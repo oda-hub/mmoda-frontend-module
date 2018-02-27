@@ -2,6 +2,8 @@ Date.prototype.getJulian = function() {
 	return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
 }
 
+// Testing Git
+
 function get_today_mjd() {
 	var today = new Date(); // set any date
 	var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian
