@@ -1,0 +1,13 @@
+name = Astrooda
+description = Astro Data Analysis
+core = 7.x
+dependencies[] = block
+dependencies[] = libraries (2.x)
+
+files[] = astrooda.admin.inc
+files[] = astrooda.common.inc
+files[] = astrooda.isgri.inc
+files[] = astrooda.module
+
+;configure = admin/structure/block/manage/astrooda/astrooda/configure
+configure = admin/config/astrooda

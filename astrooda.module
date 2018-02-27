@@ -1,0 +1,332 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+function astrooda_init() {
+  drupal_add_library ( 'system', 'ui.draggable' );
+  drupal_add_library ( 'system', 'ui.resizable' );
+  // drupal_add_library('system', 'effects.bounce');
+  // drupal_add_library('system', 'effects.transfer');
+  // drupal_add_library('system', 'effects.shake');
+  drupal_add_library ( 'system', 'effects.highlight' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
+}
+
+/**
+ * Implements hook_help().
+ */
+function astrooda_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#astrooda' :
+      $output = '<p>';
+      $output .= t ( "Online data analysis system." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function astrooda_block_info() {
+  $blocks = array ();
+  $blocks ['astrooda_main'] ['info'] = t ( "Astrooda" );
+  $blocks ['astrooda_main'] ['cache'] = DRUPAL_NO_CACHE;
+  
+  return $blocks;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+function astrooda_permission() {
+  return array (
+      'administer astrooda' => array (
+          'description' => t ( 'Administer Data Analysis' ),
+          'title' => t ( 'Administer Data Analysis' ),
+          'restrict access' => TRUE
+      ),
+      'access astrooda' => array (
+          'description' => t ( 'Access Data Analysis' ),
+          'title' => t ( 'Access Data Analysis' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function astrooda_menu() {
+  $items = array ();
+  
+  $items ['admin/config/astrooda'] = array (
+      'title' => 'Administer Data Analysis',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'astrooda_admin_settings'
+      ),
+      'description' => 'Edit data analysis settings.',
+      'file' => 'astrooda.admin.inc'
+  );
+  // 'weight' => -10,
+  
+  return $items;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function astrooda_block_view($delta) {
+  $block = array ();
+  switch ($delta) {
+    case 'astrooda_main' :
+      $block = array (
+          'subject' => t ( "Astro Online Data Analysis" ),
+          'content' => astrooda_main_block_content (),
+          //'content' => "A new content",
+          );
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function astrooda_main_block_content() {
+  /*
+   * $library = libraries_detect ( 'praytimes' );
+   * if (empty ( $library ['installed'] ))
+   * return ('');
+   * astrooda_block_content ();
+   */
+  $libraries_OK = True;
+  
+  if (session_status () != PHP_SESSION_NONE) {
+    session_destroy ();
+  }
+  // if (session_status() == PHP_SESSION_NONE) {
+  session_start ();
+  // }
+  $session_id = session_id ();
+  // $session_id = '56';
+  
+  if (! isset ( $_SESSION ['count'] )) {
+    $_SESSION ['count'] = 0;
+  } else {
+    $_SESSION ['count'] ++;
+  }
+  $session_count = $_SESSION ['count'];
+  
+  if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
+    $libraries_OK = False;
+    drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
+  }
+  
+  if (! ($library_mpld3 = libraries_load ( 'mpld3' )) || empty ( $library_mpld3 ['loaded'] )) {
+    $libraries_OK = False;
+    drupal_set_message ( t ( 'Error : can not load mplD3 library.' ), 'error' );
+  }
+  
+  $libname = 'bootstrap-form-validator';
+  /*
+   * if (($library = libraries_detect($libname)) && !empty($library['installed'])) {
+   * // The library is installed. Awesome!
+   * }
+   * else {
+   * // Something went wrong. :(
+   * // This contains a short status code of what went wrong, such as 'not found'.
+   * $error = $library['error'];
+   * // This contains a detailed (localized) error message.
+   * $error_message = $library['error message'];
+   * drupal_set_message ( t ( 'Error ').$error.t(': can not load bootstrap form validator library. ' ).t($error_message), 'error' );
+   * }
+   */
+  if (! ($library = libraries_load ( $libname )) || empty ( $library ['loaded'] )) {
+    $libraries_OK = False;
+    drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
+  }
+  
+  /*
+   * if (! ($library_datatables = libraries_load ( 'DataTables' )) || empty ( $library_datatables ['loaded'] )) {
+   * $libraries_OK = False;
+   * drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
+   * }
+   */
+  
+  if (! $libraries_OK) {
+    return;
+  }
+  
+  drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
+  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js' );
+  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.instrument.js' );
+  
+  $items = array ();
+  
+  // require_once drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.common.inc';
+  
+  $items ['session_id'] = $session_id;
+  $items ['session_count'] = $session_count;
+  
+  $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
+  $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
+  $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
+  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
+  // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
+  
+  // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets
+  // registered below
+  return theme ( 'astrooda_main_block_content', $items );
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function astrooda_get_settings() {
+  $js = array ();
+  
+  return ($js);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function astrooda_theme($existing, $type, $theme, $path) {
+  return array (
+      'astrooda_main_block_content' => array (
+          'path' => drupal_get_path ( 'module', 'astrooda' ) . '/templates/',
+          'template' => 'astrooda-main',
+          'variables' => array (
+              'items' => NULL
+          )
+      ),
+      'astrooda_month_block' => array (
+          'path' => drupal_get_path ( 'module', 'astrooda' ),
+          'template' => 'astrooda-month-block',
+          'variables' => array (
+              'location' => NULL,
+              'error' => NULL
+          )
+      )
+  );
+}
+function astrooda_array_member($val, $myArray) {
+  foreach ( $myArray as $av ) {
+    if ($av == $val) {
+      return (true);
+    }
+  }
+  return (false);
+}
+
+/**
+ * Implements hook_libraries_info().
+ *
+ * For defining external libraries.
+ */
+function astrooda_libraries_info() {
+  
+  // A very simple library. No changing APIs (hence, no versions), no variants.
+  // Expected to be extracted into 'sites/all/libraries/simple'.
+  $libraries ['d3'] = array (
+      'name' => 'Data Driven-Documents library',
+      'vendor url' => 'https://d3js.org',
+      'download url' => 'https://d3js.org',
+      'version arguments' => array (
+          'file' => 'd3.js', // Could be any file with version info
+          'pattern' => '/Version (\d+\.\d+\.\d+\.?) /'
+      ),
+      'files' => array (
+          'js' => array (
+              'd3.js'
+          )
+      )
+  );
+  
+  $libraries ['mpld3'] = array (
+      'name' => 'Data Driven-Documents library',
+      'vendor url' => 'http://mpld3.github.io/',
+      'download url' => 'http://mpld3.github.io/install.html',
+      'version arguments' => array (
+          'file' => 'mpld3.js', // Could be any file with version info
+          'pattern' => '/Version (.*)$/'
+      ),
+      'files' => array (
+          'js' => array (
+              'mpld3.js'
+          )
+      )
+  );
+  
+  $libraries ['DataTables'] = array (
+      'name' => 'Table plug-in for jQuery',
+      'vendor url' => 'https://datatables.net/',
+      'download url' => 'https://datatables.net/download/index',
+      // 'version arguments' => array (
+      // 'file' => 'datatables.js', // Could be any file with version info
+      // 'pattern' => '/DataTables (\d+\.\d+\.\d+) /'
+      // ),
+      'files' => array (
+          'js' => array (
+              'datatables.min.js'
+          )
+      )
+  );
+  $libraries ['bootstrap-form-validator'] = array (
+      'name' => 'Bootstrap Form Validator library',
+      'vendor url' => 'http://bootstrapvalidator.com',
+      'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
+      'version callback' => 'astrooda_bootstrapValidator_version_callback',
+      /*
+      'version arguments' => array (
+          'file' => 'js/bootstrapValidator.min.js', // Could be any file with version info
+         // 'pattern' => '/@Version (.*)$,/'
+      ),*/
+      'files' => array (
+          'js' => array (
+              'js/bootstrapValidator.min.js'
+          )
+      )
+  );
+  
+  return $libraries;
+}
+function astrooda_bootstrapValidator_version_callback() {
+  // use some fancy magic to get the version number... or don't
+  return TRUE;
+}
+
+function astrooda_form_alter(&$form, &$form_state, $form_id) {
+//   foreach ( $form as $item_name => $item_value ) {
+//     if (is_array ( $item_value ) and array_key_exists ( '#states', $item_value )) {
+//       foreach ( $item_value ['#states'] as $state_name => $state_value ) {
+//         foreach ( $state_value as $condition_name => $condition_value ) {
+//           $form [$item_name] ['#states'] [$state_name] = array (
+//               '#' . $form ['#id'] . ' ' . $condition_name => $condition_value
+//           );
+//         }
+//       }
+//     }
+//   }
+  error_log ( $form ['#id'] );
+  $filename = '/tmp/momo/form_' . $form_id . '.php';
+  //unlink($filename);
+  
+  
+//   $f = fopen ( $filename, 'w' );
+//   fwrite ( $f, "form:\n" );
+//   fwrite ( $f, print_r ( $form, true ) );
+//   fclose ( $f );
+//   chmod ( $filename, 0777 );
+}
+

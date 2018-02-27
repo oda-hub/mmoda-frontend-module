@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the astrooda module.
+ */
+define ( 'D3_MIN_LIB_VERSION', '3.0' );
+
+/**
+ * Implements hook_requirements().
+ */
+function astrooda_requirements($phase) {
+  $requirements = array ();
+
+  if ($phase == 'runtime') {
+    $t = get_t ();
+    $library = libraries_detect ( 'D3' );
+    $error_type = isset ( $library ['error'] ) ? drupal_ucfirst ( $library ['error'] ) : '';
+    $error_message = isset ( $library ['error message'] ) ? $library ['error message'] : '';
+
+    if (empty ( $library ['installed'] )) {
+      $requirements ['D3_library'] = array (
+          'title' => $t ( 'D3 library' ),
+          'value' => $t ( '@e: At least @a', array (
+              '@e' => $error_type,
+              '@a' => D3_MIN_LIB_VERSION
+          ) ),
+          'severity' => REQUIREMENT_ERROR,
+          'description' => $t ( '!error you need to download the !D3, extract the archive and place the D3 directory in the %path directory on your server.', array (
+              '!error' => $error_message,
+              '!D3' => l ( $t ( 'D3 library' ), $library ['download url'] ),
+              '%path' => 'sites/all/libraries'
+          ) )
+      );
+    } elseif (version_compare ( $library ['version'], D3_MIN_LIB_VERSION, '>=' )) {
+      $requirements ['D3_library'] = array (
+          'title' => $t ( 'D3 library' ),
+          'severity' => REQUIREMENT_OK,
+          'value' => $library ['version']
+      );
+    } else {
+       $requirements ['D3_library'] = array (
+          'title' => $t ( 'D3 library' ),
+          'value' => $t ( 'At least @a', array (
+              '@a' => D3_MIN_LIB_VERSION
+          ) ),
+          'severity' => REQUIREMENT_ERROR,
+          'description' => $t ( 'You need to download a later version of the !D3 and replace the old version located in the %path directory on your server.', array (
+              '!D3' => l ( $t ( 'D3 library' ), $library ['download url'] ),
+              '%path' => $library ['library path']
+          ) )
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function astrooda_uninstall() {
+  // db_delete('variable')->condition('name', db_like('astrooda_') . '%', 'LIKE')->execute();
+}
+
