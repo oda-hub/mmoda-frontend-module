@@ -18,7 +18,7 @@ function astrooda_jemx($form, &$form_state) {
   $mform_id= __FUNCTION__.'_';
   
   
-  $form ['#action'] = '/dispatch-data/test';
+  $form ['#action'] = '/dispatch-data/run_analysis';
   // $form['#action'] = '/test_post.php';
   // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';

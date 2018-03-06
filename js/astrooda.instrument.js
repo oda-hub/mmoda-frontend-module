@@ -63,7 +63,7 @@
 						});
 			}
 			else if (data.query_status != 'done') {
-				job_id = data['job_monitor']['job_id'];			
+				job_id = data['job_monitor']['job_id'];	
 				waitingDialog.append(get_current_date_time() + ' : Session ID = ' + current_ajax_call_params.currentFormData.get('session_id') + ' : Job ID = ' + job_id + ', Job Status = ' + data.query_status +'<br>');
 
 				current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
@@ -79,6 +79,7 @@
 				
 			}
 			else {
+				i++;
 				job_id = data['job_monitor']['job_id'];
 				instrument = $('input[name=instrument]', ".instrument-panel.active").val();
 				$('#ldialog').find('.progress').hide();
@@ -205,8 +206,9 @@
 						});
 						
 						// Disable form elements added by Drupal
-						$('[name^=form_],[name=catalog_selected_objects]', this).prop('disabled', true);
+						$('[name^=form_]', this).prop('disabled', true);
 						$('[name^=form_]','form#astrooda-common').prop('disabled', true);
+						//$('[name=catalog_selected_objects]', this).prop('disabled', true);
 
 						// Collect common parameters
 						var allFormData = $("form#astrooda-common").serializeArray();
@@ -222,12 +224,12 @@
 						formData = new FormData();
 						for (var lindex=0; lindex<allFormData.length; lindex++)
 						    formData.append(allFormData[lindex].name, allFormData[lindex].value);
-												
 						// Enable form elements added by Drupal
-						$('[name^=form_],[name=catalog_selected_objects]',this).prop('disabled', false);
+						$('[name^=form_]',this).prop('disabled', false);
 						$('[name^=form_]','form#astrooda-common').prop('disabled', false);
+						//$('[name=catalog_selected_objects]',this).prop('disabled', false);
 						
-						var catalog_selected_objects = $('input[name=catalog_selected_objects]:checked', this).map(function() {return this.value;}).get().join(',');
+						var catalog_selected_objects = $('input[name=catalog_selected_objects]:checked', $(this).closest('.instrument-panel')).map(function() {return this.value;}).get().join(',');
 						if (catalog_selected_objects != '') {
 							formData.append('catalog_selected_objects', catalog_selected_objects);
 						}

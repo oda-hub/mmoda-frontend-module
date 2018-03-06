@@ -63,6 +63,7 @@ function copyToClipboard(text) {
 
 	document.body.removeChild( textArea );
 }
+
 function add3Dots(field_name, field_description, limit) {
 	var dots = '<a href="#" data-toggle="popover" title="'+field_name+' " duuata-content="TTT" class="popover-help"> ...</a>';
 	if(field_description.length > limit)
@@ -275,6 +276,7 @@ function get_waitingDialog() {
 		var panel_id = product_type + '-wrapper-' + i;
 		var panel_body_id = product_type + '-' + i;
 		
+		console.log('New panel:'+panel_body_id);
 		$result_panel = $('#astrooda_panel_model').clone();
 		$result_panel.attr('id', panel_id);
 		$result_panel.find('.date').text(datetime);
