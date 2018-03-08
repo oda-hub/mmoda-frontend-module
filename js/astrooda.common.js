@@ -223,14 +223,37 @@ function get_waitingDialog() {
 			hide : function() {
 				$dialog.modal('hide');
 			},
-			append : function(message) {
+			append : function(message, alert_type) {
 				//element = $dialog.find('.message');
+				var message_class='current-message';
+				if (typeof alert_type !== 'undefined') {
+					message_class+='alert alert-'+alert_type;
+				}
+				console.log('Appendidos ...............');
 				$('.message', $dialog).find('span').removeClass('current-message');				
-				$('.message', $dialog).append($("<span>"+message+"<span>").addClass('current-message'));				
+				$('.message', $dialog).append($('<span>'+message+'</span>').addClass(message_class));				
 				$('.message', $dialog).animate({scrollTop: $('.message', $dialog).prop("scrollHeight")}, 500);				
 			},
 			hideSpinner : function() {
 				$dialog.find('.fa-spinner').addClass('hidden');				
+			},
+			setTitle : function(title) {
+				$dialog.find('h4').html(title);
+			},
+			setHeaderMessagesSessionId : function(session_id) {
+				console.log('Setting session id');
+				$dialog.find('.header-message .session-id').html(session_id);
+			},
+			setHeaderMessageJobId : function(job_id) {
+				console.log('Setting job id');
+				$dialog.find('.header-message .job-id').html(job_id);
+			},
+			showHeaderMessage : function() {
+				console.log('Showing Header Message');
+				$dialog.find('.header-message').show();
+			},
+			hideHeaderMessage : function() {
+				$dialog.find('.header-message').hide();
 			}
 		};
 

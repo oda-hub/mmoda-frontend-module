@@ -53,6 +53,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
         <h4 class="modal-title"></h4>
+        <div class="header-message">Session : <span class="session-id"></span> | Job Id : <span class="job-id"></span></div>
       </div>
       <div class="modal-body">
         <div class="message"></div>

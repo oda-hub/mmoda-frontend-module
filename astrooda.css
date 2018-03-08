@@ -230,3 +230,7 @@ span.panel-toolbox span {
 #astrooda-mockup + :input[name="use_scws"] {
 	border: 5px solid red;
 }
+
+#ldialog .header-message {
+	display: none;
+}

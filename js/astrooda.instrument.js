@@ -50,31 +50,39 @@
 		})
 		.done (function(data, textStatus, jqXHR){
 			// merge_response_data();
+
 			console.log('--- Query response ---');
 			console.log(data);
-			if (data.query_status == 'failed' ) {
-				waitingDialog
-				.show(
-						'',
-						'<div class="alert alert-danger">Request failed !<br>'+ data.exit_status.error_message+'<br>Please try later ...</div>',
-						{
-							progressType : 'danger' , showSpinner : false // , showProgressBar
-																														// : false
-						});
+			job_id = '';
+			if (data['job_monitor'].hasOwnProperty('job_id')) {
+				job_id = data['job_monitor']['job_id'];
+			}
+			waitingDialog.setHeaderMessageJobId(job_id);
+			if (data.query_status == 'failed') {
+				waitingDialog.hideSpinner();
+				waitingDialog.append(get_current_date_time() + ' ' + data.exit_status.error_message, 'danger');
 			}
 			else if (data.query_status != 'done') {
-				job_id = data['job_monitor']['job_id'];	
-				waitingDialog.append(get_current_date_time() + ' : Session ID = ' + current_ajax_call_params.currentFormData.get('session_id') + ' : Job ID = ' + job_id + ', Job Status = ' + data.query_status +'<br>');
-
+			  previous_message = '';
+				if (typeof message !== 'undefined') {
+					previous_message= message;
+				}
+				message= 'Status : ' + data.job_status;
+				if (data['job_monitor'].hasOwnProperty('full_report_dict')) {
+					message+= ' | ' + data['job_monitor'].full_report_dict.message + ' | ' +data['job_monitor'].full_report_dict.node;
+					if (data['job_monitor'].full_report_dict.hasOwnProperty('scwid')){
+						message+= ' | ' + data['job_monitor'].full_report_dict.scwid;
+					}
+				}
+				if (message != previous_message) {
+					waitingDialog.append(get_current_date_time() + ' ' + message +'<br>');
+				}
 				current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
 				current_ajax_call_params.currentFormData.append('query_status', data.query_status);
 				if (!current_ajax_call_params.currentFormData.has('job_id')) {
-					console.log('JOB ID 1 ='+ current_ajax_call_params.currentFormData['job_id']);
 					current_ajax_call_params.currentFormData.append('job_id', job_id);
 				}
-				else {
-					console.log('JOB ID 2='+ current_ajax_call_params.currentFormData['job_id']);
-				}
+				
 				requestTimer = setTimeout(AJAX_call,5000);
 				
 			}
@@ -208,7 +216,8 @@
 						// Disable form elements added by Drupal
 						$('[name^=form_]', this).prop('disabled', true);
 						$('[name^=form_]','form#astrooda-common').prop('disabled', true);
-						//$('[name=catalog_selected_objects]', this).prop('disabled', true);
+						// $('[name=catalog_selected_objects]', this).prop('disabled',
+						// true);
 
 						// Collect common parameters
 						var allFormData = $("form#astrooda-common").serializeArray();
@@ -227,7 +236,8 @@
 						// Enable form elements added by Drupal
 						$('[name^=form_]',this).prop('disabled', false);
 						$('[name^=form_]','form#astrooda-common').prop('disabled', false);
-						//$('[name=catalog_selected_objects]',this).prop('disabled', false);
+						// $('[name=catalog_selected_objects]',this).prop('disabled',
+						// false);
 						
 						var catalog_selected_objects = $('input[name=catalog_selected_objects]:checked', $(this).closest('.instrument-panel')).map(function() {return this.value;}).get().join(',');
 						if (catalog_selected_objects != '') {
@@ -237,7 +247,7 @@
 							formData.append('selected_catalog', JSON.stringify(session_image_catalogs[current_catalog_index]));
 						}
 						// Attach files
-						$.each($('input:file'), function(i, file) {
+						$.each($('input:file', this), function(i, file) {
 							if ($(this).val() !== '') {
 								// console.log('attaching file
 								// '+$(this).attr('name'));
@@ -253,6 +263,9 @@
 					waitingDialog.show('Processing ...', '', {
 						progressType : 'success', showProgressBar : false, showSpinner : true
 					});
+					waitingDialog.setHeaderMessagesSessionId(formData.get('session_id'));
+					waitingDialog.showHeaderMessage();
+					
 
 					current_ajax_call_params = {};
 					
@@ -377,7 +390,8 @@
 
 		// var panel_ids =insert_new_panel(i, 'spectrum-table', '#isgri-params',
 		// datetime);
-		//var panel_ids =$('#isgri-params').insert_new_panel(i, 'spectrum-table', datetime);
+		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'spectrum-table',
+		// datetime);
 		var panel_ids =$(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(i, 'spectrum-table', datetime);
 
 		
@@ -428,7 +442,7 @@
 
 		datetime= get_current_date_time();
 		// var panel_ids =insert_new_panel(i, 'image', '#isgri-params', datetime);
-		//var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
+		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
 		var panel_ids =$(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(i, 'image', datetime);
 
 		download_filename = 'spectra-'+ metadata.source_name +'.tar.gz';
@@ -455,7 +469,7 @@
 	function display_image(data, catalogue_index, job_id, instrument) {
 		// var panel_ids =insert_new_panel(i, 'image', '#catalog-wrapper');
 		datetime = get_current_date_time();
-		//var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
+		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
 		var panel_ids =$(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(i, 'image', datetime);
 
 		// console.log('Displaying image ...');
