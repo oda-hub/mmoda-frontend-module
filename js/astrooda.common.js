@@ -63,6 +63,7 @@ function copyToClipboard(text) {
 
 	document.body.removeChild( textArea );
 }
+
 function add3Dots(field_name, field_description, limit) {
 	var dots = '<a href="#" data-toggle="popover" title="'+field_name+' " duuata-content="TTT" class="popover-help"> ...</a>';
 	if(field_description.length > limit)
@@ -76,9 +77,9 @@ function add3Dots(field_name, field_description, limit) {
 
 function get_current_date_time()  {
 	var currentdate = new Date();
-	return ("0" + currentdate.getDate()).slice(-2) + "."
+	return currentdate.getFullYear() + "."
 	+ ("0" + (currentdate.getMonth()+1)).slice(-2) + "."
-	+ currentdate.getFullYear() + "T"  
+	+ ("0" + currentdate.getDate()).slice(-2) + "T"  
 	+ ("0" + currentdate.getHours()).slice(-2) + ":"
 	+ ("0" + currentdate.getMinutes()).slice(-2) + ":"
 	+ ("0" + currentdate .getSeconds()).slice(-2);
@@ -174,7 +175,6 @@ function get_waitingDialog() {
 				}
 				
 				if (!settings.showProgressBar) {
-					console.log('Hiding progress bar');
 					$dialog.find('.progress').addClass('hidden');
 				}
 				else {
@@ -191,7 +191,6 @@ function get_waitingDialog() {
 				else {
 					$dialog.find('button').hide();						
 				}
-				console.log('show modal window');
 				$dialog.find('h4').html(title);
 				$dialog.find('.message').html(message);
 				$dialog.find('.modal-footer button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
@@ -222,14 +221,46 @@ function get_waitingDialog() {
 			hide : function() {
 				$dialog.modal('hide');
 			},
-			append : function(message) {
-				//element = $dialog.find('.message');
-				$('.message', $dialog).find('span').removeClass('current-message');				
-				$('.message', $dialog).append($("<span>"+message+"<span>").addClass('current-message'));				
-				$('.message', $dialog).animate({scrollTop: $('.message', $dialog).prop("scrollHeight")}, 500);				
+			append : function(message, alert_type) {
+				// element = $dialog.find('.message');
+				var message_class='';
+				if (typeof alert_type !== 'undefined') {
+					message_class+='alert alert-'+alert_type;
+				}
+				$('.summary', $dialog).append($('<div>'+message+'</div>').addClass(message_class));				
+				//$('.message', $dialog).animate({scrollTop: $('.message', $dialog).prop("scrollHeight")}, 500);				
+			},
+			replace : function(messages, alert_type) {
+				var message_class= '';
+				if (typeof alert_type !== 'undefined') {
+					message_class+='alert alert-'+alert_type;
+				}
+				$('.summary', $dialog).html($('<span>'+messages.summary+'</span>').addClass(message_class));				
+				$('.details', $dialog).html(messages.details);
+				if (messages.details !== '') {
+					$('#ldialog .modal-body .more-less-details').show();
+				}
 			},
 			hideSpinner : function() {
 				$dialog.find('.fa-spinner').addClass('hidden');				
+			},
+			setTitle : function(title) {
+				$dialog.find('h4').html(title);
+			},
+			setClose : function(title) {
+				$dialog.find('.modal-footer button').text('Close');
+			},
+			setHeaderMessagesSessionId : function(session_id) {
+				$dialog.find('.header-message .session-id').html(session_id);
+			},
+			setHeaderMessageJobId : function(job_id) {
+				$dialog.find('.header-message .job-id').html(job_id);
+			},
+			showHeaderMessage : function() {
+				$dialog.find('.header-message').show();
+			},
+			hideHeaderMessage : function() {
+				$dialog.find('.header-message').hide();
 			}
 		};
 
@@ -296,7 +327,6 @@ function get_waitingDialog() {
   	$(this).css({'left': position_left}).css('z-index', max_zindexes+1);
   	var x = $('#integral-isgri').position().top -80;
   	var thisObject = $(this);
-  	console.log('max_zindexes='+max_zindexes+', position_left='+position_left+', x='+x);
   	$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
   	// Animation complete.
   		thisObject.show('highlight', {color: '#adebad'}, 1000);
@@ -363,9 +393,7 @@ function get_waitingDialog() {
 
 
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
-			console.log('AJAX called');
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
-       console.log('In ajax call resolve name'); 				
 				waitingDialog.show('','Resolving name using <a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a> respectively NED, Simbad and VizieR...', {
 					progressType : 'success', 'showProgress' : true, 'showButton' : false
 		    }); 
@@ -382,10 +410,10 @@ function get_waitingDialog() {
 		
 		// Disable main submit if error in common parameters
 		$('input, slect, textarea', '#astrooda-common').on('error.field.bv', function() {
-			console.log('Disabling submit');
+			// Disabling submit
 			$('[type="submit"]', '.instrument-panel').prop('disabled', true);
 		}).on('success.field.bv', function() {
-			console.log('Enabling submit');
+			// Enabling submit')
 			$('[type="submit"]', '.instrument-panel').prop('disabled', false);
 
 		});
@@ -442,7 +470,8 @@ function cloneFormData (formData1) {
 	}
 	return(formData2);
 }
-function  get_text_table(table) {
+
+function get_text_table(table) {
 	if (! table.hasOwnProperty('column_names')) {
 		return '';
 	}
