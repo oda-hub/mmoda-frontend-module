@@ -91,9 +91,10 @@ function astrooda_block_view($delta) {
     case 'astrooda_main' :
       $block = array (
           'subject' => t ( "Astro Online Data Analysis" ),
-          'content' => astrooda_main_block_content (),
-          //'content' => "A new content",
-          );
+          'content' => astrooda_main_block_content ()
+      )
+      // 'content' => "A new content",
+      ;
       break;
   }
   return $block;
@@ -155,13 +156,11 @@ function astrooda_main_block_content() {
     $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
   }
-  
-  /*
-   * if (! ($library_datatables = libraries_load ( 'DataTables' )) || empty ( $library_datatables ['loaded'] )) {
-   * $libraries_OK = False;
-   * drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
-   * }
-   */
+    
+  if (! ($library_datatables = libraries_load ( 'datatables' )) || empty ( $library_datatables ['loaded'] )) {
+    $libraries_OK = False;
+    drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
+  }
   
   if (! $libraries_OK) {
     return;
@@ -267,18 +266,18 @@ function astrooda_libraries_info() {
           )
       )
   );
-  
-  $libraries ['DataTables'] = array (
+  error_log('Just befor datatables');
+  $libraries ['datatables'] = array (
       'name' => 'Table plug-in for jQuery',
       'vendor url' => 'https://datatables.net/',
       'download url' => 'https://datatables.net/download/index',
-      // 'version arguments' => array (
-      // 'file' => 'datatables.js', // Could be any file with version info
-      // 'pattern' => '/DataTables (\d+\.\d+\.\d+) /'
-      // ),
+      'version arguments' => array (
+          'file' => 'jquery.dataTables.js', // Could be any file with version info
+          'pattern' => '/version +(\d+\.\d+\.\d+)$/'
+      ),
       'files' => array (
           'js' => array (
-              'datatables.min.js'
+              'jquery.dataTables.min.js'
           )
       )
   );
@@ -305,28 +304,26 @@ function astrooda_bootstrapValidator_version_callback() {
   // use some fancy magic to get the version number... or don't
   return TRUE;
 }
-
 function astrooda_form_alter(&$form, &$form_state, $form_id) {
-//   foreach ( $form as $item_name => $item_value ) {
-//     if (is_array ( $item_value ) and array_key_exists ( '#states', $item_value )) {
-//       foreach ( $item_value ['#states'] as $state_name => $state_value ) {
-//         foreach ( $state_value as $condition_name => $condition_value ) {
-//           $form [$item_name] ['#states'] [$state_name] = array (
-//               '#' . $form ['#id'] . ' ' . $condition_name => $condition_value
-//           );
-//         }
-//       }
-//     }
-//   }
+  // foreach ( $form as $item_name => $item_value ) {
+  // if (is_array ( $item_value ) and array_key_exists ( '#states', $item_value )) {
+  // foreach ( $item_value ['#states'] as $state_name => $state_value ) {
+  // foreach ( $state_value as $condition_name => $condition_value ) {
+  // $form [$item_name] ['#states'] [$state_name] = array (
+  // '#' . $form ['#id'] . ' ' . $condition_name => $condition_value
+  // );
+  // }
+  // }
+  // }
+  // }
   error_log ( $form ['#id'] );
   $filename = '/tmp/momo/form_' . $form_id . '.php';
-  //unlink($filename);
+  // unlink($filename);
   
-  
-//   $f = fopen ( $filename, 'w' );
-//   fwrite ( $f, "form:\n" );
-//   fwrite ( $f, print_r ( $form, true ) );
-//   fclose ( $f );
-//   chmod ( $filename, 0777 );
+  // $f = fopen ( $filename, 'w' );
+  // fwrite ( $f, "form:\n" );
+  // fwrite ( $f, print_r ( $form, true ) );
+  // fclose ( $f );
+  // chmod ( $filename, 0777 );
 }
 

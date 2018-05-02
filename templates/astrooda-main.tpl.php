@@ -45,20 +45,33 @@
  */
 ?>
 <!-- Modal -->
-<div id="ldialog" class="modal fade" role="dialog" aria-hidden="true">
+<div id="ldialog" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <!--button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
-        </button>
+        </button-->
         <h4 class="modal-title"></h4>
-        <div class="header-message">Session : <span class="session-id"></span> | Job Id : <span class="job-id"></span></div>
+        <div class="header-message">
+          Session : <span class="session-id"></span> | Job Id : <span class="job-id"></span>
+        </div>
       </div>
       <div class="modal-body">
-        <div class="message"></div>
-        <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
-        
+        <div class="legend">
+          <div class="legend-element waiting"></div>
+          Waiting
+          <div class="legend-element calculating"></div>
+          Calculating
+          <div class="legend-element calculated"></div>
+          Done
+          <div class="legend-element from-cache"></div>
+          Restored from cache
+        </div>
+        <div class="summary"></div>
+        <div class="more-less-details">More details &gt;</div>
+        <div class="details"></div>
+        <i class="fa fa-spinner fa-spin" style="font-size: 24px"></i>
         <div class="progress progress-striped active" style="margin-bottom: 0;">
           <div class="progress-bar" style="width: 100%"></div>
         </div>
@@ -136,7 +149,7 @@
                   </div>
                   </div>
                 </div>
-                </div>
+              </div>
             </div>
           </div>
         </div>

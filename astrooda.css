@@ -7,7 +7,7 @@
 }
 
 .result-panel {
-	position : absolute;
+	position: absolute;
 	vertical-align: top;
 	display: none;
 	float: left;
@@ -17,42 +17,57 @@
 #ldialog {
 	/*padding-top:15%;
 	overflow-y:visible;*/
+	
 }
 
 .block-astrooda {
 	display: none;
 }
 /***************** Start vertically center modal   ***/
-
 .modal {
-  text-align: center;
-  padding: 0!important;
-  top: 15%;
+	text-align: center;
+	padding: 0 !important;
+	top: 15%;
 }
 
 .modal:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-  margin-right: -4px;
+	content: '';
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+	margin-right: -4px;
 }
 
 .modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
-  width : 60%;
+	display: inline-block;
+	text-align: left;
+	vertical-align: middle;
+	width: 60%;
 }
 
-#ldialog .modal-body .message {
-  max-height: 20vh;
-  overflow-y: auto;
+#ldialog .modal-body {
+	max-height: 80vh;
+	overflow-y: auto;
 }
 
 .current-message {
 	font-weight: bold;
 }
+
+table.message-table tr td {
+	padding-right: 1em;
+}
+
+#ldialog .details, #ldialog .more-less-details {
+	display: none;
+}
+
+
+#ldialog .more-less-details {
+	color: #007d64;
+	cursor: pointer;
+}
+
 
 /***************** End vertically center modal   ***/
 /*
@@ -66,7 +81,6 @@
 #formwrapper {
 	width: 100%;
 }
-
 
 .common-params {
 	margin: 0 35% 1em 35%;
@@ -94,18 +108,17 @@ table.astro-ana tr td, table.astro-ana tr th {
 }
 
 .ui-resizable-s {
-    background: #eee url(../../../../misc/grippie.png) no-repeat center 2px;
-    border: 1px solid #ddd;
-    border-top-width: 0;
-    cursor: s-resize;
-    height: 15px;
-    overflow: hidden;
+	background: #eee url(../../../../misc/grippie.png) no-repeat center 2px;
+	border: 1px solid #ddd;
+	border-top-width: 0;
+	cursor: s-resize;
+	height: 15px;
+	overflow: hidden;
 }
 
 .instrument-panel {
-	position : relative;
-  overflow: hidden;
-  
+	position: relative;
+	overflow: hidden;
 }
 
 .instrument-panel .panel-heading {
@@ -133,10 +146,66 @@ table.astro-ana tr td, table.astro-ana tr th {
 	padding-right: 1em;
 }
 
-.spectrum-text-table tr td:not(:first-child), #catalog-wrapper table tr td:not(:first-child) {
-text-align : right;
-}
+.spectrum-text-table
 
+ 
+
+tr
+
+ 
+
+td
+
+
+:not
+
+ 
+
+(
+:first-child
+
+ 
+
+),
+#catalog-wrapper
+
+ 
+
+table
+
+ 
+
+tr
+
+ 
+
+td
+
+
+:not
+
+
+	
+
+(
+:first-child
+
+ 
+
+)
+{
+text-align
+
+
+:
+
+ 
+
+right
+
+
+;
+}
 .catalog-wrapper table tr td.optional, .catalog-wrapper table tr th.optional,
 	.catalog-wrapper .more, .catalog-wrapper .less {
 	display: none;
@@ -152,7 +221,7 @@ span.panel-toolbox span {
 }
 
 .panel {
-  margin-left: 0.5em;
+	margin-left: 0.5em;
 }
 
 .panel:hover {
@@ -168,11 +237,10 @@ span.panel-toolbox span {
 	float: right;
 	padding: 1em;
 	background-color: lightgray;
-	
 }
 
-.node-astrooda-help{
-  float: left;
+.node-astrooda-help {
+	float: left;
 }
 
 #astrooda_panel_model {
@@ -181,16 +249,16 @@ span.panel-toolbox span {
 
 /***********************************/
 .form-item-src-name .alert {
-  padding: 5px 30px 5px 12px;
+	padding: 5px 30px 5px 12px;
 	margin-bottom: 5px;
-} 
+}
 
 .form-item-use-scws {
 	display: inline-block;
 }
 
 #formwrapper input:disabled {
-    background-color: #f5f5f5;
+	background-color: #f5f5f5;
 }
 
 /*
@@ -222,15 +290,67 @@ span.panel-toolbox span {
   text-align: center;
 }
 */
-
 .astrooda-popver-content {
 	display: none;
 }
 
-#astrooda-mockup + :input[name="use_scws"] {
+#astrooda-mockup+:input[name="use_scws"] {
 	border: 5px solid red;
 }
 
 #ldialog .header-message {
 	display: none;
+}
+
+#ldialog table.status-table th:first-child {
+	vertical-align: bottom;
+}
+
+#ldialog table.status-table th.rotate {
+	/* Something you can count on */
+	height: 140px;
+	white-space: nowrap;
+}
+
+#ldialog table.status-table th.rotate>div {
+	transform: /* Magic Numbers */ translate( 25px, 51px)
+		/* 45 is really 360 - 45 */
+    rotate( 315deg);
+	width: 30px;
+}
+
+#ldialog table.status-table th.rotate>div>span {
+	border-bottom: 1px solid #ccc;
+	padding: 5px 10px;
+}
+
+#ldialog table.status-table td {
+	border: 1px solid lightGray;
+}
+
+#ldialog .legend {
+	text-align: right;
+}
+
+#ldialog .legend .legend-element {
+	display : inline-block;
+	width : 1em;
+	height: 1em;
+	margin-left: 0.5em;
+}
+
+.calculated {
+	background-color: LimeGreen;
+}
+
+.from-cache {
+	background-color: DarkGreen;
+}
+
+.calculating {
+	background-color: orange;
+}
+
+.waiting {
+  background-color: yellow;
 }
