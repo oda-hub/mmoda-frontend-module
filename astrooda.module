@@ -158,8 +158,8 @@ function astrooda_main_block_content() {
   }
     
   if (! ($library_datatables = libraries_load ( 'datatables' )) || empty ( $library_datatables ['loaded'] )) {
-    $libraries_OK = False;
-    drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
+ //   $libraries_OK = False;
+ //   drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
   }
   
   if (! $libraries_OK) {
