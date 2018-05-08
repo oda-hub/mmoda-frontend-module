@@ -59,8 +59,8 @@
       </div>
       <div class="modal-body">
         <div class="legend">
-          <div class="legend-element waiting"></div>
-          Waiting
+          <div class="legend-element preparing"></div>
+          Preparing
           <div class="legend-element calculating"></div>
           Calculating
           <div class="legend-element calculated"></div>
