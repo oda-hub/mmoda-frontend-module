@@ -62,12 +62,10 @@ table.message-table tr td {
 	display: none;
 }
 
-
 #ldialog .more-less-details {
 	color: #007d64;
 	cursor: pointer;
 }
-
 
 /***************** End vertically center modal   ***/
 /*
@@ -146,66 +144,11 @@ table.astro-ana tr td, table.astro-ana tr th {
 	padding-right: 1em;
 }
 
-.spectrum-text-table
-
- 
-
-tr
-
- 
-
-td
-
-
-:not
-
- 
-
-(
-:first-child
-
- 
-
-),
-#catalog-wrapper
-
- 
-
-table
-
- 
-
-tr
-
- 
-
-td
-
-
-:not
-
-
-	
-
-(
-:first-child
-
- 
-
-)
-{
-text-align
-
-
-:
-
- 
-
-right
-
-
-;
+.spectrum-text-table tr td:not(:first-child),
+#catalog-wrapper table tr td:not(:first-child) {
+  text-align : right;
 }
+
 .catalog-wrapper table tr td.optional, .catalog-wrapper table tr th.optional,
 	.catalog-wrapper .more, .catalog-wrapper .less {
 	display: none;
@@ -333,8 +276,8 @@ span.panel-toolbox span {
 }
 
 #ldialog .legend .legend-element {
-	display : inline-block;
-	width : 1em;
+	display: inline-block;
+	width: 1em;
 	height: 1em;
 	margin-left: 0.5em;
 }
@@ -351,6 +294,10 @@ span.panel-toolbox span {
 	background-color: orange;
 }
 
-.waiting {
-  background-color: yellow;
+.preparing {
+	background-color: yellow;
+}
+
+.popover {
+	max-width: 30%;
 }

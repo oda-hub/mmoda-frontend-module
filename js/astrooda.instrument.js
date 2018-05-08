@@ -271,7 +271,7 @@
 	function get_node_status_class(started_or_not, message) {
 		cssClass = '';
 		if (message) {
-			cssClass = 'waiting';
+			cssClass = 'preparing';
 			if ( started_or_not == 'main starting') {
 				cssClass = 'calculating';
 			}
@@ -730,13 +730,23 @@
 			});
 		}
 		if (data.input_prod_list.length > 0) {
+			scw_list = data.input_prod_list.join(', ');
+			//scw_list = '005200270010.001, 005500630010.001, 011600200010.001, 011600600010.001, 011900060010.001, 012100100010.001, 015700470010.001, 022900710010.001, 023000490010.001, 023100230010.001, 024600690010.001, 028300650010.001, 028601030010.001, 028900610010.001, 029000390010.001, 029600080010.001, 029700340010.001, 029801010010.001, 030200940010.001, 030400420010.001, 030600860010.001, 030700950010.001, 040400590010.001, 040800090010.001, 041100220010.001, 041300150010.001, 041800650010.001, 042600450010.001, 046100540010.001, 046800590010.001, 047200190010.001, 048000710010.001, 048200070010.001, 048200600010.001, 048400120010.001, 048900600010.001, 052500050010.001, 053400320010.001, 053500190010.001, 053600120010.001, 055000050010.001, 055100030010.001, 059500350010.001, 059500610010.001, 059600470010.001, 060700030010.001, 065400090010.001, 066000080010.001, 066300140010.001, 066400650030.001, 066900310010.001, 072200020010.001, 072600520010.001, 073300880010.001, 073400620010.001, 073600590010.001, 077200080010.001, 079100580010.001, 079200520010.001, 084000960010.001, 084501090010.001, 089700540010.001, 089800140010.001, 090200840010.001, 090700250010.001, 095500450010.001, 095600340010.001, 095600420010.001, 102000110010.001, 102400670010.001, 102900920010.001, 103000920010.001, 103401070010.001, 103500590010.001, 103800650010.001, 108100640010.001, 109200390010.001, 109300380010.001, 109401180020.001, 114300160010.001, 114300810010.001, 114400500010.001, 114600120010.001, 115200680010.001, 115300520010.001, 115300900010.001, 115500390010.001, 115700890010.001, 116100070010.001, 120100050010.001, 120301000010.001, 120800290010.001, 120800350010.001, 121001050010.001, 121700260010.001, 122200760010.001, 122300210010.001, 122300550010.001, 126300610010.001, 126700830010.001';
 			$('#' + panel_ids.panel_body_id)
 			.append(
-					'<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><span>'
-					+ data.input_prod_list.join(', ') + '</span></div>');
+					'<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">'
+					+ scw_list + '</div></div>');
 			$('.copy-to-clipboard').on('click', function() {
-				copyToClipboard($(this).parent().find('span').text());
+				copyToClipboard($(this).parent().find('.astrooda-popver-content').text());
 			});
+			$('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
+			$('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {e.preventDefault(); return true;}).popover({
+				container: 'body',
+				content : function () { return $(this).parent().find('.astrooda-popver-content').html();},
+				html : true,
+				template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+			});
+
 		}
 
 		mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
