@@ -83,7 +83,7 @@
   </div>
 </div>
 <!-- Panel -->
-<div id="astrooda_panel_model" class="result-panel panel panel-default panel-'+product_type+' ldraggable ">
+<div id="astrooda_panel_model" class="result-panel panel panel-default ldraggable ">
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span class="panel-toolbox pull-right"> <span class="date">@ '+datetime+'</span> <span
       class="clickable"

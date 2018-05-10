@@ -1,7 +1,7 @@
 (function($) {
 
 	$(document).ready(commonReady);
-	var i = 1;
+	var desktop_panel_counter = 1;
 	var session_image_catalogs = [];
 
 	var request_draw_spectrum = false;
@@ -98,8 +98,6 @@
 						requestTimer = setTimeout(AJAX_call, 5000);
 
 					} else {
-						i++;
-						job_id = data['job_monitor']['job_id'];
 						instrument = $('input[name=instrument]',
 						".instrument-panel.active").val();
 						$('#ldialog').find('.progress').hide();
@@ -111,19 +109,25 @@
 							$('#ldialog').find('.progress').hide();
 						}
 						if (data.products.hasOwnProperty('image')) {
-							waitingDialog.append(get_current_date_time() + ' '
-									+ data.products.prod_process_message, 'success');
-							if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-								display_spectrum(request_spectrum_form_element.data(),
-										data.products.image, job_id, instrument);
-							} else {
-								catalog_index = 1;
-								if (data.products.hasOwnProperty('catalog')) {
-									catalog_index = session_image_catalogs
-									.push(data.products.catalog);
+							if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
+								display_lc_table(job_id, data.query_status,
+										data.products);
+							}
+							else {
+								waitingDialog.append(get_current_date_time() + ' '
+										+ data.products.prod_process_message, 'success');
+								if (data.products.image.hasOwnProperty('spectral_fit_image')) {
+									display_spectrum(request_spectrum_form_element.data(),
+											data.products.image, job_id, instrument);
+								} else {
+									catalog_index = 1;
+									if (data.products.hasOwnProperty('catalog')) {
+										catalog_index = session_image_catalogs
+										.push(data.products.catalog);
+									}
+									display_image(data.products, catalog_index - 1, job_id,
+											instrument);
 								}
-								display_image(data.products, catalog_index - 1, job_id,
-										instrument);
 							}
 						} else if (data.products.hasOwnProperty('spectrum_name')) {
 							display_spectrum_table(job_id, data.query_status,
@@ -163,7 +167,7 @@
 			$('#ldialog .summary').html('');
 			$('#ldialog .details').html('');
 			$('#ldialog .modal-body .more-less-details').hide();
-			
+
 			jqxhr.abort();
 		});
 
@@ -248,7 +252,7 @@
 
 			messages.summary += '</tr>';
 		}
-		
+
 		messages.summary += '</tbody></table>';
 		if (response['job_monitor'].hasOwnProperty('full_report_dict_list')
 				&& response['job_monitor'].full_report_dict_list.length > 0) {
@@ -528,8 +532,8 @@
 		var html = '<table class="astro-ana"><thead>' + header + '</thead><tbody>'
 		+ body + '</tbody></table>';
 
-		// var panel_ids =insert_new_panel(i, 'image-catalog', afterDiv, datetime);
-		var panel_ids = $(afterDiv).insert_new_panel(i, 'image-catalog', datetime);
+		// var panel_ids =insert_new_panel(desktop_panel_counter++, 'image-catalog', afterDiv, datetime);
+		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-catalog', datetime);
 
 		$('#' + panel_ids.panel_body_id)
 		.append(
@@ -583,6 +587,106 @@
 				});
 	}
 
+	
+	function display_lc_table(job_id, query_status, products) {
+		datetime = get_current_date_time();
+
+		var header = '<tr><th>Source name</th><th>Light curve</th><th/></tr>';
+		var body = '';
+		for (var i = 0; i < products.image.length; i++) {
+			body += '<tr><td>'
+				+ products.name[i]
+			+ '</td><td><button type="button" class="btn btn-primary draw_lc" data-job-id="' + job_id +'" data-index="'+
+			+ i + '">View</button></td>' + '</tr>';
+		}
+
+		var html = '<table class="astro-ana lc"><thead>' + header
+		+ '</thead><tbody>' + body + '</tbody></table>';
+		// var panel_ids =insert_new_panel(desktop_panel_counter++, 'spectrum-table', '#isgri-params',
+		// datetime);
+		// var panel_ids =$('#isgri-params').insert_new_panel(desktop_panel_counter++, 'spectrum-table',
+		// datetime);
+		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
+		.insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
+
+		if (products.input_prod_list.length > 0) {
+			scw_list = products.input_prod_list.join(', ');
+			//scw_list = '005200270010.001, 005500630010.001, 011600200010.001, 011600600010.001, 011900060010.001, 012100100010.001, 015700470010.001, 022900710010.001, 023000490010.001, 023100230010.001, 024600690010.001, 028300650010.001, 028601030010.001, 028900610010.001, 029000390010.001, 029600080010.001, 029700340010.001, 029801010010.001, 030200940010.001, 030400420010.001, 030600860010.001, 030700950010.001, 040400590010.001, 040800090010.001, 041100220010.001, 041300150010.001, 041800650010.001, 042600450010.001, 046100540010.001, 046800590010.001, 047200190010.001, 048000710010.001, 048200070010.001, 048200600010.001, 048400120010.001, 048900600010.001, 052500050010.001, 053400320010.001, 053500190010.001, 053600120010.001, 055000050010.001, 055100030010.001, 059500350010.001, 059500610010.001, 059600470010.001, 060700030010.001, 065400090010.001, 066000080010.001, 066300140010.001, 066400650030.001, 066900310010.001, 072200020010.001, 072600520010.001, 073300880010.001, 073400620010.001, 073600590010.001, 077200080010.001, 079100580010.001, 079200520010.001, 084000960010.001, 084501090010.001, 089700540010.001, 089800140010.001, 090200840010.001, 090700250010.001, 095500450010.001, 095600340010.001, 095600420010.001, 102000110010.001, 102400670010.001, 102900920010.001, 103000920010.001, 103401070010.001, 103500590010.001, 103800650010.001, 108100640010.001, 109200390010.001, 109300380010.001, 109401180020.001, 114300160010.001, 114300810010.001, 114400500010.001, 114600120010.001, 115200680010.001, 115300520010.001, 115300900010.001, 115500390010.001, 115700890010.001, 116100070010.001, 120100050010.001, 120301000010.001, 120800290010.001, 120800350010.001, 121001050010.001, 121700260010.001, 122200760010.001, 122300210010.001, 122300550010.001, 126300610010.001, 126700830010.001';
+			$('#' + panel_ids.panel_body_id)
+			.append(
+					'<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">'
+					+ scw_list + '</div></div>');
+			$('.copy-to-clipboard').on('click', function() {
+				copyToClipboard($(this).parent().find('.astrooda-popver-content').text());
+			});
+			$('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
+			$('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {e.preventDefault(); return true;}).popover({
+				container: 'body',
+				content : function () { return $(this).parent().find('.astrooda-popver-content').html();},
+				html : true,
+				template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+			});
+		}
+		$('#' + panel_ids.panel_id).data({ 'job_id' : job_id });
+		$('#' + panel_ids.panel_id).data({ 'products' : products });
+
+    $('#' + panel_ids.panel_body_id).append(
+		'<div id="lc-table-wrapper-' +job_id +'"></div>');
+		$("#lc-table-wrapper-" +job_id).html(html);
+		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
+				'Source : ' + source_name + ' - Light curve table');
+
+		$('.draw_lc').on(
+				'click',
+				function() {
+					lc_index = $(this).data('index');
+					current_panel = $(this).closest('.panel');
+					display_lc_image(current_panel, lc_index, datetime);
+				});
+		$('#' + panel_ids.panel_id).highlight_result_panel();
+
+	}
+	
+	function display_lc_image(current_panel, lc_index, datetime) {
+		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
+		.insert_new_panel(desktop_panel_counter++, 'image', datetime);
+		var ldata = current_panel.data('products');
+		var image = ldata.image[lc_index];
+		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
+		var job_id= current_panel.data('job_id');
+		
+		var file_name = ldata.file_name[lc_index].replace('query_lc_query_lc_', '');
+		url = 'session_id=' + session_id  + '&download_file_name='
+		+ file_name + '.gz&file_list=' + ldata.file_name[lc_index]
+		+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
+		url = url.replace(/\+/g, '%2B');
+		$('#' + panel_ids.panel_body_id).append(
+				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
+
+		mpld3.draw_figure(panel_ids.panel_body_id, image.image);
+		$('#' + panel_ids.panel_body_id).append(
+				image.header_text.replace(/\n/g, "<br />"));
+		$('#' + panel_ids.panel_body_id).append(
+				get_text_table(image.table_text));
+		$('#' + panel_ids.panel_body_id).append(
+				image.footer_text.replace(/\n/g, "<br />"));
+
+		product_type = $("input[name$='product_type']:checked",
+		".instrument-panel.active").val();
+		
+		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
+				'Source : ' + ldata.name[lc_index] + ' - ' + product_type);
+
+		// set_draggable();
+		$('#' + panel_ids.panel_id).css({
+			'width' : $('#' + panel_ids.panel_id).width()
+		});
+
+		$('#' + panel_ids.panel_id).highlight_result_panel();
+
+	}
+	
 	function display_spectrum_table(job_id, query_status, data) {
 
 		datetime = get_current_date_time();
@@ -600,12 +704,12 @@
 		var html = '<table class="astro-ana spectra"><thead>' + header
 		+ '</thead><tbody>' + body + '</tbody></table>';
 
-		// var panel_ids =insert_new_panel(i, 'spectrum-table', '#isgri-params',
+		// var panel_ids =insert_new_panel(desktop_panel_counter++, 'spectrum-table', '#isgri-params',
 		// datetime);
-		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'spectrum-table',
+		// var panel_ids =$('#isgri-params').insert_new_panel(desktop_panel_counter++, 'spectrum-table',
 		// datetime);
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-		.insert_new_panel(i, 'spectrum-table', datetime);
+		.insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
 
 		$('#' + panel_ids.panel_body_id).append(
 		'<div id="spectrum-table-wrapper"></div>');
@@ -657,16 +761,15 @@
 				});
 		// highlight_result_panel(panel_ids.panel_id);
 		$('#' + panel_ids.panel_id).highlight_result_panel();
-
 	}
 
 	function display_spectrum(metadata, data, job_id, instrument) {
 
 		datetime = get_current_date_time();
-		// var panel_ids =insert_new_panel(i, 'image', '#isgri-params', datetime);
-		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
+		// var panel_ids =insert_new_panel(desktop_panel_counter++, 'image', '#isgri-params', datetime);
+		// var panel_ids =$('#isgri-params').insert_new_panel(desktop_panel_counter++, 'image', datetime);
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-		.insert_new_panel(i, 'image', datetime);
+		.insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
 		download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
 		url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files
@@ -700,11 +803,11 @@
 	}
 
 	function display_image(data, catalogue_index, job_id, instrument) {
-		// var panel_ids =insert_new_panel(i, 'image', '#catalog-wrapper');
+		// var panel_ids =insert_new_panel(desktop_panel_counter++, 'image', '#catalog-wrapper');
 		datetime = get_current_date_time();
 		// var panel_ids =$('#isgri-params').insert_new_panel(i, 'image', datetime);
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-		.insert_new_panel(i, 'image', datetime);
+		.insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
 		session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		url = 'session_id=' + session_id + '&download_file_name='
@@ -746,7 +849,6 @@
 				html : true,
 				template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
 			});
-
 		}
 
 		mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
