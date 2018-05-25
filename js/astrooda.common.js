@@ -69,7 +69,7 @@ function add3Dots(field_name, field_description, limit) {
 	if(field_description.length > limit)
 	{
 		// you can also use substr instead of substring
-		field_description = '<div class="astrooda-popver-content">' + field_description + '</div><span>'+field_description.substring(0,limit) + '</span>'+ dots;
+		field_description = '<div class="astrooda-popover-content">' + field_description + '</div><span>'+field_description.substring(0,limit) + '</span>'+ dots;
 	}
 
 	return field_description;
@@ -160,6 +160,7 @@ function get_waitingDialog() {
 					onHide : null,
 					showProgressBar : false,
 					showSpinner : false,
+					showLegend : false,
 					showCloseInHeader : false,
 					showButton : true,
 					buttonText : 'Cancel'
@@ -209,6 +210,12 @@ function get_waitingDialog() {
 					$dialog.find('.fa-spinner').removeClass('hidden');									
 				}
 
+				if (!settings.showLegend) {
+					$dialog.find('.legend').hide();				
+				}
+				else {
+					$dialog.find('.legend').show();									
+				}
 				// Opening dialog
 				$dialog.modal();
 				$dialog.find('.close-panel').on("click", function() {
@@ -228,7 +235,8 @@ function get_waitingDialog() {
 					message_class+='alert alert-'+alert_type;
 				}
 				$('.summary', $dialog).append($('<div>'+message+'</div>').addClass(message_class));				
-				//$('.message', $dialog).animate({scrollTop: $('.message', $dialog).prop("scrollHeight")}, 500);				
+				// $('.message', $dialog).animate({scrollTop: $('.message',
+				// $dialog).prop("scrollHeight")}, 500);
 			},
 			replace : function(messages, alert_type) {
 				var message_class= '';
@@ -261,6 +269,12 @@ function get_waitingDialog() {
 			},
 			hideHeaderMessage : function() {
 				$dialog.find('.header-message').hide();
+			},
+			showLegend : function() {
+				$dialog.find('.legend').show();
+			},
+			hideLegend : function() {
+				$dialog.find('.legend').hide();
 			}
 		};
 
@@ -270,11 +284,6 @@ function get_waitingDialog() {
 
 (function($) {
 	
-	 $.fn.set_table_select_all = function(select_all_element, elements_to_select) {
-		$('input[name=' + select_all_element+']', this).on('click', function(e) {
-			$('input[name=' + elements_to_select +']', this).prop('checked', this.checked).change();
-		});
-	}
 
   $.fn.set_panel_draggable = function () {
 		$(this).draggable({
@@ -302,7 +311,7 @@ function get_waitingDialog() {
   }
 
   // $.fn.insert_new_panel = function(i, product_type, insertAfter, datetime) {
-	$.fn.insert_new_panel = function(i, product_type, datetime) {
+	$.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
 		var panel_id = product_type + '-wrapper-' + i;
 		var panel_body_id = product_type + '-' + i;
 		
@@ -313,29 +322,40 @@ function get_waitingDialog() {
 
 	// $($result_panel).insertAfter(insertAfter);
 		$(this).after($result_panel);
-		$('#'+panel_id+ ' .panel-heading .close-panel').on("click", function() {
-			$(this).closest('.result-panel').remove();
-		});
+		if (left) {
+			$result_panel.css('left', left + 'px');
+		}
+		if (top) {
+			$result_panel.css('top', top + 'px');
+		}
+		
 		$('#'+panel_id).set_panel_draggable();
 		$('#'+panel_id).set_collapsible();
 		return({ 'panel_id' : panel_id, 'panel_body_id' :panel_body_id});
 	}
 
-  $.fn.highlight_result_panel = function() {
-  	max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() {return parseInt($(this).zIndex());}).get());
-  	position_left = parseInt(($(this).parent().width() - $(this).width())/2);
-  	$(this).css({'left': position_left}).css('z-index', max_zindexes+1);
-  	var x = $('#integral-isgri').position().top -80;
-  	var thisObject = $(this);
-  	$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
-  	// Animation complete.
-  		thisObject.show('highlight', {color: '#adebad'}, 1000);
-		});
+	$.fn.highlight_result_panel = function(offset) {
+		max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() {return parseInt($(this).zIndex());}).get());
+		$(this).css('z-index', max_zindexes+1);
+		var thisObject = $(this);
+		if (offset) {
+			$(this).offset(offset);
+			thisObject.show('highlight', {color: '#adebad'}, 1000);		
+		} 
+		else {
+			position_left = parseInt(($(this).parent().width() - $(this).width())/2);
+			$(this).css('left', position_left);
+			var x = $('#integral-isgri').position().top -80;
+			$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
+				// Animation complete.
+				thisObject.show('highlight', {color: '#adebad'}, 1000);
+			});
+		}
 	}
 
 	$(document).ready(commonReady);
 
-
+  
 	function validate_date(value) {
 		max_mjd_date= get_today_mjd();
 		var time_format_type = $('select[name="T_format"]', 'form#astrooda-common').val();
@@ -355,6 +375,7 @@ function get_waitingDialog() {
 	}
 
 	function commonReady() {
+
 		
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 // var target = $(e.target).attr("href") // activated tab
@@ -370,7 +391,7 @@ function get_waitingDialog() {
 		});
 		$('.popover-help').on('click', function(e) {e.preventDefault(); return true;}).popover({
 			container: 'body',
-			content : function () { return $(this).parent().find('.astrooda-popver-content').html();},
+			content : function () { return $(this).parent().find('.astrooda-popover-content').html();},
 			html : true,
 			template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
 		});
@@ -497,10 +518,12 @@ function round_catalog_values(catalog) {
 	for (var j = 0; j < catalog.cat_column_list[0].length; j++) {
 		// Round significance to 1 digit
 		catalog.cat_column_list[2][j] = catalog.cat_column_list[2][j].toFixed(1);
-		// Round RA to 3 digits
-		catalog.cat_column_list[3][j] = catalog.cat_column_list[3][j].toFixed(3);
-		// Round DEC to 3 digits
-		catalog.cat_column_list[4][j] = catalog.cat_column_list[4][j].toFixed(3);
+		// Round RA to 4 digits
+		catalog.cat_column_list[3][j] = catalog.cat_column_list[3][j].toFixed(4);
+		// Round DEC to 4 digits
+		catalog.cat_column_list[4][j] = catalog.cat_column_list[4][j].toFixed(4);
+		// Round ERR_RAD to 4 digits
+		catalog.cat_column_list[8][j] = catalog.cat_column_list[8][j].toFixed(4);
 	}
 }
 

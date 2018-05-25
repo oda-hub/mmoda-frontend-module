@@ -191,7 +191,7 @@ function astrooda_common($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Time unit" ),
       '#options' => array (
-          'isot' => 'ISO',
+          'isot' => 'ISO/ISOT',
           'mjd' => 'MJD'
       ),
       '#default_value' => 'iso',

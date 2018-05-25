@@ -45,9 +45,14 @@
 	width: 60%;
 }
 
-#ldialog .modal-body {
+.astrooda-log .modal-body, .astrooda-log .panel-body{
 	max-height: 80vh;
 	overflow-y: auto;
+}
+
+.panel.astrooda-log table.status-table {
+  /* Important ! to show the rotated headings of the status table */
+  margin-right: 100px; 
 }
 
 .current-message {
@@ -58,13 +63,16 @@ table.message-table tr td {
 	padding-right: 1em;
 }
 
-#ldialog .details, #ldialog .more-less-details {
+.astrooda-log .details, .astrooda-log .more-less-details {
 	display: none;
 }
 
-#ldialog .more-less-details {
+.astrooda-log .more-less-details {
 	color: #007d64;
 	cursor: pointer;
+}
+#ldialog .legend {
+	display: none;
 }
 
 /***************** End vertically center modal   ***/
@@ -233,7 +241,7 @@ span.panel-toolbox span {
   text-align: center;
 }
 */
-.astrooda-popver-content {
+.astrooda-popover-content {
 	display: none;
 }
 
@@ -245,37 +253,37 @@ span.panel-toolbox span {
 	display: none;
 }
 
-#ldialog table.status-table th:first-child {
+.astrooda-log table.status-table th:first-child {
 	vertical-align: bottom;
 }
 
-#ldialog table.status-table th.rotate {
+.astrooda-log table.status-table th.rotate {
 	/* Something you can count on */
 	height: 140px;
 	white-space: nowrap;
 }
 
-#ldialog table.status-table th.rotate>div {
+.astrooda-log table.status-table th.rotate>div {
 	transform: /* Magic Numbers */ translate( 25px, 51px)
 		/* 45 is really 360 - 45 */
     rotate( 315deg);
 	width: 30px;
 }
 
-#ldialog table.status-table th.rotate>div>span {
+.astrooda-log table.status-table th.rotate>div>span {
 	border-bottom: 1px solid #ccc;
 	padding: 5px 10px;
 }
 
-#ldialog table.status-table td {
+.astrooda-log table.status-table td {
 	border: 1px solid lightGray;
 }
 
-#ldialog .legend {
+.astrooda-log .legend {
 	text-align: right;
 }
 
-#ldialog .legend .legend-element {
+.astrooda-log .legend .legend-element {
 	display: inline-block;
 	width: 1em;
 	height: 1em;
@@ -300,4 +308,24 @@ span.panel-toolbox span {
 
 .popover {
 	max-width: 30%;
+}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+    background-color: inherit;
+}
+
+tr.selected td {
+	background: inherit;
+}
+
+.dataTable tr td {
+	white-space: nowrap;
+}
+
+table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+  background-color: #007d64;
+}
+
+.inline-user-catalog .show-catalog{
+	padding-right: 0.5em;
 }
