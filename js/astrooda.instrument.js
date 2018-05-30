@@ -119,7 +119,7 @@
 										if (data.products.image
 												.hasOwnProperty('spectral_fit_image')) {
 											display_spectrum(request_spectrum_form_element.data(),
-													data.products.image, job_id, instrument);
+													data.products, job_id, instrument);
 										} else {
 											display_image(data.products, job_id, instrument);
 										}
@@ -887,7 +887,9 @@
 		$('#' + panel_ids.panel_body_id).append(
 				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
 
-		mpld3.draw_figure(panel_ids.panel_body_id, image.image);
+		//mpld3.draw_figure(panel_ids.panel_body_id, image.image);
+		$('#' + panel_ids.panel_body_id).append(image.image.script + image.image.div);
+		
 		$('#' + panel_ids.panel_body_id).append(
 				image.header_text.replace(/\n/g, "<br />"));
 		$('#' + panel_ids.panel_body_id).append(get_text_table(image.table_text));
@@ -902,7 +904,7 @@
 
 		// set_draggable();
 		$('#' + panel_ids.panel_id).css({
-			'width' : $('#' + panel_ids.panel_id).width()
+		//	'width' : $('#' + panel_ids.panel_id).width()
 		});
 
 		$('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
@@ -1009,18 +1011,15 @@
 		$('#' + panel_ids.panel_body_id).append(
 				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
 
-		data.spectral_fit_image.height *= 0.9375;
-		data.spectral_fit_image.width *= 0.9375;
-
 		//mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
-		$('#' + panel_ids.panel_body_id).append(data.spectral_fit_image.image.script + data.spectral_fit_image.image.div);
+		$('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
 
 		
 		$('#' + panel_ids.panel_body_id).append(
-				data.header_text.replace(/\n/g, "<br />"));
-		$('#' + panel_ids.panel_body_id).append(get_text_table(data.table_text));
+				data.image.header_text.replace(/\n/g, "<br />"));
+		$('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
 		$('#' + panel_ids.panel_body_id).append(
-				data.footer_text.replace(/\n/g, "<br />"));
+				data.image.footer_text.replace(/\n/g, "<br />"));
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
 				'Source : ' + metadata.source_name + ' - Spectrum');
 
