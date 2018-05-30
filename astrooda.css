@@ -125,6 +125,7 @@ table.astro-ana tr td, table.astro-ana tr th {
 .instrument-panel {
 	position: relative;
 	overflow: hidden;
+	display: inline-block;
 }
 
 .instrument-panel .panel-heading {
@@ -338,4 +339,17 @@ input[type=number]::-webkit-outer-spin-button {
 }
 input[type=number] {
     -moz-appearance:textfield;
+}
+
+.dataTables_filter, .dataTables_info {
+	float: right;
+}
+
+.dataTables_length  {
+	float: left;
+}
+
+.dataTables_paginate {
+	clear: both;
+	text-align: center;
 }
