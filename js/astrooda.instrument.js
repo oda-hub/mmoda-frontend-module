@@ -304,16 +304,6 @@
 			if (panel.data('catalog_parent_panel_id')) {
 				catalog_parent_panel_id = $(panel.data('catalog_parent_panel_id'));
 				catalog_parent_panel_id.removeData('catalog_panel_id');
-
-// if (catalog_parent_panel_id.hasClass('instrument-params-panel')) {
-// var dataTable = panel.data('dataTable');
-// var catalog = catalog_parent_panel_id.data('catalog');
-// catalog.data = dataTable.data().toArray();
-// catalog_parent_panel_id.data({
-// 'catalog' : catalog,
-// 'dataTable' : dataTable
-// });
-// }
 			}
 
 			if (panel.data('log_product_panel_id')) {
@@ -691,8 +681,9 @@
 		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
-			dom : 'Bfrtip',
-			buttons : [ {
+//			dom : 'Brtflip',
+      dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
+      	buttons : [ {
 				extend : "create",
 				editor : editor
 			}, {
@@ -1023,9 +1014,6 @@
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
 				'Source : ' + metadata.source_name + ' - Spectrum');
 
-		$('#' + panel_ids.panel_id).css({
-			'width' : $('#' + panel_ids.panel_id).width()
-		});
 		var x = $('#' + panel_ids.panel_id).offset().top - 100;
 		jQuery('html,body').animate({
 			scrollTop : x

@@ -110,7 +110,6 @@ function astrooda_main_block_content() {
    * return ('');
    * astrooda_block_content ();
    */
-  
   if (session_status () != PHP_SESSION_NONE) {
     session_destroy ();
   }
@@ -161,10 +160,9 @@ function astrooda_main_block_content() {
     drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
     return;
   }
-  
   if (! ($library_bokeh = libraries_load ( 'bokeh' )) || empty ( $library_bokeh ['bokeh'] )) {
-    //drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
-    //return;
+    // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+    // return;
   }
   
   drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
@@ -267,7 +265,7 @@ function astrooda_libraries_info() {
           )
       )
   );
-
+  
   $libraries ['datatables'] = array (
       'name' => 'Table plug-in for jQuery',
       'vendor url' => 'https://datatables.net/',
@@ -283,18 +281,18 @@ function astrooda_libraries_info() {
               'Select/js/dataTables.select.min.js',
               'Buttons/js/dataTables.buttons.min.js',
               'Responsive/js/dataTables.responsive.min.js',
-              'Editor/js/dataTables.editor.js',
+              'Editor/js/dataTables.editor.js'
           ),
           'css' => array (
               'datatables.min.css',
-              'Select/css/select.bootstrap.min.css',
-              'Buttons/css/buttons.bootstrap.min.css',
-              'Responsive/css/responsive.bootstrap.min.css',
-              'Editor/css/editor.bootstrap.min.css',
+              'Select/css/select.dataTables.min.css',
+              'Buttons/css/buttons.dataTables.min.css',
+              'Responsive/css/responsive.dataTables.min.css',
+              'Editor/css/editor.dataTables.min.css'
           )
       )
-       
-  );
+  )
+  ;
   $libraries ['bootstrap-form-validator'] = array (
       'name' => 'Bootstrap Form Validator library',
       'vendor url' => 'http://bootstrapvalidator.com',
@@ -320,18 +318,17 @@ function astrooda_libraries_info() {
       'files' => array (
           'js' => array (
               'bokeh.min.js',
-              'bokeh-widgets.min.js',
+              'bokeh-widgets.min.js'
           ),
           'css' => array (
               'bokeh.min.css',
-              'bokeh-widgets.min.css',
+              'bokeh-widgets.min.css'
           )
       )
   );
   
   return $libraries;
 }
-
 function short_circuit_version() {
   // use some fancy magic to get the version number... or don't
   return TRUE;
