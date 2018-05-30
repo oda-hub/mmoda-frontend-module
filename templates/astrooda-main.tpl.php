@@ -45,7 +45,7 @@
  */
 ?>
 <!-- Modal -->
-<div id="ldialog" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div id="ldialog" class="modal fade astrooda-log" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -90,8 +90,9 @@
     ><i class="fa fa-chevron-up"></i></span> <span class="fa fa-times close-panel"></span>
     </span>
   </div>
-  <div class="panel-body resizable"></div>
-</div>
+  <div class="panel-body"></div>
+  <div class="panel-footer"></div>
+  </div>
 <?php  ?>
 <div>
 
