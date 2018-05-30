@@ -288,22 +288,34 @@
 	function commonReady() {
 
 		$("body").on('click', '.panel .close-panel', function(e) {
-			console.log('removing panel');
 			var panel = $(this).closest('.panel');
 			if (panel.data('catalog')) {
+				// delete catalog when attached to panel
 				panel.removeData('catalog');
 
 			}
-			var dataTable;
-			if (dataTable = panel.data('dataTable')) {
-				console.log('----- data');
-				console.log(dataTable.data());
+			if (panel.data('log')) {
+				// delete log when attached to panel
+				panel.removeData('log');
+
 			}
 
+			// update the catalog only if it is in the parameters panel
 			if (panel.data('catalog_parent_panel_id')) {
-				catalog_parent_panel_id = panel.data('catalog_parent_panel_id');
-				$(catalog_parent_panel_id).removeData('catalog_panel_id');
+				catalog_parent_panel_id = $(panel.data('catalog_parent_panel_id'));
+				catalog_parent_panel_id.removeData('catalog_panel_id');
+
+// if (catalog_parent_panel_id.hasClass('instrument-params-panel')) {
+// var dataTable = panel.data('dataTable');
+// var catalog = catalog_parent_panel_id.data('catalog');
+// catalog.data = dataTable.data().toArray();
+// catalog_parent_panel_id.data({
+// 'catalog' : catalog,
+// 'dataTable' : dataTable
+// });
+// }
 			}
+
 			if (panel.data('log_product_panel_id')) {
 				log_product_panel_id = panel.data('log_product_panel_id');
 				$(log_product_panel_id).removeData('log_panel_id');
@@ -340,6 +352,8 @@
 								var catalog = clone(catalog_parent_panel.data('catalog'));
 								catalog_offset.top -= parent_catalog_offset.top;
 								catalog_offset.left -= parent_catalog_offset.left;
+								console.log('catalog_parent_panel='
+										+ catalog_parent_panel.attr('id'));
 								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'),
 										'', catalog_offset, showUseCatalog);
 							}
@@ -379,12 +393,32 @@
 							var catalog_parent_panel = $(catalog_panel
 									.data('catalog_parent_panel_id'));
 							var catalog = clone(catalog_parent_panel.data('catalog'));
+							var dataTable = catalog_panel.data('dataTable');
+							catalog.data = dataTable.data().toArray();
 							$(".instrument-panel.active .instrument-params-panel").data({
-								catalog : catalog
+								catalog : catalog,
+								dataTable : dataTable
 							});
 							$(
-									".instrument-panel.active .instrument-params-panel .inline-user-catalog")
+									'.instrument-panel.active .instrument-params-panel .inline-user-catalog')
 									.removeClass('hidden');
+							
+							var event = $.Event('click');
+							var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
+							var catalog_position = showCatalog.position();
+							var new_catalog_position = {
+									left : catalog_position.left + showCatalog.width() / 2,
+									top : catalog_position.top + showCatalog.height() * 2
+							}
+
+							var catalog_offset = showCatalog.offset();
+							event.pageX = catalog_offset.left + showCatalog.width() / 2;
+							event.pageY = catalog_offset.top  + showCatalog.height() / 2;
+						  catalog_panel.animate(new_catalog_position, "slow", function() {
+								$('.close-panel', catalog_panel).click();
+								showCatalog.trigger(event);
+						  });
+
 						});
 		$(".instrument-panel.active .instrument-params-panel .inline-user-catalog")
 				.on('click', ".remove-catolog", function(e) {
@@ -470,6 +504,9 @@
 				function(e) {
 					var form_id = $(this).attr('id').replace(/-/g, "_");
 
+					var form_panel = $(this).closest('.panel');
+					console.log('Form panel ID=' + form_panel.attr('id'));
+
 					e.preventDefault();
 					var formData;
 					if (request_draw_spectrum) {
@@ -513,19 +550,30 @@
 						// $('[name=catalog_selected_objects]',this).prop('disabled',
 						// false);
 
-						var catalog_selected_objects = $(
-								'input[name=catalog_selected_objects]:checked',
-								$(this).closest('.instrument-panel')).map(function() {
-							return this.value;
-						}).get().join(',');
-						if (catalog_selected_objects != '') {
-							formData.append('catalog_selected_objects',
-									catalog_selected_objects);
-						}
+						if (form_panel.data('catalog')) {
+							catalog = form_panel.data('catalog').initial_catalog;
+							var dataTable = form_panel.data('dataTable');
+							catalog.cat_column_list = dataTable.columns().data().toArray();
 
-						if ($(".instrument-panel.active").data('catalog')) {
-							formData.append('selected_catalog', JSON.stringify($(
-									".instrument-panel.active").data('catalog')));
+							var catalog_selected_objects = Array.apply(null, Array(dataTable
+									.rows().count()));
+							catalog_selected_objects = catalog_selected_objects.map(function(
+									x, i) {
+								return i + 1
+							});
+							console.log('---catalog_selected_objects ');
+							console.log(catalog_selected_objects);
+							var catalog_selected_objects_string = catalog_selected_objects
+									.join(',');
+							console.log('--- catalog_selected_objects_string');
+							console.log(catalog_selected_objects_string);
+							catalog.cat_column_list[0] = catalog_selected_objects;
+							console.log('--- catalog data from dataTable to send');
+							console.log(catalog);
+
+							formData.append('catalog_selected_objects',
+									catalog_selected_objects_string);
+							formData.append('selected_catalog', JSON.stringify(catalog));
 						}
 						// Attach files
 						$.each($('input:file', this), function(i, file) {
@@ -637,9 +685,10 @@
 			table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
 			fields : catalog.fields,
 		});
+		var catalog_container = $(".catalog-wrapper .astro-ana", '#'
+				+ panel_ids.panel_id);
 
-		var dataTable = $(".catalog-wrapper .astro-ana",
-				'#' + panel_ids.panel_id).DataTable({
+		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
 			dom : 'Bfrtip',
@@ -657,13 +706,34 @@
 				style : 'os',
 				selector : 'td:first-child'
 			},
-			order : [ [ 1, 'asc' ] ]
+			order : [ [ 1, 'asc' ] ],
+			persistUpdates : 'hehe',
 		});
 		
-		// dataTable.row(':eq(0)').select();
-		// dataTable.MakeCellsEditable({
-		// "onUpdate" : myCallbackFunction
-		// });
+		// Activate inline edit on click of a table cell
+		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
+			editor.inline(this);
+		});
+		
+		// Update the catalog within the main window whenever the dataTable is
+		// changed
+		// create, remove or edit of any cell
+		if (! showUseCatalog) {
+			editor.on('create remove edit', function(e, json, data) {
+				var catalog_parent_panel = $(afterDiv);
+				if (catalog_parent_panel.hasClass('instrument-params-panel')) {
+					var panel = $('#' + panel_ids.panel_id);
+					var dataTable = panel.data('dataTable');
+					var catalog = catalog_parent_panel.data('catalog');
+					catalog.data = dataTable.data().toArray();
+					catalog_parent_panel.data({
+						'catalog' : catalog,
+						'dataTable' : dataTable
+					});
+				}
+			});
+		}
+
 		$('#' + panel_ids.panel_id).data({
 			dataTable : dataTable
 		});
@@ -942,7 +1012,10 @@
 		data.spectral_fit_image.height *= 0.9375;
 		data.spectral_fit_image.width *= 0.9375;
 
-		mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
+		//mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
+		$('#' + panel_ids.panel_body_id).append(data.spectral_fit_image.image.script + data.spectral_fit_image.image.div);
+
+		
 		$('#' + panel_ids.panel_body_id).append(
 				data.header_text.replace(/\n/g, "<br />"));
 		$('#' + panel_ids.panel_body_id).append(get_text_table(data.table_text));
@@ -983,29 +1056,30 @@
 		if (data.hasOwnProperty('catalog')) {
 			var catalog = data.catalog;
 			var columns = [];
-			var fields =  [];
+			var fields = [];
 			columns[0] = {
 				title : '',
 				data : null,
-        defaultContent: '',
-        className: 'select-checkbox',
-        orderable: false
+				defaultContent : '',
+				className : 'select-checkbox',
+				orderable : false
 			};
 			for (var i = 1; i < catalog.cat_column_descr.length; i++) {
 				columns[i] = {
-						title : catalog.cat_column_descr[i][0].replace('_', ' '),
-						name : catalog.cat_column_descr[i][0],
-						data : catalog.cat_column_descr[i][0],
-					};
-				fields[i-1] = {
-						label : catalog.cat_column_descr[i][0].replace('_', ' ').toUpperCase(),
-						name : catalog.cat_column_descr[i][0],
-					};
+					title : catalog.cat_column_descr[i][0].replace('_', ' '),
+					name : catalog.cat_column_descr[i][0],
+					data : catalog.cat_column_descr[i][0],
+				};
+				fields[i - 1] = {
+					label : catalog.cat_column_descr[i][0].replace('_', ' ')
+							.toUpperCase(),
+					name : catalog.cat_column_descr[i][0],
+				};
 
 				if (catalog.cat_column_descr[i][1].indexOf('f') != -1) {
-					fields[i-1].attr = new Object();
-					fields[i-1].attr.type = 'number';
-					fields[i-1].attr.step = 'any';
+					fields[i - 1].attr = new Object();
+					fields[i - 1].attr.type = 'number';
+					fields[i - 1].attr.step = 'any';
 					columns[i].render = function(data) {
 						return (format_output(data));
 					};
@@ -1014,28 +1088,20 @@
 			var dataSet = new Array(catalog.cat_column_list[0].length);
 			for (var j = 0; j < catalog.cat_column_list[0].length; j++) {
 				dataSet[j] = new Object();
-				dataSet[j]['DT_RowId'] = 'row_'+j;
+				dataSet[j]['DT_RowId'] = 'row_' + j;
 				for (var i = 1; i < catalog.cat_column_list.length; i++) {
 					dataSet[j][catalog.cat_column_descr[i][0]] = catalog.cat_column_list[i][j];
 				}
 			}
 			var selectedRows = new Array(catalog.cat_column_list[0].length);
-			selectedRows.fill(0);
 			$('#' + panel_ids.panel_id).data({
 				catalog : {
+					initial_catalog : catalog,
 					data : dataSet,
 					column_names : columns,
 					fields : fields,
-					select_rows : selectedRows
 				}
 			});
-			
-			console.log('dataSet');
-			console.log(dataSet);
-			console.log('columns');
-			console.log(columns);
-			console.log('fields');
-			console.log(fields);
 		}
 		session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 
@@ -1043,14 +1109,14 @@
 				+ data.download_file_name + '&file_list=' + data.file_name
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
-		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-						+ '">Download</a>';
+		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
+				+ url + '">Download</a>';
 		product_type = $("input[name$='product_type']:checked",
 				".instrument-panel.active").val();
 		var showCataloghtml = '';
 		if (product_type.endsWith('image')) {
-			data.image.image.height *= 1.4;
-			data.image.image.width *= 1.4;
+//			data.image.image.height *= 1.4;
+//			data.image.image.width *= 1.4;
 			showCataloghtml = '<button class="btn btn-default show-catalog" type="button" data-datetime="'
 					+ datetime + '" >Catalog</button>';
 		}
@@ -1059,11 +1125,11 @@
 				+ '</div><div>Job ID : ' + job_id + '</div>';
 		$('#' + panel_ids.panel_id).data("log",
 				session_job_ids + $('.modal-body', '#ldialog').html());
-		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime
-				+ '" >Log</button>';
-		
-		var toolbar = '<div class="btn-group" role="group">'
-			+ downloadButton + showCataloghtml + showLoghtml + '</div>';
+		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="'
+				+ datetime + '" >Log</button>';
+
+		var toolbar = '<div class="btn-group" role="group">' + downloadButton
+				+ showCataloghtml + showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		if (data.input_prod_list.length > 0) {
@@ -1100,7 +1166,7 @@
 		}
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
-		$('#' + panel_ids.panel_body_id).append(data.image.image);
+		$('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
 
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.header_text.replace(/\n/g, "<br />"));
@@ -1114,9 +1180,6 @@
 				'Source : ' + source_name + ' - ' + product_type);
 
 		// set_draggable();
-		$('#' + panel_ids.panel_id).css({
-			'width' : $('#' + panel_ids.panel_id).width()
-		});
 
 		$('#' + panel_ids.panel_id).highlight_result_panel();
 	}

@@ -329,3 +329,13 @@ table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
 .inline-user-catalog .show-catalog{
 	padding-right: 0.5em;
 }
+
+/* Turn Off Number Input Spinners */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}
