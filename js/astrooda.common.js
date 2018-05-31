@@ -376,7 +376,9 @@ function get_waitingDialog() {
 
 	function commonReady() {
 
-		
+	$('body').tooltip({
+      selector: '[data-toggle="tooltip"]'
+  });
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 // var target = $(e.target).attr("href") // activated tab
 // $("form :input").prop("disabled", true);

@@ -342,8 +342,6 @@
 								var catalog = clone(catalog_parent_panel.data('catalog'));
 								catalog_offset.top -= parent_catalog_offset.top;
 								catalog_offset.left -= parent_catalog_offset.left;
-								console.log('catalog_parent_panel='
-										+ catalog_parent_panel.attr('id'));
 								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'),
 										'', catalog_offset, showUseCatalog);
 							}
@@ -495,8 +493,6 @@
 					var form_id = $(this).attr('id').replace(/-/g, "_");
 
 					var form_panel = $(this).closest('.panel');
-					console.log('Form panel ID=' + form_panel.attr('id'));
-
 					e.preventDefault();
 					var formData;
 					if (request_draw_spectrum) {
@@ -551,15 +547,9 @@
 									x, i) {
 								return i + 1
 							});
-							console.log('---catalog_selected_objects ');
-							console.log(catalog_selected_objects);
 							var catalog_selected_objects_string = catalog_selected_objects
 									.join(',');
-							console.log('--- catalog_selected_objects_string');
-							console.log(catalog_selected_objects_string);
 							catalog.cat_column_list[0] = catalog_selected_objects;
-							console.log('--- catalog data from dataTable to send');
-							console.log(catalog);
 
 							formData.append('catalog_selected_objects',
 									catalog_selected_objects_string);
@@ -669,8 +659,7 @@
 									+ datetime
 									+ '" >Use catalog</button><div class="clearfix"></div>');
 		}
-		console.log('----catalog.data');
-		console.log(catalog.data);
+
 		var editor = new $.fn.dataTable.Editor({
 			table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
 			fields : catalog.fields,
@@ -754,13 +743,7 @@
 		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
 
 	}
-
-	function myCallbackFunction(updatedCell, updatedRow, oldValue) {
-		console.log("The new value for the cell is: " + updatedCell.data());
-		console.log("The old value for that cell was: " + oldValue);
-		console.log("The values for each cell in that row are: "
-				+ updatedRow.data());
-	}
+	
 	function only_one_catalog_selection(element_wrapper, element_class,
 			select_all_element, checked_element) {
 		$('input[name=' + checked_element + ']', element_wrapper).on(
@@ -1000,7 +983,7 @@
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 		$('#' + panel_ids.panel_body_id).append(
-				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
+				'<a href="/dispatch-data/download_products?' + url + '">Download</a>');
 
 		//mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
 		$('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
@@ -1021,8 +1004,6 @@
 		var parent_catalog_offset = $(".instrument-panel.active").offset();
 		var last_click_position = $(".instrument-panel.active").data(
 				'last_click_position');
-		console.log("--- after last_click_position");
-		console.log(last_click_position);
 
 		var catalog_offset = {};
 		catalog_offset.top = last_click_position.top - parent_catalog_offset.top;
@@ -1097,13 +1078,11 @@
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
-				+ url + '">Download</a>';
+				+ url + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 		product_type = $("input[name$='product_type']:checked",
 				".instrument-panel.active").val();
 		var showCataloghtml = '';
 		if (product_type.endsWith('image')) {
-//			data.image.image.height *= 1.4;
-//			data.image.image.width *= 1.4;
 			showCataloghtml = '<button class="btn btn-default show-catalog" type="button" data-datetime="'
 					+ datetime + '" >Catalog</button>';
 		}
