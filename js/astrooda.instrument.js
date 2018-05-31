@@ -470,7 +470,41 @@
 							}
 						}
 					}
-				}
+				},
+				'E1_keV' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								var E2_keV = validator.getFieldElements('E2_keV').val();
+								if (Number(value) >= Number(E2_keV)) {
+									return {
+										valid : false,
+										message : 'Energy min must be lower that energy max'
+									}
+								}
+								return true;
+							}
+						}
+					}
+				},
+				'E2_keV' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								var E1_keV = validator.getFieldElements('E1_keV').val();
+								if (Number(value) <= Number(E1_keV)) {
+									return {
+										valid : false,
+										message : 'Energy max must be higher that energy min'
+									}
+								}
+								return true;
+							}
+						}
+					}
+				},
 			},
 			feedbackIcons : {
 				valid : 'glyphicon glyphicon-ok',
@@ -485,6 +519,22 @@
 					var form = $(this).parents('form');
 					form.data('bootstrapValidator').updateStatus('time_bin',
 							'NOT_VALIDATED').validateField('time_bin');
+				});
+
+		$('[name=E1_keV]', '.instrument-params-panel form').on(
+				'change',
+				function(e) {
+					var form = $(this).parents('form');
+					form.data('bootstrapValidator').updateStatus('E2_keV',
+							'NOT_VALIDATED').validateField('E2_keV');
+				});
+		
+		$('[name=E2_keV]', '.instrument-params-panel form').on(
+				'change',
+				function(e) {
+					var form = $(this).parents('form');
+					form.data('bootstrapValidator').updateStatus('E1_keV',
+							'NOT_VALIDATED').validateField('E1_keV');
 				});
 
 		$('.instrument-panel form').on(
