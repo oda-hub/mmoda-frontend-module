@@ -281,14 +281,16 @@ function astrooda_libraries_info() {
               'Select/js/dataTables.select.min.js',
               'Buttons/js/dataTables.buttons.min.js',
               'Responsive/js/dataTables.responsive.min.js',
-              'Editor/js/dataTables.editor.js'
+              'Editor/js/dataTables.editor.min.js',
+              'Editor/js/editor.bootstrap.min.js',
           ),
           'css' => array (
               'datatables.min.css',
               'Select/css/select.dataTables.min.css',
               'Buttons/css/buttons.dataTables.min.css',
               'Responsive/css/responsive.dataTables.min.css',
-              'Editor/css/editor.dataTables.min.css'
+              //'Editor/css/editor.dataTables.min.css',
+              'Editor/css/editor.bootstrap.css',
           )
       )
   )

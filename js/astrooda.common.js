@@ -356,9 +356,11 @@ function get_waitingDialog() {
 	$(document).ready(commonReady);
 
   
-	function validate_date(value) {
+	function validate_date(value, validator, thefield) {
 		max_mjd_date= get_today_mjd();
-		var time_format_type = $('select[name="T_format"]', 'form#astrooda-common').val();
+		//var time_format_type = $('select[name="T_format"]', 'form#astrooda-common').val();
+		var time_format_type = validator.getFieldElements('T_format').val();
+		
 		if (time_format_type == 'isot' && !valid_iso_date(value)) {
 			return {
 				valid: false,
@@ -451,14 +453,18 @@ function get_waitingDialog() {
 		});
 		$('.instrument-params-panel').set_panel_draggable();
 		
-		$('form#astrooda-common').bootstrapValidator({
+		// Create validator and validate a frist time :
+		// This is important in Firefox when the page is refreshed
+		// where indeed the old values are still in the form
+		
+		var validator = $('form#astrooda-common').bootstrapValidator({
 			// live :'disabled',
 			fields: {
 				'T1' : {
 					// enabled: false,
 					validators : { callback: {
-						callback: function (value, validator, $field) {
-							return (validate_date(value));
+						callback: function (value, cbvalidator, $field) {
+							return (validate_date(value, cbvalidator, $field));
 						}
 					}
 					}
@@ -466,8 +472,8 @@ function get_waitingDialog() {
 				'T2' : {
 					// enabled: false,
 					validators : { callback: {
-						callback: function (value, validator, $field) {
-							return (validate_date(value));
+						callback: function (value, cbvalidator, $field) {
+							return (validate_date(value, cbvalidator, $field));
 						}
 					}
 					}
@@ -478,8 +484,12 @@ function get_waitingDialog() {
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			},
-// submitButtons: '[type="submit"]'
-		});
+		}).data('bootstrapValidator').validate();
+		
+		if (! validator.isValid()) {
+			console.log('common form not valid !');
+			validator.disableSubmitButtons(true);
+		}
 
 
 	}
