@@ -390,22 +390,22 @@
 							$(
 									'.instrument-panel.active .instrument-params-panel .inline-user-catalog')
 									.removeClass('hidden');
-							
+
 							var event = $.Event('click');
 							var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
 							var catalog_position = showCatalog.position();
 							var new_catalog_position = {
-									left : catalog_position.left + showCatalog.width() / 2,
-									top : catalog_position.top + showCatalog.height() * 2
+								left : catalog_position.left + showCatalog.width() / 2,
+								top : catalog_position.top + showCatalog.height() * 2
 							}
 
 							var catalog_offset = showCatalog.offset();
 							event.pageX = catalog_offset.left + showCatalog.width() / 2;
-							event.pageY = catalog_offset.top  + showCatalog.height() / 2;
-						  catalog_panel.animate(new_catalog_position, "slow", function() {
+							event.pageY = catalog_offset.top + showCatalog.height() / 2;
+							catalog_panel.animate(new_catalog_position, "slow", function() {
 								$('.close-panel', catalog_panel).click();
 								showCatalog.trigger(event);
-						  });
+							});
 
 						});
 		$(".instrument-panel.active .instrument-params-panel .inline-user-catalog")
@@ -428,6 +428,9 @@
 			});
 		});
 
+		// Create validator and validate a frist time :
+		// This is important in Firefox when the page is refreshed
+		// where indeed the old values are still in the form
 		var validator = $('.instrument-panel form').bootstrapValidator({
 			// live :'disabled',
 			fields : {
@@ -511,7 +514,11 @@
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			}
-		});
+		}).data('bootstrapValidator').validate();
+
+		if (!validator.isValid()) {
+			validator.disableSubmitButtons(true);
+		}
 
 		$('[name^=time_bin_format]', '.instrument-params-panel form').on(
 				'change',
@@ -528,7 +535,7 @@
 					form.data('bootstrapValidator').updateStatus('E2_keV',
 							'NOT_VALIDATED').validateField('E2_keV');
 				});
-		
+
 		$('[name=E2_keV]', '.instrument-params-panel form').on(
 				'change',
 				function(e) {
@@ -720,9 +727,9 @@
 		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
-//			dom : 'Brtflip',
-      dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
-      	buttons : [ {
+			// dom : 'Brtflip',
+			dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
+			buttons : [ {
 				extend : "create",
 				editor : editor
 			}, {
@@ -739,16 +746,16 @@
 			order : [ [ 1, 'asc' ] ],
 			persistUpdates : 'hehe',
 		});
-		
+
 		// Activate inline edit on click of a table cell
 		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
 			editor.inline(this);
 		});
-		
+
 		// Update the catalog within the main window whenever the dataTable is
 		// changed
 		// create, remove or edit of any cell
-		if (! showUseCatalog) {
+		if (!showUseCatalog) {
 			editor.on('create remove edit', function(e, json, data) {
 				var catalog_parent_panel = $(afterDiv);
 				if (catalog_parent_panel.hasClass('instrument-params-panel')) {
@@ -793,7 +800,7 @@
 		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
 
 	}
-	
+
 	function only_one_catalog_selection(element_wrapper, element_class,
 			select_all_element, checked_element) {
 		$('input[name=' + checked_element + ']', element_wrapper).on(
@@ -911,9 +918,10 @@
 		$('#' + panel_ids.panel_body_id).append(
 				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
 
-		//mpld3.draw_figure(panel_ids.panel_body_id, image.image);
-		$('#' + panel_ids.panel_body_id).append(image.image.script + image.image.div);
-		
+		// mpld3.draw_figure(panel_ids.panel_body_id, image.image);
+		$('#' + panel_ids.panel_body_id).append(
+				image.image.script + image.image.div);
+
 		$('#' + panel_ids.panel_body_id).append(
 				image.header_text.replace(/\n/g, "<br />"));
 		$('#' + panel_ids.panel_body_id).append(get_text_table(image.table_text));
@@ -928,7 +936,7 @@
 
 		// set_draggable();
 		$('#' + panel_ids.panel_id).css({
-		//	'width' : $('#' + panel_ids.panel_id).width()
+		// 'width' : $('#' + panel_ids.panel_id).width()
 		});
 
 		$('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
@@ -1035,13 +1043,15 @@
 		$('#' + panel_ids.panel_body_id).append(
 				'<a href="/dispatch-data/download_products?' + url + '">Download</a>');
 
-		//mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
-		$('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
+		// mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
+		$('#' + panel_ids.panel_body_id).append(
+				data.image.spectral_fit_image.script
+						+ data.image.spectral_fit_image.div);
 
-		
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.header_text.replace(/\n/g, "<br />"));
-		$('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
+		$('#' + panel_ids.panel_body_id).append(
+				get_text_table(data.image.table_text));
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.footer_text.replace(/\n/g, "<br />"));
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
@@ -1093,7 +1103,18 @@
 							.toUpperCase(),
 					name : catalog.cat_column_descr[i][0],
 				};
-
+				var readonlyFields = [ 'significance', 'err_rad', 'new_source' ];
+				var defaultValFields = [ 'isgri_flag', 'flag' ];
+				if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
+					fields[i - 1].def = '1';
+				}
+				if (defaultValFields
+						.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
+					fields[i - 1].def = '1';
+				}
+				if (readonlyFields.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
+					fields[i - 1].type = 'readonly';
+				}
 				if (catalog.cat_column_descr[i][1].indexOf('f') != -1) {
 					fields[i - 1].attr = new Object();
 					fields[i - 1].attr.type = 'number';
@@ -1101,6 +1122,11 @@
 					columns[i].render = function(data) {
 						return (format_output(data));
 					};
+				}
+				if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
+					console.log('setting ra min max ');
+					fields[i - 1].attr.min = 0;
+					fields[i - 1].attr.max = 360;
 				}
 			}
 			var dataSet = new Array(catalog.cat_column_list[0].length);
@@ -1128,7 +1154,8 @@
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
-				+ url + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
+				+ url
+				+ '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 		product_type = $("input[name$='product_type']:checked",
 				".instrument-panel.active").val();
 		var showCataloghtml = '';
@@ -1182,7 +1209,8 @@
 		}
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
-		$('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
+		$('#' + panel_ids.panel_body_id).append(
+				data.image.image.script + data.image.image.div);
 
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.header_text.replace(/\n/g, "<br />"));

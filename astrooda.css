@@ -42,7 +42,15 @@
 	display: inline-block;
 	text-align: left;
 	vertical-align: middle;
-	width: 60%;
+	/*width: 60%;*/
+}
+
+.modal-dialog h3{
+	margin-bottom: 0px;
+}
+
+#ldialog .modal-dialog{
+  width: 60%;
 }
 
 .astrooda-log .modal-body, .astrooda-log .panel-body{
