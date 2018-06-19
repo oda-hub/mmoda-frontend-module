@@ -315,6 +315,11 @@ span.panel-toolbox span {
 	background-color: yellow;
 }
 
+.analysis-exception {
+  background-color: #DC143C; /*Crimson*/
+/*  background-color: Crimson; IndianRed */
+}
+
 .popover {
 	max-width: 30%;
 }

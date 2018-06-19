@@ -2,7 +2,11 @@ Date.prototype.getJulian = function() {
 	return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
 }
 
-// Testing Git
+// Sleep time in seconds
+function sleep (sleepDuration) {
+	var now = new Date().getTime();
+  while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
+}
 
 function get_today_mjd() {
 	var today = new Date(); // set any date
@@ -123,7 +127,7 @@ var waitingDialog;
  * @author Eugene Maslovich <ehpc@em42.ru>
  */
 
-function get_waitingDialog() {
+function get_waitingDialog($modal_dialog) {
 	var waitingDialog = waitingDialog
 	|| (function($) {
 		'use strict';
@@ -193,9 +197,10 @@ function get_waitingDialog() {
 					$dialog.find('button').hide();						
 				}
 				$dialog.find('h4').html(title);
-				$dialog.find('.message').html(message);
+				console.log('writting message');
+				$dialog.find('.summary').html(message);
 				$dialog.find('.modal-footer button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
-
+				
 				// Adding callbacks
 				if (typeof settings.onHide === 'function') {
 					$dialog.off('hidden.bs.modal').on('hidden.bs.modal',
@@ -220,6 +225,7 @@ function get_waitingDialog() {
 				$dialog.modal();
 				$dialog.find('.close-panel').on("click", function() {
 				});
+				//sleep(5);
 
 			},
 			/**
@@ -415,15 +421,15 @@ function get_waitingDialog() {
 		});
 
 		waitingDialog =  get_waitingDialog();
-
-
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
 				waitingDialog.show('','Resolving name using <a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a> respectively NED, Simbad and VizieR...', {
-					progressType : 'success', 'showProgress' : true, 'showButton' : false
-		    }); 
-			  // $('input[name=src_name]',
-  			// '.current-instrument-form').trigger('resolve-name');
+					progressType : 'success',
+					'showProgress' : true,
+					'showButton' : false
+		    });
+				waitingDialog.hideHeaderMessage();
+		    
 	  		$('.form-item-src-name small', '#astrooda-common').remove();
 		  	$('.form-item-RA input.form-control').val('');
 		  	$('.form-item-DEC input.form-control').val('');
@@ -436,9 +442,11 @@ function get_waitingDialog() {
 		// Disable main submit if error in common parameters
 		$('input, slect, textarea', '#astrooda-common').on('error.field.bv', function() {
 			// Disabling submit
+			console.log('Disabling submit button');
 			$('[type="submit"]', '.instrument-panel').prop('disabled', true);
 		}).on('success.field.bv', function() {
 			// Enabling submit')
+			console.log('Enabling submit button');
 			$('[type="submit"]', '.instrument-panel').prop('disabled', false);
 
 		});
@@ -490,8 +498,6 @@ function get_waitingDialog() {
 			console.log('common form not valid !');
 			validator.disableSubmitButtons(true);
 		}
-
-
 	}
 	
 })(jQuery);

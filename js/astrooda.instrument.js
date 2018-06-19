@@ -38,6 +38,7 @@
 		// console.log(parameter[0]+ '='+ parameter[1]);
 		// }
 		var requestTimer = null;
+		var startAJAXTime = new Date().getTime();
 		var jqxhr = $
 				.ajax({
 					url : current_ajax_call_params.action,
@@ -46,7 +47,7 @@
 					dataType : 'json',
 					processData : false,
 					contentType : false,
-					timeout : 60000, // sets timeout to 10 seconds
+					timeout : 5 * 60 * 1000, // sets timeout to 10 seconds
 					type : 'POST'
 				})
 				.done(
@@ -133,8 +134,11 @@
 						})
 				.complete(
 						function(jqXHR, textStatus) {
-							$('input[type=submit].form-submit', ".instrument-panel.active")
-									.prop('disabled', false);
+							console.log('Exec time : '
+									+ (new Date().getTime() - startAJAXTime));
+							$('input[type=submit].form-submit',
+									".instrument-panel.active, .common-params").prop('disabled',
+									false);
 						})
 				.fail(
 						function(jqXHR, textStatus, errorThrown) {
@@ -273,6 +277,9 @@
 			}
 		}
 		switch (message) {
+		case 'analysis exception':
+			cssClass = 'analysis-exception';
+			break;
 		case 'restored from cache':
 			cssClass = 'from-cache';
 			break;
@@ -729,7 +736,10 @@
 			columns : catalog.column_names,
 			// dom : 'Brtflip',
 			dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
-			buttons : [ {
+			buttons : [
+				'selectAll',
+        'selectNone',
+      {
 				extend : "create",
 				editor : editor
 			}, {
@@ -1108,11 +1118,12 @@
 				if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
 					fields[i - 1].def = '1';
 				}
-				if (defaultValFields
-						.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
+				if (defaultValFields.indexOf(catalog.cat_column_descr[i][0]
+						.toLowerCase()) != -1) {
 					fields[i - 1].def = '1';
 				}
-				if (readonlyFields.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
+				if (readonlyFields
+						.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
 					fields[i - 1].type = 'readonly';
 				}
 				if (catalog.cat_column_descr[i][1].indexOf('f') != -1) {

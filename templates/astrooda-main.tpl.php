@@ -45,7 +45,9 @@
  */
 ?>
 <!-- Modal -->
-<div id="ldialog" class="modal fade astrooda-log" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div id="ldialog" class="modal fade astrooda-log" role="dialog" aria-hidden="true" data-backdrop="static"
+  data-keyboard="false"
+>
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -67,6 +69,8 @@
           Done
           <div class="legend-element from-cache"></div>
           Restored from cache
+          <div class="legend-element analysis-exception"></div>
+          Analysis exception
         </div>
         <div class="summary"></div>
         <div class="more-less-details">More details &gt;</div>
@@ -92,7 +96,7 @@
   </div>
   <div class="panel-body"></div>
   <div class="panel-footer"></div>
-  </div>
+</div>
 <?php  ?>
 <div>
 

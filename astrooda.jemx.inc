@@ -330,85 +330,85 @@ function astrooda_jemx($form, &$form_state) {
       '#suffix' => '</div>'
   );
   
-  $form ['image_scale_min'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Significance Min" ),
-      '#description' => t ( "" ),
-      '#default_value' => '',
-      '#states' => array (
-          'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  'value' => 'jemx_image'
-              )
-          ),
-          'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  array (
-                      'value' => 'jemx_image'
-                  )
-              )
-          )
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#prefix' => '<div class="row">'
-  );
+//   $form ['image_scale_min'] = array (
+//       '#type' => 'textfield',
+//       '#title' => t ( "Significance Min" ),
+//       '#description' => t ( "" ),
+//       '#default_value' => '',
+//       '#states' => array (
+//           'visible' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   'value' => 'jemx_image'
+//               )
+//           ),
+//           'enabled' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   array (
+//                       'value' => 'jemx_image'
+//                   )
+//               )
+//           )
+//       ),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-6'
+//       ),
+//       '#label_classes' => array (
+//           'control-label'
+//       ),
+//       '#attributes' => array (
+//           'class' => array (
+//               'form-control'
+//           ),
+//           'data-bv-numeric' => 'true'
+//       ),
+//       '#prefix' => '<div class="row">'
+//   );
   
-  $form ['image_scale_max'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Significance Max" ),
-      '#description' => t ( "" ),
-      '#default_value' => '',
-      '#states' => array (
-          'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  'value' => 'jemx_image'
-              )
-          ),
-          'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  array (
-                      'value' => 'jemx_image'
-                  )
-              )
-          )
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#suffix' => '</div>'
-  );
-  
+//   $form ['image_scale_max'] = array (
+//       '#type' => 'textfield',
+//       '#title' => t ( "Significance Max" ),
+//       '#description' => t ( "" ),
+//       '#default_value' => '',
+//       '#states' => array (
+//           'visible' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   'value' => 'jemx_image'
+//               )
+//           ),
+//           'enabled' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   array (
+//                       'value' => 'jemx_image'
+//                   )
+//               )
+//           )
+//       ),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-6'
+//       ),
+//       '#label_classes' => array (
+//           'control-label'
+//       ),
+//       '#attributes' => array (
+//           'class' => array (
+//               'form-control'
+//           ),
+//           'data-bv-numeric' => 'true'
+//       ),
+//       '#suffix' => '</div>'
+//   );
+
   $form ['user_catalog_file'] = array (
       '#type' => 'file',
       '#title' => t ( "User catalog" ),
-      '#description' => t ( 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.<br><a href="#">Download file</a>'),
+      '#description' => t ( 'If needed, create a custom catalog following one of the templates : <a href="'.$module_path.'/data/catalog.txt" download>ASCII</a> or <a href="'.$module_path.'/data/catalog.fits" download>FITS</a>.'),
       '#attributes' => array (
           'name' => 'user_catalog_file'
       ),
       '#prefix' => '<hr class="hr-default" /><div class="row">',
-      '#suffix' => '</div><hr class="hr-default" />',
+      '#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catolog"></span></div></div><hr class="hr-default" />',
       '#parent_classes' => array (
           'form-group',
           'col-md-8'
@@ -417,7 +417,7 @@ function astrooda_jemx($form, &$form_state) {
           'control-label'
       )
   );
-  
+    
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),
