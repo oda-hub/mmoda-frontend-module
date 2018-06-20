@@ -8,10 +8,9 @@
 /**
  */
 function astrooda_isgri($form, &$form_state) {
-  
-  $form = array ();
-  
+    
   $module_path= drupal_get_path('module', 'astrooda');
+  $form = array ();
   
   $form ['#tree'] = FALSE;
   //turn off form caching
