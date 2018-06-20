@@ -5,6 +5,9 @@
 
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
+	
+	// all processing distinct nodes during a request
+	var distinct_nodes;
 
 	var current_ajax_call_params = {};
 
@@ -180,7 +183,6 @@
 		}
 
 		status_table = new Array();
-		distinct_nodes = new Array();
 		if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
 			for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
 				data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
@@ -604,7 +606,6 @@
 							catalog = form_panel.data('catalog').initial_catalog;
 							var dataTable = form_panel.data('dataTable');
 							catalog.cat_column_list = dataTable.columns().data().toArray();
-
 							var catalog_selected_objects = Array.apply(null, Array(dataTable
 									.rows().count()));
 							catalog_selected_objects = catalog_selected_objects.map(function(
@@ -657,6 +658,7 @@
 
 					data_units = new Array();
 					previous_status_table = new Array();
+					distinct_nodes = new Array();
 
 					AJAX_call();
 				});
