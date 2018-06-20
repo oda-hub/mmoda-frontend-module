@@ -9,6 +9,8 @@
  */
 function astrooda_jemx($form, &$form_state) {
   
+  $module_path= drupal_get_path('module', 'astrooda');
+
   $form = array ();
   
   $form ['#tree'] = FALSE;
