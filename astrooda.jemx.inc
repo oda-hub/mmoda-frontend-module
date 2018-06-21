@@ -53,7 +53,7 @@ function astrooda_jemx($form, &$form_state) {
               'form-control'
           )
       ),
-      '#prefix' => '<div class="row">'
+      '#prefix' => '<div class="row">',
   );
   
   $form ['radius'] = array (

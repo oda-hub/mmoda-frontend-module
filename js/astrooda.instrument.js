@@ -5,7 +5,7 @@
 
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
-	
+
 	// all processing distinct nodes during a request
 	var distinct_nodes;
 
@@ -417,10 +417,14 @@
 							});
 
 						});
+		// delete catalog when attached to panel
 		$(".instrument-panel.active .instrument-params-panel .inline-user-catalog")
 				.on('click', ".remove-catolog", function(e) {
 					$(this).parent().addClass('hidden');
-					$(".instrument-panel.active").removeData('catalog');
+					var panel = $(".instrument-panel.active .instrument-params-panel");
+					if (panel.data('catalog')) {
+						panel.removeData('catalog');
+					}
 				});
 
 		waitingDialog = get_waitingDialog();
@@ -738,10 +742,7 @@
 			columns : catalog.column_names,
 			// dom : 'Brtflip',
 			dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
-			buttons : [
-				'selectAll',
-        'selectNone',
-      {
+			buttons : [ 'selectAll', 'selectNone', {
 				extend : "create",
 				editor : editor
 			}, {

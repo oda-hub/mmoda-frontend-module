@@ -31,7 +31,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'isgri'
   );
-  
+
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
@@ -53,7 +53,7 @@ function astrooda_isgri($form, &$form_state) {
               'form-control'
           )
       ),
-      '#prefix' => '<div class="row">'
+      '#prefix' => '<div class="row">',
   );
   
   $form ['radius'] = array (
@@ -73,11 +73,8 @@ function astrooda_isgri($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#suffix' => '</div><hr class="hr-default" />'
+      '#suffix' => '</div><hr class="hr-default" />',
   );
-  
-
-  
   
   $form ['use_scws'] = array (
       '#type' => 'radios',
