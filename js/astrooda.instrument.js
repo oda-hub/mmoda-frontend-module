@@ -57,8 +57,8 @@
 						function(data, textStatus, jqXHR) {
 							// merge_response_data();
 
-							console.log('--- Query response ---');
-							console.log(data);
+							// console.log('--- Query response ---');
+							// console.log(data);
 							job_id = '';
 							if (data['job_monitor'].hasOwnProperty('job_id')) {
 								job_id = data['job_monitor']['job_id'];
@@ -82,7 +82,6 @@
 								messages = get_server_message(data, data_units);
 								current_summary = messages.summary;
 								messages.summary = get_current_date_time() + messages.summary;
-								// console.log(messages);
 								if (current_summary != previous_summary) {
 									waitingDialog.replace(messages);
 									$('#ldialog .summary [data-toggle="tooltip"]').tooltip({
@@ -137,8 +136,8 @@
 						})
 				.complete(
 						function(jqXHR, textStatus) {
-							console.log('Exec time : '
-									+ (new Date().getTime() - startAJAXTime));
+							// console.log('Exec time : ' + (new Date().getTime() -
+							// startAJAXTime));
 							$('input[type=submit].form-submit',
 									".instrument-panel.active, .common-params").prop('disabled',
 									false);
@@ -168,6 +167,7 @@
 
 			jqxhr.abort();
 		});
+		// jqxhr
 
 	}
 
@@ -234,8 +234,6 @@
 					if (typeof previous_status_table[data_unit] !== 'undefined'
 							&& typeof previous_status_table[data_unit][node] !== 'undefined') {
 						started_or_not = previous_status_table[data_unit][node];
-						// console.log('data_unit='+data_unit+', node=' +node+ ',
-						// value='+value+', previous='+started_or_not);
 						if (value.indexOf('restored') == 0
 								&& started_or_not == 'main starting') {
 							value = 'task complete';
@@ -296,31 +294,150 @@
 
 	function commonReady() {
 
-		$("body").on('click', '.panel .close-panel', function(e) {
-			var panel = $(this).closest('.panel');
-			if (panel.data('catalog')) {
-				// delete catalog when attached to panel
-				panel.removeData('catalog');
+		$('body')
+				.on(
+						'click',
+						'table.lightcurve-table tbody button.draw-lightcurve',
+						function(e) {
+							// var lc_index = $(this).data('index');
+							var current_row = $(this).parents('tr');
+							var data = current_row.data();
+							var lightcurve_offset = {};
+							lightcurve_offset.top = e.pageY;
+							lightcurve_offset.left = e.pageX;
+							if (lightcurve_panel_id = data.lightcurve_panel_id) {
+								$(lightcurve_panel_id)
+										.highlight_result_panel(lightcurve_offset);
+								$('.fa-chevron-down', lightcurve_panel_id).click();
 
-			}
-			if (panel.data('log')) {
-				// delete log when attached to panel
-				panel.removeData('log');
+							} else {
+								$(".instrument-panel.active").data(
+										"lightcurve_table_current_row", current_row);
+								var lc_index = data.index;
+								var current_panel = $(this).closest('.panel');
+								var parent_catalog_offset = $(".instrument-panel.active")
+										.offset();
+								var catalog_offset = {};
+								catalog_offset.top = e.pageY - parent_catalog_offset.top;
+								catalog_offset.left = e.pageX - parent_catalog_offset.left;
+								display_lc_image(current_panel, lc_index, datetime,
+										catalog_offset);
+							}
+						});
 
-			}
+		$('body')
+				.on(
+						'click',
+						'table.spectrum-table tbody button.draw-spectrum',
+						function(e) {
+							var current_row = $(this).parents('tr');
+							var data = current_row.data();
+							var spectrum_offset = {};
+							spectrum_offset.top = e.pageY;
+							spectrum_offset.left = e.pageX;
 
-			// update the catalog only if it is in the parameters panel
-			if (panel.data('catalog_parent_panel_id')) {
-				catalog_parent_panel_id = $(panel.data('catalog_parent_panel_id'));
-				catalog_parent_panel_id.removeData('catalog_panel_id');
-			}
+							if (spectrum_panel_id = data.spectrum_panel_id) {
+								$(spectrum_panel_id).highlight_result_panel(spectrum_offset);
+								$('.fa-chevron-down', spectrum_panel_id).click();
 
-			if (panel.data('log_product_panel_id')) {
-				log_product_panel_id = panel.data('log_product_panel_id');
-				$(log_product_panel_id).removeData('log_panel_id');
-			}
-			panel.remove();
-		});
+							} else {
+
+								// return;
+								request_draw_spectrum = true;
+								request_spectrum_form_element = $(this);
+								draw_spectrum_form_elements = new FormData();
+								var session_id = $('input[name=session_id]',
+										'form#astrooda-common').val();
+
+								draw_spectrum_form_elements.append('session_id', session_id);
+								draw_spectrum_form_elements.append('query_status', 'ready');
+								draw_spectrum_form_elements.append('job_id', data.job_id);
+								draw_spectrum_form_elements
+										.append('instrument', $('input[name=instrument]',
+												".instrument-panel.active").val());
+								draw_spectrum_form_elements.append('query_type', $(
+										'select[name=query_type]', ".instrument-panel.active")
+										.val());
+								draw_spectrum_form_elements.append('product_type',
+										'spectral_fit');
+								draw_spectrum_form_elements.append('xspec_model',
+										data.xspec_model);
+								draw_spectrum_form_elements.append('ph_file_name',
+										data.ph_file_name);
+								draw_spectrum_form_elements.append('arf_file_name',
+										data.arf_file_name);
+								draw_spectrum_form_elements.append('rmf_file_name',
+										data.rmf_file_name);
+
+								$(this).data('session_id', session_id);
+								$(this).data('parameters', draw_spectrum_form_elements);
+								$(this).data('source_name', data.source_name);
+								$(this).data(
+										'files',
+										data.ph_file_name + ',' + data.arf_file_name + ','
+												+ data.rmf_file_name);
+
+								$(".instrument-panel.active").data("last_click_position", {
+									'top' : e.pageY,
+									'left' : e.pageX
+								});
+								$(".instrument-panel.active").data(
+										"spectrum_table_current_row", current_row);
+								$(".form-submit", ".instrument-panel.active").click();
+							}
+						});
+
+		$("body")
+				.on(
+						'click',
+						'.panel .close-panel',
+						function(e) {
+							var panel = $(this).closest('.panel');
+							if (panel.data('catalog')) {
+								// delete catalog when attached to panel
+								panel.removeData('catalog');
+
+							}
+							if (panel.data('log')) {
+								// delete log when attached to panel
+								panel.removeData('log');
+
+							}
+
+							// update the catalog only if it is in the parameters panel
+							if (panel.data('catalog_parent_panel_id')) {
+								catalog_parent_panel_id = $(panel
+										.data('catalog_parent_panel_id'));
+								catalog_parent_panel_id.removeData('catalog_panel_id');
+							}
+
+							// update the spectrum only if it is in the parameters panel
+							if (panel.data('spectrum_parent_panel_id')) {
+								spectrum_parent_panel_id = $(panel
+										.data('spectrum_parent_panel_id'));
+								spectrum_parent_panel_id.removeData('spectrum_panel_id');
+							}
+
+							// update the lightcurve only if it is in the parameters panel
+							if (panel.data('lightcurve_parent_panel_id')) {
+								lightcurve_parent_panel_id = $(panel
+										.data('lightcurve_parent_panel_id'));
+								lightcurve_parent_panel_id.removeData('lightcurve_panel_id');
+							}
+
+							if (panel.data('log_product_panel_id')) {
+								log_product_panel_id = panel.data('log_product_panel_id');
+								$(log_product_panel_id).removeData('log_panel_id');
+							}
+
+							if (panel.data('query_parameters_product_panel_id')) {
+								query_parameters_product_panel_id = panel
+										.data('query_parameters_product_panel_id');
+								$(query_parameters_product_panel_id).removeData(
+										'query_parameters_panel_id');
+							}
+							panel.remove();
+						});
 
 		$("body")
 				.on(
@@ -379,6 +496,37 @@
 								log_offset);
 					}
 				});
+		$("body")
+				.on(
+						'click',
+						'.result-panel .show-query-parameters',
+						function(e) {
+							e.preventDefault();
+							var query_parameters_parent_panel = $(this).closest(
+									'.result-panel');
+							var query_parameters = query_parameters_parent_panel
+									.data('analysis_paramters');
+							var parent_query_parameters_offset = $(".instrument-panel.active")
+									.offset();
+							var query_parameters_offset = {};
+							query_parameters_offset.top = e.pageY;
+							query_parameters_offset.left = e.pageX;
+							if (query_parameters_panel_id = query_parameters_parent_panel
+									.data('query_parameters_panel_id')) {
+								$(query_parameters_panel_id).highlight_result_panel(
+										query_parameters_offset);
+								$('.fa-chevron-down', query_parameters_panel_id).click();
+							} else {
+								// Show query_parameters
+								var datetime = $(this).attr('data-datetime');
+								query_parameters_offset.top -= parent_query_parameters_offset.top;
+								query_parameters_offset.left -= parent_query_parameters_offset.left;
+
+								display_query_parameters(query_parameters, '#'
+										+ query_parameters_parent_panel.attr('id'), datetime,
+										query_parameters_offset);
+							}
+						});
 
 		$("body")
 				.on(
@@ -627,13 +775,11 @@
 						// Attach files
 						$.each($('input:file', this), function(i, file) {
 							if ($(this).val() !== '') {
-								// console.log('attaching file
-								// '+$(this).attr('name'));
 								formData.append($(this).attr('name'), file.files[0]);
 							}
 						});
 					}
-					$('input[name=hidden_xspec_model]', this).prop('disabled', false);
+					$('input[name=xspec_model]', this).prop('disabled', false);
 					$('input.spectrum-fit-param', this).prop('disabled', true);
 
 					request_draw_spectrum = false;
@@ -677,14 +823,11 @@
 											$(this).attr('href'),
 											function(data) {
 												var help_text = $(".region-content .content", data);
-												// console.log('help_text:'+help_text);
 												help_text
 														.find(
 																'#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a')
 														.each(
 																function() {
-																	// console.log('href = '+
-																	// $(this).attr('href'));
 																	$(this).attr(
 																			'href',
 																			$(this).attr('href').substring(
@@ -711,9 +854,8 @@
 		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
 				'image-catalog', datetime);
 
-		$('#' + panel_ids.panel_body_id)
-				.append(
-						'<div class="catalog-wrapper"><table class="astro-ana table-striped"></table></div>');
+		$('#' + panel_ids.panel_body_id).append(
+				'<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
 
 		$(afterDiv).data({
 			catalog_panel_id : '#' + panel_ids.panel_id
@@ -741,7 +883,7 @@
 			data : catalog.data,
 			columns : catalog.column_names,
 			// dom : 'Brtflip',
-			dom : '<"top"iB>rt<"bottom"<fl>p><"clear">',
+			dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
 			buttons : [ 'selectAll', 'selectNone', {
 				extend : "create",
 				editor : editor
@@ -757,7 +899,6 @@
 				selector : 'td:first-child'
 			},
 			order : [ [ 1, 'asc' ] ],
-			persistUpdates : 'hehe',
 		});
 
 		// Activate inline edit on click of a table cell
@@ -808,8 +949,42 @@
 		});
 		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + source_name + ' - Image log');
+				'Source : ' + source_name + ' - Log');
 		$('#' + panel_ids.panel_id).addClass('astrooda-log');
+		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
+
+	}
+
+	function display_query_parameters(query_parameters, afterDiv, datetime,
+			offset) {
+		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
+				'image-query_parameters', datetime);
+
+		var header = '<tr><th>Parameter</th><th>Value</th><th/></tr>';
+		var body = '';
+		for ( var parameter in query_parameters) {
+			if (query_parameters.hasOwnProperty(parameter)) {
+				body += '<tr><td>'
+						+ parameter
+						+ '</td><td>' + query_parameters[parameter] + '</td>' + '</tr>';
+			}
+		}
+		var html = '<table class=""><thead>' + header + '</thead><tbody>' + body
+				+ '</tbody></table>';
+		$('#' + panel_ids.panel_body_id).append(
+				'<div class="query_parameters-wrapper">' + html + '</div>');
+		
+		$(afterDiv).data({
+			query_parameters_panel_id : '#' + panel_ids.panel_id
+		});
+		$('#' + panel_ids.panel_id).data({
+			query_parameters_product_panel_id : afterDiv
+		});
+		
+		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
+				'Source : ' + source_name + ' -  Query parameters');
+		$('#' + panel_ids.panel_id).addClass('astrooda-query_parameters');
 		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
 
 	}
@@ -831,20 +1006,9 @@
 				});
 	}
 
-	function display_lc_table(job_id, query_status, products) {
+	function display_lc_table(job_id, query_status, data) {
 		datetime = get_current_date_time();
 
-		var header = '<tr><th>Source name</th><th>Light curve</th><th/></tr>';
-		var body = '';
-		for (var i = 0; i < products.image.length; i++) {
-			body += '<tr><td>'
-					+ products.name[i]
-					+ '</td><td><button type="button" class="btn btn-primary draw_lc" data-job-id="'
-					+ job_id + '" data-index="' + +i + '">View</button></td>' + '</tr>';
-		}
-
-		var html = '<table class="astro-ana lc"><thead>' + header
-				+ '</thead><tbody>' + body + '</tbody></table>';
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
 
@@ -853,12 +1017,17 @@
 				+ '</div><div>Job ID : ' + job_id + '</div>';
 		$('#' + panel_ids.panel_id).data("log",
 				session_job_ids + $('.modal-body', '#ldialog').html());
-		var showLoghtml = '<div><a class="show-log" data-datetime="' + datetime
-				+ '" href="#" >Show log<a></div>';
-		$('#' + panel_ids.panel_body_id).append(showLoghtml);
 
-		if (products.input_prod_list.length > 0) {
-			scw_list = products.input_prod_list.join(', ');
+		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="'
+				+ datetime + '" >Log</button>';
+		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
+				+ datetime + '" >Query parameters</button>';
+		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
+				+ showLoghtml + '</div>';
+		$('#' + panel_ids.panel_body_id).append(toolbar);
+
+		if (data.input_prod_list.length > 0) {
+			scw_list = data.input_prod_list.join(', ');
 			$('#' + panel_ids.panel_body_id)
 					.append(
 							'<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">'
@@ -891,26 +1060,64 @@
 		$('#' + panel_ids.panel_id).data({
 			'job_id' : job_id
 		});
+		
 		$('#' + panel_ids.panel_id).data({
-			'products' : products
+			'products' : data
+		});
+		
+		$('#' + panel_ids.panel_id).data({
+			analysis_paramters : data.analysis_paramters
 		});
 
-		$('#' + panel_ids.panel_body_id).append(
-				'<div id="lc-table-wrapper-' + job_id + '"></div>');
-		$("#lc-table-wrapper-" + job_id).html(html);
-		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + source_name + ' - Light curve table');
+				'Source : ' + data.analysis_paramters.src_name + ', '
+						+ data.analysis_paramters.E1_keV + ' - '
+						+ data.analysis_paramters.E2_keV + ' keV, '
+						+ data.analysis_paramters.time_bin + ' '
+						+ data.analysis_paramters.time_bin_format);
 
-		$('.draw_lc').on('click', function(e) {
-			var lc_index = $(this).data('index');
-			var current_panel = $(this).closest('.panel');
-			var parent_catalog_offset = $(".instrument-panel.active").offset();
-			var catalog_offset = {};
-			catalog_offset.top = e.pageY - parent_catalog_offset.top;
-			catalog_offset.left = e.pageX - parent_catalog_offset.left;
-			display_lc_image(current_panel, lc_index, datetime, catalog_offset);
+		var lightcurve_table_data = new Array(data.name.length);
+		for (var i = 0; i < data.name.length; i++) {
+			lightcurve_table_data[i] = {
+				DT_RowId : 'row_' + i,
+				source_name : data.name[i],
+				index : i,
+			}
+		}
+
+		$('#' + panel_ids.panel_body_id)
+				.append(
+						'<div class="lightcurve-table-wrapper"><table class="lightcurve-table table-striped"></table></div>');
+		var lightcurve_table_column_names = [
+				{
+					title : "Source Name",
+					name : "source_name",
+					data : "source_name",
+				},
+				{
+					data : null,
+					title : "Light Curve",
+					name : "lightcurve",
+					defaultContent : '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
+					orderable : false
+				}, ];
+
+		var lightcurve_table_container = $(".lightcurve-table", '#'
+				+ panel_ids.panel_id);
+
+		var dataTable = lightcurve_table_container.DataTable({
+			// "bAutoWidth": false,
+			data : lightcurve_table_data,
+			columns : lightcurve_table_column_names,
+			// dom : 'Brtflip',
+			dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
+			buttons : [],
+			order : [ [ 0, 'asc' ] ],
+			"rowCallback" : function(row, data) {
+				$(row).data(data);
+			}
 		});
+
 		$('#' + panel_ids.panel_id).highlight_result_panel();
 
 	}
@@ -918,18 +1125,33 @@
 	function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'image', datetime);
-		var ldata = current_panel.data('products');
-		var image = ldata.image[lc_index];
+
+		var current_row = $(".instrument-panel.active").data(
+				"lightcurve_table_current_row");
+		$(current_row).data({
+			lightcurve_panel_id : '#' + panel_ids.panel_id
+		});
+		$('#' + panel_ids.panel_id).data({
+			lightcurve_parent_panel_id : current_row
+		});
+
+		var data = current_panel.data('products');
+		var image = data.image[lc_index];
 		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		var job_id = current_panel.data('job_id');
 
-		var file_name = ldata.file_name[lc_index].replace('query_lc_query_lc_', '');
+		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '.gz&file_list=' + ldata.file_name[lc_index]
+				+ '.gz&file_list=' + data.file_name[lc_index]
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
-		$('#' + panel_ids.panel_body_id).append(
-				'<a href="/dispatch-data/download_products?' + url + '">Download<a>');
+
+		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
+				+ url
+				+ '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
+		var toolbar = '<div class="btn-group" role="group">' + downloadButton
+				+ '</div>';
+		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, image.image);
 		$('#' + panel_ids.panel_body_id).append(
@@ -945,7 +1167,11 @@
 				".instrument-panel.active").val();
 
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + ldata.name[lc_index] + ' - ' + product_type);
+				'Source : ' + data.analysis_paramters.src_name + ', '
+						+ data.analysis_paramters.E1_keV + ' - '
+						+ data.analysis_paramters.E2_keV + ' keV, '
+						+ data.analysis_paramters.time_bin + ' '
+						+ data.analysis_paramters.time_bin_format);
 
 		// set_draggable();
 		$('#' + panel_ids.panel_id).css({
@@ -959,19 +1185,6 @@
 	function display_spectrum_table(job_id, query_status, data) {
 
 		datetime = get_current_date_time();
-		var header = '<tr><th>Source name</th><th>Xspec model</th><th>Spectrum</th><th/></tr>';
-		var body = '';
-		for (var i = 0; i < data.spectrum_name.length; i++) {
-			body += '<tr><td>'
-					+ data.spectrum_name[i]
-					+ '</td><td><input id="hidden_xspec_model-'
-					+ i
-					+ '" name="hidden_xspec_model" type="text" class="form-control" value="powerlaw"></td><td><button type="button" class="btn btn-primary draw_spectrum" data="'
-					+ i + '">Fit</button></td>' + '</tr>';
-		}
-
-		var html = '<table class="astro-ana spectra"><thead>' + header
-				+ '</thead><tbody>' + body + '</tbody></table>';
 
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
@@ -981,63 +1194,102 @@
 				+ '</div><div>Job ID : ' + job_id + '</div>';
 		$('#' + panel_ids.panel_id).data("log",
 				session_job_ids + $('.modal-body', '#ldialog').html());
-		var showLoghtml = '<div><a class="show-log" data-datetime="' + datetime
-				+ '" href="#" >Show log<a></div>';
-		$('#' + panel_ids.panel_body_id).append(showLoghtml);
 
-		$('#' + panel_ids.panel_body_id).append(
-				'<div id="spectrum-table-wrapper"></div>');
-		$("#spectrum-table-wrapper").html(html);
+		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="'
+				+ datetime + '" >Log</button>';
+		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
+				+ datetime + '" >Query parameters</button>';
+		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
+				+ showLoghtml + '</div>';
+		$('#' + panel_ids.panel_body_id).append(toolbar);
 
-		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + source_name + ' - Spectra table');
+				'Source : ' + data.analysis_paramters.src_name);
 
-		$('.draw_spectrum').on(
-				'click',
-				function(e) {
-					request_draw_spectrum = true;
-					request_spectrum_form_element = $(this);
-					var i = $(this).attr('data');
-					draw_spectrum_form_elements = new FormData();
-					var session_id = $('input[name=session_id]', 'form#astrooda-common')
-							.val();
+		var spectrum_table_data = new Array(data.spectrum_name.length);
+		for (var i = 0; i < data.spectrum_name.length; i++) {
+			spectrum_table_data[i] = {
+				DT_RowId : 'row_' + i,
+				source_name : data.spectrum_name[i],
+				xspec_model : 'powerlaw',
+				arf_file_name : data.arf_file_name[i],
+				ph_file_name : data.ph_file_name[i],
+				rmf_file_name : data.rmf_file_name[i],
+				job_id : job_id,
+			}
+		}
 
-					draw_spectrum_form_elements.append('session_id', session_id);
-					draw_spectrum_form_elements.append('query_status', 'ready');
-					draw_spectrum_form_elements.append('job_id', job_id);
-					draw_spectrum_form_elements.append('instrument', $(
-							'input[name=instrument]', ".instrument-panel.active").val());
-					draw_spectrum_form_elements.append('query_type', $(
-							'select[name=query_type]', ".instrument-panel.active").val());
-					draw_spectrum_form_elements.append('product_type', 'spectral_fit');
-					draw_spectrum_form_elements.append('xspec_model', $(
-							'input[id=hidden_xspec_model-' + i + ']',
-							".instrument-panel.active").val());
-					draw_spectrum_form_elements.append('ph_file_name',
-							data.ph_file_name[i]);
-					draw_spectrum_form_elements.append('arf_file_name',
-							data.arf_file_name[i]);
-					draw_spectrum_form_elements.append('rmf_file_name',
-							data.rmf_file_name[i]);
+		$('#' + panel_ids.panel_id).data({
+			analysis_paramters : data.analysis_paramters
+		});
 
-					$(this).data('session_id', session_id);
-					$(this).data('parameters', draw_spectrum_form_elements);
-					$(this).data('source_name', data.spectrum_name[i]);
-					$(this).data(
-							'files',
-							data.ph_file_name[i] + ',' + data.arf_file_name[i] + ','
-									+ data.rmf_file_name[i]);
+		$('#' + panel_ids.panel_body_id)
+				.append(
+						'<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
+		var spectrum_table_column_names = [
+				{
+					title : "Source Name",
+					name : "source_name",
+					data : "source_name",
+				},
+				{
+					title : "Xspec Model",
+					name : "xspec_model",
+					data : "xspec_model",
+					orderable : false
+				},
+				{
+					data : null,
+					title : "Spectrum",
+					name : "spectrum",
+					defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
+					orderable : false
+				}, ];
 
-					// $(".instrument-panel.active").submit();
-					// console.log('Submit button id:'+ $(".form-submit",
-					// ".instrument-panel.active").attr(id));
-					$(".instrument-panel.active").data("last_click_position", {
-						'top' : e.pageY,
-						'left' : e.pageX
-					});
-					$(".form-submit", ".instrument-panel.active").click();
-				});
+		var spectrum_table_fields = [ {
+			name : "source_name",
+			type : "readonly",
+		}, {
+			name : "xspec_model",
+		}, {
+			name : "spectrum",
+			type : "readonly",
+		}, ];
+		var editor = new $.fn.dataTable.Editor({
+			table : '#' + panel_ids.panel_id + ' .spectrum-table',
+			fields : spectrum_table_fields,
+		});
+		var spectrum_table_container = $(".spectrum-table", '#'
+				+ panel_ids.panel_id);
+
+		var dataTable = spectrum_table_container.DataTable({
+			// "bAutoWidth": false,
+			data : spectrum_table_data,
+			columns : spectrum_table_column_names,
+			// dom : 'Brtflip',
+			dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
+			buttons : [],
+			order : [ [ 0, 'asc' ] ],
+			"rowCallback" : function(row, data) {
+				$(row).data(data);
+			}
+		});
+
+		// Activate inline edit on click of a table cell
+		spectrum_table_container.on('click', 'tbody td:nth-child(2)', function(e) {
+			editor.inline(this);
+		});
+		editor.on('initEdit', function(e, json, data) {
+			$(this).data('xspec_model_previous_val', data.xspec_model);
+		});
+
+		editor.on('postEdit', function(e, json, data) {
+			if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
+				$('.instrument-panel.active .spectrum-table tr#' + data.DT_RowId)
+						.removeData('spectrum_panel_id');
+			}
+		});
+
 		// highlight_result_panel(panel_ids.panel_id);
 		$('#' + panel_ids.panel_id).highlight_result_panel();
 	}
@@ -1046,15 +1298,35 @@
 
 		datetime = get_current_date_time();
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'image', datetime);
+				.insert_new_panel(desktop_panel_counter++, 'spectrum', datetime);
+
+		var current_row = $(".instrument-panel.active").data(
+				"spectrum_table_current_row");
+		$(current_row).data({
+			spectrum_panel_id : '#' + panel_ids.panel_id
+		});
+		$('#' + panel_ids.panel_id).data({
+			spectrum_parent_panel_id : current_row
+		});
 
 		download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
 		url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files
 				+ '&download_file_name=' + download_filename
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
-		$('#' + panel_ids.panel_body_id).append(
-				'<a href="/dispatch-data/download_products?' + url + '">Download</a>');
+
+		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
+				+ url
+				+ '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+		product_type = $("input[name$='product_type']:checked",
+				".instrument-panel.active").val();
+
+		var toolbar = '<div class="btn-group" role="group">' + downloadButton
+				+ '</div>';
+		$('#' + panel_ids.panel_body_id).append(toolbar);
+
+		// $('#' + panel_ids.panel_body_id).append(
+		// '<a href="/dispatch-data/download_products?' + url + '">Download</a>');
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
 		$('#' + panel_ids.panel_body_id).append(
@@ -1067,8 +1339,9 @@
 				get_text_table(data.image.table_text));
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.footer_text.replace(/\n/g, "<br />"));
+
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + metadata.source_name + ' - Spectrum');
+				'Source : ' + metadata.source_name);
 
 		var x = $('#' + panel_ids.panel_id).offset().top - 100;
 		jQuery('html,body').animate({
@@ -1138,7 +1411,6 @@
 					};
 				}
 				if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
-					console.log('setting ra min max ');
 					fields[i - 1].attr.min = 0;
 					fields[i - 1].attr.max = 360;
 				}
@@ -1161,6 +1433,11 @@
 				}
 			});
 		}
+
+		$('#' + panel_ids.panel_id).data({
+			analysis_paramters : data.analysis_paramters
+		});
+
 		session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 
 		url = 'session_id=' + session_id + '&download_file_name='
@@ -1184,9 +1461,11 @@
 				session_job_ids + $('.modal-body', '#ldialog').html());
 		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="'
 				+ datetime + '" >Log</button>';
+		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
+				+ datetime + '" >Query parameters</button>';
 
 		var toolbar = '<div class="btn-group" role="group">' + downloadButton
-				+ showCataloghtml + showLoghtml + '</div>';
+				+ showCataloghtml + showQueryParameters + showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		if (data.input_prod_list.length > 0) {
@@ -1219,7 +1498,6 @@
 								html : true,
 								template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
 							});
-
 		}
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
@@ -1233,11 +1511,12 @@
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.footer_text.replace(/\n/g, "<br />"));
 
-		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+		// source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+		// $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
+		// 'Source : ' + source_name + ' - ' + product_type);
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + source_name + ' - ' + product_type);
-
-		// set_draggable();
+				data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV
+						+ ' keV');
 
 		$('#' + panel_ids.panel_id).highlight_result_panel();
 	}

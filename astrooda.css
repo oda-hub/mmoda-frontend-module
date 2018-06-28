@@ -144,13 +144,20 @@ table.astro-ana tr td, table.astro-ana tr th {
 	cursor: pointer;
 }
 
+.spectrum-table, .lightcurve-table{
+  width : 100% !important ;
+}
+
+.spectrum-table th, .spectrum-table td, .lightcurve-table th, .lightcurve-table td  {
+  padding : 0.4em;
+}
 .spectrum-text-table {
 	margin: 1em 0;
 }
 
 #spectrum-table-wrapper {
 	margin: 0.5em;
-	float: left;
+	/*float: left;*/
 }
 
 .spectrum-text-table  th:first-letter {
@@ -161,20 +168,24 @@ table.astro-ana tr td, table.astro-ana tr th {
 	padding-right: 1em;
 }
 
-.spectrum-text-table tr td:not(:first-child),
+/*
+.spectrum-table tr td:not(:first-child),
 #catalog-wrapper table tr td:not(:first-child) {
   text-align : right;
 }
-
+*/
 .catalog-wrapper table tr td.optional, .catalog-wrapper table tr th.optional,
 	.catalog-wrapper .more, .catalog-wrapper .less {
 	display: none;
 }
 
-.catalog-wrapper {
+/*
+.catalog-wrapper tr td ,  .spectrum-table-wrapper tr td {
 	clear: left;
 	text-align: right;
 }
+*/
+
 
 span.panel-toolbox span {
 	padding-left: 0.5em;
@@ -356,6 +367,7 @@ input[type=number] {
 
 .dataTables_filter, .dataTables_info {
 	float: right;
+	clear: right;
 }
 
 .dataTables_length  {
@@ -363,6 +375,6 @@ input[type=number] {
 }
 
 .dataTables_paginate {
-	clear: both;
+	/*clear: both;*/
 	text-align: center;
 }
