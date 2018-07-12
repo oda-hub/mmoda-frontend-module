@@ -8,6 +8,14 @@ function sleep (sleepDuration) {
   while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
 }
 
+function pad(number, length) {
+  var str = '' + number;
+  while (str.length < length) {
+      str = '0' + str;
+  }
+  return str;
+}
+
 function get_today_mjd() {
 	var today = new Date(); // set any date
 	var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian

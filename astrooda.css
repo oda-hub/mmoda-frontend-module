@@ -273,7 +273,13 @@ span.panel-toolbox span {
 	display: none;
 }
 
-.astrooda-log table.status-table th:first-child {
+.query_parameters-wrapper table td, 
+.status-table td {
+	padding : .2em .4em;
+	line-height : 16px;
+}
+
+.astrooda-log table.status-table th:nth-child(2) {
 	vertical-align: bottom;
 }
 
