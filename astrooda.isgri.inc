@@ -31,6 +31,30 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'isgri'
   );
+
+  $form ['osa_version'] = array (
+      '#type' => 'select',
+      '#title' => t ( "OSA Version" ),
+      '#default_value' => 'OSA11.0',
+      '#options' => array (
+          'OSA10.2' => 'OSA10.2',
+          'OSA11.0' => 'OSA11.0'
+      ),
+      
+      '#parent_classes' => array (
+          'form-group',
+          'col-md-6'
+      ),
+      '#label_classes' => array (
+          'control-label'
+      ),
+      '#attributes' => array (
+          'class' => array (
+              'form-control'
+          )
+      ),
+      '#prefix' => '<div class="row">',
+  );
   
   $form ['radius'] = array (
       '#type' => 'textfield',
@@ -49,8 +73,7 @@ function astrooda_isgri($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div><hr class="hr-default" />'
+      '#suffix' => '</div><hr class="hr-default" />',
   );
   
   $form ['use_scws'] = array (

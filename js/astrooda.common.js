@@ -8,6 +8,14 @@ function sleep (sleepDuration) {
   while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
 }
 
+function pad(number, length) {
+  var str = '' + number;
+  while (str.length < length) {
+      str = '0' + str;
+  }
+  return str;
+}
+
 function get_today_mjd() {
 	var today = new Date(); // set any date
 	var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian
@@ -197,7 +205,6 @@ function get_waitingDialog($modal_dialog) {
 					$dialog.find('button').hide();						
 				}
 				$dialog.find('h4').html(title);
-				console.log('writting message');
 				$dialog.find('.summary').html(message);
 				$dialog.find('.modal-footer button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
 				
@@ -323,7 +330,7 @@ function get_waitingDialog($modal_dialog) {
 		
 		$result_panel = $('#astrooda_panel_model').clone();
 		$result_panel.attr('id', panel_id);
-		$result_panel.find('.date').text(datetime);
+		$result_panel.find('.date').text('['+datetime+']');
 		$result_panel.find('.panel-body').attr('id', panel_body_id);
 
 	// $($result_panel).insertAfter(insertAfter);
@@ -442,11 +449,9 @@ function get_waitingDialog($modal_dialog) {
 		// Disable main submit if error in common parameters
 		$('input, slect, textarea', '#astrooda-common').on('error.field.bv', function() {
 			// Disabling submit
-			console.log('Disabling submit button');
 			$('[type="submit"]', '.instrument-panel').prop('disabled', true);
 		}).on('success.field.bv', function() {
 			// Enabling submit')
-			console.log('Enabling submit button');
 			$('[type="submit"]', '.instrument-panel').prop('disabled', false);
 
 		});
@@ -495,7 +500,6 @@ function get_waitingDialog($modal_dialog) {
 		}).data('bootstrapValidator').validate();
 		
 		if (! validator.isValid()) {
-			console.log('common form not valid !');
 			validator.disableSubmitButtons(true);
 		}
 	}
