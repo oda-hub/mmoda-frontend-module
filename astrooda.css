@@ -302,11 +302,19 @@ span.panel-toolbox span {
 }
 
 .astrooda-log table.status-table td {
-	border: 1px solid lightGray;
+  border: 1px solid lightGray;
+}
+
+.astrooda-log table.error-table td {
+  padding: 2px 10px;
+}
+.astrooda-log table.error-table tbody {
+  border: none;
 }
 
 .astrooda-log .legend {
 	text-align: right;
+  border: none;
 }
 
 .astrooda-log .legend .legend-element {
