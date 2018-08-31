@@ -232,7 +232,7 @@ function get_waitingDialog($modal_dialog) {
 				$dialog.modal();
 				$dialog.find('.close-panel').on("click", function() {
 				});
-				//sleep(5);
+				// sleep(5);
 
 			},
 			/**
@@ -371,7 +371,8 @@ function get_waitingDialog($modal_dialog) {
   
 	function validate_date(value, validator, thefield) {
 		max_mjd_date= get_today_mjd();
-		//var time_format_type = $('select[name="T_format"]', 'form#astrooda-common').val();
+		// var time_format_type = $('select[name="T_format"]',
+		// 'form#astrooda-common').val();
 		var time_format_type = validator.getFieldElements('T_format').val();
 		
 		if (time_format_type == 'isot' && !valid_iso_date(value)) {
@@ -391,6 +392,11 @@ function get_waitingDialog($modal_dialog) {
 
 	function commonReady() {
 
+	// A cross symbol after an input to clear it
+	$('.clear-left-input').on('click', function (e) {
+		$(this).parent().prev('input').val('');
+	});
+	
 	$('body').tooltip({
       selector: '[data-toggle="tooltip"]'
   });
