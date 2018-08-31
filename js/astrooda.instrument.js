@@ -67,8 +67,8 @@
 					if (data.query_status == 'failed'
 						|| (data.products.hasOwnProperty('image') && data.products.image == null)) {
 						waitingDialog.hideSpinner();
-						waitingDialog.append(get_current_date_time() + ' '
-								+ data.exit_status.message, 'danger');
+						waitingDialog.append('<table class="error-table"><tr><td>'+get_current_date_time() + '</td><td>'
+								+ data.exit_status.message+ '</td></tr><tr><td></td><td>'+ data.exit_status.error_message+ '</td></tr></table>', 'danger');
 						waitingDialog.setClose();						
 					} else if (data.query_status != 'done') {
 						waitingDialog.showLegend();
@@ -300,32 +300,6 @@
 				cssClass = 'calculated';
 			}
 			else { cssClass = 'from-cache'; }
-			break;
-		case 'main done':
-		case 'task complete':
-			cssClass = 'calculated';
-			break;
-		default:
-		}
-		return (cssClass);
-	}
-	function get_node_status_class_old(started_or_not, message) {
-		cssClass = '';
-		if (message) {
-			cssClass = 'preparing';
-			if (started_or_not == 'main starting') {
-				cssClass = 'calculating';
-			}
-		}
-		switch (message) {
-		case 'treating dependencies':
-			cssClass = 'calculating';
-			break;
-		case 'analysis exception':
-			cssClass = 'analysis-exception';
-			break;
-		case 'restored from cache':
-			cssClass = 'from-cache';
 			break;
 		case 'main done':
 		case 'task complete':

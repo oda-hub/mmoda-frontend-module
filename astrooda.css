@@ -3,84 +3,85 @@
  * Style sheet for the iPrayTimes block.
  */
 #formwrapper {
-	display: inline-block;
+  display: inline-block;
 }
 
 .result-panel {
-	position: absolute;
-	vertical-align: top;
-	display: none;
-	float: left;
-	width: auto;
+  position: absolute;
+  vertical-align: top;
+  display: none;
+  float: left;
+  width: auto;
 }
 
 #ldialog {
-	/*padding-top:15%;
+  /*padding-top:15%;
 	overflow-y:visible;*/
-	
+  
 }
 
 .block-astrooda {
-	display: none;
+  display: none;
 }
 /***************** Start vertically center modal   ***/
 .modal {
-	text-align: center;
-	padding: 0 !important;
-	top: 15%;
+  text-align: center;
+  padding: 0 !important;
+  top: 15%;
 }
 
 .modal:before {
-	content: '';
-	display: inline-block;
-	height: 100%;
-	vertical-align: middle;
-	margin-right: -4px;
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
 }
 
 .modal-dialog {
-	display: inline-block;
-	text-align: left;
-	vertical-align: middle;
-	/*width: 60%;*/
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+  /*width: 60%;*/
 }
 
-.modal-dialog h3{
-	margin-bottom: 0px;
+.modal-dialog h3 {
+  margin-bottom: 0px;
 }
 
-#ldialog .modal-dialog{
+#ldialog .modal-dialog {
   width: 60%;
 }
 
-.astrooda-log .modal-body, .astrooda-log .panel-body{
-	max-height: 80vh;
-	overflow-y: auto;
+.astrooda-log .modal-body, .astrooda-log .panel-body {
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .panel.astrooda-log table.status-table {
   /* Important ! to show the rotated headings of the status table */
-  margin-right: 100px; 
+  margin-right: 100px;
 }
 
 .current-message {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 table.message-table tr td {
-	padding-right: 1em;
+  padding-right: 1em;
 }
 
 .astrooda-log .details, .astrooda-log .more-less-details {
-	display: none;
+  display: none;
 }
 
 .astrooda-log .more-less-details {
-	color: #007d64;
-	cursor: pointer;
+  color: #007d64;
+  cursor: pointer;
 }
+
 #ldialog .legend {
-	display: none;
+  display: none;
 }
 
 /***************** End vertically center modal   ***/
@@ -93,79 +94,81 @@ table.message-table tr td {
 }
 */
 #formwrapper {
-	width: 100%;
+  width: 100%;
 }
 
 .common-params {
-	margin: 0 35% 1em 35%;
+  margin: 0 35% 1em 35%;
 }
 
 .form-item, .form-actions {
-	margin-top: 0.2em;
-	margin-bottom: 0.2em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
 }
 
 table.astro-ana tr td, table.astro-ana tr th {
-	padding: 0.4em 1em;
+  padding: 0.4em 1em;
 }
 
 .instrument-params-panel {
-	float: left;
-	display: block;
-	vertical-align: top;
-	width: 30%;
-	clear: right;
+  float: left;
+  display: block;
+  vertical-align: top;
+  width: 30%;
+  clear: right;
 }
 
 #edit-submit--2 {
-	margin-top: 2em;
+  margin-top: 2em;
 }
 
 .ui-resizable-s {
-	background: #eee url(../../../../misc/grippie.png) no-repeat center 2px;
-	border: 1px solid #ddd;
-	border-top-width: 0;
-	cursor: s-resize;
-	height: 15px;
-	overflow: hidden;
+  background: #eee url(../../../../misc/grippie.png) no-repeat center 2px;
+  border: 1px solid #ddd;
+  border-top-width: 0;
+  cursor: s-resize;
+  height: 15px;
+  overflow: hidden;
 }
 
 .instrument-panel {
-	position: relative;
-	overflow: hidden;
-	display: inline-block;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
 }
 
 .instrument-panel .panel-heading {
-	cursor: move;
+  cursor: move;
 }
 
 .instrument-panel .panel-heading .panel-toolbox {
-	cursor: pointer;
+  cursor: pointer;
 }
 
-.spectrum-table, .lightcurve-table{
-  width : 100% !important ;
+.spectrum-table, .lightcurve-table {
+  width: 100% !important;
 }
 
-.spectrum-table th, .spectrum-table td, .lightcurve-table th, .lightcurve-table td  {
-  padding : 0.4em;
+.spectrum-table th, .spectrum-table td, .lightcurve-table th,
+  .lightcurve-table td {
+  padding: 0.4em;
 }
+
 .spectrum-text-table {
-	margin: 1em 0;
+  margin: 1em 0;
 }
 
 #spectrum-table-wrapper {
-	margin: 0.5em;
-	/*float: left;*/
+  margin: 0.5em;
+  /*float: left;*/
 }
 
 .spectrum-text-table  th:first-letter {
-	text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 .spectrum-text-table  td {
-	padding-right: 1em;
+  padding-right: 1em;
 }
 
 /*
@@ -175,8 +178,8 @@ table.astro-ana tr td, table.astro-ana tr th {
 }
 */
 .catalog-wrapper table tr td.optional, .catalog-wrapper table tr th.optional,
-	.catalog-wrapper .more, .catalog-wrapper .less {
-	display: none;
+  .catalog-wrapper .more, .catalog-wrapper .less {
+  display: none;
 }
 
 /*
@@ -185,51 +188,49 @@ table.astro-ana tr td, table.astro-ana tr th {
 	text-align: right;
 }
 */
-
-
 span.panel-toolbox span {
-	padding-left: 0.5em;
+  padding-left: 0.5em;
 }
 
 .panel {
-	margin-left: 0.5em;
+  margin-left: 0.5em;
 }
 
 .panel:hover {
-	box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px 2px;
-	/*background: rgba(200, 200, 200, 0.1);*/
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px 2px;
+  /*background: rgba(200, 200, 200, 0.1);*/
 }
 
 .instrument-toolbox {
-	float: right;
+  float: right;
 }
 
 #ldialog #table-of-contents-links {
-	float: right;
-	padding: 1em;
-	background-color: lightgray;
+  float: right;
+  padding: 1em;
+  background-color: lightgray;
 }
 
 .node-astrooda-help {
-	float: left;
+  float: left;
 }
 
 #astrooda_panel_model {
-	display: none;
+  display: none;
 }
 
 /***********************************/
 .form-item-src-name .alert {
-	padding: 5px 30px 5px 12px;
-	margin-bottom: 5px;
+  padding: 5px 30px 5px 12px;
+  margin-bottom: 5px;
 }
 
 .form-item-use-scws {
-	display: inline-block;
+  display: inline-block;
 }
 
 #formwrapper input:disabled {
-	background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 /*
@@ -262,125 +263,134 @@ span.panel-toolbox span {
 }
 */
 .astrooda-popover-content {
-	display: none;
+  display: none;
 }
 
 #astrooda-mockup+:input[name="use_scws"] {
-	border: 5px solid red;
+  border: 5px solid red;
 }
 
 #ldialog .header-message {
-	display: none;
+  display: none;
 }
 
-.query_parameters-wrapper table td, 
-.status-table td {
-	padding : .2em .4em;
-	line-height : 16px;
+.query_parameters-wrapper table td, .status-table td {
+  padding: .2em .4em;
+  line-height: 16px;
 }
 
 .astrooda-log table.status-table th:nth-child(2) {
-	vertical-align: bottom;
+  vertical-align: bottom;
 }
 
 .astrooda-log table.status-table th.rotate {
-	/* Something you can count on */
-	height: 140px;
-	white-space: nowrap;
+  /* Something you can count on */
+  height: 140px;
+  white-space: nowrap;
 }
 
 .astrooda-log table.status-table th.rotate>div {
-	transform: /* Magic Numbers */ translate( 25px, 51px)
-		/* 45 is really 360 - 45 */
+  transform: /* Magic Numbers */ translate( 25px, 51px)
+    /* 45 is really 360 - 45 */
     rotate( 315deg);
-	width: 30px;
+  width: 30px;
 }
 
 .astrooda-log table.status-table th.rotate>div>span {
-	border-bottom: 1px solid #ccc;
-	padding: 5px 10px;
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
 }
 
 .astrooda-log table.status-table td {
-	border: 1px solid lightGray;
+  border: 1px solid lightGray;
+}
+
+.astrooda-log table.error-table td {
+  padding: 2px 10px;
+}
+
+.astrooda-log table.error-table tbody {
+  border: none;
 }
 
 .astrooda-log .legend {
-	text-align: right;
+  text-align: right;
 }
 
 .astrooda-log .legend .legend-element {
-	display: inline-block;
-	width: 1em;
-	height: 1em;
-	margin-left: 0.5em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.5em;
 }
 
 .calculated {
-	background-color: LimeGreen;
+  background-color: LimeGreen;
 }
 
 .from-cache {
-	background-color: DarkGreen;
+  background-color: DarkGreen;
 }
 
 .calculating {
-	background-color: orange;
+  background-color: orange;
 }
 
 .preparing {
-	background-color: yellow;
+  background-color: yellow;
 }
 
 .analysis-exception {
   background-color: #DC143C; /*Crimson*/
-/*  background-color: Crimson; IndianRed */
+  /*  background-color: Crimson; IndianRed */
 }
 
 .popover {
-	max-width: 30%;
+  max-width: 30%;
 }
 
-.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
-    background-color: inherit;
+.table-striped>tbody>tr:nth-child(2n+1)>td, .table-striped>tbody>tr:nth-child(2n+1)>th
+  {
+  background-color: inherit;
 }
 
 tr.selected td {
-	background: inherit;
+  background: inherit;
 }
 
 .dataTable tr td {
-	white-space: nowrap;
+  white-space: nowrap;
 }
 
-table.dataTable tbody > tr.selected, table.dataTable tbody > tr > .selected {
+table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
   background-color: #007d64;
 }
 
-.inline-user-catalog .show-catalog{
-	padding-right: 0.5em;
+.inline-user-catalog .show-catalog {
+  padding-right: 0.5em;
 }
 
 /* Turn Off Number Input Spinners */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button
+  {
+  -webkit-appearance: none;
+  margin: 0;
 }
+
 input[type=number] {
-    -moz-appearance:textfield;
+  -moz-appearance: textfield;
 }
 
 .dataTables_filter, .dataTables_info {
-	float: right;
-	clear: right;
+  float: right;
+  clear: right;
 }
 
-.dataTables_length  {
-	float: left;
+.dataTables_length {
+  float: left;
 }
 
 .dataTables_paginate {
-	/*clear: both;*/
-	text-align: center;
+  /*clear: both;*/
+  text-align: center;
 }
