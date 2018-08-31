@@ -134,7 +134,7 @@ function astrooda_jemx($form, &$form_state) {
   $form ['user_scw_list_file'] = array (
       '#type' => 'file',
       '#title' => t ( "ScWs file" ),
-      '#description' => t ( 'Lorem Ipsum is simply The dummy text of the printing and typesetting industry.' . 'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer ' . 'took a galley of type and scrambled it to make a type specimen book.<br/>' . 'It has survived not only five centuries, but also the leap into electronic typesetting,' . 'remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.<br/><a href="#">Download file</a>' ),
+      '#description' => t ( 'An ASCII file, one ScW per line.'),
       '#attributes' => array (
           'name' => 'user_scw_list_file',
           'class' => array (
@@ -150,22 +150,23 @@ function astrooda_jemx($form, &$form_state) {
       ),
       '#states' => array (
           'visible' => array ( // action to take.
-              ':input[name="' . $mform_id . 'use_scws"]' => array (
+              ':input[name="'.$mform_id.'use_scws"]' => array (
                   'value' => 'user_file'
               )
           ),
           'enabled' => array (
-              ':input[name="' . $mform_id . 'use_scws"]' => array (
+              ':input[name="'.$mform_id.'use_scws"]' => array (
                   array (
                       'value' => 'user_file'
                   )
               )
           )
       ),
+      '#field_suffix' => '<span class="fa fa-times clear-left-input"></span>',
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+    
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
