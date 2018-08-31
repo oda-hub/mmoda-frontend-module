@@ -324,6 +324,10 @@ span.panel-toolbox span {
   margin-left: 0.5em;
 }
 
+input.user_scw_list_file {
+  display: inline;
+}
+
 .calculated {
   background-color: LimeGreen;
 }

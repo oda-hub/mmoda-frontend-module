@@ -790,7 +790,7 @@
 							formData.append('selected_catalog', JSON.stringify(catalog));
 						}
 						// Attach files
-						$.each($('input:file', this), function(i, file) {
+						$.each($('input:file:enabled', this), function(i, file) {
 							if ($(this).val() !== '') {
 								formData.append($(this).attr('name'), file.files[0]);
 							}

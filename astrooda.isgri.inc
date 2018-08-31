@@ -166,6 +166,7 @@ function astrooda_isgri($form, &$form_state) {
               )
           )
       ),
+      '#field_suffix' => '<span class="fa fa-times clear-left-input"></span>',
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />'
   );
