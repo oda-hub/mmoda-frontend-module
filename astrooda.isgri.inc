@@ -35,7 +35,7 @@ function astrooda_isgri($form, &$form_state) {
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
-      '#default_value' => 'OSA11.0',
+      '#default_value' => 'OSA10.2',
       '#options' => array (
           'OSA10.2' => 'OSA10.2',
           'OSA11.0' => 'OSA11.0'
@@ -59,7 +59,7 @@ function astrooda_isgri($form, &$form_state) {
   $form ['radius'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
-      '#default_value' => '25',
+      '#default_value' => '15',
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
@@ -134,11 +134,7 @@ function astrooda_isgri($form, &$form_state) {
   $form ['user_scw_list_file'] = array (
       '#type' => 'file',
       '#title' => t ( "ScWs file" ),
-      '#description' => t ( 'Lorem Ipsum is simply The dummy text of the printing and typesetting industry.' .
-          'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer '.
-           'took a galley of type and scrambled it to make a type specimen book.<br/>'.
-           'It has survived not only five centuries, but also the leap into electronic typesetting,'.
-           'remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.<br/><a href="#">Download file</a>'),
+      '#description' => t ( 'An ASCII file, one ScW per line.'),
       '#attributes' => array (
           'name' => 'user_scw_list_file',
           'class' => array (
