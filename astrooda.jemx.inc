@@ -35,7 +35,7 @@ function astrooda_jemx($form, &$form_state) {
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
-      '#default_value' => 'OSA11.0',
+      '#default_value' => 'OSA10.2',
       '#options' => array (
           'OSA10.2' => 'OSA10.2',
           'OSA11.0' => 'OSA11.0'
@@ -59,7 +59,7 @@ function astrooda_jemx($form, &$form_state) {
   $form ['radius'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
-      '#default_value' => '25',
+      '#default_value' => '15',
       '#parent_classes' => array (
           'form-group',
           'col-md-6'

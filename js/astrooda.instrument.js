@@ -612,16 +612,38 @@
 		var validator = $('.instrument-panel form').bootstrapValidator({
 			// live :'disabled',
 			fields : {
-				'T1' : {
+				'RA' : {
 					// enabled: false,
 					validators : {
 						callback : {
 							callback : function(value, validator, $field) {
-								return (validate_date(value));
+								var decimalRA;
+								return (HMS2Decimal(value, decimalRA));
 							}
 						}
 					}
 				},
+				'DEC' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								var decimalDEC;
+								return (DMS2Decimal(value, decimalDEC));
+							}
+						}
+					}
+				},
+//				'T1' : {
+//					// enabled: false,
+//					validators : {
+//						callback : {
+//							callback : function(value, validator, $field) {
+//								return (validate_date(value));
+//							}
+//						}
+//					}
+//				},
 				'T2' : {
 					// enabled: false,
 					validators : {

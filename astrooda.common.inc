@@ -94,9 +94,9 @@ function astrooda_common($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-between' => 'true',
-          'data-bv-between-min' => 0,
-          'data-bv-between-max' => 360
+//           'data-bv-between' => 'true',
+//           'data-bv-between-min' => 0,
+//           'data-bv-between-max' => 360
       )
   );
   
@@ -118,9 +118,9 @@ function astrooda_common($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-between' => 'true',
-          'data-bv-between-min' => - 90,
-          'data-bv-between-max' => 90
+//           'data-bv-between' => 'true',
+//           'data-bv-between-min' => - 90,
+//           'data-bv-between-max' => 90
       )
   );
   

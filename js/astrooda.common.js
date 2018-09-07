@@ -44,6 +44,105 @@ function validate_scws(value, nb_scws) {
 	return true;
 }
 
+function HMS2Decimal (hmsVal, decimalVal) {
+  decimalVal= 0;
+  if (hmsVal.match(/^ *$/)) {
+    decimalVal= -1;
+    return(true);
+  }
+  var sign         = '[+-]?';
+  var integer      = sign+'\\d{1,3}';
+  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
+  var hr_min       = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var hr_min_sec   = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+
+  var integer_regexp      = new RegExp('^('+integer+')$');
+  var decimal_regexp      = new RegExp('^('+decimal+')$');
+  var hr_min_regexp       = new RegExp('^('+hr_min+')$');
+  var hr_min_sec_regexp   = new RegExp('^('+hr_min_sec+')$');
+  var bad_value = {
+  		valid: false,
+  		message: 'Must be in degrees [0,360] or H:M:S'
+  	};
+  if (hmsVal.match(integer_regexp)) { // coordinate is in integral hours
+    if (hmsVal *1 < 25) decimalVal = hmsVal * 15; // return decimal
+    // degrees
+    else decimalVal = hmsVal * 1;
+  } else if (hmsVal.match(decimal_regexp)) { // coordinate is decimal, so
+    // assume degrees
+    decimalVal = hmsVal*1; // return decimal degrees
+  } else if (hmsVal.match(hr_min_sec_regexp)) {
+    var hms = hmsVal.split(/[:|\s]+/);
+    if (hms[0].match(/^-/)) { hms[1] *= -1; hms[2] *= -1; }
+    decimalVal = (hms[0]*1+ (hms[1]/60.0) + (hms[2]/3600.0)) * 15.0;
+  } else if (hmsVal.match(hr_min_regexp)) {
+    var hms = hmsVal.split(/[:|\s]+/);
+    if (hms[0].match(/^-/)) { hms[1] *= -1; }
+    decimalVal = (hms[0]*1 + (hms[1]/60.0)) * 15.0;
+  } else {
+    return(bad_value);
+  }
+
+  return(valid_RA(decimalVal) ? true : bad_value);
+
+} // end--HMS2Decimal
+
+function valid_RA(decimalVal) {
+  if (decimalVal < -360 || decimalVal > 360) return(false);
+  if (decimalVal < 0.0) {
+    decimalVal += 360.0;
+  } else if (decimalVal == 360.0) {
+    decimalVal = 0.0;
+  }
+  return(true);
+} // end--correctRA
+
+function DMS2Decimal (dmsVal, decimalVal) {
+
+  decimalVal= 0;
+  if (dmsVal.match(/^ *$/)) {
+    decimalVal= -1;
+    return(true);
+  }
+  
+  var sign         = '[+-]?';
+  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
+  var deg_min       = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var deg_min_sec   = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+
+  var decimal_regexp      = new RegExp('^('+decimal+')$');
+  var deg_min_regexp      = new RegExp('^('+deg_min+')$');
+  var deg_min_sec_regexp  = new RegExp('^('+deg_min_sec+')$');
+  var bad_value = {
+  		valid: false,
+  		message: 'Must be in degrees [-90,+90] or D:M:S'
+  	};
+  
+  if (dmsVal.match(decimal_regexp)) { // coordinate is decimal, so assume
+    // degrees
+    decimalVal = dmsVal*1; // return decimal degrees
+  } else if (dmsVal.match(deg_min_sec_regexp)) {
+    var dms = dmsVal.split(/[:|\s]+/);
+    if (dms[0].match(/^-/)) { dms[1] *= -1; dms[2] *= -1; }
+    decimalVal = dms[0]*1+ (dms[1]/60.0) + (dms[2]/3600.0);
+  } else if (dmsVal.match(deg_min_regexp)) {
+    var dms = dmsVal.split(/[:|\s]+/);
+    if (dms[0].match(/^-/)) { dms[1] *= -1; }
+    decimalVal = dms[0]*1 + (dms[1]/60.0);
+  } else {
+    return(bad_value);
+  }
+  return(valid_DEC(decimalVal) ? true : bad_value);
+
+} // end--DMS2Decimal
+
+function valid_DEC(decimalVal) {
+  if (decimalVal < -90 || decimalVal > 90) return(false);
+  return(true);
+}
+
 function jsUcfirst(string) 
 {
 	return string.charAt(0).toUpperCase() + string.slice(1);
@@ -479,6 +578,28 @@ function get_waitingDialog($modal_dialog) {
 		var validator = $('form#astrooda-common').bootstrapValidator({
 			// live :'disabled',
 			fields: {
+				'RA' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								var decimalRA;
+								return (HMS2Decimal(value, decimalRA));
+							}
+						}
+					}
+				},
+				'DEC' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								var decimalDEC;
+								return (DMS2Decimal(value, decimalDEC));
+							}
+						}
+					}
+				},
 				'T1' : {
 					// enabled: false,
 					validators : { callback: {

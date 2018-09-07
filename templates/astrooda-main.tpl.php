@@ -121,7 +121,7 @@
               <ul class="nav nav-tabs">
                 <li class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
                 <li><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
-                <li><a href="#mockup" data-toggle="tab">MOCK instrument</a></li>
+                <li><a href="#polar" data-toggle="tab">Polar</a></li>
               </ul>
               <div class="tab-content">
                 <div class="instrument-panel tab-pane fade in active" id="integral-isgri">
@@ -144,13 +144,13 @@
                   </div>
                   </div>
                 </div>
-                <div class="instrument-panel tab-pane fade in" id="mockup">
-                  <div id="mockup-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/mockup-help-page">Help</a>
+                <div class="instrument-panel tab-pane fade in" id="polar">
+                  <div id="polar-toolbox" class="instrument-toolbox">
+                    <a class="panel-help" href="astrooda/help/polar-help-page">Help</a>
                   </div>
-                  <div id="mockup-params" class="panel panel-default instrument-params-panel">
+                  <div id="polar-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($mockup_form)?>
+                    <div class="panel-body"><?=render($polar_form)?>
                   </div>
                   </div>
                 </div>
