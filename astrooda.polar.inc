@@ -124,7 +124,7 @@ function astrooda_polar($form, &$form_state) {
   $form ['time_bin'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
-      '#description' => t ( "Minimum value is 20 seconds." ),
+      //'#description' => t ( "Minimum value is 20 seconds." ),
       '#default_value' => '1000',
       '#states' => array (
           'visible' => array (
