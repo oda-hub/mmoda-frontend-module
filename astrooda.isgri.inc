@@ -311,6 +311,7 @@ function astrooda_isgri($form, &$form_state) {
               'form-control'
           ),
           'data-bv-numeric' => 'true',
+          'data-astrooda-time-bin-min' => 20,
       ),
       '#prefix' => '<div class="row">'
   );

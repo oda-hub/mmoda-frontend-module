@@ -312,7 +312,8 @@ function astrooda_jemx($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-numeric' => 'true'
+          'data-bv-numeric' => 'true',
+          'data-astrooda-time-bin-min' => 20,
       ),
       '#prefix' => '<div class="row">'
   );
