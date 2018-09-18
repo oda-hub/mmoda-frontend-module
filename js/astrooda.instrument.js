@@ -326,6 +326,7 @@
 						'click',
 						'table.lightcurve-table tbody button.draw-lightcurve',
 						function(e) {
+							console.log('draw lc clicked !');
 							// var lc_index = $(this).data('index');
 							var current_row = $(this).parents('tr');
 							var data = current_row.data();
@@ -1183,6 +1184,9 @@
 		});
 
 		var data = current_panel.data('products');
+		console.log('----- data');
+		console.log(data);
+		
 		var image = data.image[lc_index];
 		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		var job_id = current_panel.data('job_id');
@@ -1214,7 +1218,8 @@
 				".instrument-panel.active").val();
 
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + data.analysis_paramters.src_name + ', '
+//				'Source : ' + data.analysis_paramters.src_name + ', '
+				'Source : ' + data.name[lc_index] + ', '
 						+ data.analysis_paramters.E1_keV + ' - '
 						+ data.analysis_paramters.E2_keV + ' keV, '
 						+ data.analysis_paramters.time_bin + ' '
