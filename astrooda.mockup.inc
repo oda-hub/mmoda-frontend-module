@@ -193,7 +193,7 @@ function astrooda_mockup($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
       '#description' => t ( "Select query type" ),
-      '#default_value' => 'Dummy',
+      '#default_value' => 'Real',
       '#options' => array (
           'Real' => 'Real',
           'Dummy' => 'Dummy'

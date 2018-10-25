@@ -16,15 +16,16 @@
 			var time_bin_min = $thefield.data('astroodaTimeBinMin');
 
 			var time_bin_format = validator.getFieldElements('time_bin_format').val();
-			var time_bin_format_message =  time_bin_min+' seconds';
+			var time_bin_format_message = time_bin_min + ' seconds';
 			if (time_bin_format == 'jd') {
 				time_bin_min = (time_bin_min / 86400).toFixed(6);
-				var time_bin_format_message =  time_bin_min+' day (20 seconds)';
+				var time_bin_format_message = time_bin_min + ' day (20 seconds)';
 			}
 			if (value < time_bin_min) {
 				return {
 					valid : false,
-					message : 'Please enter a time bin higher than '+  time_bin_format_message
+					message : 'Please enter a time bin higher than '
+							+ time_bin_format_message
 				}
 			}
 		}
@@ -145,7 +146,7 @@
 						function(jqXHR, textStatus) {
 							// console.log('Exec time : ' + (new Date().getTime() -
 							// startAJAXTime));
-							$('input[type=submit].form-submit',
+							$('button[type=submit]',
 									".instrument-panel.active, .common-params").prop('disabled',
 									false);
 						})
@@ -321,11 +322,43 @@
 
 	function commonReady() {
 
+		$('body').on(
+				'click',
+				'table.lightcurve-table tbody button.copy-multi-product',
+				function(e) {
+					// console.log('copy lc clicked !');
+					var current_row = $(this).parents('tr');
+					var data = current_row.data();
+					var current_panel = $(this).closest('.panel');
+					// console.log(data);
+					// console.log(current_panel.data("product_type"));
+					var product_type = current_panel.data("product_type");
+					$('#multi-product-' + product_type + '-tab a').click();
+					return;
+					if (multiproduct_panel_id = data['multiproduct_' + product_type
+							+ '_panel_id']) {
+						$(multiproduct_panel_id).highlight_result_panel(lightcurve_offset);
+						$('.fa-chevron-down', multiproduct_panel_id).click();
+
+					} else {
+						$(".instrument-panel.active").data("lightcurve_table_current_row",
+								current_row);
+						var lc_index = data.index;
+						var parent_catalog_offset = $(".instrument-panel.active").offset();
+						var catalog_offset = {};
+						catalog_offset.top = e.pageY - parent_catalog_offset.top;
+						catalog_offset.left = e.pageX - parent_catalog_offset.left;
+						display_multiproduct_table(current_panel, lc_index, datetime,
+								catalog_offset);
+					}
+				});
+
 		$('body')
 				.on(
 						'click',
 						'table.lightcurve-table tbody button.draw-lightcurve',
 						function(e) {
+							// console.log('draw lc clicked !');
 							// var lc_index = $(this).data('index');
 							var current_row = $(this).parents('tr');
 							var data = current_row.data();
@@ -870,7 +903,7 @@
 									.get(
 											$(this).attr('href'),
 											function(data) {
-												var help_text = $(".region-content .content", data);
+												var help_text = $(".region-content .block-system", data);
 												help_text
 														.find(
 																'#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a')
@@ -1065,6 +1098,8 @@
 		$('#' + panel_ids.panel_id).data("log",
 				session_job_ids + $('.modal-body', '#ldialog').html());
 
+		$('#' + panel_ids.panel_id).data("product_type", 'lc');
+
 		var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="'
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
@@ -1147,6 +1182,13 @@
 					name : "lightcurve",
 					defaultContent : '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
 					orderable : false
+				},
+				{
+					data : null,
+					title : "Multi-product",
+					name : "multi_product",
+					defaultContent : '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
+					orderable : false
 				}, ];
 
 		var lightcurve_table_container = $(".lightcurve-table", '#'
@@ -1183,6 +1225,9 @@
 		});
 
 		var data = current_panel.data('products');
+		// console.log('----- data');
+		// console.log(data);
+
 		var image = data.image[lc_index];
 		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		var job_id = current_panel.data('job_id');
@@ -1214,7 +1259,7 @@
 				".instrument-panel.active").val();
 
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				'Source : ' + data.analysis_paramters.src_name + ', '
+				'Source : ' + data.name[lc_index] + ', '
 						+ data.analysis_paramters.E1_keV + ' - '
 						+ data.analysis_paramters.E2_keV + ' keV, '
 						+ data.analysis_paramters.time_bin + ' '

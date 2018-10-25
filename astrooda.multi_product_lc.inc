@@ -7,7 +7,7 @@
 
 /**
  */
-function astrooda_polar($form, &$form_state) {
+function astrooda_multi_product_lc($form, &$form_state) {
   
   $form = array ();
   
@@ -19,59 +19,14 @@ function astrooda_polar($form, &$form_state) {
   // $form['#action'] = '/test_post.php';
   // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
-  $form['#attributes'] = array('class' => 'polar-form');
+  $form['#attributes'] = array('class' => 'multi_product_lc-form');
 
   $form ['instrument'] = array (
       '#type' => 'hidden',
-      '#value' => 'polar'
+      '#value' => 'multi_product_lc'
   );
   
   
-  $form ['E1_keV'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Energy Min" ),
-      '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => '20.0',
-      '#required' => TRUE,
-      '#size' => 10,
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#prefix' => '<div class="row">'
-  );
-  
-  $form ['E2_keV'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Energy Max" ),
-      '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => '40.0',
-      '#required' => TRUE,
-      '#size' => 10,
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-5'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#suffix' => '</div><hr class="hr-default" />'
-  );
   
   $form ['query_type'] = array (
       '#type' => 'select',
@@ -99,16 +54,15 @@ function astrooda_polar($form, &$form_state) {
   );
   
   
-  $form ['product_type'] = array (
+  $form ['query_action'] = array (
       '#type' => 'radios',
-      '#title' => t ( "Product Type" ),
-      '#description' => t ( "Select product type" ),
-      '#attributes' => array ('name' => $mform_id.'product_type'),
-      '#default_value' => 'polar_lc',
+      '#title' => t ( "Query Action" ),
+      '#description' => t ( "Select query action" ),
+      '#attributes' => array ('name' => $mform_id.'query_action'),
+      '#default_value' => 'merge',
       '#options' => array (
-   //       'polar_image' => 'Image',
-   //       'polar_spectrum' => 'Spectrum',
-          'polar_lc' => 'Light curve'
+          'merge' => 'Merge',
+          'rebin' => 'Rebin'
       ),
       '#parent_classes' => array (
           'form-group',
@@ -124,16 +78,15 @@ function astrooda_polar($form, &$form_state) {
   $form ['time_bin'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
-      //'#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => '1e-4',
+      '#default_value' => '',
       '#states' => array (
           'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
+              ':input[name="'.$mform_id.'query_action"]' => array (
                   'value' => 'polar_lc'
               )
           ),
           'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
+              ':input[name="'.$mform_id.'query_action"]' => array (
                   array (
                       'value' => 'polar_lc'
                   )
@@ -166,12 +119,12 @@ function astrooda_polar($form, &$form_state) {
       '#default_value' => 'jd',
       '#states' => array (
           'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
+              ':input[name="'.$mform_id.'query_action"]' => array (
                   'value' => 'polar_lc'
               )
           ),
           'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
+              ':input[name="'.$mform_id.'query_action"]' => array (
                   array (
                       'value' => 'polar_lc'
                   )

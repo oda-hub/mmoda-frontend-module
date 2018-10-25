@@ -98,7 +98,7 @@ table.message-table tr td {
 }
 
 .common-params {
-  margin: 0 25% 1em 25%;
+  margin: 0 30% 1em 30%;
 }
 
 .form-item, .form-actions {
@@ -212,7 +212,7 @@ span.panel-toolbox span {
 }
 
 .node-astrooda-help {
-  float: left;
+  /*float: left;*/
 }
 
 #astrooda_panel_model {
@@ -397,4 +397,8 @@ input[type=number] {
 .dataTables_paginate {
   /*clear: both;*/
   text-align: center;
+}
+
+#resolve-src-name.input-group-btn {
+    vertical-align: bottom;
 }
