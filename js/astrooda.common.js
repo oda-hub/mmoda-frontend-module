@@ -328,7 +328,7 @@ function get_waitingDialog($modal_dialog) {
 					$dialog.find('.legend').show();									
 				}
 				// Opening dialog
-				$dialog.modal();
+				$dialog.modal({keyboard: true});
 				$dialog.find('.close-panel').on("click", function() {
 				});
 				// sleep(5);
@@ -576,7 +576,7 @@ function get_waitingDialog($modal_dialog) {
 		// where indeed the old values are still in the form
 		
 		var validator = $('form#astrooda-common').bootstrapValidator({
-			// live :'disabled',
+		 // live :'disabled',
 			fields: {
 				'RA' : {
 					// enabled: false,

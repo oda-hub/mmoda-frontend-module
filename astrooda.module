@@ -15,6 +15,7 @@ function astrooda_init() {
   module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
   module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
   module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
   //module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
 }
 
@@ -182,6 +183,7 @@ function astrooda_main_block_content() {
   $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
 //  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
   $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
+  $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
   // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
   
   // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets

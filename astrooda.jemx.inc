@@ -20,7 +20,6 @@ function astrooda_jemx($form, &$form_state) {
   
   $form ['#action'] = '/dispatch-data/run_analysis';
   // $form['#action'] = '/test_post.php';
-  // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
   
   $form ['#attributes'] = array (
@@ -217,7 +216,7 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
       '#description' => t ( "Select query type" ),
-      '#default_value' => 'Dummy',
+      '#default_value' => 'Real',
       '#options' => array (
           'Real' => 'Real',
           'Dummy' => 'Dummy'
