@@ -10,6 +10,8 @@
 	var distinct_nodes;
 
 	var current_ajax_call_params = {};
+	var max_nb_attempts_after_failed = 3;
+	var current_nb_attempts_after_failed = 0;
 
 	function validate_timebin(value, validator, $thefield) {
 		if ($thefield.data('astroodaTimeBinMin')) {
@@ -68,8 +70,17 @@
 								job_id = data['job_monitor']['job_id'];
 							}
 							waitingDialog.setHeaderMessageJobId(job_id);
+							var query_failed = false;
 							if (data.query_status == 'failed'
 									|| (data.products.hasOwnProperty('image') && data.products.image == null)) {
+								current_nb_attempts_after_failed++;
+								query_failed = true;
+							} else {
+								current_nb_attempts_after_failed = 0;
+							}
+							console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
+							if (query_failed
+									&& (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
 								waitingDialog.hideSpinner();
 								waitingDialog.append('<table class="error-table"><tr><td>'
 										+ get_current_date_time() + '</td><td>'
@@ -676,16 +687,16 @@
 						}
 					}
 				},
-				// 'T1' : {
-				// // enabled: false,
-				// validators : {
-				// callback : {
-				// callback : function(value, validator, $field) {
-				// return (validate_date(value));
-				// }
-				// }
-				// }
-				// },
+				 'T1' : {
+					// enabled: false,
+					validators : {
+						callback : {
+							callback : function(value, validator, $field) {
+								return (validate_date(value));
+							}
+						}
+					}
+				},
 				'T2' : {
 					// enabled: false,
 					validators : {

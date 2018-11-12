@@ -5,19 +5,42 @@
  * Install, update and uninstall functions for the astrooda module.
  */
 define ( 'D3_MIN_LIB_VERSION', '3.0' );
+include_once 'astrooda_help_page.field_base.inc';
+include_once 'astrooda_help_page.field_instance.inc';
+include_once 'astrooda_help_page.inc';
+include_once 'astrooda_help_page_isgri.inc';
 
 /**
  * Implements hook_requirements().
  */
 function astrooda_requirements($phase) {
   $requirements = array ();
-
+  $conflicts = array ();
+  if ('install' == $phase) {
+    foreach ( astrooda_help_page_field_default_field_bases () as $field_new ) {
+      $field_old = field_info_field ( $field_new ['field_name'] );
+      if ($field_new ['field_name'] == $field_old ['field_name']) {
+        $conflicts [] = $field_new ['field_name'];
+      }
+    }
+    if (! empty ( $conflicts )) {
+      $clist = implode ( ', ', $conflicts );
+      $requirements ['astrooda'] = array (
+          'title' => t ( 'title' ),
+          'description' => t ( 'astrooda: Field %clist already exists.', array (
+              '%clist' => $clist
+          ) ),
+          'severity' => REQUIREMENT_ERROR
+      );
+    }
+  }
+  
   if ($phase == 'runtime') {
     $t = get_t ();
     $library = libraries_detect ( 'd3' );
     $error_type = isset ( $library ['error'] ) ? drupal_ucfirst ( $library ['error'] ) : '';
     $error_message = isset ( $library ['error message'] ) ? $library ['error message'] : '';
-
+    
     if (empty ( $library ['installed'] )) {
       $requirements ['D3_library'] = array (
           'title' => $t ( 'D3 library' ),
@@ -39,7 +62,7 @@ function astrooda_requirements($phase) {
           'value' => $library ['version']
       );
     } else {
-       $requirements ['D3_library'] = array (
+      $requirements ['D3_library'] = array (
           'title' => $t ( 'D3 library' ),
           'value' => $t ( 'At least @a', array (
               '@a' => D3_MIN_LIB_VERSION
@@ -52,14 +75,149 @@ function astrooda_requirements($phase) {
       );
     }
   }
-
+  
   return $requirements;
+}
+function astrooda_add_custom_fields() {
+  error_log ( "In astrooda_add_custom_fields\n" );
+  foreach ( astrooda_help_page_field_default_field_bases () as $field ) {
+    error_log ( "Creating the field: $field\n" );
+    field_create_field ( $field );
+  }
+  foreach ( astrooda_help_page_field_default_field_instances () as $instance ) {
+    field_create_instance ( $instance );
+  }
+}
+function astrooda_del_custom_fields() {
+  foreach ( array_keys ( astrooda_help_page_field_default_field_bases () ) as $field ) {
+    field_delete_field ( $field );
+  }
+  foreach ( astrooda_help_page_field_default_field_instances () as $instance ) {
+    field_delete_instance ( $instance );
+  }
+}
+
+/**
+ * Implements hook_install().
+ */
+function astrooda_install() {
+  // Add node types
+    
+  node_types_rebuild ();
+  
+  // Set the variable keeping the main page node id
+  // To be used at uninstall to delete the node
+  print "created nid: ". $node->nid."\n";
+  variable_set ( 'astrooda_main_page_nid', $node->nid );
+  
+  // Default to not to be promoted
+  variable_set ( 'node_options_astrooda_help', array (
+      'status'
+  ) );
+  variable_set ( 'node_options_astrooda_page', array (
+      'status'
+  ) );
+  
+  // Disable comments
+  variable_set ( 'comment_astrooda_help', COMMENT_NODE_CLOSED );
+  variable_set ( 'comment_astrooda_page', COMMENT_NODE_CLOSED );
+  
+  // Hide date and author information
+  variable_set('node_submitted_astrooda_help', FALSE);
+  variable_set('node_submitted_astrooda_page', FALSE);
+
+  astrooda_add_custom_fields ();
+  
+  $node = new stdClass ();
+  $node->type = 'astrooda_page';
+  node_object_prepare ( $node );
+  
+  $node->title = 'Astro Online Data Analysis';
+  $node->status = 1;
+  $node->language = LANGUAGE_NONE;
+  $node->path = array (
+      'alias' => 'astrooda'
+  );
+  $node->comment = 0;
+  $node->promote = 0;
+  $node->moderate = 0;
+  $node->sticky = 0;
+  node_save ( $node );
+  // Disable node preview
+  // variable_set('node_preview_astrooda_help', 0);
+  
+  // Disable menu entry
+  // variable_set('menu_options_astrooda_help', array(0));
+  
+  // Do we need to do anything with the body field?
+  // Remove next line if 'body' => 0.
+  // node_add_body_field($bundle);
+  
+  // Add fields
+  
+  
+  // add help node
+  $node_array = isgri_help_page_node_export_features_default();
+  $import_output = node_export_import($node_array['code_string']);
+  print var_dump($import_output);
+  print "--------------------\n";
+  print join("\n", $import_output['output'])."\n";
+  if ($import_output['success']) {
+    variable_set ( 'astrooda_isgri_help_page_nid', $import_output['nids'][0] );
+    print "New help page nid :".$import_output['nids'][0]."\n";
+    $node = node_load($import_output['nids'][0]);
+    $node->status = 1;
+    node_save($node);
+  }
+  
 }
 
 /**
  * Implements hook_uninstall().
  */
 function astrooda_uninstall() {
-  // db_delete('variable')->condition('name', db_like('astrooda_') . '%', 'LIKE')->execute();
+  // Delete node content
+  error_log ( "In astrooda_uninstall\n" );
+    
+  $bundles = array ();
+  foreach ( astrooda_node_info () as $key => $value ) {
+    $bundles [] = $key;
+  }
+  $nodeids = array ();
+  foreach ( $bundles as $bundle ) {
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query ( $sql, array (
+        ':type' => $bundle
+    ) );
+    foreach ( $result as $row ) {
+      $nodeids [] = $row->nid;
+    }
+  }
+  // Delete all help pages
+  if (! empty ( $nodeids )) {
+    node_delete_multiple ( $nodeids );
+  }
+  // Delete all help page fields.
+  astrooda_del_custom_fields ();
+  // Delete bundles.
+  foreach ( $bundles as $bundle ) {
+    node_type_delete ( $bundle );
+  }
+  node_types_rebuild ();
+  
+  $astrooda_main_page_nid = variable_get ( 'astrooda_main_page_nid' );
+  print "Before testing: $astrooda_main_page_nid\n";
+  if ($astrooda_main_page_nid) {
+    print "Nid = $astrooda_main_page_nid\n";
+    // Delete the main page
+    node_delete ( $astrooda_main_page_nid);
+    // Unset the variable keeping the main page node id
+    variable_del ( 'astrooda_main_page_nid' );
+  }
+  if (variable_get ( 'astrooda_isgri_help_page_nid')) {
+    variable_del ( 'astrooda_isgri_help_page_nid');
+  }
+  menu_rebuild ();
+  field_purge_batch ( 500 );
 }
 
