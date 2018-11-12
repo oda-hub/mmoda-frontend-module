@@ -109,7 +109,7 @@
 
    <div class="content" <?=$content_attributes?>>
     <div class="panel panel-default">
-      <!--  div class="panel-heading">Session ID : <?=$session_id?>, count= <?=$session_count?></div-->
+      <div class="panel-heading">Session ID : <?=$session_id?>, count= <?=$session_count?></div>
       <div class="panel-heading"></div>
           <div id="formwrapper">
         <div class="common-params">
@@ -121,16 +121,14 @@
             <div class="tabs">
               <ul class="nav nav-tabs">
                 <li id="integral-isgri-tab" class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
-                <!--
                 <li id="integral-jemx-tab"><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
                 <li id="polar-tab"><a href="#polar" data-toggle="tab">Polar</a></li>
                 <li id="multi-product-lc-tab"><a href="#multi-product-lc" data-toggle="tab">Light Curves</a></li>
-                -->
               </ul>
               <div class="tab-content">
                 <div class="instrument-panel tab-pane fade in active" id="integral-isgri">
                   <div id="isgri-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/isgri">Help</a>
+                    <a class="panel-help" href="<?=$isgri_help_page?>">Help</a>
                   </div>
                   <div id="isgri-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
@@ -139,7 +137,6 @@
                   </div>
                 </div>
                 
-                <!--
                 <div class="instrument-panel tab-pane fade in" id="integral-jemx">
                   <div id="jemx-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="astrooda/help/jemx">Help</a>
@@ -170,8 +167,6 @@
                   </div>
                   </div>
                 </div>
-                -->
-                
               </div>
             </div>
           </div>

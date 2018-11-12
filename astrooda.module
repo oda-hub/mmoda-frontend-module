@@ -39,8 +39,14 @@ function astrooda_help($path, $arg) {
  */
 function astrooda_block_info() {
   $blocks = array ();
-  $blocks ['astrooda_main'] ['info'] = t ( "Astrooda" );
-  $blocks ['astrooda_main'] ['cache'] = DRUPAL_NO_CACHE;
+  $blocks ['astrooda_main'] = array (
+      'info' => t ( "Astrooda" ),
+      'status'     => TRUE,
+      'region' => 'content',
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'astrooda',
+      'cache' => DRUPAL_NO_CACHE
+  );
   
   return $blocks;
 }
@@ -48,6 +54,7 @@ function astrooda_block_info() {
 /**
  * Implementation of hook_permission().
  */
+
 function astrooda_permission() {
   return array (
       'administer astrooda' => array (
@@ -92,7 +99,8 @@ function astrooda_block_view($delta) {
   switch ($delta) {
     case 'astrooda_main' :
       $block = array (
-          'subject' => t ( "Astro Online Data Analysis" ),
+          //'subject' => t ( "Astro Online Data Analysis" ),
+          'subject' => '<none>',
           'content' => astrooda_main_block_content ()
       );
       // 'content' => "A new content",
@@ -113,10 +121,10 @@ function astrooda_main_block_content() {
    * astrooda_block_content ();
    */
   if (session_status () != PHP_SESSION_NONE) {
-    session_destroy ();
+//MTM    session_destroy ();
   }
   // if (session_status() == PHP_SESSION_NONE) {
-  session_start ();
+//MTM  session_start ();
   // }
   $session_id = session_id ();
   // $session_id = '56';
@@ -184,6 +192,8 @@ function astrooda_main_block_content() {
 //  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
   $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
   $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
+  $items ['isgri_help_page'] ='node/'.variable_get ( 'astrooda_isgri_help_page_nid');
+  
   // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
   
   // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets

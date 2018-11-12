@@ -208,7 +208,7 @@ var waitingDialog;
 		html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
 			+response.args.message
 			+'</small>';
-		elt = $('.form-item-src-name', '#astrooda-common').append(html);
+		elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
 		elt.find('.alert').hide();
 		if (response.args.status == 0) {
 			$('.form-item-RA input.form-control').val(response.args.ra);
@@ -542,7 +542,7 @@ function get_waitingDialog($modal_dialog) {
 		    });
 				waitingDialog.hideHeaderMessage();
 		    
-	  		$('.form-item-src-name small', '#astrooda-common').remove();
+	  		$('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
 		  	$('.form-item-RA input.form-control').val('');
 		  	$('.form-item-DEC input.form-control').val('');
 			  $('input:not(:file)', '#astrooda-common').val(function(_, value) {
@@ -552,7 +552,7 @@ function get_waitingDialog($modal_dialog) {
 		});
 		
 		// Disable main submit if error in common parameters
-		$('input, slect, textarea', '#astrooda-common').on('error.field.bv', function() {
+		$('input, select, textarea', '#astrooda-common').on('error.field.bv', function() {
 			// Disabling submit
 			$('[type="submit"]', '.instrument-panel').prop('disabled', true);
 		}).on('success.field.bv', function() {
