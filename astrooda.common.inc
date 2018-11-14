@@ -23,11 +23,14 @@ function astrooda_common($form, &$form_state) {
 //   $form ['#action'] = '/dispatch-data/test';
   $form ['#method'] = 'POST';
   
+  $astrooda_settings = variable_get('astrooda_settings');
+  $instrument_defaults= $astrooda_settings['common'];
+  
   $form ['src_name'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Object name" ),
       // '#description' => t ( "The right ascension." ),
-      '#default_value' => '4U 1700-377',
+      '#default_value' => $instrument_defaults['src_name'],
       '#required' => TRUE,
       '#parent_classes' => array (
           'form-group',
@@ -77,7 +80,7 @@ function astrooda_common($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "RA" ),
       '#description' => t ( "The right ascension." ),
-      '#default_value' => '257.815417',
+      '#default_value' => $instrument_defaults['RA'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -101,7 +104,7 @@ function astrooda_common($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Dec" ),
       '#description' => t ( "The declination." ),
-      '#default_value' => '-41.593417',
+      '#default_value' => $instrument_defaults['DEC'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -129,7 +132,7 @@ function astrooda_common($form, &$form_state) {
   $form ['time'] ['T1'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Start time" ),
-      '#default_value' => '2003-03-15T23:27:40.0',
+      '#default_value' => $instrument_defaults['T1'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -158,7 +161,7 @@ function astrooda_common($form, &$form_state) {
   $form ['time'] ['T2'] = array (
       '#type' => 'textfield',
       '#title' => t ( "End time" ),
-      '#default_value' => '2003-03-16T00:03:15.0',
+      '#default_value' => $instrument_defaults['T2'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -191,7 +194,7 @@ function astrooda_common($form, &$form_state) {
           'isot' => 'ISO/ISOT',
           'mjd' => 'MJD'
       ),
-      '#default_value' => 'iso',
+      '#default_value' => $instrument_defaults['T_format'],
       '#parent_classes' => array (
           'form-group',
           'col-md-2'

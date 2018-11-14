@@ -8,7 +8,7 @@ define ( 'D3_MIN_LIB_VERSION', '3.0' );
 include_once 'astrooda_help_page.field_base.inc';
 include_once 'astrooda_help_page.field_instance.inc';
 include_once 'astrooda_help_page.inc';
-include_once 'astrooda_help_page_isgri.inc';
+include_once 'astrooda.help_page.inc';
 
 /**
  * Implements hook_requirements().
@@ -101,15 +101,20 @@ function astrooda_del_custom_fields() {
  * Implements hook_install().
  */
 function astrooda_install() {
+  
+  $astrooda_settings['common']['dispatcher_path'] = '/dispatcher-data';
+  $astrooda_settings['common']['src_name'] ='4U 1700-377';
+  $astrooda_settings['common']['RA'] ='257.815417';
+  $astrooda_settings['common']['DEC'] ='-41.593417';
+  $astrooda_settings['common']['T1'] ='2003-03-15T23:27:40.0';
+  $astrooda_settings['common']['T2'] ='2003-03-16T00:03:15.0';
+  $astrooda_settings['common']['T_format'] ='isot';
+  variable_set('astrooda_settings', $astrooda_settings);
+  variable_set('astrooda_debug', true);
+  
   // Add node types
-    
   node_types_rebuild ();
-  
-  // Set the variable keeping the main page node id
-  // To be used at uninstall to delete the node
-  print "created nid: ". $node->nid."\n";
-  variable_set ( 'astrooda_main_page_nid', $node->nid );
-  
+    
   // Default to not to be promoted
   variable_set ( 'node_options_astrooda_help', array (
       'status'
@@ -143,6 +148,11 @@ function astrooda_install() {
   $node->moderate = 0;
   $node->sticky = 0;
   node_save ( $node );
+  // Set the variable keeping the main page node id
+  // To be used at uninstall to delete the node
+  print "created nid: ". $node->nid."\n";
+  variable_set ( 'astrooda_main_page_nid', $node->nid );
+  
   // Disable node preview
   // variable_set('node_preview_astrooda_help', 0);
   
@@ -157,17 +167,17 @@ function astrooda_install() {
   
   
   // add help node
-  $node_array = isgri_help_page_node_export_features_default();
+  $node_array = astrooda_help_page_node_export_features_default();
   $import_output = node_export_import($node_array['code_string']);
   print var_dump($import_output);
   print "--------------------\n";
   print join("\n", $import_output['output'])."\n";
   if ($import_output['success']) {
-    variable_set ( 'astrooda_isgri_help_page_nid', $import_output['nids'][0] );
     print "New help page nid :".$import_output['nids'][0]."\n";
     $node = node_load($import_output['nids'][0]);
     $node->status = 1;
     node_save($node);
+    variable_set ( 'astrooda_help_page_nid', $node->nid);
   }
   
 }
@@ -214,10 +224,13 @@ function astrooda_uninstall() {
     // Unset the variable keeping the main page node id
     variable_del ( 'astrooda_main_page_nid' );
   }
-  if (variable_get ( 'astrooda_isgri_help_page_nid')) {
-    variable_del ( 'astrooda_isgri_help_page_nid');
+  if (variable_get ( 'astrooda_help_page_nid')) {
+    variable_del ( 'astrooda_help_page_nid');
   }
   menu_rebuild ();
   field_purge_batch ( 500 );
+  
+  // Delete settings
+  variable_del('astrooda_settings');
 }
 

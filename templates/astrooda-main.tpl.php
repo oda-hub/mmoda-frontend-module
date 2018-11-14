@@ -99,7 +99,6 @@
 </div>
 <?php  ?>
 <div>
-
   <?=render($title_prefix)?>
 <?php if (isset($subject)): ?>
   <h2 <?=$title_attributes?>><?=$subject?></h2>
@@ -109,65 +108,37 @@
 
    <div class="content" <?=$content_attributes?>>
     <div class="panel panel-default">
-      <div class="panel-heading">Session ID : <?=$session_id?>, count= <?=$session_count?></div>
-      <div class="panel-heading"></div>
-          <div id="formwrapper">
-        <div class="common-params">
-        <?=render($common_form)?>
+      <div class="panel-heading">
+        <?php  if ($astrooda_debug) :?>
+        <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
+        <?php endif; ?>
       </div>
+        <div id="formwrapper">
+          <div class="common-params">
+           <?=render($common_form)?>
+          </div>
         <div class="instruments-panel panel with-nav-tabs panel-primary">
           <div class="panel-heading"></div>
           <div class="panel-body">
             <div class="tabs">
               <ul class="nav nav-tabs">
-                <li id="integral-isgri-tab" class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
-                <li id="integral-jemx-tab"><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
-                <li id="polar-tab"><a href="#polar" data-toggle="tab">Polar</a></li>
-                <li id="multi-product-lc-tab"><a href="#multi-product-lc" data-toggle="tab">Light Curves</a></li>
+             <?php  foreach ($instruments as $name => $instrument ) :?>
+                 <li id="<?=$name?>-tab" class="<?=$instrument['active']?>"><a href="#<?=$name?>" data-toggle="tab"><?=$instrument['title']?></a></li>
+             <?php endforeach; ?>
               </ul>
               <div class="tab-content">
-                <div class="instrument-panel tab-pane fade in active" id="integral-isgri">
-                  <div id="isgri-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="<?=$isgri_help_page?>">Help</a>
+             <?php  foreach ($instruments as $name => $instrument ) :?>
+              <div class="instrument-panel tab-pane fade in <?=$instrument['active']?>" id="<?=$name?>">
+                  <div id="<?=$name?>-toolbox" class="instrument-toolbox">
+                    <a class="panel-help" href="<?=$instrument['help_page']?>">Help</a>
                   </div>
-                  <div id="isgri-params" class="panel panel-default instrument-params-panel">
+                  <div id="<?=$name?>-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($isgri_form)?>
+                    <div class="panel-body"><?=render($instrument['form'])?>
                   </div>
                   </div>
                 </div>
-                
-                <div class="instrument-panel tab-pane fade in" id="integral-jemx">
-                  <div id="jemx-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/jemx">Help</a>
-                  </div>
-                  <div id="jemx-params" class="panel panel-default instrument-params-panel">
-                    <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($jemx_form)?>
-                  </div>
-                  </div>
-                </div>
-                <div class="instrument-panel tab-pane fade in" id="polar">
-                  <div id="polar-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/polar">Help</a>
-                  </div>
-                  <div id="polar-params" class="panel panel-default instrument-params-panel">
-                    <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($polar_form)?>
-                  </div>
-                  </div>
-                </div>
-                <div class="instrument-panel tab-pane fade in" id="multi-product-lc">
-                  <div id="multi-product-lc-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/multi-product-lc">Help</a>
-                  </div>
-                  <div id="multi-product-lc-params" class="panel panel-default instrument-params-panel">
-                    <div class="panel-heading">Parameters :</div>
-                    <div class="panel-body"><?=render($multi_product_lc_form)?>
-                  </div>
-                  </div>
-                </div>
-              </div>
+             <?php endforeach; ?>
             </div>
           </div>
         </div>

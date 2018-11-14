@@ -31,11 +31,14 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'isgri'
   );
-
+  
+  $astrooda_settings = variable_get('astrooda_settings');
+  $instrument_defaults= $astrooda_settings['instruments']['isgri'];
+  
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
-      '#default_value' => 'OSA10.2',
+      '#default_value' => $instrument_defaults['osa_version'],
       '#options' => array (
           'OSA10.2' => 'OSA10.2',
           'OSA11.0' => 'OSA11.0'
@@ -59,7 +62,7 @@ function astrooda_isgri($form, &$form_state) {
   $form ['radius'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
-      '#default_value' => '15',
+      '#default_value' => $instrument_defaults['radius'],
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
@@ -100,7 +103,7 @@ function astrooda_isgri($form, &$form_state) {
   $form ['scw_list'] = array (
       '#type' => 'textarea',
       '#title' => t ( "ScWs List" ),
-      '#default_value' => '005100410010.001,005100420010.001',
+      '#default_value' => $instrument_defaults['scw_list'],
       '#parent_classes' => array (
           'form-group',
           'col-md-12'
@@ -171,7 +174,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
       '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => '20.0',
+      '#default_value' => $instrument_defaults['E1_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -194,7 +197,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
       '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => '40.0',
+      '#default_value' => $instrument_defaults['E2_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -217,7 +220,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
       '#description' => t ( "Select query type" ),
-      '#default_value' => 'Real',
+      '#default_value' => $instrument_defaults['query_type'],
       '#options' => array (
           'Real' => 'Real',
           'Dummy' => 'Dummy'
@@ -241,7 +244,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Detection Threshold" ),
       '#description' => t ( "Output catalog significance threshold" ),
-      '#default_value' => '5.0',
+      '#default_value' => $instrument_defaults['detection_threshold'],
       '#parent_classes' => array (
           'form-group',
           'col-md-5'
@@ -263,7 +266,7 @@ function astrooda_isgri($form, &$form_state) {
       '#title' => t ( "Product Type" ),
       '#description' => t ( "Select product type" ),
       '#attributes' => array ('name' => $mform_id.'product_type'),
-      '#default_value' => 'isgri_image',
+      '#default_value' => $instrument_defaults['product_type'],
       '#options' => array (
           'isgri_image' => 'Image',
           'isgri_spectrum' => 'Spectrum',
@@ -284,7 +287,7 @@ function astrooda_isgri($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
       '#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => '1000',
+      '#default_value' => $instrument_defaults['time_bin'],
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
@@ -323,7 +326,7 @@ function astrooda_isgri($form, &$form_state) {
           'sec' => 'Seconds',
           'jd' => 'Days'
       ),
-      '#default_value' => 'sec',
+      '#default_value' => $instrument_defaults['time_bin_format'],
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (

@@ -8,33 +8,37 @@
 /**
  */
 function astrooda_jemx($form, &$form_state) {
-  $module_path = drupal_get_path ( 'module', 'astrooda' );
-  
+    
+  $module_path= drupal_get_path('module', 'astrooda');
+
   $form = array ();
   
   $form ['#tree'] = FALSE;
-  // turn off form caching
-  // $form_state['no_cache'] = TRUE;
+  //turn off form caching
+  //$form_state['no_cache'] = TRUE;
   
-  $mform_id = __FUNCTION__ . '_';
+  $mform_id= __FUNCTION__.'_';
   
   $form ['#action'] = '/dispatch-data/run_analysis';
   // $form['#action'] = '/test_post.php';
+  // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
   
-  $form ['#attributes'] = array (
-      'class' => 'jemx-form'
-  );
+  
+  $form['#attributes'] = array('class' => 'jemx-form');
   
   $form ['instrument'] = array (
       '#type' => 'hidden',
       '#value' => 'jemx'
   );
   
+  $astrooda_settings = variable_get('astrooda_settings');
+  $instrument_defaults= $astrooda_settings['instruments']['jemx'];
+  
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
-      '#default_value' => 'OSA10.2',
+      '#default_value' => $instrument_defaults['osa_version'],
       '#options' => array (
           'OSA10.2' => 'OSA10.2',
           'OSA11.0' => 'OSA11.0'
@@ -58,7 +62,7 @@ function astrooda_jemx($form, &$form_state) {
   $form ['radius'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
-      '#default_value' => '15',
+      '#default_value' => $instrument_defaults['radius'],
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
@@ -72,7 +76,7 @@ function astrooda_jemx($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#suffix' => '</div><hr class="hr-default" />'
+      '#suffix' => '</div><hr class="hr-default" />',
   );
   
   $form ['use_scws'] = array (
@@ -80,7 +84,7 @@ function astrooda_jemx($form, &$form_state) {
       '#title' => t ( "Use Science Windows - ScWs" ),
       '#description' => t ( "Maximum number of ScWs is 50." ),
       '#attributes' => array (
-          'name' => $mform_id . 'use_scws'
+          'name' => $mform_id.'use_scws'
       ),
       '#options' => array (
           'no' => t ( 'No' ),
@@ -99,7 +103,7 @@ function astrooda_jemx($form, &$form_state) {
   $form ['scw_list'] = array (
       '#type' => 'textarea',
       '#title' => t ( "ScWs List" ),
-      '#default_value' => '005100410010.001,005100420010.001',
+      '#default_value' => $instrument_defaults['scw_list'],
       '#parent_classes' => array (
           'form-group',
           'col-md-12'
@@ -114,12 +118,12 @@ function astrooda_jemx($form, &$form_state) {
       ),
       '#states' => array (
           'visible' => array ( // action to take.
-              ':input[name="' . $mform_id . 'use_scws"]' => array (
+              ':input[name="'.$mform_id.'use_scws"]' => array (
                   'value' => 'form_list'
               )
           ),
           'enabled' => array (
-              ':input[name="' . $mform_id . 'use_scws"]' => array (
+              ':input[name="'.$mform_id.'use_scws"]' => array (
                   array (
                       'value' => 'form_list'
                   )
@@ -165,12 +169,12 @@ function astrooda_jemx($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />'
   );
-    
+  
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
       '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => '20.0',
+      '#default_value' => $instrument_defaults['E1_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -193,7 +197,7 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
       '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => '40.0',
+      '#default_value' => $instrument_defaults['E2_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -216,7 +220,7 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
       '#description' => t ( "Select query type" ),
-      '#default_value' => 'Real',
+      '#default_value' => $instrument_defaults['query_type'],
       '#options' => array (
           'Real' => 'Real',
           'Dummy' => 'Dummy'
@@ -240,7 +244,7 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Detection Threshold" ),
       '#description' => t ( "Output catalog significance threshold" ),
-      '#default_value' => '5.0',
+      '#default_value' => $instrument_defaults['detection_threshold'],
       '#parent_classes' => array (
           'form-group',
           'col-md-5'
@@ -261,10 +265,8 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'radios',
       '#title' => t ( "Product Type" ),
       '#description' => t ( "Select product type" ),
-      '#attributes' => array (
-          'name' => $mform_id . 'product_type'
-      ),
-      '#default_value' => 'jemx_image',
+      '#attributes' => array ('name' => $mform_id.'product_type'),
+      '#default_value' => $instrument_defaults['product_type'],
       '#options' => array (
           'jemx_image' => 'Image',
           'jemx_spectrum' => 'Spectrum',
@@ -285,15 +287,15 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
       '#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => '1000',
+      '#default_value' => $instrument_defaults['time_bin'],
       '#states' => array (
           'visible' => array (
-              ':input[name="' . $mform_id . 'product_type"]' => array (
+              ':input[name="'.$mform_id.'product_type"]' => array (
                   'value' => 'jemx_lc'
               )
           ),
           'enabled' => array (
-              ':input[name="' . $mform_id . 'product_type"]' => array (
+              ':input[name="'.$mform_id.'product_type"]' => array (
                   array (
                       'value' => 'jemx_lc'
                   )
@@ -324,15 +326,15 @@ function astrooda_jemx($form, &$form_state) {
           'sec' => 'Seconds',
           'jd' => 'Days'
       ),
-      '#default_value' => 'sec',
+      '#default_value' => $instrument_defaults['time_bin_format'],
       '#states' => array (
           'visible' => array (
-              ':input[name="' . $mform_id . 'product_type"]' => array (
+              ':input[name="'.$mform_id.'product_type"]' => array (
                   'value' => 'jemx_lc'
               )
           ),
           'enabled' => array (
-              ':input[name="' . $mform_id . 'product_type"]' => array (
+              ':input[name="'.$mform_id.'product_type"]' => array (
                   array (
                       'value' => 'jemx_lc'
                   )
@@ -354,80 +356,80 @@ function astrooda_jemx($form, &$form_state) {
       '#suffix' => '</div>'
   );
   
-  // $form ['image_scale_min'] = array (
-  // '#type' => 'textfield',
-  // '#title' => t ( "Significance Min" ),
-  // '#description' => t ( "" ),
-  // '#default_value' => '',
-  // '#states' => array (
-  // 'visible' => array (
-  // ':input[name="'.$mform_id.'product_type"]' => array (
-  // 'value' => 'jemx_image'
-  // )
-  // ),
-  // 'enabled' => array (
-  // ':input[name="'.$mform_id.'product_type"]' => array (
-  // array (
-  // 'value' => 'jemx_image'
-  // )
-  // )
-  // )
-  // ),
-  // '#parent_classes' => array (
-  // 'form-group',
-  // 'col-md-6'
-  // ),
-  // '#label_classes' => array (
-  // 'control-label'
-  // ),
-  // '#attributes' => array (
-  // 'class' => array (
-  // 'form-control'
-  // ),
-  // 'data-bv-numeric' => 'true'
-  // ),
-  // '#prefix' => '<div class="row">'
-  // );
+//   $form ['image_scale_min'] = array (
+//       '#type' => 'textfield',
+//       '#title' => t ( "Significance Min" ),
+//       '#description' => t ( "" ),
+//       '#default_value' => '',
+//       '#states' => array (
+//           'visible' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   'value' => 'jemx_image'
+//               )
+//           ),
+//           'enabled' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   array (
+//                       'value' => 'jemx_image'
+//                   )
+//               )
+//           )
+//       ),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-6'
+//       ),
+//       '#label_classes' => array (
+//           'control-label'
+//       ),
+//       '#attributes' => array (
+//           'class' => array (
+//               'form-control'
+//           ),
+//           'data-bv-numeric' => 'true'
+//       ),
+//       '#prefix' => '<div class="row">'
+//   );
   
-  // $form ['image_scale_max'] = array (
-  // '#type' => 'textfield',
-  // '#title' => t ( "Significance Max" ),
-  // '#description' => t ( "" ),
-  // '#default_value' => '',
-  // '#states' => array (
-  // 'visible' => array (
-  // ':input[name="'.$mform_id.'product_type"]' => array (
-  // 'value' => 'jemx_image'
-  // )
-  // ),
-  // 'enabled' => array (
-  // ':input[name="'.$mform_id.'product_type"]' => array (
-  // array (
-  // 'value' => 'jemx_image'
-  // )
-  // )
-  // )
-  // ),
-  // '#parent_classes' => array (
-  // 'form-group',
-  // 'col-md-6'
-  // ),
-  // '#label_classes' => array (
-  // 'control-label'
-  // ),
-  // '#attributes' => array (
-  // 'class' => array (
-  // 'form-control'
-  // ),
-  // 'data-bv-numeric' => 'true'
-  // ),
-  // '#suffix' => '</div>'
-  // );
+//   $form ['image_scale_max'] = array (
+//       '#type' => 'textfield',
+//       '#title' => t ( "Significance Max" ),
+//       '#description' => t ( "" ),
+//       '#default_value' => '',
+//       '#states' => array (
+//           'visible' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   'value' => 'jemx_image'
+//               )
+//           ),
+//           'enabled' => array (
+//               ':input[name="'.$mform_id.'product_type"]' => array (
+//                   array (
+//                       'value' => 'jemx_image'
+//                   )
+//               )
+//           )
+//       ),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-6'
+//       ),
+//       '#label_classes' => array (
+//           'control-label'
+//       ),
+//       '#attributes' => array (
+//           'class' => array (
+//               'form-control'
+//           ),
+//           'data-bv-numeric' => 'true'
+//       ),
+//       '#suffix' => '</div>'
+//   );
   
   $form ['user_catalog_file'] = array (
       '#type' => 'file',
       '#title' => t ( "User catalog" ),
-      '#description' => t ( 'If needed, create a custom catalog following one of the templates : <a href="' . $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' . $module_path . '/data/catalog.fits" download>FITS</a>.' ),
+      '#description' => t ( 'If needed, create a custom catalog following one of the templates : <a href="'.$module_path.'/data/catalog.txt" download>ASCII</a> or <a href="'.$module_path.'/data/catalog.fits" download>FITS</a>.'),
       '#attributes' => array (
           'name' => 'user_catalog_file'
       ),
@@ -444,10 +446,11 @@ function astrooda_jemx($form, &$form_state) {
   
   $form ['submit'] = array (
       '#type' => 'submit',
-      '#value' => t ( 'Submit' )
+      '#value' => t ( 'Submit' ),
   );
   
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.jemx' );
   
+   
   return ($form);
 }

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provides a block displaying prayer times for the visitor's location
+ * Provides a block
  */
 function astrooda_init() {
   drupal_add_library ( 'system', 'ui.draggable' );
@@ -11,12 +11,21 @@ function astrooda_init() {
   // drupal_add_library('system', 'effects.transfer');
   // drupal_add_library('system', 'effects.shake');
   drupal_add_library ( 'system', 'effects.highlight' );
+  
   module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
-  //module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
+  
+  $astrooda_settings = variable_get ( 'astrooda_settings' );
+  foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
+    if ($instrument ['enabled']) {
+      module_load_include ( 'inc', 'astrooda_' . $name, 'astrooda_' . $name );
+    }
+  }
+  
+  // module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
+  // module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
+  // module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
+  // module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
+  // module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
 }
 
 /**
@@ -41,7 +50,7 @@ function astrooda_block_info() {
   $blocks = array ();
   $blocks ['astrooda_main'] = array (
       'info' => t ( "Astrooda" ),
-      'status'     => TRUE,
+      'status' => TRUE,
       'region' => 'content',
       'visibility' => BLOCK_VISIBILITY_LISTED,
       'pages' => 'astrooda',
@@ -54,7 +63,6 @@ function astrooda_block_info() {
 /**
  * Implementation of hook_permission().
  */
-
 function astrooda_permission() {
   return array (
       'administer astrooda' => array (
@@ -99,7 +107,7 @@ function astrooda_block_view($delta) {
   switch ($delta) {
     case 'astrooda_main' :
       $block = array (
-          //'subject' => t ( "Astro Online Data Analysis" ),
+          // 'subject' => t ( "Astro Online Data Analysis" ),
           'subject' => '<none>',
           'content' => astrooda_main_block_content ()
       );
@@ -121,10 +129,10 @@ function astrooda_main_block_content() {
    * astrooda_block_content ();
    */
   if (session_status () != PHP_SESSION_NONE) {
-//MTM    session_destroy ();
+    // MTM session_destroy ();
   }
   // if (session_status() == PHP_SESSION_NONE) {
-//MTM  session_start ();
+  // MTM session_start ();
   // }
   $session_id = session_id ();
   // $session_id = '56';
@@ -181,18 +189,55 @@ function astrooda_main_block_content() {
   
   $items = array ();
   
+  $astrooda_settings = variable_get ( 'astrooda_settings' );
+  
+  error_log ( print_r ( $astrooda_settings, true ) );
+  
   // require_once drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.common.inc';
   
   $items ['session_id'] = $session_id;
   $items ['session_count'] = $session_count;
+  $items ['astrooda_debug'] = variable_get('astrooda_debug');
   
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
-  $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
-  $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
-//  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
-  $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
-  $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
-  $items ['isgri_help_page'] ='node/'.variable_get ( 'astrooda_isgri_help_page_nid');
+  error_log ( "---------------------------------------------" );
+  
+  foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
+    $instruments [$instrument ['weight']] = $name;
+  }
+  ksort ( $instruments );
+  $weight_sorted_instruments = array_values ( $instruments );
+  $first_instrument = true;
+  foreach ( $weight_sorted_instruments as $instrument_name ) {
+    $instrument = $astrooda_settings ['instruments'] [$instrument_name];
+    error_log ( 'Instrument:' . $instrument ['name'] . "\n" );
+    if ($instrument ['enabled']) {
+      $items ['instruments'] [$instrument ['name']] = array (
+          'name' => $instrument ['name'],
+          'title' => $instrument ['title'],
+          'help_page' => 'node/' . $instrument ['help_page_nid'],
+          'form' => drupal_get_form ( 'astrooda_' . $instrument ['name'] ),
+          'active' => ''
+      );
+      if ($first_instrument) {
+        $items ['instruments'] [$instrument ['name']] ['active'] = 'active';
+        $first_instrument = false;
+      }
+    }
+  }
+  
+  $lfile = fopen ( '/tmp/astrooda_instruments.php', "w" );
+  fwrite ( $lfile, print_r ( $items, true ) );
+  fclose ( $lfile );
+  
+  error_log ( print_r ( $items, true ) );
+  
+  // $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
+  // $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
+  // $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
+  // $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
+  // $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
+  // $items ['isgri_help_page'] ='node/'.variable_get ( 'astrooda_isgri_help_page_nid');
   
   // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
   
@@ -296,20 +341,19 @@ function astrooda_libraries_info() {
               'Buttons/js/dataTables.buttons.min.js',
               'Responsive/js/dataTables.responsive.min.js',
               'Editor/js/dataTables.editor.min.js',
-              'Editor/js/editor.bootstrap.min.js',
+              'Editor/js/editor.bootstrap.min.js'
           ),
           'css' => array (
-              //'datatables.min.css',
+              // 'datatables.min.css',
               'dataTables.bootstrap.min.css',
               'Buttons/css/buttons.dataTables.min.css',
               'Responsive/css/responsive.dataTables.min.css',
-              //'Editor/css/editor.dataTables.min.css',
+              // 'Editor/css/editor.dataTables.min.css',
               'Select/css/select.dataTables.min.css',
-              'Editor/css/editor.bootstrap.css',
+              'Editor/css/editor.bootstrap.css'
           )
       )
-  )
-  ;
+  );
   $libraries ['bootstrap-form-validator'] = array (
       'name' => 'Bootstrap Form Validator library',
       'vendor url' => 'http://bootstrapvalidator.com',

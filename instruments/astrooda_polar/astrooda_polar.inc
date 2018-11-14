@@ -26,12 +26,14 @@ function astrooda_polar($form, &$form_state) {
       '#value' => 'polar'
   );
   
+  $astrooda_settings = variable_get('astrooda_settings');
+  $instrument_defaults= $astrooda_settings['instruments']['polar'];
   
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
       '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => '20.0',
+      '#default_value' => $instrument_defaults['E1_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -54,7 +56,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
       '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => '40.0',
+      '#default_value' => $instrument_defaults['E2_keV'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -77,7 +79,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
       '#description' => t ( "Select query type" ),
-      '#default_value' => 'Real',
+      '#default_value' => $instrument_defaults['query_type'],
       '#options' => array (
           'Real' => 'Real',
           'Dummy' => 'Dummy'
@@ -104,7 +106,7 @@ function astrooda_polar($form, &$form_state) {
       '#title' => t ( "Product Type" ),
       '#description' => t ( "Select product type" ),
       '#attributes' => array ('name' => $mform_id.'product_type'),
-      '#default_value' => 'polar_lc',
+      '#default_value' => $instrument_defaults['product_type'],
       '#options' => array (
    //       'polar_image' => 'Image',
    //       'polar_spectrum' => 'Spectrum',
@@ -125,7 +127,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
       //'#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => '1e-4',
+      '#default_value' => $instrument_defaults['time_bin'],
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
@@ -163,7 +165,7 @@ function astrooda_polar($form, &$form_state) {
           'sec' => 'Seconds',
           'jd' => 'Days'
       ),
-      '#default_value' => 'jd',
+      '#default_value' => $instrument_defaults['time_bin_format'],
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
