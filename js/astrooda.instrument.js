@@ -1244,6 +1244,8 @@
 		var job_id = current_panel.data('job_id');
 
 		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+		filename = filename.split('.').slice(0, -1).join('.');
+		
 		var files_list= data.file_name[lc_index];
 		if (data.root_file_name) {
 			files_list+= ','+data.root_file_name;

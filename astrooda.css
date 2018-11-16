@@ -230,7 +230,7 @@ span.panel-toolbox span {
   display: inline-block;
 }
 
-#edit-use-resolver,  #edit-use-resolver .form-item{
+#edit-use-resolver,  #edit-use-resolver, .form-item-use-resolver *{
   display: inline;
 }
 
