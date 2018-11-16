@@ -1243,15 +1243,18 @@
 		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		var job_id = current_panel.data('job_id');
 
-		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
-		filename = filename.split('.').slice(0, -1).join('.');
+		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');		
 		
 		var files_list= data.file_name[lc_index];
 		if (data.root_file_name) {
+			file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
 			files_list+= ','+data.root_file_name;
 		}
+		else {
+			file_name+= '.gz';
+		}
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '.tar.gz&file_list=' + files_list
+				+ '&file_list=' + files_list
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 
