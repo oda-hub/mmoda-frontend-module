@@ -2,6 +2,7 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
+ 
 #formwrapper {
   display: inline-block;
 }
@@ -227,6 +228,14 @@ span.panel-toolbox span {
 
 .form-item-use-scws {
   display: inline-block;
+}
+
+#edit-use-resolver,  #edit-use-resolver .form-item{
+  display: inline;
+}
+
+.form-item-use-resolver {
+  text-align: right;
 }
 
 #formwrapper input:disabled {

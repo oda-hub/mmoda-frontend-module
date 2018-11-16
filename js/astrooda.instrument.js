@@ -78,7 +78,7 @@
 							} else {
 								current_nb_attempts_after_failed = 0;
 							}
-							console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
+							// console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
 							if (query_failed
 									&& (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
 								waitingDialog.hideSpinner();
@@ -767,7 +767,7 @@
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			}
-		}).data('bootstrapValidator').validate();
+		}).data('bootstrapValidator'); //.validate();
 
 		if (!validator.isValid()) {
 			validator.disableSubmitButtons(true);
@@ -1244,8 +1244,12 @@
 		var job_id = current_panel.data('job_id');
 
 		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+		var files_list= data.file_name[lc_index];
+		if (data.root_file_name) {
+			files_list+= ','+data.root_file_name;
+		}
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '.gz&file_list=' + data.file_name[lc_index]
+				+ '.tar.gz&file_list=' + files_list
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 
@@ -1398,7 +1402,6 @@
 	}
 
 	function display_spectrum(metadata, data, job_id, instrument) {
-
 		datetime = get_current_date_time();
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'spectrum', datetime);
@@ -1427,9 +1430,6 @@
 		var toolbar = '<div class="btn-group" role="group">' + downloadButton
 				+ '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
-
-		// $('#' + panel_ids.panel_body_id).append(
-		// '<a href="/dispatch-data/download_products?' + url + '">Download</a>');
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
 		$('#' + panel_ids.panel_body_id).append(

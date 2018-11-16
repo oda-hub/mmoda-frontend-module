@@ -8,19 +8,18 @@
 /**
  */
 function astrooda_common($form, &$form_state) {
-  
   $form = array ();
   $session_id = session_id ();
   
   $form ['#tree'] = FALSE;
-  //turn off form caching
-  //$form_state['no_cache'] = TRUE;
-      
+  // turn off form caching
+  // $form_state['no_cache'] = TRUE;
+  
   $form ['session_id'] = array (
       '#type' => 'hidden',
       '#value' => $session_id
   );
-//   $form ['#action'] = '/dispatch-data/test';
+  // $form ['#action'] = '/dispatch-data/test';
   $form ['#method'] = 'POST';
   
   $form ['src_name'] = array (
@@ -46,12 +45,14 @@ function astrooda_common($form, &$form_state) {
   );
   
   $form ['resolve_src_name'] = array (
-      '#type' => 'submit',
+      '#type' => 'button',
+      '#button_type' => 'button',
       '#name' => 'resolve_name',
       '#value' => t ( "Resolve" ),
       '#attributes' => array (
           'class' => array (
-              'btn-primary', 'form-item'
+              'btn-primary',
+              'form-item'
           )
       ),
       '#ajax' => array (
@@ -65,6 +66,23 @@ function astrooda_common($form, &$form_state) {
       
       '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
       '#suffix' => '</span></div></div></div>'
+  );
+  
+  $form ['use_resolver'] = array (
+      '#type' => 'checkboxes',
+      '#title' => t ( "Resolvers :" ),
+      //'#default_value' => '',
+      '#options' => array (
+          'local' => 'Local',
+          'sesame' => 'Sesame service',
+      ),
+     '#default_value' => array('local'),
+      '#parent_classes' => array (
+          'form-group',
+          'col-md-12'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
   );
   
   $form ['radec'] = array (
@@ -90,11 +108,12 @@ function astrooda_common($form, &$form_state) {
       '#attributes' => array (
           'class' => array (
               'form-control'
-          ),
-//           'data-bv-between' => 'true',
-//           'data-bv-between-min' => 0,
-//           'data-bv-between-max' => 360
+          )
       )
+      // 'data-bv-between' => 'true',
+      // 'data-bv-between-min' => 0,
+      // 'data-bv-between-max' => 360
+       
   );
   
   $form ['radec'] ['DEC'] = array (
@@ -114,11 +133,12 @@ function astrooda_common($form, &$form_state) {
       '#attributes' => array (
           'class' => array (
               'form-control'
-          ),
-//           'data-bv-between' => 'true',
-//           'data-bv-between-min' => - 90,
-//           'data-bv-between-max' => 90
+          )
       )
+      // 'data-bv-between' => 'true',
+      // 'data-bv-between-min' => - 90,
+      // 'data-bv-between-max' => 90
+       
   );
   
   $form ['time'] = array (
@@ -212,33 +232,32 @@ function astrooda_common($form, &$form_state) {
                   )
               )
           )
-      ),
+      )
   );
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.common' );
   
   return ($form);
 }
-
 function resolve_object_name_callback($form, &$form_state) {
   module_load_include ( 'inc', 'astrooda', 'astrooda.nameresolver' );
-  error_log('Resolve callback !');
-  //   $filename = '/tmp/form_state.txt';
-  //   $f = fopen ( $filename, 'w' );
-  //   fwrite ( $f, "form_state\n" );
-  //   fwrite ( $f, print_r ( $form_state ['input'], true ) );
-  //   fclose ( $f );
-  //   chmod ( $filename, 0777 );
-
+//   error_log ( 'Resolve callback !' );
+//   $filename = '/tmp/form_state.txt';
+//   $f = fopen ( $filename, 'w' );
+//   fwrite ( $f, "form_state\n" );
+//   fwrite ( $f, print_r ( $form_state ['input'], true ) );
+//   fclose ( $f );
+//   chmod ( $filename, 0777 );
+  
   $form ['radec'] ['RA'] ['#value'] = 50;
   $form ['radec'] ['DEC'] ['#value'] = 80;
   // $commands = array();
-
+  
   // $args= [ 'ra' => 67,
   // 'dec' => 88
   // ];
-
-  $args = resolve_object_name ( $form_state ['input'] ['src_name'] );
-
+  
+  $args = resolve_object_name ( $form_state ['input'] ['src_name'],  $form_state ['input'] ['use_resolver']);
+  
   $commands [] = array (
       'command' => 'set_ra_dec', // the name of your javascript callback
       'args' => $args
