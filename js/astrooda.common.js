@@ -201,6 +201,7 @@ var waitingDialog;
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
 		waitingDialog.hide();    	
+
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
 			+response.args.message
@@ -211,9 +212,23 @@ var waitingDialog;
 		elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
 		elt.find('.alert').hide();
 		if (response.args.status == 0) {
-			$('.form-item-RA input.form-control').val(response.args.ra);
-			$('.form-item-DEC input.form-control').val(response.args.dec);
-			elt.find('.alert').addClass('alert-success').show(); 
+			if (response.args.ra) {
+				$('.form-item-RA input.form-control').val(response.args.ra);
+			}		
+			if (response.args.dec) {
+				$('.form-item-DEC input.form-control').val(response.args.dec);
+			}
+			if (response.args.t1) {
+				if ($('select[name="T_format"]', '#astrooda-common').val() == 'isot') {
+					$('input[name="T1"]', '#astrooda-common').val(response.args.t1.utc).trigger('input');
+					$('input[name="T2"]', '#astrooda-common').val(response.args.t2.utc).trigger('input');
+				}
+				else  {
+					$('input[name="T1"]', '#astrooda-common').val(response.args.t1.mjd).trigger('input');
+					$('input[name="T2"]', '#astrooda-common').val(response.args.t2.mjd).trigger('input');
+				}
+			}
+			elt.find('.alert').addClass('alert-success').show();
 		}
 		else {
 			$('.form-item-src-name', '#astrooda-common').addClass('has-error').children('.form-control-feedback').removeClass('glyphicon-ok').addClass('glyphicon-remove');
@@ -222,7 +237,6 @@ var waitingDialog;
 			elt.find('small').addClass('help-block');
 			$('.form-item-RA input.form-control').val('');
 			$('.form-item-DEC input.form-control').val('');
-			console.log('Error: ' + response.args.message)
 		}
 		$('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
 	}
@@ -533,6 +547,7 @@ function get_waitingDialog($modal_dialog) {
 		});
 
 		waitingDialog =  get_waitingDialog();
+		
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
 				waitingDialog.show('','Resolving name using <a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a> respectively NED, Simbad and VizieR...', {

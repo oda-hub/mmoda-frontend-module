@@ -120,13 +120,13 @@
           <div class="panel-body">
             <div class="tabs">
               <ul class="nav nav-tabs">
-                <li id="integral-isgri-tab" class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
-                <li id="integral-jemx-tab"><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
-                <li id="polar-tab"><a href="#polar" data-toggle="tab">Polar</a></li>
-                <li id="multi-product-lc-tab"><a href="#multi-product-lc" data-toggle="tab">Light Curves</a></li>
+                <li id="integral-isgri-tab"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
+                <!-- li id="integral-jemx-tab"><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li -->
+                <li id="polar-tab" class="active"><a href="#polar" data-toggle="tab">Polar</a></li>
+                <!--li id="multi-product-lc-tab"><a href="#multi-product-lc" data-toggle="tab">Light Curves</a></li-->
               </ul>
               <div class="tab-content">
-                <div class="instrument-panel tab-pane fade in active" id="integral-isgri">
+                <div class="instrument-panel tab-pane fade in" id="integral-isgri">
                   <div id="isgri-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="<?=$isgri_help_page?>">Help</a>
                   </div>
@@ -137,6 +137,7 @@
                   </div>
                 </div>
                 
+                <!--
                 <div class="instrument-panel tab-pane fade in" id="integral-jemx">
                   <div id="jemx-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="astrooda/help/jemx">Help</a>
@@ -147,7 +148,8 @@
                   </div>
                   </div>
                 </div>
-                <div class="instrument-panel tab-pane fade in" id="polar">
+                 -->
+                <div class="instrument-panel tab-pane fade in active" id="polar">
                   <div id="polar-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="astrooda/help/polar">Help</a>
                   </div>
@@ -157,6 +159,7 @@
                   </div>
                   </div>
                 </div>
+                <!--
                 <div class="instrument-panel tab-pane fade in" id="multi-product-lc">
                   <div id="multi-product-lc-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="astrooda/help/multi-product-lc">Help</a>
@@ -167,6 +170,8 @@
                   </div>
                   </div>
                 </div>
+                 -->
+                
               </div>
             </div>
           </div>

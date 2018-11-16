@@ -31,7 +31,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
       '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => '20.0',
+      '#default_value' => '0.0',
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -54,7 +54,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
       '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => '40.0',
+      '#default_value' => '2000.0',
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
@@ -125,7 +125,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
       //'#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => '1e-4',
+      '#default_value' => '0.1',
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
@@ -163,7 +163,7 @@ function astrooda_polar($form, &$form_state) {
           'sec' => 'Seconds',
           'jd' => 'Days'
       ),
-      '#default_value' => 'jd',
+      '#default_value' => 'sec',
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
