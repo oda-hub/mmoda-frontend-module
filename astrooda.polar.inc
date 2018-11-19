@@ -38,6 +38,7 @@ function astrooda_polar($form, &$form_state) {
           'form-group',
           'col-md-6'
       ),
+      '#field_suffix' => t('keV'),
       '#label_classes' => array (
           'control-label'
       ),
@@ -57,9 +58,10 @@ function astrooda_polar($form, &$form_state) {
       '#default_value' => '2000.0',
       '#required' => TRUE,
       '#size' => 10,
+      '#field_suffix' => t('keV'),
       '#parent_classes' => array (
           'form-group',
-          'col-md-5'
+          'col-md-6'
       ),
       '#label_classes' => array (
           'control-label'

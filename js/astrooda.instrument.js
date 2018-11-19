@@ -10,7 +10,7 @@
 	var distinct_nodes;
 
 	var current_ajax_call_params = {};
-	var max_nb_attempts_after_failed = 3;
+	var max_nb_attempts_after_failed = 0;
 	var current_nb_attempts_after_failed = 0;
 
 	function validate_timebin(value, validator, $thefield) {
