@@ -107,6 +107,9 @@
 
 
    <div class="content" <?=$content_attributes?>>
+   <?php if (! isset($instruments)): ?>
+   <div>No instruments module installed.<br>Please install and enable at least one instrument module.</div>
+   <?php  else : ?>
     <div class="panel panel-default">
       <div class="panel-heading">
         <?php  if ($astrooda_debug) :?>
@@ -145,4 +148,5 @@
       </div>
     </div>
   </div>
+  <?php endif;?>
 </div>

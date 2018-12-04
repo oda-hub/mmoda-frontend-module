@@ -10,7 +10,7 @@
 	var distinct_nodes;
 
 	var current_ajax_call_params = {};
-	var max_nb_attempts_after_failed = 3;
+	var max_nb_attempts_after_failed = 0;
 	var current_nb_attempts_after_failed = 0;
 
 	function validate_timebin(value, validator, $thefield) {
@@ -767,7 +767,7 @@
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			}
-		}).data('bootstrapValidator').validate();
+		}).data('bootstrapValidator'); //.validate();
 
 		if (!validator.isValid()) {
 			validator.disableSubmitButtons(true);
@@ -1243,9 +1243,18 @@
 		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
 		var job_id = current_panel.data('job_id');
 
-		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');		
+		
+		var files_list= data.file_name[lc_index];
+		if (data.root_file_name) {
+			file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
+			files_list+= ','+data.root_file_name;
+		}
+		else {
+			file_name+= '.gz';
+		}
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '.gz&file_list=' + data.file_name[lc_index]
+				+ '&file_list=' + files_list
 				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 
