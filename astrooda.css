@@ -2,6 +2,12 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
+ 
+.form-item-E1-keV .form-control, .form-item-E2-keV .form-control {
+  display: inline-block !important;
+  width: 80% !important;  
+}
+
 #formwrapper {
   display: inline-block;
 }
@@ -16,13 +22,13 @@
 
 #ldialog {
   /*padding-top:15%;
-	overflow-y:visible;*/
-  
+	overflow-y:visible;*/  
 }
 
 .block-astrooda {
   display: none;
 }
+
 /***************** Start vertically center modal   ***/
 .modal {
   text-align: center;
@@ -227,6 +233,14 @@ span.panel-toolbox span {
 
 .form-item-use-scws {
   display: inline-block;
+}
+
+#edit-use-resolver,  #edit-use-resolver, .form-item-use-resolver *{
+  display: inline;
+}
+
+.form-item-use-resolver {
+  text-align: right;
 }
 
 #formwrapper input:disabled {

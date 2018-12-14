@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the astrooda module.
+ */
+include_once 'astrooda_isgri.help_page.inc';
+
+
+function astrooda_isgri_instrument_info() {
+  $info = array (
+      'name' => 'isgri',
+      'title' => 'INTEGRAL ISGRI',
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function astrooda_isgri_requirements($phase) {
+  $requirements = array ();
+  $conflicts = array ();
+  if ('install' == $phase) {
+  }
+  
+  if ($phase == 'runtime') {
+  }
+  
+  return $requirements;
+}
+function astrooda_isgri_install() {
+  $instrument_info = astrooda_isgri_instrument_info();
+  
+  $astrooda_settings = variable_get ( 'astrooda_settings' );
+  $astrooda_settings ['instruments'] [$instrument_info['name']] = array (
+      'enabled' => TRUE,
+      'name' => $instrument_info['name'],
+      'title' => $instrument_info['title'],
+      'osa_version' => 'OSA10.2',
+      'radius' => 15,
+      'scw_list' => '005100410010.001,005100420010.001',
+      'E1_keV' => 20.0,
+      'E2_keV' => 40.0,
+      'query_type' => 'Real',
+      'detection_threshold' => 5.0,
+      'product_type' => 'isgri_image',
+      'time_bin' => 1000,
+      'time_bin_format' => 'sec',
+      'weight' => 10,
+  );
+  
+  // add help node
+  $node_array = isgri_help_page_node_export_features_default ();
+  $import_output = node_export_import ( $node_array ['code_string'] );
+  print var_dump ( $import_output );
+  print "--------------------\n";
+  print join ( "\n", $import_output ['output'] ) . "\n";
+  if ($import_output ['success']) {
+    print "New help page nid :" . $import_output ['nids'] [0] . "\n";
+    $node = node_load ( $import_output ['nids'] [0] );
+    $node->status = 1;
+    node_save ( $node );
+    $astrooda_settings ['instruments'] [$instrument_info['name']] ['help_page_nid'] = $node->nid;
+  }
+  
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function astrooda_isgri_uninstall() {
+  $instrument_info = astrooda_isgri_instrument_info();
+  $astrooda_settings = variable_get ( 'astrooda_settings' );
+  
+  if (array_key_exists('help_page_nid', $astrooda_settings ['instruments'] [$instrument_info['name']])) {
+    node_delete ( $astrooda_settings ['instruments'] [$instrument_info['name']]['help_page_nid'] );
+  }
+  
+  $astrooda_settings = variable_get ( 'astrooda_settings' );
+  unset ( $astrooda_settings ['instruments'] [$instrument_info['name']] );
+  
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+  
+  menu_rebuild ();
+}
+

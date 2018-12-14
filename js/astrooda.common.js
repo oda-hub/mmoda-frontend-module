@@ -208,12 +208,26 @@ var waitingDialog;
 		html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
 			+response.args.message
 			+'</small>';
-		elt = $('.form-item-src-name', '#astrooda-common').append(html);
+		elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
 		elt.find('.alert').hide();
 		if (response.args.status == 0) {
-			$('.form-item-RA input.form-control').val(response.args.ra);
-			$('.form-item-DEC input.form-control').val(response.args.dec);
-			elt.find('.alert').addClass('alert-success').show(); 
+			if (response.args.ra) {
+				$('.form-item-RA input.form-control').val(response.args.ra);
+			}		
+			if (response.args.dec) {
+				$('.form-item-DEC input.form-control').val(response.args.dec);
+			}
+			if (response.args.t1) {
+				if ($('select[name="T_format"]', '#astrooda-common').val() == 'isot') {
+					$('input[name="T1"]', '#astrooda-common').val(response.args.t1.utc).trigger('input');
+					$('input[name="T2"]', '#astrooda-common').val(response.args.t2.utc).trigger('input');
+				}
+				else  {
+					$('input[name="T1"]', '#astrooda-common').val(response.args.t1.mjd).trigger('input');
+					$('input[name="T2"]', '#astrooda-common').val(response.args.t2.mjd).trigger('input');
+				}
+			}
+			elt.find('.alert').addClass('alert-success').show();
 		}
 		else {
 			$('.form-item-src-name', '#astrooda-common').addClass('has-error').children('.form-control-feedback').removeClass('glyphicon-ok').addClass('glyphicon-remove');
@@ -222,7 +236,7 @@ var waitingDialog;
 			elt.find('small').addClass('help-block');
 			$('.form-item-RA input.form-control').val('');
 			$('.form-item-DEC input.form-control').val('');
-			console.log('Error: ' + response.args.message)
+			//console.log('Error: ' + response.args.message)
 		}
 		$('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
 	}
@@ -457,7 +471,9 @@ function get_waitingDialog($modal_dialog) {
 		else {
 			position_left = parseInt(($(this).parent().width() - $(this).width())/2);
 			$(this).css('left', position_left);
-			var x = $('#integral-isgri').position().top -80;
+			instrument_panel = $(this).closest('.instrument-panel');
+
+			var x = instrument_panel.position().top -80;
 			$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
 				// Animation complete.
 				thisObject.show('highlight', {color: '#adebad'}, 1000);
@@ -542,7 +558,7 @@ function get_waitingDialog($modal_dialog) {
 		    });
 				waitingDialog.hideHeaderMessage();
 		    
-	  		$('.form-item-src-name small', '#astrooda-common').remove();
+	  		$('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
 		  	$('.form-item-RA input.form-control').val('');
 		  	$('.form-item-DEC input.form-control').val('');
 			  $('input:not(:file)', '#astrooda-common').val(function(_, value) {
@@ -552,7 +568,7 @@ function get_waitingDialog($modal_dialog) {
 		});
 		
 		// Disable main submit if error in common parameters
-		$('input, slect, textarea', '#astrooda-common').on('error.field.bv', function() {
+		$('input, select, textarea', '#astrooda-common').on('error.field.bv', function() {
 			// Disabling submit
 			$('[type="submit"]', '.instrument-panel').prop('disabled', true);
 		}).on('success.field.bv', function() {

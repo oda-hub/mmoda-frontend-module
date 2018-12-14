@@ -1,0 +1,8 @@
+name = Astrooda ISGRI
+description = Astro Online Data Analysis module for ISGRI
+core = 7.x
+dependencies[] = astrooda
+
+files[] = astrooda.isgri.inc
+
+configure = admin/config/astrooda/isgri

@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+function astrooda_polar_enable() {
+  $astrooda_settings = variable_get('astrooda_settings');
+  $astrooda_settings['instruments']['polar']['enabled'] = true;
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+}
+
+function astrooda_polar_disable() {
+  $astrooda_settings = variable_get('astrooda_settings');
+  $astrooda_settings['instruments']['polar']['enabled'] = false;
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+}
+
+function astrooda_polar_init() {
+}
+
+/**
+ * Implements hook_help().
+ */
+function astrooda_polar_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#astrooda_polar' :
+      $output = '<p>';
+      $output .= t ( "Astrooda Polar." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+
+function astrooda_polar_permission() {
+  return array (
+      'administer astrooda polar' => array (
+          'description' => t ( 'Administer Astrooda Polar' ),
+          'title' => t ( 'Administer Astrooda Polar' ),
+          'restrict access' => TRUE
+      ),
+      'access astrooda polar' => array (
+          'description' => t ( 'Access Astrooda Polar' ),
+          'title' => t ( 'Access Astrooda Polar' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function astrooda_polar_menu() {
+  $items = array ();
+  
+  $items ['admin/config/astrooda/polar'] = array (
+      'title' => 'Administer Astrooda Polar',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'astrooda_polar_admin_settings'
+      ),
+      'description' => 'Edit Astrooda Polar settings.',
+      'file' => 'astrooda_polar.admin.inc'
+  );
+  // 'weight' => -10,
+  
+  return $items;
+}
+
