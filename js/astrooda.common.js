@@ -236,7 +236,7 @@ var waitingDialog;
 			elt.find('small').addClass('help-block');
 			$('.form-item-RA input.form-control').val('');
 			$('.form-item-DEC input.form-control').val('');
-			console.log('Error: ' + response.args.message)
+			//console.log('Error: ' + response.args.message)
 		}
 		$('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
 	}
@@ -471,7 +471,9 @@ function get_waitingDialog($modal_dialog) {
 		else {
 			position_left = parseInt(($(this).parent().width() - $(this).width())/2);
 			$(this).css('left', position_left);
-			var x = $('#integral-isgri').position().top -80;
+			instrument_panel = $(this).closest('.instrument-panel');
+
+			var x = instrument_panel.position().top -80;
 			$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
 				// Animation complete.
 				thisObject.show('highlight', {color: '#adebad'}, 1000);
