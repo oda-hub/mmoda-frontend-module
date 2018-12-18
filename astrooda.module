@@ -135,7 +135,7 @@ function astrooda_main_block_content() {
 //   if (session_status() == PHP_SESSION_NONE) {
 //    session_start ();
 //   }
-// $session_id = session_id ();
+  $session_id = session_id ();
   
   if (! isset ( $_SESSION ['count'] )) {
     $_SESSION ['count'] = 0;
