@@ -129,14 +129,13 @@ function astrooda_main_block_content() {
    * return ('');
    * astrooda_block_content ();
    */
-  if (session_status () != PHP_SESSION_NONE) {
-    session_destroy ();
-  }
-  //if (session_status() == PHP_SESSION_NONE) {
-    session_start ();
-  //}
-  $session_id = session_id ();
-  // $session_id = '56';
+//   if (session_status () != PHP_SESSION_NONE) {
+//     session_destroy ();
+//   }
+//   if (session_status() == PHP_SESSION_NONE) {
+//    session_start ();
+//   }
+// $session_id = session_id ();
   
   if (! isset ( $_SESSION ['count'] )) {
     $_SESSION ['count'] = 0;
