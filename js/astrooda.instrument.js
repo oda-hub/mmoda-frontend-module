@@ -61,15 +61,15 @@
 				})
 				.done(
 						function(data, textStatus, jqXHR) {
-							// merge_response_data();
-
 							// console.log('--- Query response ---');
 							// console.log(data);
 							job_id = '';
+							session_id = '';
 							if (data['job_monitor'].hasOwnProperty('job_id')) {
 								job_id = data['job_monitor']['job_id'];
+								session_id = data['job_monitor']['session_id'];
 							}
-							waitingDialog.setHeaderMessageJobId(job_id);
+							waitingDialog.setHeaderMessageJobId(session_id);
 							var query_failed = false;
 							if (data.query_status == 'failed'
 									|| (data.products.hasOwnProperty('image') && data.products.image == null)) {
@@ -78,7 +78,7 @@
 							} else {
 								current_nb_attempts_after_failed = 0;
 							}
-							console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
+							//console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
 							if (query_failed
 									&& (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
 								waitingDialog.hideSpinner();
@@ -109,15 +109,12 @@
 								}
 
 								current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-								current_ajax_call_params.currentFormData.append('query_status',
-										data.query_status);
+								current_ajax_call_params.currentFormData.append('query_status', data.query_status);
 								if (!current_ajax_call_params.currentFormData.has('job_id')) {
-									current_ajax_call_params.currentFormData.append('job_id',
-											job_id);
+									current_ajax_call_params.currentFormData.append('job_id', job_id);
+									current_ajax_call_params.currentFormData.append('session_id', session_id);
 								}
-
 								requestTimer = setTimeout(AJAX_call, 5000);
-
 							} else {
 								waitingDialog.hideSpinner();
 								instrument = $('input[name=instrument]',
@@ -337,13 +334,10 @@
 				'click',
 				'table.lightcurve-table tbody button.copy-multi-product',
 				function(e) {
-					// console.log('copy lc clicked !');
 					var current_row = $(this).parents('tr');
 					var data = current_row.data();
 					var current_panel = $(this).closest('.panel');
-					// console.log(data);
-					// console.log(current_panel.data("product_type"));
-					var product_type = current_panel.data("product_type");
+   				var product_type = current_panel.data("product_type");
 					$('#multi-product-' + product_type + '-tab a').click();
 					return;
 					if (multiproduct_panel_id = data['multiproduct_' + product_type
@@ -369,8 +363,6 @@
 						'click',
 						'table.lightcurve-table tbody button.draw-lightcurve',
 						function(e) {
-							// console.log('draw lc clicked !');
-							// var lc_index = $(this).data('index');
 							var current_row = $(this).parents('tr');
 							var data = current_row.data();
 							var lightcurve_offset = {};
@@ -417,10 +409,8 @@
 								request_draw_spectrum = true;
 								request_spectrum_form_element = $(this);
 								draw_spectrum_form_elements = new FormData();
-								var session_id = $('input[name=session_id]',
-										'form#astrooda-common').val();
 
-								draw_spectrum_form_elements.append('session_id', session_id);
+								draw_spectrum_form_elements.append('session_id', data.session_id);
 								draw_spectrum_form_elements.append('query_status', 'ready');
 								draw_spectrum_form_elements.append('job_id', data.job_id);
 								draw_spectrum_form_elements
@@ -440,7 +430,7 @@
 								draw_spectrum_form_elements.append('rmf_file_name',
 										data.rmf_file_name);
 
-								$(this).data('session_id', session_id);
+								$(this).data('session_id', data.session_id);
 								$(this).data('parameters', draw_spectrum_form_elements);
 								$(this).data('source_name', data.source_name);
 								$(this).data(
@@ -890,9 +880,9 @@
 					current_ajax_call_params.currentFormData = cloneFormData(formData);
 					if (!current_ajax_call_params.currentFormData.has('query_status')) {
 						current_ajax_call_params.currentFormData.append('query_status',
-								'new');
-					}
-					if (!current_ajax_call_params.currentFormData.has('job_id')) {
+						'new');
+						current_ajax_call_params.currentFormData.append('session_id',
+						'new');
 						current_ajax_call_params.currentFormData.append('job_id', '');
 					}
 					current_ajax_call_params.action = $(this).attr('action');
@@ -1103,7 +1093,7 @@
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
 
-		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
+		var session_id = data.session_id;
 		var session_job_ids = '<div>Session ID : ' + session_id
 				+ '</div><div>Job ID : ' + job_id + '</div>';
 		$('#' + panel_ids.panel_id).data("log",
@@ -1236,11 +1226,9 @@
 		});
 
 		var data = current_panel.data('products');
-		// console.log('----- data');
-		// console.log(data);
 
 		var image = data.image[lc_index];
-		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
+		var session_id = data.session_id;
 		var job_id = current_panel.data('job_id');
 
 		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');		
@@ -1301,7 +1289,7 @@
 		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
 				.insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
 
-		var session_id = $('input[name=session_id]', 'form#astrooda-common').val();
+		var session_id = data.session_id;
 		var session_job_ids = '<div>Session ID : ' + session_id
 				+ '</div><div>Job ID : ' + job_id + '</div>';
 		$('#' + panel_ids.panel_id).data("log",
@@ -1328,6 +1316,7 @@
 				ph_file_name : data.ph_file_name[i],
 				rmf_file_name : data.rmf_file_name[i],
 				job_id : job_id,
+				session_id : session_id,
 			}
 		}
 
@@ -1550,7 +1539,7 @@
 			analysis_paramters : data.analysis_paramters
 		});
 
-		session_id = $('input[name=session_id]', 'form#astrooda-common').val();
+		var session_id = data.session_id;
 
 		url = 'session_id=' + session_id + '&download_file_name='
 				+ data.download_file_name + '&file_list=' + data.file_name

@@ -15,10 +15,10 @@ function astrooda_common($form, &$form_state) {
   // turn off form caching
   // $form_state['no_cache'] = TRUE;
   
-  $form ['session_id'] = array (
-      '#type' => 'hidden',
-      '#value' => $session_id
-  );
+//   $form ['session_id'] = array (
+//       '#type' => 'hidden',
+//       '#value' => $session_id
+//   );
   // $form ['#action'] = '/dispatch-data/test';
   $form ['#method'] = 'POST';
   
