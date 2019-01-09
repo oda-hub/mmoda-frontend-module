@@ -639,11 +639,11 @@ function get_waitingDialog($modal_dialog) {
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			},
-		}).data('bootstrapValidator').validate();
+		}).data('bootstrapValidator'); //.validate();
 		
-		if (! validator.isValid()) {
-			validator.disableSubmitButtons(true);
-		}
+//		if (! validator.isValid()) {
+//			validator.disableSubmitButtons(true);
+//		}
 	}
 	
 })(jQuery);

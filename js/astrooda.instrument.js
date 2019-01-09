@@ -665,48 +665,6 @@
 		var validator = $('.instrument-panel form').bootstrapValidator({
 			// live :'disabled',
 			fields : {
-				'RA' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								var decimalRA;
-								return (HMS2Decimal(value, decimalRA));
-							}
-						}
-					}
-				},
-				'DEC' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								var decimalDEC;
-								return (DMS2Decimal(value, decimalDEC));
-							}
-						}
-					}
-				},
-				 'T1' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								return (validate_date(value));
-							}
-						}
-					}
-				},
-				'T2' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								return (validate_date(value));
-							}
-						}
-					}
-				},
 				'scw_list' : {
 					// enabled: false,
 					validators : {
@@ -769,9 +727,9 @@
 			}
 		}).data('bootstrapValidator'); //.validate();
 
-		if (!validator.isValid()) {
-			validator.disableSubmitButtons(true);
-		}
+//		if (!validator.isValid()) {
+//			validator.disableSubmitButtons(true);
+//		}
 
 		$('[name^=time_bin_format]', '.instrument-params-panel form').on(
 				'change',
