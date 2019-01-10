@@ -169,7 +169,27 @@ function astrooda_jemx($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+  $form ['jemx_num'] = array (
+      '#type' => 'radios',
+      '#title' => t ( "JEMX number" ),
+      '#description' => t ( "" ),
+      '#attributes' => array (
+          'name' => $mform_id.'jemx_num'
+      ),
+      '#options' => array (
+          '1' => t ( 'JEMX-1' ),
+          '2' => t ( 'JEMX-2' ),
+          '3' => t ( 'Merged JEMX-1 and JEMX-2' )
+      ),
+      '#default_value' => '1',
+      '#parent_classes' => array (
+          'form-group',
+          'col-md-8'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div><hr class="hr-default" />'
+          );
+      
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
