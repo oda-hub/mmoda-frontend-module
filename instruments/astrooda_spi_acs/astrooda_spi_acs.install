@@ -4,13 +4,13 @@
  * @file
  * Install, update and uninstall functions for the astrooda module.
  */
-include_once 'astrooda_jemx.help_page.inc';
+include_once 'astrooda_spi_acs.help_page.inc';
 
 
-function astrooda_jemx_instrument_info() {
+function astrooda_spi_acs_instrument_info() {
   $info = array (
-      'name' => 'jemx',
-      'title' => 'INTEGRAL JEM-X',
+      'name' => 'spi_acs',
+      'title' => 'SPI-ACS',
   );
 
   return $info;
@@ -19,7 +19,7 @@ function astrooda_jemx_instrument_info() {
 /**
  * Implements hook_requirements().
  */
-function astrooda_jemx_requirements($phase) {
+function astrooda_spi_acs_requirements($phase) {
   $requirements = array ();
   $conflicts = array ();
   if ('install' == $phase) {
@@ -30,29 +30,23 @@ function astrooda_jemx_requirements($phase) {
   
   return $requirements;
 }
-function astrooda_jemx_install() {
-  $instrument_info = astrooda_jemx_instrument_info();
+function astrooda_spi_acs_install() {
+  $instrument_info = astrooda_spi_acs_instrument_info();
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   $astrooda_settings ['instruments'] [$instrument_info['name']] = array (
       'enabled' => TRUE,
       'name' => $instrument_info['name'],
       'title' => $instrument_info['title'],
-      'osa_version' => 'OSA10.2',
-      'radius' => 12,
-      'scw_list' => '005100410010.001,005100420010.001',
-      'E1_keV' => 3.0,
-      'E2_keV' => 35.0,
       'query_type' => 'Real',
-      'detection_threshold' => 5.0,
-      'product_type' => 'jemx_image',
-      'time_bin' => 1000,
+      'product_type' => 'spi_acs_lc',
+      'time_bin' => '2',
       'time_bin_format' => 'sec',
-      'weight' => 20,
+      'weight' => 30,
   );
   
   // add help node
-  $node_array = jemx_help_page_node_export_features_default ();
+  $node_array = spi_acs_help_page_node_export_features_default ();
   $import_output = node_export_import ( $node_array ['code_string'] );
   //print var_dump ( $import_output );
   //print "--------------------\n";
@@ -71,8 +65,8 @@ function astrooda_jemx_install() {
 /**
  * Implements hook_uninstall().
  */
-function astrooda_jemx_uninstall() {
-  $instrument_info = astrooda_jemx_instrument_info();
+function astrooda_spi_acs_uninstall() {
+  $instrument_info = astrooda_spi_acs_instrument_info();
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   
   if (array_key_exists('help_page_nid', $astrooda_settings ['instruments'] [$instrument_info['name']])) {

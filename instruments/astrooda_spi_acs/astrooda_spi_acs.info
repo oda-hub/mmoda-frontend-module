@@ -1,0 +1,8 @@
+name = Astrooda SPI-ACS
+description = Astro Online Data Analysis module for SPI-ACS
+core = 7.x
+dependencies[] = astrooda
+
+files[] = astrooda.spi_acs.inc
+
+configure = admin/config/astrooda/spi_acs

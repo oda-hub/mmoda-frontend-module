@@ -54,11 +54,11 @@ function astrooda_isgri_install() {
   // add help node
   $node_array = isgri_help_page_node_export_features_default ();
   $import_output = node_export_import ( $node_array ['code_string'] );
-  print var_dump ( $import_output );
-  print "--------------------\n";
-  print join ( "\n", $import_output ['output'] ) . "\n";
+  //print var_dump ( $import_output );
+  //print "--------------------\n";
+  //print join ( "\n", $import_output ['output'] ) . "\n";
   if ($import_output ['success']) {
-    print "New help page nid :" . $import_output ['nids'] [0] . "\n";
+    //print "New help page nid :" . $import_output ['nids'] [0] . "\n";
     $node = node_load ( $import_output ['nids'] [0] );
     $node->status = 1;
     node_save ( $node );

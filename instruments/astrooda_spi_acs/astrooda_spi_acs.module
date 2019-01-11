@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+function astrooda_spi_acs_enable() {
+  $astrooda_settings = variable_get('astrooda_settings');
+  $astrooda_settings['instruments']['spi_acs']['enabled'] = true;
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+}
+
+function astrooda_spi_acs_disable() {
+  $astrooda_settings = variable_get('astrooda_settings');
+  $astrooda_settings['instruments']['spi_acs']['enabled'] = false;
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+}
+
+function astrooda_spi_acs_init() {
+}
+
+/**
+ * Implements hook_help().
+ */
+function astrooda_spi_acs_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#astrooda_spi_acs' :
+      $output = '<p>';
+      $output .= t ( "Astrooda SPI-ACS." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+
+function astrooda_spi_acs_permission() {
+  return array (
+      'administer astrooda spi_acs' => array (
+          'description' => t ( 'Administer Astrooda SPI-ACS' ),
+          'title' => t ( 'Administer Astrooda SPI-ACS' ),
+          'restrict access' => TRUE
+      ),
+      'access astrooda spi_acs' => array (
+          'description' => t ( 'Access Astrooda SPI-ACS' ),
+          'title' => t ( 'Access Astrooda SPI-ACS' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function astrooda_spi_acs_menu() {
+  $items = array ();
+  
+  $items ['admin/config/astrooda/spi_acs'] = array (
+      'title' => 'Administer Astrooda SPI-ACS',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'astrooda_spi_acs_admin_settings'
+      ),
+      'description' => 'Edit Astrooda SPI-ACS settings.',
+      'file' => 'astrooda_spi_acs.admin.inc'
+  );
+  // 'weight' => -10,
+  
+  return $items;
+}
+

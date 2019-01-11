@@ -933,7 +933,27 @@
 			}, {
 				extend : "remove",
 				editor : editor
-			} ],
+			},
+			{
+        text: 'Save as TXT',
+        action: function ( e, dt, button, config ) {
+            var data = dt.buttons.exportData();
+            data.header[0]="meta_ID";
+            var file_content='';
+        		for (var i = 0; i < data.header.length; i++) {
+        			data.header[i]= data.header[i].replace(' ', '_');
+        		}
+        		file_content = data.header.join(' ') + "\n";
+        		for (var i = 0; i < data.body.length; i++) {
+        			data.body[i][0]= i;
+          		file_content+= data.body[i].join(' ') + "\n";       			
+        		}
+            $.fn.dataTable.fileSave(
+                new Blob( [ file_content ] ),
+                'catalog.txt'
+            );
+        }
+    }],
 			select : {
 				style : 'os',
 				selector : 'td:first-child'
