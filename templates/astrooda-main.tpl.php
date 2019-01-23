@@ -45,7 +45,9 @@
  */
 ?>
 <!-- Modal -->
-<div id="ldialog" class="modal fade" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div id="ldialog" class="modal fade astrooda-log" tabindex='-1' role="dialog" aria-hidden="true" data-backdrop="static"
+  data-keyboard="false"
+>
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -59,14 +61,16 @@
       </div>
       <div class="modal-body">
         <div class="legend">
-          <div class="legend-element waiting"></div>
-          Waiting
+          <div class="legend-element preparing"></div>
+          Preparing
           <div class="legend-element calculating"></div>
           Calculating
           <div class="legend-element calculated"></div>
           Done
           <div class="legend-element from-cache"></div>
           Restored from cache
+          <div class="legend-element analysis-exception"></div>
+          Analysis exception
         </div>
         <div class="summary"></div>
         <div class="more-less-details">More details &gt;</div>
@@ -83,14 +87,15 @@
   </div>
 </div>
 <!-- Panel -->
-<div id="astrooda_panel_model" class="result-panel panel panel-default panel-'+product_type+' ldraggable ">
+<div id="astrooda_panel_model" class="result-panel panel panel-default ldraggable ">
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span class="panel-toolbox pull-right"> <span class="date">@ '+datetime+'</span> <span
       class="clickable"
     ><i class="fa fa-chevron-up"></i></span> <span class="fa fa-times close-panel"></span>
     </span>
   </div>
-  <div class="panel-body resizable"></div>
+  <div class="panel-body"></div>
+  <div class="panel-footer"></div>
 </div>
 <?php  ?>
 <div>
@@ -104,8 +109,9 @@
 
    <div class="content" <?=$content_attributes?>>
     <div class="panel panel-default">
-      <div class="panel-heading">Session ID : <?=$session_id?>, count= <?=$session_count?></div>
-      <div id="formwrapper">
+      <!--  div class="panel-heading">Session ID : <?=$session_id?>, count= <?=$session_count?></div-->
+      <div class="panel-heading"></div>
+          <div id="formwrapper">
         <div class="common-params">
         <?=render($common_form)?>
       </div>
@@ -114,14 +120,17 @@
           <div class="panel-body">
             <div class="tabs">
               <ul class="nav nav-tabs">
-                <li class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
-                <li><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
-                <li><a href="#mockup" data-toggle="tab">MOCK instrument</a></li>
+                <li id="integral-isgri-tab" class="active"><a href="#integral-isgri" data-toggle="tab">INTEGRAL ISGRI</a></li>
+                <!--
+                <li id="integral-jemx-tab"><a href="#integral-jemx" data-toggle="tab">INTEGRAL JEM-X</a></li>
+                <li id="polar-tab"><a href="#polar" data-toggle="tab">Polar</a></li>
+                <li id="multi-product-lc-tab"><a href="#multi-product-lc" data-toggle="tab">Light Curves</a></li>
+                -->
               </ul>
               <div class="tab-content">
                 <div class="instrument-panel tab-pane fade in active" id="integral-isgri">
                   <div id="isgri-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/isgri-help-page">Help</a>
+                    <a class="panel-help" href="astrooda/help/isgri">Help</a>
                   </div>
                   <div id="isgri-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
@@ -129,9 +138,11 @@
                   </div>
                   </div>
                 </div>
+                
+                <!--
                 <div class="instrument-panel tab-pane fade in" id="integral-jemx">
                   <div id="jemx-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/jemx-help-page">Help</a>
+                    <a class="panel-help" href="astrooda/help/jemx">Help</a>
                   </div>
                   <div id="jemx-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
@@ -139,16 +150,28 @@
                   </div>
                   </div>
                 </div>
-                <div class="instrument-panel tab-pane fade in" id="mockup">
-                  <div id="mockup-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="astrooda/help/mockup-help-page">Help</a>
+                <div class="instrument-panel tab-pane fade in" id="polar">
+                  <div id="polar-toolbox" class="instrument-toolbox">
+                    <a class="panel-help" href="astrooda/help/polar">Help</a>
                   </div>
-                  <div id="mockup-params" class="panel panel-default instrument-params-panel">
+                  <div id="polar-params" class="panel panel-default instrument-params-panel">
                     <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($mockup_form)?>
+                    <div class="panel-body"><?=render($polar_form)?>
                   </div>
                   </div>
                 </div>
+                <div class="instrument-panel tab-pane fade in" id="multi-product-lc">
+                  <div id="multi-product-lc-toolbox" class="instrument-toolbox">
+                    <a class="panel-help" href="astrooda/help/multi-product-lc">Help</a>
+                  </div>
+                  <div id="multi-product-lc-params" class="panel panel-default instrument-params-panel">
+                    <div class="panel-heading">Parameters :</div>
+                    <div class="panel-body"><?=render($multi_product_lc_form)?>
+                  </div>
+                  </div>
+                </div>
+                -->
+                
               </div>
             </div>
           </div>
@@ -156,3 +179,4 @@
       </div>
     </div>
   </div>
+</div>

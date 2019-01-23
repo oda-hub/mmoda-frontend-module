@@ -14,7 +14,9 @@ function astrooda_init() {
   module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
   module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
   module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
+  module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
+  //module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
 }
 
 /**
@@ -92,9 +94,9 @@ function astrooda_block_view($delta) {
       $block = array (
           'subject' => t ( "Astro Online Data Analysis" ),
           'content' => astrooda_main_block_content ()
-      )
+      );
       // 'content' => "A new content",
-      ;
+      
       break;
   }
   return $block;
@@ -110,8 +112,6 @@ function astrooda_main_block_content() {
    * return ('');
    * astrooda_block_content ();
    */
-  $libraries_OK = True;
-  
   if (session_status () != PHP_SESSION_NONE) {
     session_destroy ();
   }
@@ -129,13 +129,13 @@ function astrooda_main_block_content() {
   $session_count = $_SESSION ['count'];
   
   if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
-    $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
+    return;
   }
   
   if (! ($library_mpld3 = libraries_load ( 'mpld3' )) || empty ( $library_mpld3 ['loaded'] )) {
-    $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load mplD3 library.' ), 'error' );
+    return;
   }
   
   $libname = 'bootstrap-form-validator';
@@ -155,8 +155,9 @@ function astrooda_main_block_content() {
   if (! ($library = libraries_load ( $libname )) || empty ( $library ['loaded'] )) {
     $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
+    return;
   }
-    
+  
   if (! ($library_datatables = libraries_load ( 'datatables' )) || empty ( $library_datatables ['loaded'] )) {
  //   $libraries_OK = False;
  //   drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
@@ -164,6 +165,10 @@ function astrooda_main_block_content() {
   
   if (! $libraries_OK) {
     return;
+  }
+  if (! ($library_bokeh = libraries_load ( 'bokeh' )) || empty ( $library_bokeh ['bokeh'] )) {
+    // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+    // return;
   }
   
   drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
@@ -180,7 +185,9 @@ function astrooda_main_block_content() {
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
   $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
   $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
-  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
+//  $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
+  $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
+  $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
   // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
   
   // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets
@@ -266,26 +273,42 @@ function astrooda_libraries_info() {
           )
       )
   );
-  error_log('Just befor datatables');
+  
   $libraries ['datatables'] = array (
       'name' => 'Table plug-in for jQuery',
       'vendor url' => 'https://datatables.net/',
       'download url' => 'https://datatables.net/download/index',
-      'version arguments' => array (
-          'file' => 'jquery.dataTables.js', // Could be any file with version info
-          'pattern' => '/version +(\d+\.\d+\.\d+)$/'
-      ),
+      // 'version arguments' => array (
+      // 'file' => 'datatables.js', // Could be any file with version info
+      // 'pattern' => '/version +(\d+\.\d+\.\d+)$/'
+      // ),
+      'version callback' => 'short_circuit_version',
       'files' => array (
           'js' => array (
-              'jquery.dataTables.min.js'
+              'datatables.min.js',
+              'Select/js/dataTables.select.min.js',
+              'Buttons/js/dataTables.buttons.min.js',
+              'Responsive/js/dataTables.responsive.min.js',
+              'Editor/js/dataTables.editor.min.js',
+              'Editor/js/editor.bootstrap.min.js',
+          ),
+          'css' => array (
+              //'datatables.min.css',
+              'dataTables.bootstrap.min.css',
+              'Buttons/css/buttons.dataTables.min.css',
+              'Responsive/css/responsive.dataTables.min.css',
+              //'Editor/css/editor.dataTables.min.css',
+              'Select/css/select.dataTables.min.css',
+              'Editor/css/editor.bootstrap.css',
           )
       )
-  );
+  )
+  ;
   $libraries ['bootstrap-form-validator'] = array (
       'name' => 'Bootstrap Form Validator library',
       'vendor url' => 'http://bootstrapvalidator.com',
       'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
-      'version callback' => 'astrooda_bootstrapValidator_version_callback',
+      'version callback' => 'short_circuit_version',
       /*
       'version arguments' => array (
           'file' => 'js/bootstrapValidator.min.js', // Could be any file with version info
@@ -298,9 +321,26 @@ function astrooda_libraries_info() {
       )
   );
   
+  $libraries ['bokeh'] = array (
+      'name' => 'Bokeh',
+      'vendor url' => 'https://bokeh.pydata.org',
+      'download url' => 'https://bokeh.pydata.org',
+      'version callback' => 'short_circuit_version',
+      'files' => array (
+          'js' => array (
+              'bokeh.min.js',
+              'bokeh-widgets.min.js'
+          ),
+          'css' => array (
+              'bokeh.min.css',
+              'bokeh-widgets.min.css'
+          )
+      )
+  );
+  
   return $libraries;
 }
-function astrooda_bootstrapValidator_version_callback() {
+function short_circuit_version() {
   // use some fancy magic to get the version number... or don't
   return TRUE;
 }

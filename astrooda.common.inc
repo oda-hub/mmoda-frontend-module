@@ -31,7 +31,7 @@ function astrooda_common($form, &$form_state) {
       '#required' => TRUE,
       '#parent_classes' => array (
           'form-group',
-          'col-md-10'
+          ''
       ),
       '#label_classes' => array (
           'control-label'
@@ -42,19 +42,16 @@ function astrooda_common($form, &$form_state) {
           )
       ),
       // 'data-validate' => 'false'
-      '#prefix' => '<div class="row">'
+      '#prefix' => '<div class="row"><div class="col-md-12"><div class="input-group form-item">'
   );
   
   $form ['resolve_src_name'] = array (
       '#type' => 'submit',
       '#name' => 'resolve_name',
       '#value' => t ( "Resolve" ),
-      // '#description' => t ( "The right ascension." ),
-      // '#parent_classes' => array('form-group', 'col-md-2'),
-      // '#label_classes' => array('control-label'),
       '#attributes' => array (
           'class' => array (
-              ''
+              'btn-primary', 'form-item'
           )
       ),
       '#ajax' => array (
@@ -66,8 +63,8 @@ function astrooda_common($form, &$form_state) {
       ),
       // 'message' => t ( 'Resolving name using ').'<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>'.t(' respectively NED, Simbad and VizieR...' )
       
-      '#prefix' => '<div id="resolve-src-name" class="form-item col-md-2 form-group align-bottom"><label class="control-label">&nbsp;</label>',
-      '#suffix' => '</div></div>'
+      '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
+      '#suffix' => '</span></div></div></div>'
   );
   
   $form ['radec'] = array (
@@ -94,9 +91,9 @@ function astrooda_common($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-between' => 'true',
-          'data-bv-between-min' => 0,
-          'data-bv-between-max' => 360
+//           'data-bv-between' => 'true',
+//           'data-bv-between-min' => 0,
+//           'data-bv-between-max' => 360
       )
   );
   
@@ -118,9 +115,9 @@ function astrooda_common($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-between' => 'true',
-          'data-bv-between-min' => - 90,
-          'data-bv-between-max' => 90
+//           'data-bv-between' => 'true',
+//           'data-bv-between-min' => - 90,
+//           'data-bv-between-max' => 90
       )
   );
   
@@ -191,7 +188,7 @@ function astrooda_common($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Time unit" ),
       '#options' => array (
-          'isot' => 'ISO',
+          'isot' => 'ISO/ISOT',
           'mjd' => 'MJD'
       ),
       '#default_value' => 'iso',
