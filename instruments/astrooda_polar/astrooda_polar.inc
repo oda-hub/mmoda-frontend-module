@@ -16,8 +16,6 @@ function astrooda_polar($form, &$form_state) {
   $mform_id= __FUNCTION__.'_';
   
   $form ['#action'] = '/dispatch-data/run_analysis';
-  // $form['#action'] = '/test_post.php';
-  // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'polar-form');
 
@@ -194,8 +192,7 @@ function astrooda_polar($form, &$form_state) {
       ),
       '#suffix' => '</div>'
   );
-  
-  
+
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),

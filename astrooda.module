@@ -15,18 +15,13 @@ function astrooda_init() {
   module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
-  if (!isset($astrooda_settings['instruments'])) return;
+  if (! isset ( $astrooda_settings ['instruments'] ))
+    return;
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
     if ($instrument ['enabled']) {
       module_load_include ( 'inc', 'astrooda_' . $name, 'astrooda_' . $name );
     }
   }
-  
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
 }
 
 /**
@@ -129,12 +124,7 @@ function astrooda_main_block_content() {
    * return ('');
    * astrooda_block_content ();
    */
-//   if (session_status () != PHP_SESSION_NONE) {
-//     session_destroy ();
-//   }
-//   if (session_status() == PHP_SESSION_NONE) {
-//    session_start ();
-//   }
+
   $session_id = session_id ();
   
   if (! isset ( $_SESSION ['count'] )) {
@@ -143,6 +133,19 @@ function astrooda_main_block_content() {
     $_SESSION ['count'] ++;
   }
   $session_count = $_SESSION ['count'];
+  $params = drupal_get_query_parameters ();
+  if ($params) {
+    $_SESSION ['url_parameters'] = $params;
+  } else if (array_key_exists('url_parameters', $_SESSION)) {
+    drupal_add_js ( array (
+        'url_parameters' => $_SESSION ['url_parameters']
+    ), array (
+        'type' => 'setting',
+        'scope' => JS_DEFAULT
+    ) );
+    
+    unset($_SESSION ['url_parameters']);
+  }
   
   if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
     drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
@@ -194,13 +197,13 @@ function astrooda_main_block_content() {
   error_log ( print_r ( $astrooda_settings, true ) );
   
   // require_once drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.common.inc';
-  if (empty($astrooda_settings ['instruments'])) {
+  if (empty ( $astrooda_settings ['instruments'] )) {
     return theme ( 'astrooda_main_block_content', $items );
   }
   
   $items ['session_id'] = $session_id;
   $items ['session_count'] = $session_count;
-  $items ['astrooda_debug'] = variable_get('astrooda_debug');
+  $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
   
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
   error_log ( "---------------------------------------------" );
@@ -409,8 +412,8 @@ function astrooda_form_alter(&$form, &$form_state, $form_id) {
   // }
   // }
   // }
-  error_log ( $form ['#id'] );
-  $filename = '/tmp/momo/form_' . $form_id . '.php';
+  //error_log ( $form ['#id'] );
+  //$filename = '/tmp/momo/form_' . $form_id . '.php';
   // unlink($filename);
   
   // $f = fopen ( $filename, 'w' );

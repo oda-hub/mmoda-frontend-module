@@ -237,6 +237,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
+  
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.common' );
   
   return ($form);
