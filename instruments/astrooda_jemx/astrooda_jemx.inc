@@ -20,8 +20,6 @@ function astrooda_jemx($form, &$form_state) {
   $mform_id= __FUNCTION__.'_';
   
   $form ['#action'] = '/dispatch-data/run_analysis';
-  // $form['#action'] = '/test_post.php';
-  // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
   
   
@@ -375,77 +373,7 @@ function astrooda_jemx($form, &$form_state) {
       ),
       '#suffix' => '</div>'
   );
-  
-//   $form ['image_scale_min'] = array (
-//       '#type' => 'textfield',
-//       '#title' => t ( "Significance Min" ),
-//       '#description' => t ( "" ),
-//       '#default_value' => '',
-//       '#states' => array (
-//           'visible' => array (
-//               ':input[name="'.$mform_id.'product_type"]' => array (
-//                   'value' => 'jemx_image'
-//               )
-//           ),
-//           'enabled' => array (
-//               ':input[name="'.$mform_id.'product_type"]' => array (
-//                   array (
-//                       'value' => 'jemx_image'
-//                   )
-//               )
-//           )
-//       ),
-//       '#parent_classes' => array (
-//           'form-group',
-//           'col-md-6'
-//       ),
-//       '#label_classes' => array (
-//           'control-label'
-//       ),
-//       '#attributes' => array (
-//           'class' => array (
-//               'form-control'
-//           ),
-//           'data-bv-numeric' => 'true'
-//       ),
-//       '#prefix' => '<div class="row">'
-//   );
-  
-//   $form ['image_scale_max'] = array (
-//       '#type' => 'textfield',
-//       '#title' => t ( "Significance Max" ),
-//       '#description' => t ( "" ),
-//       '#default_value' => '',
-//       '#states' => array (
-//           'visible' => array (
-//               ':input[name="'.$mform_id.'product_type"]' => array (
-//                   'value' => 'jemx_image'
-//               )
-//           ),
-//           'enabled' => array (
-//               ':input[name="'.$mform_id.'product_type"]' => array (
-//                   array (
-//                       'value' => 'jemx_image'
-//                   )
-//               )
-//           )
-//       ),
-//       '#parent_classes' => array (
-//           'form-group',
-//           'col-md-6'
-//       ),
-//       '#label_classes' => array (
-//           'control-label'
-//       ),
-//       '#attributes' => array (
-//           'class' => array (
-//               'form-control'
-//           ),
-//           'data-bv-numeric' => 'true'
-//       ),
-//       '#suffix' => '</div>'
-//   );
-  
+    
   $form ['user_catalog_file'] = array (
       '#type' => 'file',
       '#title' => t ( "User catalog" ),
@@ -463,7 +391,7 @@ function astrooda_jemx($form, &$form_state) {
           'control-label'
       )
   );
-  
+    
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),

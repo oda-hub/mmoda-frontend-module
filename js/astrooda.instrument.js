@@ -6,6 +6,9 @@
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
 
+	var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]',
+			'user_catalog_file' ];
+
 	// all processing distinct nodes during a request
 	var distinct_nodes;
 
@@ -78,7 +81,7 @@
 							} else {
 								current_nb_attempts_after_failed = 0;
 							}
-							//console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
+							// console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
 							if (query_failed
 									&& (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
 								waitingDialog.hideSpinner();
@@ -109,10 +112,13 @@
 								}
 
 								current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-								current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+								current_ajax_call_params.currentFormData.append('query_status',
+										data.query_status);
 								if (!current_ajax_call_params.currentFormData.has('job_id')) {
-									current_ajax_call_params.currentFormData.append('job_id', job_id);
-									current_ajax_call_params.currentFormData.append('session_id', session_id);
+									current_ajax_call_params.currentFormData.append('job_id',
+											job_id);
+									current_ajax_call_params.currentFormData.append('session_id',
+											session_id);
 								}
 								requestTimer = setTimeout(AJAX_call, 5000);
 							} else {
@@ -330,6 +336,13 @@
 
 	function commonReady() {
 
+		if (window.location.search) {
+			var url_base = document.location.protocol + "//"
+					+ document.location.hostname + document.location.pathname;
+			// redirect to astrooda base url to get rid of the parameters
+			window.location.replace(url_base);
+		}
+
 		$('body').on(
 				'click',
 				'table.lightcurve-table tbody button.copy-multi-product',
@@ -337,7 +350,7 @@
 					var current_row = $(this).parents('tr');
 					var data = current_row.data();
 					var current_panel = $(this).closest('.panel');
-   				var product_type = current_panel.data("product_type");
+					var product_type = current_panel.data("product_type");
 					$('#multi-product-' + product_type + '-tab a').click();
 					return;
 					if (multiproduct_panel_id = data['multiproduct_' + product_type
@@ -410,7 +423,8 @@
 								request_spectrum_form_element = $(this);
 								draw_spectrum_form_elements = new FormData();
 
-								draw_spectrum_form_elements.append('session_id', data.session_id);
+								draw_spectrum_form_elements.append('session_id',
+										data.session_id);
 								draw_spectrum_form_elements.append('query_status', 'ready');
 								draw_spectrum_form_elements.append('job_id', data.job_id);
 								draw_spectrum_form_elements
@@ -589,6 +603,18 @@
 							}
 						});
 
+		$("body").on(
+				'click',
+				'.result-panel .share-query',
+				function(e) {
+					e.preventDefault();
+					var query_parameters_parent_panel = $(this).closest('.result-panel');
+					var query_parameters = query_parameters_parent_panel
+							.data('analysis_paramters');
+					var url = get_query_url(query_parameters);
+					copyToClipboard(url);
+				});
+
 		$("body")
 				.on(
 						'click',
@@ -715,11 +741,11 @@
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			}
-		}).data('bootstrapValidator');//.validate();
+		}).data('bootstrapValidator');// .validate();
 
-//		if (!validator.isValid()) {
-//			validator.disableSubmitButtons(true);
-//		}
+		// if (!validator.isValid()) {
+		// validator.disableSubmitButtons(true);
+		// }
 
 		$('[name^=time_bin_format]', '.instrument-params-panel form').on(
 				'change',
@@ -838,9 +864,9 @@
 					current_ajax_call_params.currentFormData = cloneFormData(formData);
 					if (!current_ajax_call_params.currentFormData.has('query_status')) {
 						current_ajax_call_params.currentFormData.append('query_status',
-						'new');
-						current_ajax_call_params.currentFormData.append('session_id',
-						'new');
+								'new');
+						current_ajax_call_params.currentFormData
+								.append('session_id', 'new');
 						current_ajax_call_params.currentFormData.append('job_id', '');
 					}
 					current_ajax_call_params.action = $(this).attr('action');
@@ -886,6 +912,38 @@
 											});
 							return false;
 						});
+		if (Drupal.settings.hasOwnProperty('url_parameters')) {
+			make_request(Drupal.settings.url_parameters);
+			// console.log('Parameters in url:');
+			// console.log(Drupal.settings.url_parameters);
+		}
+
+	}
+
+	function make_request(request_parameters) {
+		$(
+				".instruments-panel ul.nav-tabs li#" + request_parameters.instrument
+						+ '-tab a').tab('show');
+
+		$('input, textarea, select',
+				'form#astrooda-common, form.' + request_parameters.instrument + '-form')
+				.each(
+						function() {
+							var re = new RegExp('astrooda_?-?'
+									+ request_parameters.instrument + '_?-?');
+							var field_name = $(this).attr('name').replace(re, '');
+
+							if (request_parameters.hasOwnProperty(field_name)) {
+								if ($(this).attr('type') == 'radio') {
+									if ($(this).val() == request_parameters[field_name]) {
+										$(this).click();
+									}
+								} else {
+									$(this).val(request_parameters[field_name]);
+								}
+							}
+						});
+		$('form.' + request_parameters.instrument + '-form').submit();
 
 	}
 
@@ -933,27 +991,23 @@
 			}, {
 				extend : "remove",
 				editor : editor
-			},
-			{
-        text: 'Save as TXT',
-        action: function ( e, dt, button, config ) {
-            var data = dt.buttons.exportData();
-            data.header[0]="meta_ID";
-            var file_content='';
-        		for (var i = 0; i < data.header.length; i++) {
-        			data.header[i]= data.header[i].replace(' ', '_');
-        		}
-        		file_content = data.header.join(' ') + "\n";
-        		for (var i = 0; i < data.body.length; i++) {
-        			data.body[i][0]= i;
-          		file_content+= data.body[i].join(' ') + "\n";       			
-        		}
-            $.fn.dataTable.fileSave(
-                new Blob( [ file_content ] ),
-                'catalog.txt'
-            );
-        }
-    }],
+			}, {
+				text : 'Save as TXT',
+				action : function(e, dt, button, config) {
+					var data = dt.buttons.exportData();
+					data.header[0] = "meta_ID";
+					var file_content = '';
+					for (var i = 0; i < data.header.length; i++) {
+						data.header[i] = data.header[i].replace(' ', '_');
+					}
+					file_content = data.header.join(' ') + "\n";
+					for (var i = 0; i < data.body.length; i++) {
+						data.body[i][0] = i;
+						file_content += data.body[i].join(' ') + "\n";
+					}
+					$.fn.dataTable.fileSave(new Blob([ file_content ]), 'catalog.txt');
+				}
+			} ],
 			select : {
 				style : 'os',
 				selector : 'td:first-child'
@@ -1048,6 +1102,21 @@
 
 	}
 
+	function get_query_url(query_parameters) {
+		var url_parameters = new Array();
+		for ( var parameter in query_parameters) {
+			if (ignore_params_url.indexOf(parameter) == -1) {
+				url_parameters.push({
+					'name' : parameter,
+					'value' : query_parameters[parameter]
+				});
+			}
+		}
+		var currentURL = location.protocol + '//' + location.host
+				+ location.pathname;
+		return (currentURL + '?' + $.param(url_parameters));
+	}
+
 	function only_one_catalog_selection(element_wrapper, element_class,
 			select_all_element, checked_element) {
 		$('input[name=' + checked_element + ']', element_wrapper).on(
@@ -1083,6 +1152,9 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
+		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+				+ datetime
+				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
 				+ showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1209,19 +1281,18 @@
 		var session_id = data.session_id;
 		var job_id = current_panel.data('job_id');
 
-		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');		
-		
-		var files_list= data.file_name[lc_index];
+		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+
+		var files_list = data.file_name[lc_index];
 		if (data.root_file_name) {
 			file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
-			files_list+= ','+data.root_file_name;
-		}
-		else {
-			file_name+= '.gz';
+			files_list += ',' + data.root_file_name;
+		} else {
+			file_name += '.gz';
 		}
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '&file_list=' + files_list
-				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
+				+ '&file_list=' + files_list + '&query_status=ready&job_id=' + job_id
+				+ '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
@@ -1277,6 +1348,9 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
+		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+				+ datetime
+				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
 				+ showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1542,6 +1616,9 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
+		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+				+ datetime
+				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 
 		var toolbar = '<div class="btn-group" role="group">' + downloadButton
 				+ showCataloghtml + showQueryParameters + showLoghtml + '</div>';
