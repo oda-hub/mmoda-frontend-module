@@ -336,13 +336,6 @@
 
 	function commonReady() {
 
-		if (window.location.search) {
-			var url_base = document.location.protocol + "//"
-					+ document.location.hostname + document.location.pathname;
-			// redirect to astrooda base url to get rid of the parameters
-			window.location.replace(url_base);
-		}
-
 		$('body').on(
 				'click',
 				'table.lightcurve-table tbody button.copy-multi-product',
@@ -1112,8 +1105,13 @@
 				});
 			}
 		}
-		var currentURL = location.protocol + '//' + location.host
-				+ location.pathname;
+		var iframeStatus = checkIFrame();
+		var thelocation = window.location;
+		if (iframeStatus == 2) {
+				thelocation = window.parent.location;
+		}
+		var currentURL = thelocation.protocol + '//' + thelocation.host
+				+ thelocation.pathname;
 		return (currentURL + '?' + $.param(url_parameters));
 	}
 
