@@ -53,7 +53,25 @@ function astrooda_isgri_install() {
   
   // add help node
   $node_array = isgri_help_page_node_export_features_default ();
-  $import_output = node_export_import ( $node_array ['code_string'] );
+  global $base_path;
+  global $base_url;
+  //error_log('base_path:'.$base_path);
+  $base_path0 = '/astrooda';
+  $node_array_test = preg_replace('/"\/sites\/default\/files\//', '"'.$base_path0.'/sites/default/files/', $node_array ['code_string']);
+  //error_log($node_array_test);
+  if ($wrapper = file_stream_wrapper_get_instance_by_uri('public://')) {
+    $realpath = $wrapper->realpath();
+    // ...
+  }
+//   $lfile = fopen ( '/tmp/astrooda_help_isgri.php', "w" );
+//   fwrite ( $lfile, 'realpath:'.$realpath."\n");
+//   fwrite ( $lfile, 'base_url:'.$base_url."\n");
+//   fwrite ( $lfile, 'base_path:'.$base_path."\n");
+//   fwrite ( $lfile, $node_array_test);
+//   fclose ( $lfile );
+  
+  //$import_output = node_export_import ( $node_array ['code_string'] );
+  $import_output = node_export_import ( $node_array_test );
   //print var_dump ( $import_output );
   //print "--------------------\n";
   //print join ( "\n", $import_output ['output'] ) . "\n";

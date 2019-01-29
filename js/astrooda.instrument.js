@@ -70,7 +70,9 @@
 							session_id = '';
 							if (data['job_monitor'].hasOwnProperty('job_id')) {
 								job_id = data['job_monitor']['job_id'];
-								session_id = data['job_monitor']['session_id'];
+							}
+							if (data.hasOwnProperty('session_id')) {
+								session_id = data['session_id'];
 							}
 							waitingDialog.setHeaderMessageJobId(session_id);
 							var query_failed = false;
