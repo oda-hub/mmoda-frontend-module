@@ -1152,7 +1152,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
@@ -1348,7 +1348,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
@@ -1616,7 +1616,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 
