@@ -6,6 +6,9 @@
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
 
+	//var ajax_request_timeout= 5 * 60 * 1000; // sets timeout to 5 minutes
+	var ajax_request_timeout= 10 * 1000;
+  
 	var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]',
 			'user_catalog_file' ];
 
@@ -59,7 +62,7 @@
 					dataType : 'json',
 					processData : false,
 					contentType : false,
-					timeout : 5 * 60 * 1000, // sets timeout to 10 seconds
+					timeout : ajax_request_timeout,
 					type : 'POST'
 				})
 				.done(
@@ -168,15 +171,23 @@
 						})
 				.fail(
 						function(jqXHR, textStatus, errorThrown) {
-							console.log('textStatus : ' + textStatus);
+							console.log('textStatus : ' + textStatus +'|');
 							console.log('errorThrown :' + errorThrown);
 							console.log('jqXHR');
 							console.log(jqXHR);
 							waitingDialog.hideSpinner();
+							var message= get_current_date_time() + ' ';
+							if (errorThrown == 'timeout') {
+								message += ' Timeout ('+(ajax_request_timeout/1000)+'s) !';
+							}
+							else if (jqXHR.status > 0) {
+								message += textStatus + ' '+ jqXHR.status + ', ' + errorThrown;
+							}
+							else {
+								message += 'Can not reach the data server, unknown error';
+							}
 							waitingDialog
-									.append(
-											get_current_date_time()
-													+ ' Error : can not reach the data server. Please try later ...',
+									.append('<div>' + message +'</div>',
 											'danger');
 						});
 
