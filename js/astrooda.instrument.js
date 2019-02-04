@@ -6,6 +6,9 @@
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
 
+	var ajax_request_timeout= 5 * 60 * 1000; // sets timeout to 5 minutes
+	// var ajax_request_timeout= 10 * 1000; // test timeout 
+  
 	var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]',
 			'user_catalog_file' ];
 
@@ -59,7 +62,7 @@
 					dataType : 'json',
 					processData : false,
 					contentType : false,
-					timeout : 5 * 60 * 1000, // sets timeout to 10 seconds
+					timeout : ajax_request_timeout,
 					type : 'POST'
 				})
 				.done(
@@ -70,7 +73,9 @@
 							session_id = '';
 							if (data['job_monitor'].hasOwnProperty('job_id')) {
 								job_id = data['job_monitor']['job_id'];
-								session_id = data['job_monitor']['session_id'];
+							}
+							if (data.hasOwnProperty('session_id')) {
+								session_id = data['session_id'];
 							}
 							waitingDialog.setHeaderMessageJobId(session_id);
 							var query_failed = false;
@@ -135,6 +140,11 @@
 									}
 									$('#ldialog').find('.progress').hide();
 								}
+								data.products['session_id_old'] = data.products.session_id;
+								data.products['session_id'] = data.session_id;
+								console.log('Dispatcher response:');
+								console.log(data);
+
 								if (data.products.hasOwnProperty('image')) {
 									if (data.products.hasOwnProperty('download_file_name')
 											&& data.products.download_file_name
@@ -166,15 +176,23 @@
 						})
 				.fail(
 						function(jqXHR, textStatus, errorThrown) {
-							console.log('textStatus : ' + textStatus);
+							console.log('textStatus : ' + textStatus +'|');
 							console.log('errorThrown :' + errorThrown);
 							console.log('jqXHR');
 							console.log(jqXHR);
 							waitingDialog.hideSpinner();
+							var message= get_current_date_time() + ' ';
+							if (errorThrown == 'timeout') {
+								message += ' Timeout ('+(ajax_request_timeout/1000)+'s) !';
+							}
+							else if (jqXHR.status > 0) {
+								message += textStatus + ' '+ jqXHR.status + ', ' + errorThrown;
+							}
+							else {
+								message += 'Can not reach the data server, unknown error';
+							}
 							waitingDialog
-									.append(
-											get_current_date_time()
-													+ ' Error : can not reach the data server. Please try later ...',
+									.append('<div>' + message +'</div>',
 											'danger');
 						});
 
@@ -335,13 +353,6 @@
 	}
 
 	function commonReady() {
-
-		if (window.location.search) {
-			var url_base = document.location.protocol + "//"
-					+ document.location.hostname + document.location.pathname;
-			// redirect to astrooda base url to get rid of the parameters
-			window.location.replace(url_base);
-		}
 
 		$('body').on(
 				'click',
@@ -952,13 +963,14 @@
 		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
 				'image-catalog', datetime);
 
+		var catalog_panel = $('#' + panel_ids.panel_id);
 		$('#' + panel_ids.panel_body_id).append(
 				'<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
 
 		$(afterDiv).data({
 			catalog_panel_id : '#' + panel_ids.panel_id
 		});
-		$('#' + panel_ids.panel_id).data({
+		catalog_panel.data({
 			catalog_parent_panel_id : afterDiv
 		});
 
@@ -969,14 +981,15 @@
 									+ datetime
 									+ '" >Use catalog</button><div class="clearfix"></div>');
 		}
-
+		
 		var editor = new $.fn.dataTable.Editor({
 			table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
 			fields : catalog.fields,
 		});
+		
 		var catalog_container = $(".catalog-wrapper .astro-ana", '#'
 				+ panel_ids.panel_id);
-
+		
 		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
@@ -1007,6 +1020,22 @@
 					}
 					$.fn.dataTable.fileSave(new Blob([ file_content ]), 'catalog.txt');
 				}
+			}, {
+				text : 'Add query object',
+				action : function(e, dt, button, config) {
+					var lrow={};
+					$.each( catalog.fields, function( index, value ){
+						lrow[value.name]= null;
+					});					
+					lrow["src_names"]= $('input[name=src_name]', 'form#astrooda-common').val();
+					lrow['ra']= $('input[name=RA]', 'form#astrooda-common').val();
+					lrow['dec']= $('input[name=DEC]', 'form#astrooda-common').val();
+					lrow["DT_RowId"]= 'row_'+ catalog_panel.data('currentRowId');
+					catalog_panel.data('currentRowId', catalog_panel.data('currentRowId')+ 1);
+					console.log('lrow');
+					console.log(lrow);
+					dt.row.add(lrow).draw( false );
+				}
 			} ],
 			select : {
 				style : 'os',
@@ -1014,7 +1043,7 @@
 			},
 			order : [ [ 1, 'asc' ] ],
 		});
-
+		
 		// Activate inline edit on click of a table cell
 		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
 			editor.inline(this);
@@ -1039,14 +1068,15 @@
 			});
 		}
 
-		$('#' + panel_ids.panel_id).data({
-			dataTable : dataTable
+		catalog_panel.data({
+			dataTable : dataTable,
+			currentRowId : catalog.data.length
 		});
 		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
 				'Source : ' + source_name + ' - Image catalog');
 
-		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
+		catalog_panel.highlight_result_panel(offset);
 
 	}
 
@@ -1112,8 +1142,13 @@
 				});
 			}
 		}
-		var currentURL = location.protocol + '//' + location.host
-				+ location.pathname;
+		var iframeStatus = checkIFrame();
+		var thelocation = window.location;
+		if (iframeStatus == 2) {
+				thelocation = window.parent.location;
+		}
+		var currentURL = thelocation.protocol + '//' + thelocation.host
+				+ thelocation.pathname;
 		return (currentURL + '?' + $.param(url_parameters));
 	}
 
@@ -1152,7 +1187,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
@@ -1348,7 +1383,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
@@ -1616,7 +1651,7 @@
 				+ datetime + '" >Log</button>';
 		var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="'
 				+ datetime + '" >Query parameters</button>';
-		var showQueryParameters = '<button class="btn btn-default share-query"  type="button" data-datetime="'
+		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 

@@ -2,18 +2,38 @@ Date.prototype.getJulian = function() {
 	return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
 }
 
-// Sleep time in seconds
+//Sleep time in seconds
 function sleep (sleepDuration) {
 	var now = new Date().getTime();
-  while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
+	while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
+}
+
+function checkIFrame() {
+	try {
+		if (window.parent.location.href !=  null && window.parent.location.href != window.location.href) {
+			locationHref= window.parent.location.href;
+			// --- in iframe, same domain
+			return(2);
+		}
+		else if (window.parent.location.href !=  null) {
+			// --- not in iframe
+			return(1);
+		}
+	}
+	catch(err) {
+		// --- permission denied, not in the same domain (iFrameStatus == 0);
+		return(0)
+	}
+	// --- in iframe, not in the same domain (iFrameStatus == 0) ;
+	return(0)
 }
 
 function pad(number, length) {
-  var str = '' + number;
-  while (str.length < length) {
-      str = '0' + str;
-  }
-  return str;
+	var str = '' + number;
+	while (str.length < length) {
+		str = '0' + str;
+	}
+	return str;
 }
 
 function get_today_mjd() {
@@ -45,102 +65,102 @@ function validate_scws(value, nb_scws) {
 }
 
 function HMS2Decimal (hmsVal, decimalVal) {
-  decimalVal= 0;
-  if (hmsVal.match(/^ *$/)) {
-    decimalVal= -1;
-    return(true);
-  }
-  var sign         = '[+-]?';
-  var integer      = sign+'\\d{1,3}';
-  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
-  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
-  var hr_min       = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
-  var hr_min_sec   = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+	decimalVal= 0;
+	if (hmsVal.match(/^ *$/)) {
+		decimalVal= -1;
+		return(true);
+	}
+	var sign         = '[+-]?';
+	var integer      = sign+'\\d{1,3}';
+	var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+	var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
+	var hr_min       = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+	var hr_min_sec   = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
 
-  var integer_regexp      = new RegExp('^('+integer+')$');
-  var decimal_regexp      = new RegExp('^('+decimal+')$');
-  var hr_min_regexp       = new RegExp('^('+hr_min+')$');
-  var hr_min_sec_regexp   = new RegExp('^('+hr_min_sec+')$');
-  var bad_value = {
-  		valid: false,
-  		message: 'Must be in degrees [0,360] or H:M:S'
-  	};
-  if (hmsVal.match(integer_regexp)) { // coordinate is in integral hours
-    if (hmsVal *1 < 25) decimalVal = hmsVal * 15; // return decimal
-    // degrees
-    else decimalVal = hmsVal * 1;
-  } else if (hmsVal.match(decimal_regexp)) { // coordinate is decimal, so
-    // assume degrees
-    decimalVal = hmsVal*1; // return decimal degrees
-  } else if (hmsVal.match(hr_min_sec_regexp)) {
-    var hms = hmsVal.split(/[:|\s]+/);
-    if (hms[0].match(/^-/)) { hms[1] *= -1; hms[2] *= -1; }
-    decimalVal = (hms[0]*1+ (hms[1]/60.0) + (hms[2]/3600.0)) * 15.0;
-  } else if (hmsVal.match(hr_min_regexp)) {
-    var hms = hmsVal.split(/[:|\s]+/);
-    if (hms[0].match(/^-/)) { hms[1] *= -1; }
-    decimalVal = (hms[0]*1 + (hms[1]/60.0)) * 15.0;
-  } else {
-    return(bad_value);
-  }
+	var integer_regexp      = new RegExp('^('+integer+')$');
+	var decimal_regexp      = new RegExp('^('+decimal+')$');
+	var hr_min_regexp       = new RegExp('^('+hr_min+')$');
+	var hr_min_sec_regexp   = new RegExp('^('+hr_min_sec+')$');
+	var bad_value = {
+			valid: false,
+			message: 'Must be in degrees [0,360] or H:M:S'
+	};
+	if (hmsVal.match(integer_regexp)) { // coordinate is in integral hours
+		if (hmsVal *1 < 25) decimalVal = hmsVal * 15; // return decimal
+		// degrees
+		else decimalVal = hmsVal * 1;
+	} else if (hmsVal.match(decimal_regexp)) { // coordinate is decimal, so
+		// assume degrees
+		decimalVal = hmsVal*1; // return decimal degrees
+	} else if (hmsVal.match(hr_min_sec_regexp)) {
+		var hms = hmsVal.split(/[:|\s]+/);
+		if (hms[0].match(/^-/)) { hms[1] *= -1; hms[2] *= -1; }
+		decimalVal = (hms[0]*1+ (hms[1]/60.0) + (hms[2]/3600.0)) * 15.0;
+	} else if (hmsVal.match(hr_min_regexp)) {
+		var hms = hmsVal.split(/[:|\s]+/);
+		if (hms[0].match(/^-/)) { hms[1] *= -1; }
+		decimalVal = (hms[0]*1 + (hms[1]/60.0)) * 15.0;
+	} else {
+		return(bad_value);
+	}
 
-  return(valid_RA(decimalVal) ? true : bad_value);
+	return(valid_RA(decimalVal) ? true : bad_value);
 
 } // end--HMS2Decimal
 
 function valid_RA(decimalVal) {
-  if (decimalVal < -360 || decimalVal > 360) return(false);
-  if (decimalVal < 0.0) {
-    decimalVal += 360.0;
-  } else if (decimalVal == 360.0) {
-    decimalVal = 0.0;
-  }
-  return(true);
+	if (decimalVal < -360 || decimalVal > 360) return(false);
+	if (decimalVal < 0.0) {
+		decimalVal += 360.0;
+	} else if (decimalVal == 360.0) {
+		decimalVal = 0.0;
+	}
+	return(true);
 } // end--correctRA
 
 function DMS2Decimal (dmsVal, decimalVal) {
 
-  decimalVal= 0;
-  if (dmsVal.match(/^ *$/)) {
-    decimalVal= -1;
-    return(true);
-  }
-  
-  var sign         = '[+-]?';
-  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
-  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
-  var deg_min       = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
-  var deg_min_sec   = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+	decimalVal= 0;
+	if (dmsVal.match(/^ *$/)) {
+		decimalVal= -1;
+		return(true);
+	}
 
-  var decimal_regexp      = new RegExp('^('+decimal+')$');
-  var deg_min_regexp      = new RegExp('^('+deg_min+')$');
-  var deg_min_sec_regexp  = new RegExp('^('+deg_min_sec+')$');
-  var bad_value = {
-  		valid: false,
-  		message: 'Must be in degrees [-90,+90] or D:M:S'
-  	};
-  
-  if (dmsVal.match(decimal_regexp)) { // coordinate is decimal, so assume
-    // degrees
-    decimalVal = dmsVal*1; // return decimal degrees
-  } else if (dmsVal.match(deg_min_sec_regexp)) {
-    var dms = dmsVal.split(/[:|\s]+/);
-    if (dms[0].match(/^-/)) { dms[1] *= -1; dms[2] *= -1; }
-    decimalVal = dms[0]*1+ (dms[1]/60.0) + (dms[2]/3600.0);
-  } else if (dmsVal.match(deg_min_regexp)) {
-    var dms = dmsVal.split(/[:|\s]+/);
-    if (dms[0].match(/^-/)) { dms[1] *= -1; }
-    decimalVal = dms[0]*1 + (dms[1]/60.0);
-  } else {
-    return(bad_value);
-  }
-  return(valid_DEC(decimalVal) ? true : bad_value);
+	var sign         = '[+-]?';
+	var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+	var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
+	var deg_min       = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+	var deg_min_sec   = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+
+	var decimal_regexp      = new RegExp('^('+decimal+')$');
+	var deg_min_regexp      = new RegExp('^('+deg_min+')$');
+	var deg_min_sec_regexp  = new RegExp('^('+deg_min_sec+')$');
+	var bad_value = {
+			valid: false,
+			message: 'Must be in degrees [-90,+90] or D:M:S'
+	};
+
+	if (dmsVal.match(decimal_regexp)) { // coordinate is decimal, so assume
+		// degrees
+		decimalVal = dmsVal*1; // return decimal degrees
+	} else if (dmsVal.match(deg_min_sec_regexp)) {
+		var dms = dmsVal.split(/[:|\s]+/);
+		if (dms[0].match(/^-/)) { dms[1] *= -1; dms[2] *= -1; }
+		decimalVal = dms[0]*1+ (dms[1]/60.0) + (dms[2]/3600.0);
+	} else if (dmsVal.match(deg_min_regexp)) {
+		var dms = dmsVal.split(/[:|\s]+/);
+		if (dms[0].match(/^-/)) { dms[1] *= -1; }
+		decimalVal = dms[0]*1 + (dms[1]/60.0);
+	} else {
+		return(bad_value);
+	}
+	return(valid_DEC(decimalVal) ? true : bad_value);
 
 } // end--DMS2Decimal
 
 function valid_DEC(decimalVal) {
-  if (decimalVal < -90 || decimalVal > 90) return(false);
-  return(true);
+	if (decimalVal < -90 || decimalVal > 90) return(false);
+	return(true);
 }
 
 function jsUcfirst(string) 
@@ -236,7 +256,7 @@ var waitingDialog;
 			elt.find('small').addClass('help-block');
 			$('.form-item-RA input.form-control').val('');
 			$('.form-item-DEC input.form-control').val('');
-			//console.log('Error: ' + response.args.message)
+			// console.log('Error: ' + response.args.message)
 		}
 		$('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
 	}
@@ -299,7 +319,7 @@ function get_waitingDialog($modal_dialog) {
 				if (!settings.showCloseInHeader) {
 					$dialog.find('.modal-header .close').hide();
 				}
-				
+
 				if (!settings.showProgressBar) {
 					$dialog.find('.progress').addClass('hidden');
 				}
@@ -308,9 +328,9 @@ function get_waitingDialog($modal_dialog) {
 					$dialog.find('.progress-bar').attr('class', 'progress progress-bar');
 					if (settings.progressType) {
 						$dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
-						}
+					}
 				}
-				
+
 				if (settings.showButton) {
 					$dialog.find('button').show();												
 				}
@@ -320,7 +340,7 @@ function get_waitingDialog($modal_dialog) {
 				$dialog.find('h4').html(title);
 				$dialog.find('.summary').html(message);
 				$dialog.find('.modal-footer button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
-				
+
 				// Adding callbacks
 				if (typeof settings.onHide === 'function') {
 					$dialog.off('hidden.bs.modal').on('hidden.bs.modal',
@@ -409,9 +429,9 @@ function get_waitingDialog($modal_dialog) {
 }
 
 (function($) {
-	
 
-  $.fn.set_panel_draggable = function () {
+
+	$.fn.set_panel_draggable = function () {
 		$(this).draggable({
 			handle: '.panel-heading',
 			stack : '.ldraggable',
@@ -419,34 +439,34 @@ function get_waitingDialog($modal_dialog) {
 		});
 	}
 
-  $.fn.set_collapsible = function () {
-  	// $('#'+panel_id + ' .panel-heading span.clickable').on('click',
+	$.fn.set_collapsible = function () {
+		// $('#'+panel_id + ' .panel-heading span.clickable').on('click',
 		// function(e){
-    	$(this).find('.panel-heading span.clickable').on('click', function(e){
-  		var $this = $(this);
-  		if(!$this.hasClass('panel-collapsed')) {
-  			$this.closest('.panel').find('.panel-body').slideUp();
-  			$this.addClass('panel-collapsed');
-  			$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-  			}
-  		else {
-  			$this.closest('.panel').find('.panel-body').slideDown();
-  			$this.removeClass('panel-collapsed');$this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-  		}
-  	});
-  }
+		$(this).find('.panel-heading span.clickable').on('click', function(e){
+			var $this = $(this);
+			if(!$this.hasClass('panel-collapsed')) {
+				$this.closest('.panel').find('.panel-body').slideUp();
+				$this.addClass('panel-collapsed');
+				$this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+			}
+			else {
+				$this.closest('.panel').find('.panel-body').slideDown();
+				$this.removeClass('panel-collapsed');$this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+			}
+		});
+	}
 
-  // $.fn.insert_new_panel = function(i, product_type, insertAfter, datetime) {
+	// $.fn.insert_new_panel = function(i, product_type, insertAfter, datetime) {
 	$.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
 		var panel_id = product_type + '-wrapper-' + i;
 		var panel_body_id = product_type + '-' + i;
-		
+
 		$result_panel = $('#astrooda_panel_model').clone();
 		$result_panel.attr('id', panel_id);
 		$result_panel.find('.date').text('['+datetime+']');
 		$result_panel.find('.panel-body').attr('id', panel_body_id);
 
-	// $($result_panel).insertAfter(insertAfter);
+		// $($result_panel).insertAfter(insertAfter);
 		$(this).after($result_panel);
 		if (left) {
 			$result_panel.css('left', left + 'px');
@@ -454,7 +474,7 @@ function get_waitingDialog($modal_dialog) {
 		if (top) {
 			$result_panel.css('top', top + 'px');
 		}
-		
+
 		$('#'+panel_id).set_panel_draggable();
 		$('#'+panel_id).set_collapsible();
 		return({ 'panel_id' : panel_id, 'panel_body_id' :panel_body_id});
@@ -483,13 +503,13 @@ function get_waitingDialog($modal_dialog) {
 
 	$(document).ready(commonReady);
 
-  
+
 	function validate_date(value, validator, thefield) {
 		max_mjd_date= get_today_mjd();
 		// var time_format_type = $('select[name="T_format"]',
 		// 'form#astrooda-common').val();
 		var time_format_type = validator.getFieldElements('T_format').val();
-		
+
 		if (time_format_type == 'isot' && !valid_iso_date(value)) {
 			return {
 				valid: false,
@@ -506,24 +526,37 @@ function get_waitingDialog($modal_dialog) {
 	}
 
 	function commonReady() {
+		var iframeStatus = checkIFrame();
+		if (iframeStatus > 0 && (window.parent.location.search || window.location.search)) {
+			var thelocation;
+			var url_base;
+			// In iframe with parameters in iframe URL
+			if (iframeStatus == 2 && window.location.search) {
+				thelocation = window.parent.location;
+			}
+			// In iframe with parameters in window URL
+			else if (iframeStatus == 2 && window.parent.location.search) {
+				thelocation = window.parent.location;
+				$('#myIframe1', parent.document).attr('src', $('#myIframe1', parent.document).attr('src')+window.parent.location.search);   
+			}
+			else if (iframeStatus == 1 && window.location.search) {
+				thelocation = window.parent.location;
+			}
+			url_base = thelocation.protocol + "//"
+			+ thelocation.hostname + thelocation.pathname;
+			// redirect to astrooda base url to get rid of the parameters
+			thelocation.replace(url_base);
+		}
 
-	// A cross symbol after an input to clear it
-	$('.clear-left-input').on('click', function (e) {
-		$(this).parent().prev('input').val('');
-	});
-	
-	$('body').tooltip({
-      selector: '[data-toggle="tooltip"]'
-  });
-		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-// var target = $(e.target).attr("href") // activated tab
-// $("form :input").prop("disabled", true);
-// $("form :input", target).prop("disabled", false);
-// $("form").hide();
-// $("form ", target).show();
-// console.log('target: '+ target);
+		// A cross symbol after an input to clear it
+		$('.clear-left-input').on('click', function (e) {
+			$(this).parent().prev('input').val('');
 		});
-		
+
+		$('body').tooltip({
+			selector: '[data-toggle="tooltip"]'
+		});
+
 		$('.form-item .description').each(function() {
 			$(this).html(add3Dots($(this).parent().find('label:first').html(), $(this).html(), 40));
 		});
@@ -555,18 +588,18 @@ function get_waitingDialog($modal_dialog) {
 					progressType : 'success',
 					'showProgress' : true,
 					'showButton' : false
-		    });
+				});
 				waitingDialog.hideHeaderMessage();
-		    
-	  		$('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
-		  	$('.form-item-RA input.form-control').val('');
-		  	$('.form-item-DEC input.form-control').val('');
-			  $('input:not(:file)', '#astrooda-common').val(function(_, value) {
-				 return $.trim(value.replace(/\s+/g, " "));
-			  });
-		  }			
+
+				$('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
+				$('.form-item-RA input.form-control').val('');
+				$('.form-item-DEC input.form-control').val('');
+				$('input:not(:file)', '#astrooda-common').val(function(_, value) {
+					return $.trim(value.replace(/\s+/g, " "));
+				});
+			}			
 		});
-		
+
 		// Disable main submit if error in common parameters
 		$('input, select, textarea', '#astrooda-common').on('error.field.bv', function() {
 			// Disabling submit
@@ -576,23 +609,23 @@ function get_waitingDialog($modal_dialog) {
 			$('[type="submit"]', '.instrument-panel').prop('disabled', false);
 
 		});
-		
+
 		$('select[name="T_format"]', '#astrooda-common').on('change', function() {
 			$('input[name="T1"]', '#astrooda-common').trigger('input');
 			$('input[name="T2"]', '#astrooda-common').trigger('input');
 		});
-		
+
 		$('.instrument-panel').resizable({
 			handles: 's'
 		});
 		$('.instrument-params-panel').set_panel_draggable();
-		
+
 		// Create validator and validate a frist time :
 		// This is important in Firefox when the page is refreshed
 		// where indeed the old values are still in the form
-		
+
 		var validator = $('form#astrooda-common').bootstrapValidator({
-		 // live :'disabled',
+			// live :'disabled',
 			fields: {
 				'RA' : {
 					// enabled: false,
@@ -640,14 +673,14 @@ function get_waitingDialog($modal_dialog) {
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			},
-		}).data('bootstrapValidator'); //.validate();
-		
+		}).data('bootstrapValidator'); // .validate();
+
 //		if (! validator.isValid()) {
-//			console.log('disabling submit');
-//			validator.disableSubmitButtons(true);
+//		console.log('disabling submit');
+//		validator.disableSubmitButtons(true);
 //		}
 	}
-	
+
 })(jQuery);
 
 function cloneFormData (formData1) {
