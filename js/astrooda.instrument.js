@@ -6,8 +6,8 @@
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
 
-	//var ajax_request_timeout= 5 * 60 * 1000; // sets timeout to 5 minutes
-	var ajax_request_timeout= 10 * 1000;
+	var ajax_request_timeout= 5 * 60 * 1000; // sets timeout to 5 minutes
+	// var ajax_request_timeout= 10 * 1000; // test timeout 
   
 	var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]',
 			'user_catalog_file' ];
@@ -140,6 +140,11 @@
 									}
 									$('#ldialog').find('.progress').hide();
 								}
+								data.products['session_id_old'] = data.products.session_id;
+								data.products['session_id'] = data.session_id;
+								console.log('Dispatcher response:');
+								console.log(data);
+
 								if (data.products.hasOwnProperty('image')) {
 									if (data.products.hasOwnProperty('download_file_name')
 											&& data.products.download_file_name
@@ -958,13 +963,14 @@
 		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
 				'image-catalog', datetime);
 
+		var catalog_panel = $('#' + panel_ids.panel_id);
 		$('#' + panel_ids.panel_body_id).append(
 				'<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
 
 		$(afterDiv).data({
 			catalog_panel_id : '#' + panel_ids.panel_id
 		});
-		$('#' + panel_ids.panel_id).data({
+		catalog_panel.data({
 			catalog_parent_panel_id : afterDiv
 		});
 
@@ -975,14 +981,15 @@
 									+ datetime
 									+ '" >Use catalog</button><div class="clearfix"></div>');
 		}
-
+		
 		var editor = new $.fn.dataTable.Editor({
 			table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
 			fields : catalog.fields,
 		});
+		
 		var catalog_container = $(".catalog-wrapper .astro-ana", '#'
 				+ panel_ids.panel_id);
-
+		
 		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
@@ -1013,6 +1020,22 @@
 					}
 					$.fn.dataTable.fileSave(new Blob([ file_content ]), 'catalog.txt');
 				}
+			}, {
+				text : 'Add query object',
+				action : function(e, dt, button, config) {
+					var lrow={};
+					$.each( catalog.fields, function( index, value ){
+						lrow[value.name]= null;
+					});					
+					lrow["src_names"]= $('input[name=src_name]', 'form#astrooda-common').val();
+					lrow['ra']= $('input[name=RA]', 'form#astrooda-common').val();
+					lrow['dec']= $('input[name=DEC]', 'form#astrooda-common').val();
+					lrow["DT_RowId"]= 'row_'+ catalog_panel.data('currentRowId');
+					catalog_panel.data('currentRowId', catalog_panel.data('currentRowId')+ 1);
+					console.log('lrow');
+					console.log(lrow);
+					dt.row.add(lrow).draw( false );
+				}
 			} ],
 			select : {
 				style : 'os',
@@ -1020,7 +1043,7 @@
 			},
 			order : [ [ 1, 'asc' ] ],
 		});
-
+		
 		// Activate inline edit on click of a table cell
 		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
 			editor.inline(this);
@@ -1045,14 +1068,15 @@
 			});
 		}
 
-		$('#' + panel_ids.panel_id).data({
-			dataTable : dataTable
+		catalog_panel.data({
+			dataTable : dataTable,
+			currentRowId : catalog.data.length
 		});
 		source_name = $('input[name=src_name]', 'form#astrooda-common').val();
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
 				'Source : ' + source_name + ' - Image catalog');
 
-		$('#' + panel_ids.panel_id).highlight_result_panel(offset);
+		catalog_panel.highlight_result_panel(offset);
 
 	}
 
