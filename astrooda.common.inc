@@ -8,6 +8,8 @@
 /**
  */
 function astrooda_common($form, &$form_state) {
+  drupal_get_messages();
+  
   $form = array ();
   $session_id = session_id ();
   
@@ -113,10 +115,6 @@ function astrooda_common($form, &$form_state) {
               'form-control'
           )
       )
-      // 'data-bv-between' => 'true',
-      // 'data-bv-between-min' => 0,
-      // 'data-bv-between-max' => 360
-       
   );
   
   $form ['radec'] ['DEC'] = array (
@@ -138,10 +136,6 @@ function astrooda_common($form, &$form_state) {
               'form-control'
           )
       )
-      // 'data-bv-between' => 'true',
-      // 'data-bv-between-min' => - 90,
-      // 'data-bv-between-max' => 90
-       
   );
   
   $form ['time'] = array (
@@ -238,27 +232,21 @@ function astrooda_common($form, &$form_state) {
       )
   );
   
-  form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.common' );
-  
+  //form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.common' );
+  $form['#validate'] = array('astrooda_common_validate');
   return ($form);
 }
+
+function astrooda_common_validate ($form, &$form_state) {
+  error_log('Validating common form ');
+  form_clear_error();
+}
+
 function resolve_object_name_callback($form, &$form_state) {
   module_load_include ( 'inc', 'astrooda', 'astrooda.nameresolver' );
-//   error_log ( 'Resolve callback !' );
-//   $filename = '/tmp/form_state.txt';
-//   $f = fopen ( $filename, 'w' );
-//   fwrite ( $f, "form_state\n" );
-//   fwrite ( $f, print_r ( $form_state ['input'], true ) );
-//   fclose ( $f );
-//   chmod ( $filename, 0777 );
   
   $form ['radec'] ['RA'] ['#value'] = 50;
   $form ['radec'] ['DEC'] ['#value'] = 80;
-  // $commands = array();
-  
-  // $args= [ 'ra' => 67,
-  // 'dec' => 88
-  // ];
   
   $args = resolve_object_name ( $form_state ['input'] ['src_name'],  $form_state ['input'] ['use_resolver']);
   
@@ -266,8 +254,6 @@ function resolve_object_name_callback($form, &$form_state) {
       'command' => 'set_ra_dec', // the name of your javascript callback
       'args' => $args
   );
-  // $commands[] = ajax_command_data('.form-item-RA input.form-control', 'value', 70);
-  // $commands[] = ajax_command_data(".form-item-DEC input.form-control", 'value', 45);
   return array (
       '#type' => 'ajax',
       '#commands' => $commands

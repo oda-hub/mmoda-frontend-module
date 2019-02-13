@@ -6,9 +6,9 @@
 	var request_draw_spectrum = false;
 	var request_spectrum_form_element;
 
-	var ajax_request_timeout= 5 * 60 * 1000; // sets timeout to 5 minutes
-	// var ajax_request_timeout= 10 * 1000; // test timeout 
-  
+	var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
+	// var ajax_request_timeout= 10 * 1000; // test timeout
+
 	var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]',
 			'user_catalog_file' ];
 
@@ -77,7 +77,11 @@
 							if (data.hasOwnProperty('session_id')) {
 								session_id = data['session_id'];
 							}
-							waitingDialog.setHeaderMessageJobId(session_id);
+							if (session_id && job_id) {
+								waitingDialog.setHeaderMessagesSessionId(session_id);
+								waitingDialog.setHeaderMessageJobId(job_id);
+								waitingDialog.showHeaderMessage();
+							}
 							var query_failed = false;
 							if (data.query_status == 'failed'
 									|| (data.products.hasOwnProperty('image') && data.products.image == null)) {
@@ -165,36 +169,29 @@
 								}
 								waitingDialog.setClose();
 							}
-						})
-				.complete(
+						}).complete(
 						function(jqXHR, textStatus) {
 							// console.log('Exec time : ' + (new Date().getTime() -
 							// startAJAXTime));
 							$('button[type=submit]',
 									".instrument-panel.active, .common-params").prop('disabled',
 									false);
-						})
-				.fail(
-						function(jqXHR, textStatus, errorThrown) {
-							console.log('textStatus : ' + textStatus +'|');
-							console.log('errorThrown :' + errorThrown);
-							console.log('jqXHR');
-							console.log(jqXHR);
-							waitingDialog.hideSpinner();
-							var message= get_current_date_time() + ' ';
-							if (errorThrown == 'timeout') {
-								message += ' Timeout ('+(ajax_request_timeout/1000)+'s) !';
-							}
-							else if (jqXHR.status > 0) {
-								message += textStatus + ' '+ jqXHR.status + ', ' + errorThrown;
-							}
-							else {
-								message += 'Can not reach the data server, unknown error';
-							}
-							waitingDialog
-									.append('<div>' + message +'</div>',
-											'danger');
-						});
+						}).fail(function(jqXHR, textStatus, errorThrown) {
+					console.log('textStatus : ' + textStatus + '|');
+					console.log('errorThrown :' + errorThrown);
+					console.log('jqXHR');
+					console.log(jqXHR);
+					waitingDialog.hideSpinner();
+					var message = get_current_date_time() + ' ';
+					if (errorThrown == 'timeout') {
+						message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+					} else if (jqXHR.status > 0) {
+						message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown;
+					} else {
+						message += 'Can not reach the data server, unknown error';
+					}
+					waitingDialog.append('<div>' + message + '</div>', 'danger');
+				});
 
 		$('#ldialog .cancel-button').on('click', function() {
 			if (requestTimer) {
@@ -549,13 +546,11 @@
 
 							} else {
 								// Show catalog
-								var datetime = $(this).attr('data-datetime');
 
 								var catalog = clone(catalog_parent_panel.data('catalog'));
 								catalog_offset.top -= parent_catalog_offset.top;
 								catalog_offset.left -= parent_catalog_offset.left;
-								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'),
-										'', catalog_offset, showUseCatalog);
+								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'), catalog_offset, showUseCatalog);
 							}
 						});
 		$("body").on(
@@ -866,11 +861,9 @@
 						showProgressBar : false,
 						showSpinner : true
 					});
-					waitingDialog.setHeaderMessagesSessionId(formData.get('session_id'));
-					waitingDialog.showHeaderMessage();
+					waitingDialog.hideHeaderMessage();
 
 					current_ajax_call_params = {};
-
 					current_ajax_call_params.initialFormData = formData;
 					current_ajax_call_params.currentFormData = cloneFormData(formData);
 					if (!current_ajax_call_params.currentFormData.has('query_status')) {
@@ -958,8 +951,9 @@
 
 	}
 
-	function display_catalog(catalog, afterDiv, datetime, offset, showUseCatalog) {
-
+	function display_catalog(catalog, afterDiv, offset, showUseCatalog) {
+		var datetime = catalog.datetime;
+		
 		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
 				'image-catalog', datetime);
 
@@ -981,74 +975,222 @@
 									+ datetime
 									+ '" >Use catalog</button><div class="clearfix"></div>');
 		}
-		
+
 		var editor = new $.fn.dataTable.Editor({
 			table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
 			fields : catalog.fields,
 		});
-		
+
 		var catalog_container = $(".catalog-wrapper .astro-ana", '#'
 				+ panel_ids.panel_id);
-		
+
 		var dataTable = catalog_container.DataTable({
 			data : catalog.data,
 			columns : catalog.column_names,
 			// dom : 'Brtflip',
 			dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
-			buttons : [ 'selectAll', 'selectNone', {
-				extend : "create",
-				editor : editor
-			}, {
-				extend : "edit",
-				editor : editor
-			}, {
-				extend : "remove",
-				editor : editor
-			}, {
-				text : 'Save as TXT',
-				action : function(e, dt, button, config) {
-					var data = dt.buttons.exportData();
-					data.header[0] = "meta_ID";
-					var file_content = '';
-					for (var i = 0; i < data.header.length; i++) {
-						data.header[i] = data.header[i].replace(' ', '_');
-					}
-					file_content = data.header.join(' ') + "\n";
-					for (var i = 0; i < data.body.length; i++) {
-						data.body[i][0] = i;
-						file_content += data.body[i].join(' ') + "\n";
-					}
-					$.fn.dataTable.fileSave(new Blob([ file_content ]), 'catalog.txt');
-				}
-			}, {
-				text : 'Add query object',
-				action : function(e, dt, button, config) {
-					var lrow={};
-					$.each( catalog.fields, function( index, value ){
-						lrow[value.name]= null;
-					});					
-					lrow["src_names"]= $('input[name=src_name]', 'form#astrooda-common').val();
-					lrow['ra']= $('input[name=RA]', 'form#astrooda-common').val();
-					lrow['dec']= $('input[name=DEC]', 'form#astrooda-common').val();
-					lrow["DT_RowId"]= 'row_'+ catalog_panel.data('currentRowId');
-					catalog_panel.data('currentRowId', catalog_panel.data('currentRowId')+ 1);
-					console.log('lrow');
-					console.log(lrow);
-					dt.row.add(lrow).draw( false );
-				}
-			} ],
+			buttons : [
+					'selectAll',
+					'selectNone',
+					{
+						text : 'New',
+						className : 'btn-primary',
+						extend : "create",
+						formTitle : '<h3>Add new object</h3>',
+						editor : editor,
+						formButtons : [ {
+							text : 'Add',
+							className : 'btn-primary save-row',
+							action : function() {
+								this.submit();
+							}
+						}, {
+							text : 'Cancel',
+							className : 'btn-primary',
+							action : function() {
+								this.close();
+							}
+						} ]
+					},
+					{
+						text : 'Edit',
+						className : 'btn-primary',
+						extend : "editSingle",
+						formTitle : '<h3>Edit object</h3>',
+						editor : editor,
+						formButtons : [ {
+							label : 'Save',
+							className : 'btn-primary save-row',
+							action : function() {
+								this.submit();
+							}
+						}, {
+							label : 'Cancel',
+							className : 'btn-primary',
+							action : function() {
+								this.close();
+							}
+						} ]
+					},
+					{
+						extend : "remove",
+						className : 'btn-primary',
+						formTitle : '<h3>Delete source(s)</h3>',
+						editor : editor,
+						formMessage : function(e, dt) {
+							var rows = dt.rows(e.modifier()).data().pluck('src_names');
+							return 'Confirm the deletion of the following sources ? <ul><li>'
+									+ rows.join('</li><li>') + '</li></ul>';
+						}
+					},
+					{
+						text : 'Save as TXT',
+						className : 'btn-primary',
+						action : function(e, dt, button, config) {
+							var data = dt.buttons.exportData();
+							data.header[0] = "meta_ID";
+							var file_content = '';
+							for (var i = 0; i < data.header.length; i++) {
+								data.header[i] = data.header[i].replace(' ', '_');
+							}
+							file_content = data.header.join(' ') + "\n";
+							for (var i = 0; i < data.body.length; i++) {
+								data.body[i][0] = i;
+								file_content += data.body[i].join(' ') + "\n";
+							}
+							$.fn.dataTable
+									.fileSave(new Blob([ file_content ]), 'catalog.txt');
+						}
+					},
+					{
+						text : 'Add query object',
+						className : 'btn-primary',
+						action : function(e, dt, button, config) {
+							editor.title('<h3>Add query object</h3>').buttons([ {
+								text : 'Add',
+								className : 'btn-primary save-row',
+								action : function() {
+									this.submit();
+								}
+							}, {
+								text : 'Cancel',
+								className : 'btn-primary',
+								action : function() {
+									this.close();
+								}
+							} ]).create().set('src_names',
+									$('input[name=src_name]', 'form#astrooda-common').val()).set(
+									'ra', $('input[name=RA]', 'form#astrooda-common').val()).set(
+									'dec', $('input[name=DEC]', 'form#astrooda-common').val());
+							// Make Editor draggable (movable)
+							// $('.DTE_Action_Create').draggable({
+							// handle : '.DTE_Header, .DTE_Footer',
+							// stack : '.ldraggable',
+							// containment : "parent"
+							// });
+						}
+					} ],
 			select : {
 				style : 'os',
 				selector : 'td:first-child'
 			},
 			order : [ [ 1, 'asc' ] ],
 		});
-		
+
 		// Activate inline edit on click of a table cell
 		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
 			editor.inline(this);
 		});
 
+		editor
+				.on(
+						'preSubmit',
+						function(e, data, action) {
+							var rowId = Object.keys(data.data)[0];
+							if (action === 'confirm') {
+
+							}
+							if (action !== 'remove') {
+								var ra = this.field('ra');
+								var dec = this.field('dec');
+								var src_names = this.field('src_names');
+								var ldataTable = $(this.s.table).DataTable();
+								// var lfilter = (action === 'edit')? data.data;
+								var confirmation = ($('.DTE button.save-row')
+										.data('confirmation'));
+								if (!confirmation) {
+									console.log('No confirmation button');
+									ldataTable
+											.rows()
+											.every(
+													function(rowIdx, tableLoop, rowLoop) {
+														// ignore compare with the current row !
+														if (this.id() === rowId)
+															return;
+
+														var d = this.data();
+														var distance = getDistanceFromLatLonInKm(dec.val(),
+																ra.val(), d.dec, d.ra);
+														// var distance_same = d.ERR_RAD * 2;
+														var distance_same = 0.00001;
+														if (distance <= distance_same) {
+															// Highlight the row in the table
+															$(this.node()).addClass('alert alert-danger');
+															$(this).show();
+
+															// Change the editor button to "Save anyway"
+															$('.DTE button.save-row').html('Save anyway !')
+																	.removeClass('btn-primary').addClass(
+																			'btn-warning').data('confirmation', true);
+															// Fix a bug where the opacity of the error
+															// message element is set to 0:
+															// not displayed
+															$('.DTE .DTE_Form_Error').css({
+																'opacity' : ''
+															});
+
+															editor
+																	.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: '
+																			+ d.src_names
+																			+ '<br>RA: '
+																			+ d.ra
+																			+ '<br>Dec: '
+																			+ d.dec
+																			+ '<br>Distance: '
+																			+ distance + '</dv>');
+															setTimeout(function() {
+																var row = $(".catalog-wrapper .astro-ana",
+																		'#' + panel_ids.panel_id).DataTable().row(
+																		rowIdx).node();
+
+																$(row).removeClass('alert alert-danger')
+															}, 5000);
+														}
+													});
+								} else {
+									$('.DTE button.save-row').html('Save').removeClass(
+											'btn-warning').addClass('btn-primary').removeData(
+											'confirmation').removeData('ltext');
+								}
+
+								// validate RA between 0 and 360
+								if (ra.val() < 0 || ra.val() > 360) {
+									ra.error('Value must be between 0 and 360');
+								}
+
+								// validate RA between 0 and 360
+								if (dec.val() < -90 || dec.val() > 90) {
+									dec.error('Value must be between -90 and 90');
+								}
+
+								// If any error was reported, cancel the submission so it can be
+								// corrected
+								if (this.inError() && !confirmation) {
+									return false;
+								}
+
+							}
+						});
 		// Update the catalog within the main window whenever the dataTable is
 		// changed
 		// create, remove or edit of any cell
@@ -1078,6 +1220,20 @@
 
 		catalog_panel.highlight_result_panel(offset);
 
+	}
+
+	function getDistanceFromLatLonInKm(dec1, ra1, dec2, ra2) {
+		var dLat = deg2rad(dec2 - dec1);
+		var dLon = deg2rad(ra2 - ra1);
+		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(dec1))
+				* Math.cos(deg2rad(dec2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+		var b = 2 * Math.asin(a);
+		return b;
+	}
+
+	function deg2rad(deg) {
+		return deg * (Math.PI / 180)
 	}
 
 	function display_log(log, afterDiv, datetime, offset) {
@@ -1145,7 +1301,7 @@
 		var iframeStatus = checkIFrame();
 		var thelocation = window.location;
 		if (iframeStatus == 2) {
-				thelocation = window.parent.location;
+			thelocation = window.parent.location;
 		}
 		var currentURL = thelocation.protocol + '//' + thelocation.host
 				+ thelocation.pathname;
@@ -1532,18 +1688,18 @@
 				'Source : ' + metadata.source_name);
 
 		var x = $('#' + panel_ids.panel_id).offset().top - 100;
-		jQuery('html,body').animate({
+		jQuery('body').animate({
 			scrollTop : x
 		}, 500);
-		var parent_catalog_offset = $(".instrument-panel.active").offset();
+		var parent_spectrum_offset = $(".instrument-panel.active").offset();
 		var last_click_position = $(".instrument-panel.active").data(
 				'last_click_position');
 
-		var catalog_offset = {};
-		catalog_offset.top = last_click_position.top - parent_catalog_offset.top;
-		catalog_offset.left = last_click_position.left - parent_catalog_offset.left;
+		var spectrum_offset = {};
+		spectrum_offset.top = last_click_position.top - parent_spectrum_offset.top;
+		spectrum_offset.left = last_click_position.left - parent_spectrum_offset.left;
 
-		$('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
+		$('#' + panel_ids.panel_id).highlight_result_panel(spectrum_offset);
 	}
 
 	function format_output(data) {
@@ -1598,10 +1754,6 @@
 						return (format_output(data));
 					};
 				}
-				if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
-					fields[i - 1].attr.min = 0;
-					fields[i - 1].attr.max = 360;
-				}
 			}
 			var dataSet = new Array(catalog.cat_column_list[0].length);
 			for (var j = 0; j < catalog.cat_column_list[0].length; j++) {
@@ -1618,6 +1770,7 @@
 					data : dataSet,
 					column_names : columns,
 					fields : fields,
+					datetime : datetime, 
 				}
 			});
 		}
