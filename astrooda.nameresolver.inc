@@ -1,8 +1,9 @@
 <?php
 function resolve_object_name($source_name, $which_name_resolvers) {
   $local_name_resolver_url = "http://cdcihn/tnr/api/v1.0/timespan/byname/";
+  //$local_name_resolver_url = "http://wwwcdcihn/tnr/api/v1.0/timespan/byname/";
   $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
-  // sleep(2000);
+  //sleep(2);
   
   $data = array ();
   
@@ -11,9 +12,9 @@ function resolve_object_name($source_name, $which_name_resolvers) {
   
   if ($which_name_resolvers ['local'] == 'local') {
     // resolve locally first
-    //$data ['message'].= 'Local selected  for query<br>';
-    $local_name_resolver_url .= urlencode($source_name);
-    $json = @file_get_contents ( $local_name_resolver_url);
+    // $data ['message'].= 'Local selected for query<br>';
+    $local_name_resolver_url .= urlencode ( $source_name );
+    $json = @file_get_contents ( $local_name_resolver_url );
     error_log ( 'JSON 1:' . print_r ( $json, true ) );
     $data ['status'] = 0;
     
@@ -23,21 +24,26 @@ function resolve_object_name($source_name, $which_name_resolvers) {
       
       if ($obj->success) {
         $data ['status'] = 0;
-        $data ['message'] = 'Name resolved to time using local name resolver.<br/>';
+        $data ['message'] = 'Name resolved to time using local name resolver.';
         $data ['t1'] = $obj->view->t1;
         $data ['t2'] = $obj->view->t2;
-      }
-      else {
-        $data ['status'] = -1;
+      } else {
+        $data ['status'] = - 1;
         $data ['message'] .= $source_name . ' : Unknown object by local server !';
       }
-    } else {
+    } else if ($which_name_resolvers ['sesame'] == 'sesame') {
       error_log ( "Local name resolution failed : " . $name_resolver_url . "\n" . $json );
+    } else {
+      $data ['status'] = - 1;
+      $data ['message'] .= $source_name . ' : failed to reach local name resolver server !';
+      error_log ( "Local name resolution failed : " . $name_resolver_url . "\n" . $json );
+      return $data;
     }
   }
-  
   if ($which_name_resolvers ['sesame'] == 'sesame') {
-    //$data ['message'].= 'Sesame selected  for query<br>';
+    if ($data ['message']) {
+      $data ['message'] .= '<br>';
+    }
     libxml_use_internal_errors ( true );
     $name_resolver_url .= $source_name;
     $xml = simplexml_load_file ( $name_resolver_url, 'SimpleXMLElement', LIBXML_NOWARNING );
@@ -50,7 +56,7 @@ function resolve_object_name($source_name, $which_name_resolvers) {
       $data ['message'] .= 'Failed to resolve name with Sesame service.<br>Please try later ...';
       // } else if (preg_match("/^[\b|\n|\r]*$/", $xml) or ((isset ( $xml->Target->INFO ) and (strpos ( $xml->Target->INFO, 'Nothing found' ) !== false)))) {
     } else if (! isset ( $xml->Target->Resolver->jradeg )) {
-      $data ['message'] .= 'Resolution failed with Sesame, ' . $source_name . ' : Unknown object !';
+      $data ['message'] .= $source_name . ' : Unknown object by Sesame !';
       // write_log_file($xml);
     } else {
       $ra = floatval ( $xml->Target->Resolver->jradeg ['0'] );

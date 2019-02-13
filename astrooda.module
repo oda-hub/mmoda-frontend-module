@@ -194,7 +194,7 @@ function astrooda_main_block_content() {
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   
-  error_log ( print_r ( $astrooda_settings, true ) );
+  //error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
   
   // require_once drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.common.inc';
   if (empty ( $astrooda_settings ['instruments'] )) {
@@ -206,7 +206,7 @@ function astrooda_main_block_content() {
   $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
   
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
-  error_log ( "---------------------------------------------" );
+  //error_log ( "---------------------------------------------" );
   
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
     $instruments [$instrument ['weight']] = $name;
@@ -216,7 +216,7 @@ function astrooda_main_block_content() {
   $first_instrument = true;
   foreach ( $weight_sorted_instruments as $instrument_name ) {
     $instrument = $astrooda_settings ['instruments'] [$instrument_name];
-    error_log ( 'Instrument:' . $instrument ['name'] . "\n" );
+    //error_log ( 'Instrument:' . $instrument ['name'] . "\n" );
     if ($instrument ['enabled']) {
       $items ['instruments'] [$instrument ['name']] = array (
           'name' => $instrument ['name'],
@@ -232,20 +232,10 @@ function astrooda_main_block_content() {
     }
   }
   
-  $lfile = fopen ( '/tmp/astrooda_instruments.php', "w" );
-  fwrite ( $lfile, print_r ( $items, true ) );
-  fclose ( $lfile );
+//   $lfile = fopen ( '/tmp/astrooda_instruments.php', "w" );
+//   fwrite ( $lfile, print_r ( $items, true ) );
+//   fclose ( $lfile );
   
-  error_log ( print_r ( $items, true ) );
-  
-  // $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
-  // $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
-  // $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
-  // $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
-  // $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
-  // $items ['isgri_help_page'] ='node/'.variable_get ( 'astrooda_isgri_help_page_nid');
-  
-  // $items['main_form'] = array('#markup' => '<h2>Ok why not</h2>');
   
   // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets
   // registered below

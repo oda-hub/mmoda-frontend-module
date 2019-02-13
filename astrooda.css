@@ -2,10 +2,9 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
- 
 .form-item-E1-keV .form-control, .form-item-E2-keV .form-control {
   display: inline-block !important;
-  width: 80% !important;  
+  width: 80% !important;
 }
 
 #formwrapper {
@@ -22,7 +21,8 @@
 
 #ldialog {
   /*padding-top:15%;
-	overflow-y:visible;*/  
+	overflow-y:visible;*/
+  
 }
 
 .block-astrooda {
@@ -143,7 +143,7 @@ table.astro-ana tr td, table.astro-ana tr th {
   display: inline-block;
 }
 
-.instrument-panel .panel-heading {
+.instrument-panel .panel-heading, .instrument-panel .panel-footer {
   cursor: move;
 }
 
@@ -155,8 +155,8 @@ table.astro-ana tr td, table.astro-ana tr th {
   width: 100% !important;
 }
 
-.spectrum-table th, .spectrum-table td, .lightcurve-table th,
-  .lightcurve-table td {
+.spectrum-table th, .spectrum-table td, .lightcurve-table th, .lightcurve-table td
+  {
   padding: 0.4em;
 }
 
@@ -219,6 +219,7 @@ span.panel-toolbox span {
 
 .node-astrooda-help {
   /*float: left;*/
+  
 }
 
 #astrooda_panel_model {
@@ -235,7 +236,7 @@ span.panel-toolbox span {
   display: inline-block;
 }
 
-#edit-use-resolver,  #edit-use-resolver, .form-item-use-resolver *{
+#edit-use-resolver, #edit-use-resolver, .form-item-use-resolver * {
   display: inline;
 }
 
@@ -414,5 +415,14 @@ input[type=number] {
 }
 
 #resolve-src-name.input-group-btn {
-    vertical-align: bottom;
+  vertical-align: bottom;
+}
+
+.DTE .DTE_Form_Error {
+  text-align: left;
+}
+
+.catalog-wrapper .top .dt-buttons {
+  float: none;
+  display:  block;
 }

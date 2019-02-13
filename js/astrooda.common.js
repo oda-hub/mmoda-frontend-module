@@ -1,8 +1,10 @@
+var instrument_panel_margin = 150;
+
 Date.prototype.getJulian = function() {
 	return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
 }
 
-//Sleep time in seconds
+// Sleep time in seconds
 function sleep (sleepDuration) {
 	var now = new Date().getTime();
 	while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
@@ -196,7 +198,7 @@ function copyToClipboard(text) {
 }
 
 function add3Dots(field_name, field_description, limit) {
-	var dots = '<a href="#" data-toggle="popover" title="'+field_name+' " duuata-content="TTT" class="popover-help"> ...</a>';
+	var dots = '<a href="#" data-toggle="popover" title="'+field_name+'" class="popover-help"> ...</a>';
 	if(field_description.length > limit)
 	{
 		// you can also use substr instead of substring
@@ -220,6 +222,8 @@ var waitingDialog;
 
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
+		console.log('response.args');
+		console.log(response.args);
 		waitingDialog.hide();    	
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -433,7 +437,7 @@ function get_waitingDialog($modal_dialog) {
 
 	$.fn.set_panel_draggable = function () {
 		$(this).draggable({
-			handle: '.panel-heading',
+			handle: '.panel-heading, .panel-footer',
 			stack : '.ldraggable',
 			containment: "parent"
 		});
@@ -484,19 +488,31 @@ function get_waitingDialog($modal_dialog) {
 		max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() {return parseInt($(this).zIndex());}).get());
 		$(this).css('z-index', max_zindexes+1);
 		var thisObject = $(this);
+		instrument_panel = $(this).closest('.instrument-panel');
+
 		if (offset) {
 			$(this).offset(offset);
 			thisObject.show('highlight', {color: '#adebad'}, 1000);		
+			var instrument_panel_resized_height= thisObject.height() + thisObject.offset().top  + instrument_panel_margin;
+			if (instrument_panel_resized_height  > instrument_panel.height()) {
+				instrument_panel.height(instrument_panel_resized_height);
+			}
 		} 
 		else {
 			position_left = parseInt(($(this).parent().width() - $(this).width())/2);
 			$(this).css('left', position_left);
-			instrument_panel = $(this).closest('.instrument-panel');
 
-			var x = instrument_panel.position().top -80;
-			$('html, body').animate({'scrollTop': x+ 'px'}, 500, function() {
+			var y = instrument_panel.position().top - 100;
+			console.log('y: '+y);
+			
+			$('body').animate({'scrollTop': y+ 'px'}, 500, function() {
 				// Animation complete.
 				thisObject.show('highlight', {color: '#adebad'}, 1000);
+				var instrument_panel_resized_height= thisObject.height() + thisObject.offset().top  + instrument_panel_margin;
+				// resize instrument panel to fit the product panel
+				if (instrument_panel_resized_height > instrument_panel.height()) {
+					instrument_panel.height(instrument_panel_resized_height);
+				}
 			});
 		}
 	}
@@ -526,6 +542,15 @@ function get_waitingDialog($modal_dialog) {
 	}
 
 	function commonReady() {
+
+		$('#astrooda-common').submit(function(event) {
+			var $target = $(event.target);
+			if ($target.is('input[type=submit]')) {
+				return true;
+			}
+			return false;
+		});	
+
 		var iframeStatus = checkIFrame();
 		if (iframeStatus > 0 && (window.parent.location.search || window.location.search)) {
 			var thelocation;
@@ -567,6 +592,13 @@ function get_waitingDialog($modal_dialog) {
 			template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
 		});
 
+		$('.popover-error').on('click', function(e) {e.preventDefault(); return true;}).popover({
+			container: 'body',
+			content : function () { return $(this).parent().find('.astrooda-popover-content').html();},
+			html : true,
+			template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+		});
+
 		$(document).on('click', function (e) {
 			$('[data-toggle="popover"],[data-original-title]').each(function () {
 				// the 'is' for buttons that trigger popups
@@ -584,13 +616,24 @@ function get_waitingDialog($modal_dialog) {
 		waitingDialog =  get_waitingDialog();
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
-				waitingDialog.show('','Resolving name using <a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a> respectively NED, Simbad and VizieR...', {
+				var use_local_resolver = $('input[name="use_resolver[local]"]', '#astrooda-common').prop('checked');
+				var use_sesame_resolver = $('input[name="use_resolver[sesame]"]', '#astrooda-common').prop('checked');
+				var local_resolver= 'local resolver';
+				var sesame_resolver= '<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>: NED, Simbad and VizieR';
+				var name_resolvers = 'respectively '+local_resolver +', '+sesame_resolver;
+				if (use_local_resolver && !use_sesame_resolver) {
+					name_resolvers = local_resolver;
+				}
+				else if (!use_local_resolver && use_sesame_resolver) {
+					name_resolvers = 'respectively '+sesame_resolver;
+				}
+				var message = 'Resolving name using '+ name_resolvers +' ...';
+				waitingDialog.show('', message, {
 					progressType : 'success',
 					'showProgress' : true,
 					'showButton' : false
 				});
 				waitingDialog.hideHeaderMessage();
-
 				$('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
 				$('.form-item-RA input.form-control').val('');
 				$('.form-item-DEC input.form-control').val('');
@@ -675,10 +718,10 @@ function get_waitingDialog($modal_dialog) {
 			},
 		}).data('bootstrapValidator'); // .validate();
 
-//		if (! validator.isValid()) {
-//		console.log('disabling submit');
-//		validator.disableSubmitButtons(true);
-//		}
+// if (! validator.isValid()) {
+// console.log('disabling submit');
+// validator.disableSubmitButtons(true);
+// }
 	}
 
 })(jQuery);
