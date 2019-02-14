@@ -222,8 +222,8 @@ var waitingDialog;
 
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-		console.log('response.args');
-		console.log(response.args);
+		// console.log('response.args');
+		// console.log(response.args);
 		waitingDialog.hide();    	
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -503,7 +503,7 @@ function get_waitingDialog($modal_dialog) {
 			$(this).css('left', position_left);
 
 			var y = instrument_panel.position().top - 100;
-			console.log('y: '+y);
+			// console.log('y: '+y);
 			
 			$('body').animate({'scrollTop': y+ 'px'}, 500, function() {
 				// Animation complete.

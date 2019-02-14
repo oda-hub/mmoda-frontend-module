@@ -49,7 +49,7 @@ function astrooda_block_info() {
       'status' => TRUE,
       'region' => 'content',
       'visibility' => BLOCK_VISIBILITY_LISTED,
-      'pages' => 'astrooda',
+      'pages' => '<front>',
       'cache' => DRUPAL_NO_CACHE
   );
   

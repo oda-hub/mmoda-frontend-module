@@ -1119,7 +1119,6 @@
 								var confirmation = ($('.DTE button.save-row')
 										.data('confirmation'));
 								if (!confirmation) {
-									console.log('No confirmation button');
 									ldataTable
 											.rows()
 											.every(
