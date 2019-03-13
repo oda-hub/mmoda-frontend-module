@@ -561,6 +561,7 @@ function get_waitingDialog($modal_dialog) {
 			}
 			// In iframe with parameters in window URL
 			else if (iframeStatus == 2 && window.parent.location.search) {
+				console.log('In iframe and parameters : '+window.parent.location.search);
 				thelocation = window.parent.location;
 				$('#myIframe1', parent.document).attr('src', $('#myIframe1', parent.document).attr('src')+window.parent.location.search);   
 			}
@@ -570,6 +571,7 @@ function get_waitingDialog($modal_dialog) {
 			url_base = thelocation.protocol + "//"
 			+ thelocation.hostname + thelocation.pathname;
 			// redirect to astrooda base url to get rid of the parameters
+			console.log('Redirecting to :'+url_base);
 			thelocation.replace(url_base);
 		}
 
