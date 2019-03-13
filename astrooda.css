@@ -426,3 +426,7 @@ input[type=number] {
   float: none;
   display:  block;
 }
+
+.result-panel div.dataTables_wrapper .dataTables_paginate {
+  white-space: normal;
+}

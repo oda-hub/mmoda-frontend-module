@@ -222,8 +222,8 @@ var waitingDialog;
 
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-		console.log('response.args');
-		console.log(response.args);
+		// console.log('response.args');
+		// console.log(response.args);
 		waitingDialog.hide();    	
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -503,7 +503,7 @@ function get_waitingDialog($modal_dialog) {
 			$(this).css('left', position_left);
 
 			var y = instrument_panel.position().top - 100;
-			console.log('y: '+y);
+			// console.log('y: '+y);
 			
 			$('body').animate({'scrollTop': y+ 'px'}, 500, function() {
 				// Animation complete.
@@ -561,6 +561,7 @@ function get_waitingDialog($modal_dialog) {
 			}
 			// In iframe with parameters in window URL
 			else if (iframeStatus == 2 && window.parent.location.search) {
+				console.log('In iframe and parameters : '+window.parent.location.search);
 				thelocation = window.parent.location;
 				$('#myIframe1', parent.document).attr('src', $('#myIframe1', parent.document).attr('src')+window.parent.location.search);   
 			}
@@ -570,6 +571,7 @@ function get_waitingDialog($modal_dialog) {
 			url_base = thelocation.protocol + "//"
 			+ thelocation.hostname + thelocation.pathname;
 			// redirect to astrooda base url to get rid of the parameters
+			console.log('Redirecting to :'+url_base);
 			thelocation.replace(url_base);
 		}
 

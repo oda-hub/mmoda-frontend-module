@@ -79,9 +79,7 @@ function astrooda_requirements($phase) {
   return $requirements;
 }
 function astrooda_add_custom_fields() {
-  error_log ( "In astrooda_add_custom_fields\n" );
   foreach ( astrooda_help_page_field_default_field_bases () as $field ) {
-    error_log ( "Creating the field: $field\n" );
     field_create_field ( $field );
   }
   foreach ( astrooda_help_page_field_default_field_instances () as $instance ) {
@@ -101,57 +99,31 @@ function astrooda_del_custom_fields() {
  * Implements hook_install().
  */
 function astrooda_install() {
-  
-  $astrooda_settings['common']['dispatcher_path'] = '/dispatcher-data';
-  $astrooda_settings['common']['src_name'] ='4U 1700-377';
-  $astrooda_settings['common']['RA'] ='257.815417';
-  $astrooda_settings['common']['DEC'] ='-41.593417';
-  $astrooda_settings['common']['T1'] ='2003-03-15T23:27:40.0';
-  $astrooda_settings['common']['T2'] ='2003-03-16T00:03:15.0';
-  $astrooda_settings['common']['T_format'] ='isot';
-  variable_set('astrooda_settings', $astrooda_settings);
-  variable_set('astrooda_debug', true);
+  $astrooda_settings ['common'] ['dispatcher_path'] = '/dispatcher-data';
+  $astrooda_settings ['common'] ['src_name'] = '4U 1700-377';
+  $astrooda_settings ['common'] ['RA'] = '257.815417';
+  $astrooda_settings ['common'] ['DEC'] = '-41.593417';
+  $astrooda_settings ['common'] ['T1'] = '2003-03-15T23:27:40.0';
+  $astrooda_settings ['common'] ['T2'] = '2003-03-16T00:03:15.0';
+  $astrooda_settings ['common'] ['T_format'] = 'isot';
+  variable_set ( 'astrooda_settings', $astrooda_settings );
+  variable_set ( 'astrooda_debug', true );
   
   // Add node types
   node_types_rebuild ();
-    
+  
   // Default to not to be promoted
   variable_set ( 'node_options_astrooda_help', array (
-      'status'
-  ) );
-  variable_set ( 'node_options_astrooda_page', array (
       'status'
   ) );
   
   // Disable comments
   variable_set ( 'comment_astrooda_help', COMMENT_NODE_CLOSED );
-  variable_set ( 'comment_astrooda_page', COMMENT_NODE_CLOSED );
   
   // Hide date and author information
-  variable_set('node_submitted_astrooda_help', FALSE);
-  variable_set('node_submitted_astrooda_page', FALSE);
-
+  variable_set ( 'node_submitted_astrooda_help', FALSE );
+  
   astrooda_add_custom_fields ();
-  
-  $node = new stdClass ();
-  $node->type = 'astrooda_page';
-  node_object_prepare ( $node );
-  
-  $node->title = 'Astro Online Data Analysis';
-  $node->status = 1;
-  $node->language = LANGUAGE_NONE;
-  $node->path = array (
-      'alias' => 'astrooda'
-  );
-  $node->comment = 0;
-  $node->promote = 0;
-  $node->moderate = 0;
-  $node->sticky = 0;
-  node_save ( $node );
-  // Set the variable keeping the main page node id
-  // To be used at uninstall to delete the node
-  print "created nid: ". $node->nid."\n";
-  variable_set ( 'astrooda_main_page_nid', $node->nid );
   
   // Disable node preview
   // variable_set('node_preview_astrooda_help', 0);
@@ -165,21 +137,15 @@ function astrooda_install() {
   
   // Add fields
   
-  
   // add help node
-  $node_array = astrooda_help_page_node_export_features_default();
-  $import_output = node_export_import($node_array['code_string']);
-  print var_dump($import_output);
-  print "--------------------\n";
-  print join("\n", $import_output['output'])."\n";
-  if ($import_output['success']) {
-    print "New help page nid :".$import_output['nids'][0]."\n";
-    $node = node_load($import_output['nids'][0]);
+  $node_array = astrooda_help_page_node_export_features_default ();
+  $import_output = node_export_import ( $node_array ['code_string'] );
+  if ($import_output ['success']) {
+    $node = node_load ( $import_output ['nids'] [0] );
     $node->status = 1;
-    node_save($node);
-    variable_set ( 'astrooda_help_page_nid', $node->nid);
+    node_save ( $node );
+    variable_set ( 'astrooda_help_page_nid', $node->nid );
   }
-  
 }
 
 /**
@@ -187,8 +153,6 @@ function astrooda_install() {
  */
 function astrooda_uninstall() {
   // Delete node content
-  error_log ( "In astrooda_uninstall\n" );
-    
   $bundles = array ();
   foreach ( astrooda_node_info () as $key => $value ) {
     $bundles [] = $key;
@@ -215,22 +179,13 @@ function astrooda_uninstall() {
   }
   node_types_rebuild ();
   
-  $astrooda_main_page_nid = variable_get ( 'astrooda_main_page_nid' );
-  print "Before testing: $astrooda_main_page_nid\n";
-  if ($astrooda_main_page_nid) {
-    print "Nid = $astrooda_main_page_nid\n";
-    // Delete the main page
-    node_delete ( $astrooda_main_page_nid);
-    // Unset the variable keeping the main page node id
-    variable_del ( 'astrooda_main_page_nid' );
-  }
-  if (variable_get ( 'astrooda_help_page_nid')) {
-    variable_del ( 'astrooda_help_page_nid');
+  if (variable_get ( 'astrooda_help_page_nid' )) {
+    variable_del ( 'astrooda_help_page_nid' );
   }
   menu_rebuild ();
   field_purge_batch ( 500 );
   
   // Delete settings
-  variable_del('astrooda_settings');
+  variable_del ( 'astrooda_settings' );
 }
 

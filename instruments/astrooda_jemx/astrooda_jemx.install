@@ -53,8 +53,8 @@ function astrooda_jemx_install() {
   
   // add help node
   $node_array = jemx_help_page_node_export_features_default ();
-  $lbase_url= variable_get ( 'lbase_url' );
-  $node_array_code_string = preg_replace('/src=\\\\"[\/|\w]*\/sites\/default\/files\//', 'src=\\"'.$lbase_url.'/sites/default/files/', $node_array ['code_string']);
+  $astrooda_base_url= variable_get ( 'astrooda_base_url' );
+  $node_array_code_string = preg_replace('/src=\\\\"[\/|\w]*\/sites\/default\/files\//', 'src=\\"'.$astrooda_base_url.'/sites/default/files/', $node_array ['code_string']);
   $import_output = node_export_import ( $node_array_code_string );
   
   if ($import_output ['success']) {

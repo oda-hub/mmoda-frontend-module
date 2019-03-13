@@ -49,7 +49,7 @@ function astrooda_block_info() {
       'status' => TRUE,
       'region' => 'content',
       'visibility' => BLOCK_VISIBILITY_LISTED,
-      'pages' => 'astrooda',
+      'pages' => '<front>',
       'cache' => DRUPAL_NO_CACHE
   );
   
@@ -147,15 +147,15 @@ function astrooda_main_block_content() {
     unset($_SESSION ['url_parameters']);
   }
   
-  if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
-    drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
-    return;
-  }
+//   if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
+//     drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
+//     return;
+//   }
   
-  if (! ($library_mpld3 = libraries_load ( 'mpld3' )) || empty ( $library_mpld3 ['loaded'] )) {
-    drupal_set_message ( t ( 'Error : can not load mplD3 library.' ), 'error' );
-    return;
-  }
+//   if (! ($library_mpld3 = libraries_load ( 'mpld3' )) || empty ( $library_mpld3 ['loaded'] )) {
+//     drupal_set_message ( t ( 'Error : can not load mplD3 library.' ), 'error' );
+//     return;
+//   }
   
   $libname = 'bootstrap-form-validator';
   /*
@@ -291,35 +291,35 @@ function astrooda_libraries_info() {
   
   // A very simple library. No changing APIs (hence, no versions), no variants.
   // Expected to be extracted into 'sites/all/libraries/simple'.
-  $libraries ['d3'] = array (
-      'name' => 'Data Driven-Documents library',
-      'vendor url' => 'https://d3js.org',
-      'download url' => 'https://d3js.org',
-      'version arguments' => array (
-          'file' => 'd3.js', // Could be any file with version info
-          'pattern' => '/Version (\d+\.\d+\.\d+\.?) /'
-      ),
-      'files' => array (
-          'js' => array (
-              'd3.js'
-          )
-      )
-  );
+//   $libraries ['d3'] = array (
+//       'name' => 'Data Driven-Documents library',
+//       'vendor url' => 'https://d3js.org',
+//       'download url' => 'https://d3js.org',
+//       'version arguments' => array (
+//           'file' => 'd3.js', // Could be any file with version info
+//           'pattern' => '/Version (\d+\.\d+\.\d+\.?) /'
+//       ),
+//       'files' => array (
+//           'js' => array (
+//               'd3.js'
+//           )
+//       )
+//   );
   
-  $libraries ['mpld3'] = array (
-      'name' => 'Data Driven-Documents library',
-      'vendor url' => 'http://mpld3.github.io/',
-      'download url' => 'http://mpld3.github.io/install.html',
-      'version arguments' => array (
-          'file' => 'mpld3.js', // Could be any file with version info
-          'pattern' => '/Version (.*)$/'
-      ),
-      'files' => array (
-          'js' => array (
-              'mpld3.js'
-          )
-      )
-  );
+//   $libraries ['mpld3'] = array (
+//       'name' => 'Data Driven-Documents library',
+//       'vendor url' => 'http://mpld3.github.io/',
+//       'download url' => 'http://mpld3.github.io/install.html',
+//       'version arguments' => array (
+//           'file' => 'mpld3.js', // Could be any file with version info
+//           'pattern' => '/Version (.*)$/'
+//       ),
+//       'files' => array (
+//           'js' => array (
+//               'mpld3.js'
+//           )
+//       )
+//   );
   
   $libraries ['datatables'] = array (
       'name' => 'Table plug-in for jQuery',

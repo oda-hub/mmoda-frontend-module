@@ -360,7 +360,7 @@
 					var current_panel = $(this).closest('.panel');
 					var product_type = current_panel.data("product_type");
 					$('#multi-product-' + product_type + '-tab a').click();
-					return;
+					//return;
 					if (multiproduct_panel_id = data['multiproduct_' + product_type
 							+ '_panel_id']) {
 						$(multiproduct_panel_id).highlight_result_panel(lightcurve_offset);
@@ -550,7 +550,8 @@
 								var catalog = clone(catalog_parent_panel.data('catalog'));
 								catalog_offset.top -= parent_catalog_offset.top;
 								catalog_offset.left -= parent_catalog_offset.left;
-								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'), catalog_offset, showUseCatalog);
+								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'),
+										catalog_offset, showUseCatalog);
 							}
 						});
 		$("body").on(
@@ -917,9 +918,9 @@
 							return false;
 						});
 		if (Drupal.settings.hasOwnProperty('url_parameters')) {
+			console.log('Parameters in url:');
+			console.log(Drupal.settings.url_parameters);
 			make_request(Drupal.settings.url_parameters);
-			// console.log('Parameters in url:');
-			// console.log(Drupal.settings.url_parameters);
 		}
 
 	}
@@ -928,7 +929,7 @@
 		$(
 				".instruments-panel ul.nav-tabs li#" + request_parameters.instrument
 						+ '-tab a').tab('show');
-
+		console.log('Setting parameters :');
 		$('input, textarea, select',
 				'form#astrooda-common, form.' + request_parameters.instrument + '-form')
 				.each(
@@ -947,13 +948,14 @@
 								}
 							}
 						});
+		console.log('Submitting form !');
 		$('form.' + request_parameters.instrument + '-form').submit();
 
 	}
 
 	function display_catalog(catalog, afterDiv, offset, showUseCatalog) {
 		var datetime = catalog.datetime;
-		
+
 		var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++,
 				'image-catalog', datetime);
 
@@ -1119,7 +1121,6 @@
 								var confirmation = ($('.DTE button.save-row')
 										.data('confirmation'));
 								if (!confirmation) {
-									console.log('No confirmation button');
 									ldataTable
 											.rows()
 											.every(
@@ -1697,7 +1698,8 @@
 
 		var spectrum_offset = {};
 		spectrum_offset.top = last_click_position.top - parent_spectrum_offset.top;
-		spectrum_offset.left = last_click_position.left - parent_spectrum_offset.left;
+		spectrum_offset.left = last_click_position.left
+				- parent_spectrum_offset.left;
 
 		$('#' + panel_ids.panel_id).highlight_result_panel(spectrum_offset);
 	}
@@ -1770,7 +1772,7 @@
 					data : dataSet,
 					column_names : columns,
 					fields : fields,
-					datetime : datetime, 
+					datetime : datetime,
 				}
 			});
 		}
