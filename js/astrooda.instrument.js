@@ -1,3 +1,53 @@
+function validate_timebin(value, validator, $thefield) {
+	console.log('validating time bin');
+
+	var time_bin_format = validator.getFieldElements('time_bin_format').val();
+
+	if ($thefield.data('astroodaTimeBinMin')) {
+		var time_bin_min_seconds = $thefield.data('astroodaTimeBinMin');
+		var time_bin_format_message = time_bin_min_seconds + ' seconds';
+		if (time_bin_format == 'jd') {
+			time_bin_min_days = (time_bin_min_seconds / 86400).toFixed(6);
+			var time_bin_format_message = time_bin_min_days + ' day ('
+					+ time_bin_min_seconds + ' seconds)';
+		}
+		if (value < time_bin_min) {
+			return {
+				valid : false,
+				message : 'Please enter a time bin higher than '
+						+ time_bin_format_message
+			}
+		}
+	}
+
+	if ($thefield.data('astroodaTimeBinMultiple')) {
+		var time_bin_min = $thefield.data('astroodaTimeBinMin');
+		var time_bin_format_message = time_bin_min + ' seconds';
+		value *= 1000;
+		if (time_bin_format == 'jd') {
+			value = value * 86400;
+		}
+		if (value % 50 != 0) {
+			value_inf = (value - (value % 50));
+			value_sup = value_inf + 50;
+			if (time_bin_format == 'jd') {
+				million = Math.pow(10,6);
+				value_inf *= million;
+				value_sup *= million;
+				value_inf = ((value_inf - (value_inf % 86400)))/(86400*million);
+				value_sup = ((value_sup - (value_sup % 86400)))/(86400*million);
+			}
+			value_inf /= 1000;
+			value_sup /= 1000;
+			return {
+				valid : false,
+				message : 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
+			}
+		}
+	}
+	return true;
+}
+
 (function($) {
 
 	$(document).ready(commonReady);
@@ -19,36 +69,17 @@
 	var max_nb_attempts_after_failed = 0;
 	var current_nb_attempts_after_failed = 0;
 
-	function validate_timebin(value, validator, $thefield) {
-		if ($thefield.data('astroodaTimeBinMin')) {
-			var time_bin_min = $thefield.data('astroodaTimeBinMin');
-
-			var time_bin_format = validator.getFieldElements('time_bin_format').val();
-			var time_bin_format_message = time_bin_min + ' seconds';
-			if (time_bin_format == 'jd') {
-				time_bin_min = (time_bin_min / 86400).toFixed(6);
-				var time_bin_format_message = time_bin_min + ' day (20 seconds)';
-			}
-			if (value < time_bin_min) {
-				return {
-					valid : false,
-					message : 'Please enter a time bin higher than '
-							+ time_bin_format_message
-				}
-			}
-		}
-		return true;
-	}
-
 	function AJAX_call() {
 		// Display the key/value pairs
 		// console.log('--- initialFormData');
-		// for(var parameter of current_ajax_call_params.initialFormData.entries())
+		// for(var parameter of
+		// current_ajax_call_params.initialFormData.entries())
 		// {
 		// console.log(parameter[0]+ '='+ parameter[1]);
 		// }
 		// console.log('--- currentFormData');
-		// for(var parameter of current_ajax_call_params.currentFormData.entries())
+		// for(var parameter of
+		// current_ajax_call_params.currentFormData.entries())
 		// {
 		// console.log(parameter[0]+ '='+ parameter[1]);
 		// }
@@ -78,7 +109,8 @@
 								session_id = data['session_id'];
 							}
 							if (session_id && job_id) {
-								waitingDialog.setHeaderMessagesSessionId(session_id);
+								waitingDialog
+										.setHeaderMessagesSessionId(session_id);
 								waitingDialog.setHeaderMessageJobId(job_id);
 								waitingDialog.showHeaderMessage();
 							}
@@ -94,16 +126,22 @@
 							if (query_failed
 									&& (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
 								waitingDialog.hideSpinner();
-								waitingDialog.append('<table class="error-table"><tr><td>'
-										+ get_current_date_time() + '</td><td>'
-										+ data.exit_status.message + '</td></tr><tr><td></td><td>'
-										+ data.exit_status.error_message + '</td></tr></table>',
-										'danger');
+								waitingDialog
+										.append(
+												'<table class="error-table"><tr><td>'
+														+ get_current_date_time()
+														+ '</td><td>'
+														+ data.exit_status.message
+														+ '</td></tr><tr><td></td><td>'
+														+ data.exit_status.error_message
+														+ '</td></tr></table>',
+												'danger');
 								waitingDialog.setClose();
 							} else if (data.query_status != 'done') {
 								waitingDialog.showLegend();
 								previous_summary = '';
-								if (data.products.hasOwnProperty('input_prod_list')) {
+								if (data.products
+										.hasOwnProperty('input_prod_list')) {
 									data_units = data.products.input_prod_list;
 								}
 
@@ -112,30 +150,35 @@
 								}
 								messages = get_server_message(data, data_units);
 								current_summary = messages.summary;
-								messages.summary = get_current_date_time() + messages.summary;
+								messages.summary = get_current_date_time()
+										+ messages.summary;
 								if (current_summary != previous_summary) {
 									waitingDialog.replace(messages);
-									$('#ldialog .summary [data-toggle="tooltip"]').tooltip({
-										trigger : 'hover'
-									});
+									$(
+											'#ldialog .summary [data-toggle="tooltip"]')
+											.tooltip({
+												trigger : 'hover'
+											});
 								}
 
 								current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-								current_ajax_call_params.currentFormData.append('query_status',
-										data.query_status);
-								if (!current_ajax_call_params.currentFormData.has('job_id')) {
-									current_ajax_call_params.currentFormData.append('job_id',
-											job_id);
-									current_ajax_call_params.currentFormData.append('session_id',
-											session_id);
+								current_ajax_call_params.currentFormData
+										.append('query_status',
+												data.query_status);
+								if (!current_ajax_call_params.currentFormData
+										.has('job_id')) {
+									current_ajax_call_params.currentFormData
+											.append('job_id', job_id);
+									current_ajax_call_params.currentFormData
+											.append('session_id', session_id);
 								}
 								requestTimer = setTimeout(AJAX_call, 5000);
 							} else {
 								waitingDialog.hideSpinner();
 								instrument = $('input[name=instrument]',
 										".instrument-panel.active").val();
-								waitingDialog.append(get_current_date_time() + ' '
-										+ data.query_status, 'success');
+								waitingDialog.append(get_current_date_time()
+										+ ' ' + data.query_status, 'success');
 								$('#ldialog').find('.progress').hide();
 								if (data.exit_status.status != 0) {
 									debug_message = '';
@@ -150,48 +193,64 @@
 								console.log(data);
 
 								if (data.products.hasOwnProperty('image')) {
-									if (data.products.hasOwnProperty('download_file_name')
+									if (data.products
+											.hasOwnProperty('download_file_name')
 											&& data.products.download_file_name
 													.indexOf('light_curve') == 0) {
-										display_lc_table(job_id, data.query_status, data.products);
+										display_lc_table(job_id,
+												data.query_status,
+												data.products);
 									} else {
 										if (data.products.image
 												.hasOwnProperty('spectral_fit_image')) {
-											display_spectrum(request_spectrum_form_element.data(),
-													data.products, job_id, instrument);
+											display_spectrum(
+													request_spectrum_form_element
+															.data(),
+													data.products, job_id,
+													instrument);
 										} else {
-											display_image(data.products, job_id, instrument);
+											display_image(data.products,
+													job_id, instrument);
 										}
 									}
-								} else if (data.products.hasOwnProperty('spectrum_name')) {
-									display_spectrum_table(job_id, data.query_status,
-											data.products);
+								} else if (data.products
+										.hasOwnProperty('spectrum_name')) {
+									display_spectrum_table(job_id,
+											data.query_status, data.products);
 								}
 								waitingDialog.setClose();
 							}
-						}).complete(
+						})
+				.complete(
 						function(jqXHR, textStatus) {
-							// console.log('Exec time : ' + (new Date().getTime() -
+							// console.log('Exec time : ' + (new
+							// Date().getTime() -
 							// startAJAXTime));
 							$('button[type=submit]',
-									".instrument-panel.active, .common-params").prop('disabled',
-									false);
-						}).fail(function(jqXHR, textStatus, errorThrown) {
-					console.log('textStatus : ' + textStatus + '|');
-					console.log('errorThrown :' + errorThrown);
-					console.log('jqXHR');
-					console.log(jqXHR);
-					waitingDialog.hideSpinner();
-					var message = get_current_date_time() + ' ';
-					if (errorThrown == 'timeout') {
-						message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
-					} else if (jqXHR.status > 0) {
-						message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown;
-					} else {
-						message += 'Can not reach the data server, unknown error';
-					}
-					waitingDialog.append('<div>' + message + '</div>', 'danger');
-				});
+									".instrument-panel.active, .common-params")
+									.prop('disabled', false);
+						})
+				.fail(
+						function(jqXHR, textStatus, errorThrown) {
+							console.log('textStatus : ' + textStatus + '|');
+							console.log('errorThrown :' + errorThrown);
+							console.log('jqXHR');
+							console.log(jqXHR);
+							waitingDialog.hideSpinner();
+							var message = get_current_date_time() + ' ';
+							if (errorThrown == 'timeout') {
+								message += ' Timeout ('
+										+ (ajax_request_timeout / 1000)
+										+ 's) !';
+							} else if (jqXHR.status > 0) {
+								message += textStatus + ' ' + jqXHR.status
+										+ ', ' + errorThrown;
+							} else {
+								message += 'Can not reach the data server, unknown error';
+							}
+							waitingDialog.append('<div>' + message + '</div>',
+									'danger');
+						});
 
 		$('#ldialog .cancel-button').on('click', function() {
 			if (requestTimer) {
@@ -360,54 +419,59 @@
 					var current_panel = $(this).closest('.panel');
 					var product_type = current_panel.data("product_type");
 					$('#multi-product-' + product_type + '-tab a').click();
-					//return;
-					if (multiproduct_panel_id = data['multiproduct_' + product_type
-							+ '_panel_id']) {
-						$(multiproduct_panel_id).highlight_result_panel(lightcurve_offset);
+					// return;
+					if (multiproduct_panel_id = data['multiproduct_'
+							+ product_type + '_panel_id']) {
+						$(multiproduct_panel_id).highlight_result_panel(
+								lightcurve_offset);
 						$('.fa-chevron-down', multiproduct_panel_id).click();
 
 					} else {
-						$(".instrument-panel.active").data("lightcurve_table_current_row",
-								current_row);
+						$(".instrument-panel.active").data(
+								"lightcurve_table_current_row", current_row);
 						var lc_index = data.index;
-						var parent_catalog_offset = $(".instrument-panel.active").offset();
+						var parent_catalog_offset = $(
+								".instrument-panel.active").offset();
 						var catalog_offset = {};
-						catalog_offset.top = e.pageY - parent_catalog_offset.top;
-						catalog_offset.left = e.pageX - parent_catalog_offset.left;
-						display_multiproduct_table(current_panel, lc_index, datetime,
-								catalog_offset);
+						catalog_offset.top = e.pageY
+								- parent_catalog_offset.top;
+						catalog_offset.left = e.pageX
+								- parent_catalog_offset.left;
+						display_multiproduct_table(current_panel, lc_index,
+								datetime, catalog_offset);
 					}
 				});
 
-		$('body')
-				.on(
-						'click',
-						'table.lightcurve-table tbody button.draw-lightcurve',
-						function(e) {
-							var current_row = $(this).parents('tr');
-							var data = current_row.data();
-							var lightcurve_offset = {};
-							lightcurve_offset.top = e.pageY;
-							lightcurve_offset.left = e.pageX;
-							if (lightcurve_panel_id = data.lightcurve_panel_id) {
-								$(lightcurve_panel_id)
-										.highlight_result_panel(lightcurve_offset);
-								$('.fa-chevron-down', lightcurve_panel_id).click();
+		$('body').on(
+				'click',
+				'table.lightcurve-table tbody button.draw-lightcurve',
+				function(e) {
+					var current_row = $(this).parents('tr');
+					var data = current_row.data();
+					var lightcurve_offset = {};
+					lightcurve_offset.top = e.pageY;
+					lightcurve_offset.left = e.pageX;
+					if (lightcurve_panel_id = data.lightcurve_panel_id) {
+						$(lightcurve_panel_id).highlight_result_panel(
+								lightcurve_offset);
+						$('.fa-chevron-down', lightcurve_panel_id).click();
 
-							} else {
-								$(".instrument-panel.active").data(
-										"lightcurve_table_current_row", current_row);
-								var lc_index = data.index;
-								var current_panel = $(this).closest('.panel');
-								var parent_catalog_offset = $(".instrument-panel.active")
-										.offset();
-								var catalog_offset = {};
-								catalog_offset.top = e.pageY - parent_catalog_offset.top;
-								catalog_offset.left = e.pageX - parent_catalog_offset.left;
-								display_lc_image(current_panel, lc_index, datetime,
-										catalog_offset);
-							}
-						});
+					} else {
+						$(".instrument-panel.active").data(
+								"lightcurve_table_current_row", current_row);
+						var lc_index = data.index;
+						var current_panel = $(this).closest('.panel');
+						var parent_catalog_offset = $(
+								".instrument-panel.active").offset();
+						var catalog_offset = {};
+						catalog_offset.top = e.pageY
+								- parent_catalog_offset.top;
+						catalog_offset.left = e.pageX
+								- parent_catalog_offset.left;
+						display_lc_image(current_panel, lc_index, datetime,
+								catalog_offset);
+					}
+				});
 
 		$('body')
 				.on(
@@ -421,8 +485,10 @@
 							spectrum_offset.left = e.pageX;
 
 							if (spectrum_panel_id = data.spectrum_panel_id) {
-								$(spectrum_panel_id).highlight_result_panel(spectrum_offset);
-								$('.fa-chevron-down', spectrum_panel_id).click();
+								$(spectrum_panel_id).highlight_result_panel(
+										spectrum_offset);
+								$('.fa-chevron-down', spectrum_panel_id)
+										.click();
 
 							} else {
 
@@ -431,96 +497,110 @@
 								request_spectrum_form_element = $(this);
 								draw_spectrum_form_elements = new FormData();
 
-								draw_spectrum_form_elements.append('session_id',
-										data.session_id);
-								draw_spectrum_form_elements.append('query_status', 'ready');
-								draw_spectrum_form_elements.append('job_id', data.job_id);
-								draw_spectrum_form_elements
-										.append('instrument', $('input[name=instrument]',
-												".instrument-panel.active").val());
-								draw_spectrum_form_elements.append('query_type', $(
-										'select[name=query_type]', ".instrument-panel.active")
-										.val());
-								draw_spectrum_form_elements.append('product_type',
-										'spectral_fit');
-								draw_spectrum_form_elements.append('xspec_model',
-										data.xspec_model);
-								draw_spectrum_form_elements.append('ph_file_name',
-										data.ph_file_name);
-								draw_spectrum_form_elements.append('arf_file_name',
-										data.arf_file_name);
-								draw_spectrum_form_elements.append('rmf_file_name',
-										data.rmf_file_name);
+								draw_spectrum_form_elements.append(
+										'session_id', data.session_id);
+								draw_spectrum_form_elements.append(
+										'query_status', 'ready');
+								draw_spectrum_form_elements.append('job_id',
+										data.job_id);
+								draw_spectrum_form_elements.append(
+										'instrument', $(
+												'input[name=instrument]',
+												".instrument-panel.active")
+												.val());
+								draw_spectrum_form_elements.append(
+										'query_type', $(
+												'select[name=query_type]',
+												".instrument-panel.active")
+												.val());
+								draw_spectrum_form_elements.append(
+										'product_type', 'spectral_fit');
+								draw_spectrum_form_elements.append(
+										'xspec_model', data.xspec_model);
+								draw_spectrum_form_elements.append(
+										'ph_file_name', data.ph_file_name);
+								draw_spectrum_form_elements.append(
+										'arf_file_name', data.arf_file_name);
+								draw_spectrum_form_elements.append(
+										'rmf_file_name', data.rmf_file_name);
 
 								$(this).data('session_id', data.session_id);
-								$(this).data('parameters', draw_spectrum_form_elements);
+								$(this).data('parameters',
+										draw_spectrum_form_elements);
 								$(this).data('source_name', data.source_name);
 								$(this).data(
 										'files',
-										data.ph_file_name + ',' + data.arf_file_name + ','
+										data.ph_file_name + ','
+												+ data.arf_file_name + ','
 												+ data.rmf_file_name);
 
-								$(".instrument-panel.active").data("last_click_position", {
-									'top' : e.pageY,
-									'left' : e.pageX
-								});
 								$(".instrument-panel.active").data(
-										"spectrum_table_current_row", current_row);
-								$(".form-submit", ".instrument-panel.active").click();
+										"last_click_position", {
+											'top' : e.pageY,
+											'left' : e.pageX
+										});
+								$(".instrument-panel.active").data(
+										"spectrum_table_current_row",
+										current_row);
+								$(".form-submit", ".instrument-panel.active")
+										.click();
 							}
 						});
 
-		$("body")
-				.on(
-						'click',
-						'.panel .close-panel',
-						function(e) {
-							var panel = $(this).closest('.panel');
-							if (panel.data('catalog')) {
-								// delete catalog when attached to panel
-								panel.removeData('catalog');
+		$("body").on(
+				'click',
+				'.panel .close-panel',
+				function(e) {
+					var panel = $(this).closest('.panel');
+					if (panel.data('catalog')) {
+						// delete catalog when attached to panel
+						panel.removeData('catalog');
 
-							}
-							if (panel.data('log')) {
-								// delete log when attached to panel
-								panel.removeData('log');
+					}
+					if (panel.data('log')) {
+						// delete log when attached to panel
+						panel.removeData('log');
 
-							}
+					}
 
-							// update the catalog only if it is in the parameters panel
-							if (panel.data('catalog_parent_panel_id')) {
-								catalog_parent_panel_id = $(panel
-										.data('catalog_parent_panel_id'));
-								catalog_parent_panel_id.removeData('catalog_panel_id');
-							}
+					// update the catalog only if it is in the parameters panel
+					if (panel.data('catalog_parent_panel_id')) {
+						catalog_parent_panel_id = $(panel
+								.data('catalog_parent_panel_id'));
+						catalog_parent_panel_id.removeData('catalog_panel_id');
+					}
 
-							// update the spectrum only if it is in the parameters panel
-							if (panel.data('spectrum_parent_panel_id')) {
-								spectrum_parent_panel_id = $(panel
-										.data('spectrum_parent_panel_id'));
-								spectrum_parent_panel_id.removeData('spectrum_panel_id');
-							}
+					// update the spectrum only if it is in the parameters panel
+					if (panel.data('spectrum_parent_panel_id')) {
+						spectrum_parent_panel_id = $(panel
+								.data('spectrum_parent_panel_id'));
+						spectrum_parent_panel_id
+								.removeData('spectrum_panel_id');
+					}
 
-							// update the lightcurve only if it is in the parameters panel
-							if (panel.data('lightcurve_parent_panel_id')) {
-								lightcurve_parent_panel_id = $(panel
-										.data('lightcurve_parent_panel_id'));
-								lightcurve_parent_panel_id.removeData('lightcurve_panel_id');
-							}
+					// update the lightcurve only if it is in the parameters
+					// panel
+					if (panel.data('lightcurve_parent_panel_id')) {
+						lightcurve_parent_panel_id = $(panel
+								.data('lightcurve_parent_panel_id'));
+						lightcurve_parent_panel_id
+								.removeData('lightcurve_panel_id');
+					}
 
-							if (panel.data('log_product_panel_id')) {
-								log_product_panel_id = panel.data('log_product_panel_id');
-								$(log_product_panel_id).removeData('log_panel_id');
-							}
+					if (panel.data('log_product_panel_id')) {
+						log_product_panel_id = panel
+								.data('log_product_panel_id');
+						$(log_product_panel_id).removeData('log_panel_id');
+					}
 
-							if (panel.data('query_parameters_product_panel_id')) {
-								query_parameters_product_panel_id = panel
-										.data('query_parameters_product_panel_id');
-								$(query_parameters_product_panel_id).removeData(
-										'query_parameters_panel_id');
-							}
-							panel.remove();
-						});
+					if (panel.data('query_parameters_product_panel_id')) {
+						query_parameters_product_panel_id = panel
+								.data('query_parameters_product_panel_id');
+						$(query_parameters_product_panel_id).removeData(
+								'query_parameters_panel_id');
+					}
+					panel.remove();
+				});
 
 		$("body")
 				.on(
@@ -534,23 +614,26 @@
 							if (catalog_parent_panel.hasClass('result-panel')) {
 								showUseCatalog = true;
 							}
-							var parent_catalog_offset = $(".instrument-panel.active")
-									.offset();
+							var parent_catalog_offset = $(
+									".instrument-panel.active").offset();
 							var catalog_offset = {};
 							catalog_offset.top = e.pageY;
 							catalog_offset.left = e.pageX;
 							if (catalog_panel_id = catalog_parent_panel
 									.data('catalog_panel_id')) {
-								$(catalog_panel_id).highlight_result_panel(catalog_offset);
+								$(catalog_panel_id).highlight_result_panel(
+										catalog_offset);
 								$('.fa-chevron-down', catalog_panel_id).click();
 
 							} else {
 								// Show catalog
 
-								var catalog = clone(catalog_parent_panel.data('catalog'));
+								var catalog = clone(catalog_parent_panel
+										.data('catalog'));
 								catalog_offset.top -= parent_catalog_offset.top;
 								catalog_offset.left -= parent_catalog_offset.left;
-								display_catalog(catalog, '#' + catalog_parent_panel.attr('id'),
+								display_catalog(catalog, '#'
+										+ catalog_parent_panel.attr('id'),
 										catalog_offset, showUseCatalog);
 							}
 						});
@@ -561,7 +644,8 @@
 					e.preventDefault();
 					var log_parent_panel = $(this).closest('.result-panel');
 					var log = log_parent_panel.data('log');
-					var parent_log_offset = $(".instrument-panel.active").offset();
+					var parent_log_offset = $(".instrument-panel.active")
+							.offset();
 					var log_offset = {};
 					log_offset.top = e.pageY;
 					log_offset.left = e.pageX;
@@ -574,8 +658,8 @@
 						log_offset.top -= parent_log_offset.top;
 						log_offset.left -= parent_log_offset.left;
 
-						display_log(log, '#' + log_parent_panel.attr('id'), datetime,
-								log_offset);
+						display_log(log, '#' + log_parent_panel.attr('id'),
+								datetime, log_offset);
 					}
 				});
 		$("body")
@@ -584,20 +668,22 @@
 						'.result-panel .show-query-parameters',
 						function(e) {
 							e.preventDefault();
-							var query_parameters_parent_panel = $(this).closest(
-									'.result-panel');
+							var query_parameters_parent_panel = $(this)
+									.closest('.result-panel');
 							var query_parameters = query_parameters_parent_panel
 									.data('analysis_paramters');
-							var parent_query_parameters_offset = $(".instrument-panel.active")
-									.offset();
+							var parent_query_parameters_offset = $(
+									".instrument-panel.active").offset();
 							var query_parameters_offset = {};
 							query_parameters_offset.top = e.pageY;
 							query_parameters_offset.left = e.pageX;
 							if (query_parameters_panel_id = query_parameters_parent_panel
 									.data('query_parameters_panel_id')) {
-								$(query_parameters_panel_id).highlight_result_panel(
-										query_parameters_offset);
-								$('.fa-chevron-down', query_parameters_panel_id).click();
+								$(query_parameters_panel_id)
+										.highlight_result_panel(
+												query_parameters_offset);
+								$('.fa-chevron-down', query_parameters_panel_id)
+										.click();
 							} else {
 								// Show query_parameters
 								var datetime = $(this).attr('data-datetime');
@@ -605,7 +691,8 @@
 								query_parameters_offset.left -= parent_query_parameters_offset.left;
 
 								display_query_parameters(query_parameters, '#'
-										+ query_parameters_parent_panel.attr('id'), datetime,
+										+ query_parameters_parent_panel
+												.attr('id'), datetime,
 										query_parameters_offset);
 							}
 						});
@@ -615,7 +702,8 @@
 				'.result-panel .share-query',
 				function(e) {
 					e.preventDefault();
-					var query_parameters_parent_panel = $(this).closest('.result-panel');
+					var query_parameters_parent_panel = $(this).closest(
+							'.result-panel');
 					var query_parameters = query_parameters_parent_panel
 							.data('analysis_paramters');
 					var url = get_query_url(query_parameters);
@@ -628,16 +716,20 @@
 						'.result-panel .use-catalog',
 						function(e) {
 							e.preventDefault();
-							var catalog_panel = $(this).parents('.result-panel');
+							var catalog_panel = $(this)
+									.parents('.result-panel');
 							var catalog_parent_panel = $(catalog_panel
 									.data('catalog_parent_panel_id'));
-							var catalog = clone(catalog_parent_panel.data('catalog'));
+							var catalog = clone(catalog_parent_panel
+									.data('catalog'));
 							var dataTable = catalog_panel.data('dataTable');
 							catalog.data = dataTable.data().toArray();
-							$(".instrument-panel.active .instrument-params-panel").data({
-								catalog : catalog,
-								dataTable : dataTable
-							});
+							$(
+									".instrument-panel.active .instrument-params-panel")
+									.data({
+										catalog : catalog,
+										dataTable : dataTable
+									});
 							$(
 									'.instrument-panel.active .instrument-params-panel .inline-user-catalog')
 									.removeClass('hidden');
@@ -646,109 +738,134 @@
 							var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
 							var catalog_position = showCatalog.position();
 							var new_catalog_position = {
-								left : catalog_position.left + showCatalog.width() / 2,
-								top : catalog_position.top + showCatalog.height() * 2
+								left : catalog_position.left
+										+ showCatalog.width() / 2,
+								top : catalog_position.top
+										+ showCatalog.height() * 2
 							}
 
 							var catalog_offset = showCatalog.offset();
-							event.pageX = catalog_offset.left + showCatalog.width() / 2;
-							event.pageY = catalog_offset.top + showCatalog.height() / 2;
-							catalog_panel.animate(new_catalog_position, "slow", function() {
-								$('.close-panel', catalog_panel).click();
-								showCatalog.trigger(event);
-							});
+							event.pageX = catalog_offset.left
+									+ showCatalog.width() / 2;
+							event.pageY = catalog_offset.top
+									+ showCatalog.height() / 2;
+							catalog_panel.animate(new_catalog_position, "slow",
+									function() {
+										$('.close-panel', catalog_panel)
+												.click();
+										showCatalog.trigger(event);
+									});
 						});
 		// delete catalog when attached to panel
-		$(".instrument-panel.active .instrument-params-panel .inline-user-catalog")
-				.on('click', ".remove-catolog", function(e) {
-					$(this).parent().addClass('hidden');
-					var panel = $(".instrument-panel.active .instrument-params-panel");
-					if (panel.data('catalog')) {
-						panel.removeData('catalog');
-					}
-				});
+		$(
+				".instrument-panel.active .instrument-params-panel .inline-user-catalog")
+				.on(
+						'click',
+						".remove-catolog",
+						function(e) {
+							$(this).parent().addClass('hidden');
+							var panel = $(".instrument-panel.active .instrument-params-panel");
+							if (panel.data('catalog')) {
+								panel.removeData('catalog');
+							}
+						});
 
 		waitingDialog = get_waitingDialog();
 		// The main block is hidden at startup (in astrooda.css) and
 		// shown here after the setup of DOM and the field controls
 		$('.block-astrooda').show();
-		$('body').on('click', '.astrooda-log .more-less-details', function(e) {
-			e.preventDefault();
-			var $this = $(this);
-			var details = $(this).parent().find('.details');
-			details.slideToggle('slow', function() {
-				var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
-				$this.text(txt);
-			});
-		});
+		$('body').on(
+				'click',
+				'.astrooda-log .more-less-details',
+				function(e) {
+					e.preventDefault();
+					var $this = $(this);
+					var details = $(this).parent().find('.details');
+					details.slideToggle('slow', function() {
+						var txt = $(this).is(':visible') ? '< Less details'
+								: 'More details >';
+						$this.text(txt);
+					});
+				});
 
 		// Create validator and validate a frist time :
 		// This is important in Firefox when the page is refreshed
 		// where indeed the old values are still in the form
-		var validator = $('.instrument-panel form').bootstrapValidator({
-			// live :'disabled',
-			fields : {
-				'scw_list' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								return (validate_scws(value, 50));
-							}
-						}
-					}
-				},
-				'time_bin' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								return (validate_timebin(value, validator, $field));
-							}
-						}
-					}
-				},
-				'E1_keV' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								var E2_keV = validator.getFieldElements('E2_keV').val();
-								if (Number(value) >= Number(E2_keV)) {
-									return {
-										valid : false,
-										message : 'Energy min must be lower that energy max'
+		var validator = $('.instrument-panel form')
+				.bootstrapValidator(
+						{
+							// live :'disabled',
+							fields : {
+								'scw_list' : {
+									// enabled: false,
+									validators : {
+										callback : {
+											callback : function(value,
+													validator, $field) {
+												return (validate_scws(value, 50));
+											}
+										}
 									}
-								}
-								return true;
-							}
-						}
-					}
-				},
-				'E2_keV' : {
-					// enabled: false,
-					validators : {
-						callback : {
-							callback : function(value, validator, $field) {
-								var E1_keV = validator.getFieldElements('E1_keV').val();
-								if (Number(value) <= Number(E1_keV)) {
-									return {
-										valid : false,
-										message : 'Energy max must be higher that energy min'
+								},
+								'time_bin' : {
+									// enabled: false,
+									validators : {
+										callback : {
+											callback : function(value,
+													validator, $field) {
+												return (validate_timebin(value,
+														validator, $field));
+											}
+										}
 									}
-								}
-								return true;
+								},
+								'E1_keV' : {
+									// enabled: false,
+									validators : {
+										callback : {
+											callback : function(value,
+													validator, $field) {
+												var E2_keV = validator
+														.getFieldElements(
+																'E2_keV').val();
+												if (Number(value) >= Number(E2_keV)) {
+													return {
+														valid : false,
+														message : 'Energy min must be lower that energy max'
+													}
+												}
+												return true;
+											}
+										}
+									}
+								},
+								'E2_keV' : {
+									// enabled: false,
+									validators : {
+										callback : {
+											callback : function(value,
+													validator, $field) {
+												var E1_keV = validator
+														.getFieldElements(
+																'E1_keV').val();
+												if (Number(value) <= Number(E1_keV)) {
+													return {
+														valid : false,
+														message : 'Energy max must be higher that energy min'
+													}
+												}
+												return true;
+											}
+										}
+									}
+								},
+							},
+							feedbackIcons : {
+								valid : 'glyphicon glyphicon-ok',
+								invalid : 'glyphicon glyphicon-remove',
+								validating : 'glyphicon glyphicon-refresh'
 							}
-						}
-					}
-				},
-			},
-			feedbackIcons : {
-				valid : 'glyphicon glyphicon-ok',
-				invalid : 'glyphicon glyphicon-remove',
-				validating : 'glyphicon glyphicon-refresh'
-			}
-		}).data('bootstrapValidator');// .validate();
+						}).data('bootstrapValidator');// .validate();
 
 		// if (!validator.isValid()) {
 		// validator.disableSubmitButtons(true);
@@ -777,112 +894,146 @@
 					form.data('bootstrapValidator').updateStatus('E1_keV',
 							'NOT_VALIDATED').validateField('E1_keV');
 				});
+		
+		$('.instrument-panel form')
+		.on('error.form.bv', function(e) {
+			e.preventDefault();
+			console.log('Form errooooooooorrrrr');
+		});
 
-		$('.instrument-panel form').on(
-				'success.form.bv',
-				function(e) {
-					var form_id = $(this).attr('id').replace(/-/g, "_");
+		$('.instrument-panel form')
+				.on(
+						'success.form.bv',
+						function(e) {
+							e.preventDefault();
+							
+							var form_id = $(this).attr('id').replace(/-/g, "_");
+							var form_panel = $(this).closest('.panel');
+							var formData;
+							if (request_draw_spectrum) {
+								formData = request_spectrum_form_element
+										.data('parameters');
+							} else {
+								$('input:not(:file)', this).val(
+										function(_, value) {
+											return $.trim(value);
+										});
 
-					var form_panel = $(this).closest('.panel');
-					e.preventDefault();
-					var formData;
-					if (request_draw_spectrum) {
-						formData = request_spectrum_form_element.data('parameters');
-					} else {
-						$('input:not(:file)', this).val(function(_, value) {
-							return $.trim(value);
-						});
+								// Disable form elements added by Drupal
+								$('[name^=form_]', this).prop('disabled', true);
+								$('[name^=form_]', 'form#astrooda-common')
+										.prop('disabled', true);
+								// $('[name=catalog_selected_objects]',
+								// this).prop('disabled',
+								// true);
 
-						// Disable form elements added by Drupal
-						$('[name^=form_]', this).prop('disabled', true);
-						$('[name^=form_]', 'form#astrooda-common').prop('disabled', true);
-						// $('[name=catalog_selected_objects]', this).prop('disabled',
-						// true);
+								// Collect common parameters
+								var allFormData = $("form#astrooda-common")
+										.serializeArray()
+										.map(
+												function(item, index) {
+													if (item.name == 'T1'
+															|| item.name == 'T2') {
+														item.value = item.value
+																.replace(' ',
+																		'T')
+													}
+													return (item);
+												});
 
-						// Collect common parameters
-						var allFormData = $("form#astrooda-common").serializeArray().map(
-								function(item, index) {
-									if (item.name == 'T1' || item.name == 'T2') {
-										item.value = item.value.replace(' ', 'T')
+								// Collect instrument form fields and remove the
+								// form id prefix from
+								// the name
+								var instrumentFormData = $($(this)[0])
+										.serializeArray().map(
+												function(item, index) {
+													item.name = item.name
+															.replace(form_id
+																	+ '_', '');
+													return (item);
+												});
+
+								allFormData = allFormData
+										.concat(instrumentFormData);
+								formData = new FormData();
+								for (var lindex = 0; lindex < allFormData.length; lindex++)
+									formData.append(allFormData[lindex].name,
+											allFormData[lindex].value);
+								// Enable form elements added by Drupal
+								$('[name^=form_]', this)
+										.prop('disabled', false);
+								$('[name^=form_]', 'form#astrooda-common')
+										.prop('disabled', false);
+								// $('[name=catalog_selected_objects]',this).prop('disabled',
+								// false);
+
+								if (form_panel.data('catalog')) {
+									catalog = form_panel.data('catalog').initial_catalog;
+									var dataTable = form_panel
+											.data('dataTable');
+									catalog.cat_column_list = dataTable
+											.columns().data().toArray();
+									var catalog_selected_objects = Array.apply(
+											null, Array(dataTable.rows()
+													.count()));
+									catalog_selected_objects = catalog_selected_objects
+											.map(function(x, i) {
+												return i + 1
+											});
+									var catalog_selected_objects_string = catalog_selected_objects
+											.join(',');
+									catalog.cat_column_list[0] = catalog_selected_objects;
+
+									formData.append('catalog_selected_objects',
+											catalog_selected_objects_string);
+									formData.append('selected_catalog', JSON
+											.stringify(catalog));
+								}
+								// Attach files
+								$.each($('input:file:enabled', this), function(
+										i, file) {
+									if ($(this).val() !== '') {
+										formData.append($(this).attr('name'),
+												file.files[0]);
 									}
-									return (item);
 								});
-
-						// Collect instrument form fields and remove the form id prefix from
-						// the name
-						var instrumentFormData = $($(this)[0]).serializeArray().map(
-								function(item, index) {
-									item.name = item.name.replace(form_id + '_', '');
-									return (item);
-								});
-
-						allFormData = allFormData.concat(instrumentFormData);
-						formData = new FormData();
-						for (var lindex = 0; lindex < allFormData.length; lindex++)
-							formData.append(allFormData[lindex].name,
-									allFormData[lindex].value);
-						// Enable form elements added by Drupal
-						$('[name^=form_]', this).prop('disabled', false);
-						$('[name^=form_]', 'form#astrooda-common').prop('disabled', false);
-						// $('[name=catalog_selected_objects]',this).prop('disabled',
-						// false);
-
-						if (form_panel.data('catalog')) {
-							catalog = form_panel.data('catalog').initial_catalog;
-							var dataTable = form_panel.data('dataTable');
-							catalog.cat_column_list = dataTable.columns().data().toArray();
-							var catalog_selected_objects = Array.apply(null, Array(dataTable
-									.rows().count()));
-							catalog_selected_objects = catalog_selected_objects.map(function(
-									x, i) {
-								return i + 1
-							});
-							var catalog_selected_objects_string = catalog_selected_objects
-									.join(',');
-							catalog.cat_column_list[0] = catalog_selected_objects;
-
-							formData.append('catalog_selected_objects',
-									catalog_selected_objects_string);
-							formData.append('selected_catalog', JSON.stringify(catalog));
-						}
-						// Attach files
-						$.each($('input:file:enabled', this), function(i, file) {
-							if ($(this).val() !== '') {
-								formData.append($(this).attr('name'), file.files[0]);
 							}
+							$('input[name=xspec_model]', this).prop('disabled',
+									false);
+							$('input.spectrum-fit-param', this).prop(
+									'disabled', true);
+
+							request_draw_spectrum = false;
+
+							waitingDialog.show('Processing ...', '', {
+								progressType : 'success',
+								showProgressBar : false,
+								showSpinner : true
+							});
+							waitingDialog.hideHeaderMessage();
+
+							current_ajax_call_params = {};
+							current_ajax_call_params.initialFormData = formData;
+							current_ajax_call_params.currentFormData = cloneFormData(formData);
+							if (!current_ajax_call_params.currentFormData
+									.has('query_status')) {
+								current_ajax_call_params.currentFormData
+										.append('query_status', 'new');
+								current_ajax_call_params.currentFormData
+										.append('session_id', 'new');
+								current_ajax_call_params.currentFormData
+										.append('job_id', '');
+							}
+							current_ajax_call_params.action = $(this).attr(
+									'action');
+							current_ajax_call_params.form = this;
+
+							data_units = new Array();
+							job_status_table = new Array();
+							distinct_nodes = new Array();
+
+							AJAX_call();
 						});
-					}
-					$('input[name=xspec_model]', this).prop('disabled', false);
-					$('input.spectrum-fit-param', this).prop('disabled', true);
-
-					request_draw_spectrum = false;
-
-					waitingDialog.show('Processing ...', '', {
-						progressType : 'success',
-						showProgressBar : false,
-						showSpinner : true
-					});
-					waitingDialog.hideHeaderMessage();
-
-					current_ajax_call_params = {};
-					current_ajax_call_params.initialFormData = formData;
-					current_ajax_call_params.currentFormData = cloneFormData(formData);
-					if (!current_ajax_call_params.currentFormData.has('query_status')) {
-						current_ajax_call_params.currentFormData.append('query_status',
-								'new');
-						current_ajax_call_params.currentFormData
-								.append('session_id', 'new');
-						current_ajax_call_params.currentFormData.append('job_id', '');
-					}
-					current_ajax_call_params.action = $(this).attr('action');
-					current_ajax_call_params.form = this;
-
-					data_units = new Array();
-					job_status_table = new Array();
-					distinct_nodes = new Array();
-
-					AJAX_call();
-				});
 
 		$('.panel-help')
 				.on(
@@ -893,27 +1044,44 @@
 									.get(
 											$(this).attr('href'),
 											function(data) {
-												var help_text = $(".region-content .block-system", data);
+												var help_text = $(
+														".region-content .block-system",
+														data);
 												help_text
 														.find(
 																'#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a')
 														.each(
 																function() {
-																	$(this).attr(
-																			'href',
-																			$(this).attr('href').substring(
-																					$(this).attr('href').indexOf("#")));
+																	$(this)
+																			.attr(
+																					'href',
+																					$(
+																							this)
+																							.attr(
+																									'href')
+																							.substring(
+																									$(
+																											this)
+																											.attr(
+																													'href')
+																											.indexOf(
+																													"#")));
 																});
-												help_text.find('#table-of-contents-links').addClass(
-														'rounded');
-												instrument = $('input[name=instrument]',
-														".instrument-panel.active").val();
-												waitingDialog.show(instrument.toUpperCase() + ' Help',
-														help_text, {
-															dialogSize : 'lg',
-															buttonText : 'Close',
-															showCloseInHeader : true
-														});
+												help_text
+														.find(
+																'#table-of-contents-links')
+														.addClass('rounded');
+												instrument = $(
+														'input[name=instrument]',
+														".instrument-panel.active")
+														.val();
+												waitingDialog.show(instrument
+														.toUpperCase()
+														+ ' Help', help_text, {
+													dialogSize : 'lg',
+													buttonText : 'Close',
+													showCloseInHeader : true
+												});
 											});
 							return false;
 						});
@@ -927,16 +1095,19 @@
 
 	function make_request(request_parameters) {
 		$(
-				".instruments-panel ul.nav-tabs li#" + request_parameters.instrument
-						+ '-tab a').tab('show');
+				".instruments-panel ul.nav-tabs li#"
+						+ request_parameters.instrument + '-tab a').tab('show');
 		console.log('Setting parameters :');
-		$('input, textarea, select',
-				'form#astrooda-common, form.' + request_parameters.instrument + '-form')
+		$(
+				'input, textarea, select',
+				'form#astrooda-common, form.' + request_parameters.instrument
+						+ '-form')
 				.each(
 						function() {
 							var re = new RegExp('astrooda_?-?'
 									+ request_parameters.instrument + '_?-?');
-							var field_name = $(this).attr('name').replace(re, '');
+							var field_name = $(this).attr('name').replace(re,
+									'');
 
 							if (request_parameters.hasOwnProperty(field_name)) {
 								if ($(this).attr('type') == 'radio') {
@@ -960,8 +1131,9 @@
 				'image-catalog', datetime);
 
 		var catalog_panel = $('#' + panel_ids.panel_id);
-		$('#' + panel_ids.panel_body_id).append(
-				'<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
+		$('#' + panel_ids.panel_body_id)
+				.append(
+						'<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
 
 		$(afterDiv).data({
 			catalog_panel_id : '#' + panel_ids.panel_id
@@ -986,123 +1158,149 @@
 		var catalog_container = $(".catalog-wrapper .astro-ana", '#'
 				+ panel_ids.panel_id);
 
-		var dataTable = catalog_container.DataTable({
-			data : catalog.data,
-			columns : catalog.column_names,
-			// dom : 'Brtflip',
-			dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
-			buttons : [
-					'selectAll',
-					'selectNone',
-					{
-						text : 'New',
-						className : 'btn-primary',
-						extend : "create",
-						formTitle : '<h3>Add new object</h3>',
-						editor : editor,
-						formButtons : [ {
-							text : 'Add',
-							className : 'btn-primary save-row',
-							action : function() {
-								this.submit();
-							}
-						}, {
-							text : 'Cancel',
-							className : 'btn-primary',
-							action : function() {
-								this.close();
-							}
-						} ]
-					},
-					{
-						text : 'Edit',
-						className : 'btn-primary',
-						extend : "editSingle",
-						formTitle : '<h3>Edit object</h3>',
-						editor : editor,
-						formButtons : [ {
-							label : 'Save',
-							className : 'btn-primary save-row',
-							action : function() {
-								this.submit();
-							}
-						}, {
-							label : 'Cancel',
-							className : 'btn-primary',
-							action : function() {
-								this.close();
-							}
-						} ]
-					},
-					{
-						extend : "remove",
-						className : 'btn-primary',
-						formTitle : '<h3>Delete source(s)</h3>',
-						editor : editor,
-						formMessage : function(e, dt) {
-							var rows = dt.rows(e.modifier()).data().pluck('src_names');
-							return 'Confirm the deletion of the following sources ? <ul><li>'
-									+ rows.join('</li><li>') + '</li></ul>';
-						}
-					},
-					{
-						text : 'Save as TXT',
-						className : 'btn-primary',
-						action : function(e, dt, button, config) {
-							var data = dt.buttons.exportData();
-							data.header[0] = "meta_ID";
-							var file_content = '';
-							for (var i = 0; i < data.header.length; i++) {
-								data.header[i] = data.header[i].replace(' ', '_');
-							}
-							file_content = data.header.join(' ') + "\n";
-							for (var i = 0; i < data.body.length; i++) {
-								data.body[i][0] = i;
-								file_content += data.body[i].join(' ') + "\n";
-							}
-							$.fn.dataTable
-									.fileSave(new Blob([ file_content ]), 'catalog.txt');
-						}
-					},
-					{
-						text : 'Add query object',
-						className : 'btn-primary',
-						action : function(e, dt, button, config) {
-							editor.title('<h3>Add query object</h3>').buttons([ {
-								text : 'Add',
-								className : 'btn-primary save-row',
-								action : function() {
-									this.submit();
-								}
-							}, {
-								text : 'Cancel',
+		var dataTable = catalog_container
+				.DataTable({
+					data : catalog.data,
+					columns : catalog.column_names,
+					// dom : 'Brtflip',
+					dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
+					buttons : [
+							'selectAll',
+							'selectNone',
+							{
+								text : 'New',
 								className : 'btn-primary',
-								action : function() {
-									this.close();
+								extend : "create",
+								formTitle : '<h3>Add new object</h3>',
+								editor : editor,
+								formButtons : [ {
+									text : 'Add',
+									className : 'btn-primary save-row',
+									action : function() {
+										this.submit();
+									}
+								}, {
+									text : 'Cancel',
+									className : 'btn-primary',
+									action : function() {
+										this.close();
+									}
+								} ]
+							},
+							{
+								text : 'Edit',
+								className : 'btn-primary',
+								extend : "editSingle",
+								formTitle : '<h3>Edit object</h3>',
+								editor : editor,
+								formButtons : [ {
+									label : 'Save',
+									className : 'btn-primary save-row',
+									action : function() {
+										this.submit();
+									}
+								}, {
+									label : 'Cancel',
+									className : 'btn-primary',
+									action : function() {
+										this.close();
+									}
+								} ]
+							},
+							{
+								extend : "remove",
+								className : 'btn-primary',
+								formTitle : '<h3>Delete source(s)</h3>',
+								editor : editor,
+								formMessage : function(e, dt) {
+									var rows = dt.rows(e.modifier()).data()
+											.pluck('src_names');
+									return 'Confirm the deletion of the following sources ? <ul><li>'
+											+ rows.join('</li><li>')
+											+ '</li></ul>';
 								}
-							} ]).create().set('src_names',
-									$('input[name=src_name]', 'form#astrooda-common').val()).set(
-									'ra', $('input[name=RA]', 'form#astrooda-common').val()).set(
-									'dec', $('input[name=DEC]', 'form#astrooda-common').val());
-							// Make Editor draggable (movable)
-							// $('.DTE_Action_Create').draggable({
-							// handle : '.DTE_Header, .DTE_Footer',
-							// stack : '.ldraggable',
-							// containment : "parent"
-							// });
-						}
-					} ],
-			select : {
-				style : 'os',
-				selector : 'td:first-child'
-			},
-			order : [ [ 1, 'asc' ] ],
-		});
+							},
+							{
+								text : 'Save as TXT',
+								className : 'btn-primary',
+								action : function(e, dt, button, config) {
+									var data = dt.buttons.exportData();
+									data.header[0] = "meta_ID";
+									var file_content = '';
+									for (var i = 0; i < data.header.length; i++) {
+										data.header[i] = data.header[i]
+												.replace(' ', '_');
+									}
+									file_content = data.header.join(' ') + "\n";
+									for (var i = 0; i < data.body.length; i++) {
+										data.body[i][0] = i;
+										file_content += data.body[i].join(' ')
+												+ "\n";
+									}
+									$.fn.dataTable.fileSave(new Blob(
+											[ file_content ]), 'catalog.txt');
+								}
+							},
+							{
+								text : 'Add query object',
+								className : 'btn-primary',
+								action : function(e, dt, button, config) {
+									editor
+											.title('<h3>Add query object</h3>')
+											.buttons(
+													[
+															{
+																text : 'Add',
+																className : 'btn-primary save-row',
+																action : function() {
+																	this
+																			.submit();
+																}
+															},
+															{
+																text : 'Cancel',
+																className : 'btn-primary',
+																action : function() {
+																	this
+																			.close();
+																}
+															} ])
+											.create()
+											.set(
+													'src_names',
+													$('input[name=src_name]',
+															'form#astrooda-common')
+															.val())
+											.set(
+													'ra',
+													$('input[name=RA]',
+															'form#astrooda-common')
+															.val())
+											.set(
+													'dec',
+													$('input[name=DEC]',
+															'form#astrooda-common')
+															.val());
+									// Make Editor draggable (movable)
+									// $('.DTE_Action_Create').draggable({
+									// handle : '.DTE_Header, .DTE_Footer',
+									// stack : '.ldraggable',
+									// containment : "parent"
+									// });
+								}
+							} ],
+					select : {
+						style : 'os',
+						selector : 'td:first-child'
+					},
+					order : [ [ 1, 'asc' ] ],
+				});
 
 		// Activate inline edit on click of a table cell
-		catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
-			editor.inline(this);
-		});
+		catalog_container.on('click', 'tbody td:not(:first-child)',
+				function(e) {
+					editor.inline(this);
+				});
 
 		editor
 				.on(
@@ -1124,31 +1322,55 @@
 									ldataTable
 											.rows()
 											.every(
-													function(rowIdx, tableLoop, rowLoop) {
-														// ignore compare with the current row !
+													function(rowIdx, tableLoop,
+															rowLoop) {
+														// ignore compare with
+														// the current row !
 														if (this.id() === rowId)
 															return;
 
 														var d = this.data();
-														var distance = getDistanceFromLatLonInKm(dec.val(),
-																ra.val(), d.dec, d.ra);
-														// var distance_same = d.ERR_RAD * 2;
+														var distance = getDistanceFromLatLonInKm(
+																dec.val(), ra
+																		.val(),
+																d.dec, d.ra);
+														// var distance_same =
+														// d.ERR_RAD * 2;
 														var distance_same = 0.00001;
 														if (distance <= distance_same) {
-															// Highlight the row in the table
-															$(this.node()).addClass('alert alert-danger');
+															// Highlight the row
+															// in the table
+															$(this.node())
+																	.addClass(
+																			'alert alert-danger');
 															$(this).show();
 
-															// Change the editor button to "Save anyway"
-															$('.DTE button.save-row').html('Save anyway !')
-																	.removeClass('btn-primary').addClass(
-																			'btn-warning').data('confirmation', true);
-															// Fix a bug where the opacity of the error
-															// message element is set to 0:
+															// Change the editor
+															// button to "Save
+															// anyway"
+															$(
+																	'.DTE button.save-row')
+																	.html(
+																			'Save anyway !')
+																	.removeClass(
+																			'btn-primary')
+																	.addClass(
+																			'btn-warning')
+																	.data(
+																			'confirmation',
+																			true);
+															// Fix a bug where
+															// the opacity of
+															// the error
+															// message element
+															// is set to 0:
 															// not displayed
-															$('.DTE .DTE_Form_Error').css({
-																'opacity' : ''
-															});
+															$(
+																	'.DTE .DTE_Form_Error')
+																	.css(
+																			{
+																				'opacity' : ''
+																			});
 
 															editor
 																	.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: '
@@ -1158,20 +1380,31 @@
 																			+ '<br>Dec: '
 																			+ d.dec
 																			+ '<br>Distance: '
-																			+ distance + '</dv>');
-															setTimeout(function() {
-																var row = $(".catalog-wrapper .astro-ana",
-																		'#' + panel_ids.panel_id).DataTable().row(
-																		rowIdx).node();
+																			+ distance
+																			+ '</dv>');
+															setTimeout(
+																	function() {
+																		var row = $(
+																				".catalog-wrapper .astro-ana",
+																				'#'
+																						+ panel_ids.panel_id)
+																				.DataTable()
+																				.row(
+																						rowIdx)
+																				.node();
 
-																$(row).removeClass('alert alert-danger')
-															}, 5000);
+																		$(row)
+																				.removeClass(
+																						'alert alert-danger')
+																	}, 5000);
 														}
 													});
 								} else {
-									$('.DTE button.save-row').html('Save').removeClass(
-											'btn-warning').addClass('btn-primary').removeData(
-											'confirmation').removeData('ltext');
+									$('.DTE button.save-row').html('Save')
+											.removeClass('btn-warning')
+											.addClass('btn-primary')
+											.removeData('confirmation')
+											.removeData('ltext');
 								}
 
 								// validate RA between 0 and 360
@@ -1181,10 +1414,12 @@
 
 								// validate RA between 0 and 360
 								if (dec.val() < -90 || dec.val() > 90) {
-									dec.error('Value must be between -90 and 90');
+									dec
+											.error('Value must be between -90 and 90');
 								}
 
-								// If any error was reported, cancel the submission so it can be
+								// If any error was reported, cancel the
+								// submission so it can be
 								// corrected
 								if (this.inError() && !confirmation) {
 									return false;
@@ -1226,8 +1461,9 @@
 	function getDistanceFromLatLonInKm(dec1, ra1, dec2, ra2) {
 		var dLat = deg2rad(dec2 - dec1);
 		var dLon = deg2rad(ra2 - ra1);
-		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(dec1))
-				* Math.cos(deg2rad(dec2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+				+ Math.cos(deg2rad(dec1)) * Math.cos(deg2rad(dec2))
+				* Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
 		var b = 2 * Math.asin(a);
 		return b;
@@ -1269,8 +1505,8 @@
 						+ query_parameters[parameter] + '</td>' + '</tr>';
 			}
 		}
-		var html = '<table class=""><thead>' + header + '</thead><tbody>' + body
-				+ '</tbody></table>';
+		var html = '<table class=""><thead>' + header + '</thead><tbody>'
+				+ body + '</tbody></table>';
 		$('#' + panel_ids.panel_body_id).append(
 				'<div class="query_parameters-wrapper">' + html + '</div>');
 
@@ -1316,12 +1552,14 @@
 				function(e) {
 					if (this.checked) {
 						obj = $(element_wrapper);
-						$('input[name=' + checked_element + ']', element_class).each(
-								function(e) {
-									if (!$(this).closest(element_class).is(obj)) {
-										$(this).prop('checked', false);
-									}
-								});
+						$('input[name=' + checked_element + ']', element_class)
+								.each(
+										function(e) {
+											if (!$(this).closest(element_class)
+													.is(obj)) {
+												$(this).prop('checked', false);
+											}
+										});
 					}
 				});
 	}
@@ -1329,8 +1567,9 @@
 	function display_lc_table(job_id, query_status, data) {
 		datetime = get_current_date_time();
 
-		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
+		var panel_ids = $(".instrument-params-panel",
+				".instrument-panel.active").insert_new_panel(
+				desktop_panel_counter++, 'lc-table', datetime);
 
 		var session_id = data.session_id;
 		var session_job_ids = '<div>Session ID : ' + session_id
@@ -1347,8 +1586,8 @@
 		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
-		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
-				+ showLoghtml + '</div>';
+		var toolbar = '<div class="btn-group" role="group">'
+				+ showQueryParameters + showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		if (data.input_prod_list.length > 0) {
@@ -1360,12 +1599,12 @@
 			$('.copy-to-clipboard').on(
 					'click',
 					function() {
-						copyToClipboard($(this).parent().find('.astrooda-popover-content')
-								.text());
+						copyToClipboard($(this).parent().find(
+								'.astrooda-popover-content').text());
 					});
 			$('.scw-list', '#' + panel_ids.panel_body_id).html(
-					add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id)
-							.html(), 71));
+					add3Dots('ScWs List', $('.scw-list',
+							'#' + panel_ids.panel_body_id).html(), 71));
 			$('.popover-help', '#' + panel_ids.panel_body_id)
 					.on('click', function(e) {
 						e.preventDefault();
@@ -1375,8 +1614,8 @@
 							{
 								container : 'body',
 								content : function() {
-									return $(this).parent().find('.astrooda-popover-content')
-											.html();
+									return $(this).parent().find(
+											'.astrooda-popover-content').html();
 								},
 								html : true,
 								template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
@@ -1455,8 +1694,9 @@
 	}
 
 	function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
-		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'image', datetime);
+		var panel_ids = $(".instrument-params-panel",
+				".instrument-panel.active").insert_new_panel(
+				desktop_panel_counter++, 'image', datetime);
 
 		var current_row = $(".instrument-panel.active").data(
 				"lightcurve_table_current_row");
@@ -1473,7 +1713,8 @@
 		var session_id = data.session_id;
 		var job_id = current_panel.data('job_id');
 
-		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+		var file_name = data.file_name[lc_index].replace('query_lc_query_lc_',
+				'');
 
 		var files_list = data.file_name[lc_index];
 		if (data.root_file_name) {
@@ -1483,8 +1724,8 @@
 			file_name += '.gz';
 		}
 		url = 'session_id=' + session_id + '&download_file_name=' + file_name
-				+ '&file_list=' + files_list + '&query_status=ready&job_id=' + job_id
-				+ '&instrument=' + instrument;
+				+ '&file_list=' + files_list + '&query_status=ready&job_id='
+				+ job_id + '&instrument=' + instrument;
 		url = url.replace(/\+/g, '%2B');
 
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
@@ -1500,7 +1741,8 @@
 
 		$('#' + panel_ids.panel_body_id).append(
 				image.header_text.replace(/\n/g, "<br />"));
-		$('#' + panel_ids.panel_body_id).append(get_text_table(image.table_text));
+		$('#' + panel_ids.panel_body_id).append(
+				get_text_table(image.table_text));
 		$('#' + panel_ids.panel_body_id).append(
 				image.footer_text.replace(/\n/g, "<br />"));
 
@@ -1527,8 +1769,9 @@
 
 		datetime = get_current_date_time();
 
-		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
+		var panel_ids = $(".instrument-params-panel",
+				".instrument-panel.active").insert_new_panel(
+				desktop_panel_counter++, 'spectrum-table', datetime);
 
 		var session_id = data.session_id;
 		var session_job_ids = '<div>Session ID : ' + session_id
@@ -1543,8 +1786,8 @@
 		showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="'
 				+ datetime
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
-		var toolbar = '<div class="btn-group" role="group">' + showQueryParameters
-				+ showLoghtml + '</div>';
+		var toolbar = '<div class="btn-group" role="group">'
+				+ showQueryParameters + showLoghtml + '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
@@ -1621,7 +1864,8 @@
 		});
 
 		// Activate inline edit on click of a table cell
-		spectrum_table_container.on('click', 'tbody td:nth-child(2)', function(e) {
+		spectrum_table_container.on('click', 'tbody td:nth-child(2)', function(
+				e) {
 			editor.inline(this);
 		});
 		editor.on('initEdit', function(e, json, data) {
@@ -1630,7 +1874,9 @@
 
 		editor.on('postEdit', function(e, json, data) {
 			if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
-				$('.instrument-panel.active .spectrum-table tr#' + data.DT_RowId)
+				$(
+						'.instrument-panel.active .spectrum-table tr#'
+								+ data.DT_RowId)
 						.removeData('spectrum_panel_id');
 			}
 		});
@@ -1642,8 +1888,9 @@
 	function display_spectrum(metadata, data, job_id, instrument) {
 
 		datetime = get_current_date_time();
-		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'spectrum', datetime);
+		var panel_ids = $(".instrument-params-panel",
+				".instrument-panel.active").insert_new_panel(
+				desktop_panel_counter++, 'spectrum', datetime);
 
 		var current_row = $(".instrument-panel.active").data(
 				"spectrum_table_current_row");
@@ -1655,9 +1902,10 @@
 		});
 
 		download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
-		url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files
-				+ '&download_file_name=' + download_filename
-				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
+		url = 'session_id=' + metadata.session_id + '&file_list='
+				+ metadata.files + '&download_file_name=' + download_filename
+				+ '&query_status=ready&job_id=' + job_id + '&instrument='
+				+ instrument;
 		url = url.replace(/\+/g, '%2B');
 
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
@@ -1671,7 +1919,8 @@
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		// $('#' + panel_ids.panel_body_id).append(
-		// '<a href="/dispatch-data/download_products?' + url + '">Download</a>');
+		// '<a href="/dispatch-data/download_products?' + url +
+		// '">Download</a>');
 
 		// mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
 		$('#' + panel_ids.panel_body_id).append(
@@ -1697,7 +1946,8 @@
 				'last_click_position');
 
 		var spectrum_offset = {};
-		spectrum_offset.top = last_click_position.top - parent_spectrum_offset.top;
+		spectrum_offset.top = last_click_position.top
+				- parent_spectrum_offset.top;
 		spectrum_offset.left = last_click_position.left
 				- parent_spectrum_offset.left;
 
@@ -1710,8 +1960,9 @@
 
 	function display_image(data, job_id, instrument) {
 		datetime = get_current_date_time();
-		var panel_ids = $(".instrument-params-panel", ".instrument-panel.active")
-				.insert_new_panel(desktop_panel_counter++, 'image', datetime);
+		var panel_ids = $(".instrument-params-panel",
+				".instrument-panel.active").insert_new_panel(
+				desktop_panel_counter++, 'image', datetime);
 
 		if (data.hasOwnProperty('catalog')) {
 			var catalog = data.catalog;
@@ -1744,8 +1995,8 @@
 						.toLowerCase()) != -1) {
 					fields[i - 1].def = '1';
 				}
-				if (readonlyFields
-						.indexOf(catalog.cat_column_descr[i][0].toLowerCase()) != -1) {
+				if (readonlyFields.indexOf(catalog.cat_column_descr[i][0]
+						.toLowerCase()) != -1) {
 					fields[i - 1].type = 'readonly';
 				}
 				if (catalog.cat_column_descr[i][1].indexOf('f') != -1) {
@@ -1785,7 +2036,8 @@
 
 		url = 'session_id=' + session_id + '&download_file_name='
 				+ data.download_file_name + '&file_list=' + data.file_name
-				+ '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
+				+ '&query_status=ready&job_id=' + job_id + '&instrument='
+				+ instrument;
 		url = url.replace(/\+/g, '%2B');
 		var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?'
 				+ url
@@ -1811,7 +2063,8 @@
 				+ '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 
 		var toolbar = '<div class="btn-group" role="group">' + downloadButton
-				+ showCataloghtml + showQueryParameters + showLoghtml + '</div>';
+				+ showCataloghtml + showQueryParameters + showLoghtml
+				+ '</div>';
 		$('#' + panel_ids.panel_body_id).append(toolbar);
 
 		if (data.input_prod_list.length > 0) {
@@ -1827,8 +2080,8 @@
 								'.scw-list .astrooda-popover-content').text());
 					});
 			$('.scw-list', '#' + panel_ids.panel_body_id).html(
-					add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id)
-							.html(), 71));
+					add3Dots('ScWs List', $('.scw-list',
+							'#' + panel_ids.panel_body_id).html(), 71));
 			var pop = $('.popover-help', '#' + panel_ids.panel_body_id)
 					.on('click', function(e) {
 						e.preventDefault();
@@ -1838,8 +2091,8 @@
 							{
 								container : 'body',
 								content : function() {
-									return $(this).parent().find('.astrooda-popover-content')
-											.html();
+									return $(this).parent().find(
+											'.astrooda-popover-content').html();
 								},
 								html : true,
 								template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
@@ -1857,12 +2110,13 @@
 		$('#' + panel_ids.panel_body_id).append(
 				data.image.footer_text.replace(/\n/g, "<br />"));
 
-		// source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+		// source_name = $('input[name=src_name]',
+		// 'form#astrooda-common').val();
 		// $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
 		// 'Source : ' + source_name + ' - ' + product_type);
 		$('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-				data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV
-						+ ' keV');
+				data.analysis_paramters.E1_keV + ' - '
+						+ data.analysis_paramters.E2_keV + ' keV');
 
 		$('#' + panel_ids.panel_id).highlight_result_panel();
 	}

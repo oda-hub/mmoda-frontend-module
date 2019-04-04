@@ -131,7 +131,7 @@
               </ul>
               <div class="tab-content">
              <?php  foreach ($instruments as $name => $instrument ) :?>
-              <div class="instrument-panel tab-pane fade in <?=$instrument['active']?>" id="<?=$name?>">
+              <div class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>" id="<?=$name?>">
                   <div id="<?=$name?>-toolbox" class="instrument-toolbox">
                     <a class="panel-help" href="<?=$instrument['help_page']?>">Help</a>
                   </div>

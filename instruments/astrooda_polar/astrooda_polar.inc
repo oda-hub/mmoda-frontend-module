@@ -8,13 +8,13 @@
 /**
  */
 function astrooda_polar($form, &$form_state) {
-  
+
   $form = array ();
-  
+
   $form ['#tree'] = FALSE;
   //turn off form caching
   $mform_id= __FUNCTION__.'_';
-  
+
   $form ['#action'] = '/dispatch-data/run_analysis';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'polar-form');
@@ -23,10 +23,10 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'polar'
   );
-  
+
   $astrooda_settings = variable_get('astrooda_settings');
   $instrument_defaults= $astrooda_settings['instruments']['polar'];
-  
+
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
@@ -49,7 +49,7 @@ function astrooda_polar($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['E2_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
@@ -72,7 +72,7 @@ function astrooda_polar($form, &$form_state) {
       ),
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+
   $form ['query_type'] = array (
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
@@ -97,8 +97,8 @@ function astrooda_polar($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />',
   );
-  
-  
+
+
   $form ['product_type'] = array (
       '#type' => 'radios',
       '#title' => t ( "Product Type" ),
@@ -120,7 +120,7 @@ function astrooda_polar($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['time_bin'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
@@ -155,7 +155,7 @@ function astrooda_polar($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['time_bin_format'] = array (
       '#type' => 'select',
       '#title' => t ( "Unit" ),
@@ -190,16 +190,16 @@ function astrooda_polar($form, &$form_state) {
               'form-control time_bin_format'
           )
       ),
-      '#suffix' => '</div>'
+      '#suffix' => '</div><hr class="hr-default" />'
   );
 
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),
   );
-  
+
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.polar' );
-  
-   
+
+
   return ($form);
 }
