@@ -562,7 +562,6 @@ function get_waitingDialog($modal_dialog) {
 			url_base = thelocation.protocol + "//"
 			+ thelocation.hostname + thelocation.pathname;
 			// redirect to astrooda base url to get rid of the parameters
-			//console.log('Redirecting to :'+url_base);
 			thelocation.replace(url_base);
 		}
 
