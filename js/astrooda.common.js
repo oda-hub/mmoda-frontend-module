@@ -283,15 +283,15 @@ function get_waitingDialog($modal_dialog) {
 
 		return {
 			/**
-			 * Opens alog
-			 * 
-			 * @param message
-			 *          Custom message
-			 * @param options
-			 *          Custom options: options.dialogSize - bootstrap postfix for
-			 *          dialog size, e.g. "sm", "m"; options.progressType - bootstrap
-			 *          postfix for progress bar type, e.g. "success", "warning".
-			 */
+       * Opens alog
+       * 
+       * @param message
+       *          Custom message
+       * @param options
+       *          Custom options: options.dialogSize - bootstrap postfix for
+       *          dialog size, e.g. "sm", "m"; options.progressType - bootstrap
+       *          postfix for progress bar type, e.g. "success", "warning".
+       */
 			show : function(title, message, options) {
 				// Assigning defaults
 				if (typeof options === 'undefined') {
@@ -373,8 +373,8 @@ function get_waitingDialog($modal_dialog) {
 
 			},
 			/**
-			 * Closes dialog
-			 */
+       * Closes dialog
+       */
 			hide : function() {
 				$dialog.modal('hide');
 			},
@@ -552,26 +552,17 @@ function get_waitingDialog($modal_dialog) {
 		});	
 
 		var iframeStatus = checkIFrame();
-		if (iframeStatus > 0 && (window.parent.location.search || window.location.search)) {
+    // iframeStatus = 0 Astrooda in iframe, iframe and parent are not on the same domain
+    // iframeStatus = 1 Astrooda not in iframe
+    // iframeStatus = 2 Astrooda in iframe, iframe and parent are on the same domain
+		if (iframeStatus > 0 && (window.parent.location.search || window.location.search) ) {
 			var thelocation;
 			var url_base;
-			// In iframe with parameters in iframe URL
-			if (iframeStatus == 2 && window.location.search) {
-				thelocation = window.parent.location;
-			}
-			// In iframe with parameters in window URL
-			else if (iframeStatus == 2 && window.parent.location.search) {
-				console.log('In iframe and parameters : '+window.parent.location.search);
-				thelocation = window.parent.location;
-				$('#myIframe1', parent.document).attr('src', $('#myIframe1', parent.document).attr('src')+window.parent.location.search);   
-			}
-			else if (iframeStatus == 1 && window.location.search) {
-				thelocation = window.parent.location;
-			}
+      thelocation = window.parent.location;
 			url_base = thelocation.protocol + "//"
 			+ thelocation.hostname + thelocation.pathname;
 			// redirect to astrooda base url to get rid of the parameters
-			console.log('Redirecting to :'+url_base);
+			//console.log('Redirecting to :'+url_base);
 			thelocation.replace(url_base);
 		}
 

@@ -2,9 +2,6 @@
 
 	$(document).ready(
 			function() {
-				console.log('specific JS');
-//				$('.instrument-panel-spi_acs form').bootstrapValidator(
-//				'destroy');
 				$('.instrument-panel-spi_acs form').bootstrapValidator({
 						fields : {
 							// live :'disabled',
