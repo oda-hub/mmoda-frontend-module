@@ -552,7 +552,7 @@ function get_waitingDialog($modal_dialog) {
 		});	
 
 		var iframeStatus = checkIFrame();
-    // iframeStatus = 0 Astrooda in iframe, iframe and parent are not on the same domain
+    // iframeStatus = 0 Astrooda in iframe, iframe and parent are not on the same domain.
     // iframeStatus = 1 Astrooda not in iframe
     // iframeStatus = 2 Astrooda in iframe, iframe and parent are on the same domain
 		if (iframeStatus > 0 && (window.parent.location.search || window.location.search) ) {
