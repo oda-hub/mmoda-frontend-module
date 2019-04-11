@@ -222,8 +222,8 @@ var waitingDialog;
 
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-		//console.log('response.args');
-		//console.log(response.args);
+//		console.log('response.args');
+//		console.log(response.args);
 		waitingDialog.hide();    	
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -433,8 +433,6 @@ function get_waitingDialog($modal_dialog) {
 }
 
 (function($) {
-
-
 	$.fn.set_panel_draggable = function () {
 		$(this).draggable({
 			handle: '.panel-heading, .panel-footer',
@@ -518,7 +516,6 @@ function get_waitingDialog($modal_dialog) {
 	}
 
 	$(document).ready(commonReady);
-
 
 	function validate_date(value, validator, thefield) {
 		max_mjd_date= get_today_mjd();

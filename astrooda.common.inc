@@ -238,7 +238,7 @@ function astrooda_common($form, &$form_state) {
 }
 
 function astrooda_common_validate ($form, &$form_state) {
-  error_log('Validating common form ');
+  //error_log('Validating common form ');
   form_clear_error();
 }
 
