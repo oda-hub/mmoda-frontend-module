@@ -9,24 +9,24 @@
  */
 function astrooda_common($form, &$form_state) {
   drupal_get_messages();
-  
+
   $form = array ();
   $session_id = session_id ();
-  
+
   $form ['#tree'] = FALSE;
   // turn off form caching
   // $form_state['no_cache'] = TRUE;
-  
+
 //   $form ['session_id'] = array (
 //       '#type' => 'hidden',
 //       '#value' => $session_id
 //   );
   // $form ['#action'] = '/dispatch-data/test';
   $form ['#method'] = 'POST';
-  
+
   $astrooda_settings = variable_get('astrooda_settings');
   $instrument_defaults= $astrooda_settings['common'];
-  
+
   $form ['src_name'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Object name" ),
@@ -48,7 +48,7 @@ function astrooda_common($form, &$form_state) {
       // 'data-validate' => 'false'
       '#prefix' => '<div class="row"><div class="col-md-12"><div class="input-group form-item">'
   );
-  
+
   $form ['resolve_src_name'] = array (
       '#type' => 'button',
       '#button_type' => 'button',
@@ -68,34 +68,34 @@ function astrooda_common($form, &$form_state) {
           )
       ),
       // 'message' => t ( 'Resolving name using ').'<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>'.t(' respectively NED, Simbad and VizieR...' )
-      
+
       '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
       '#suffix' => '</span></div></div></div>'
   );
-  
-  $form ['use_resolver'] = array (
-      '#type' => 'checkboxes',
-      '#title' => t ( "Resolvers :" ),
-      //'#default_value' => '',
-      '#options' => array (
-          'local' => 'Local',
-          'sesame' => 'Sesame service',
-      ),
-     '#default_value' => array('local'),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-12'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-  );
-  
+
+//   $form ['use_resolver'] = array (
+//       '#type' => 'checkboxes',
+//       '#title' => t ( "Resolvers :" ),
+//       //'#default_value' => '',
+//       '#options' => array (
+//           'local' => 'Local',
+//           'sesame' => 'Sesame service',
+//       ),
+//      '#default_value' => array('local'),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-12'
+//       ),
+//       '#prefix' => '<div class="row">',
+//       '#suffix' => '</div>'
+//   );
+
   $form ['radec'] = array (
       '#type' => 'item',
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['radec'] ['RA'] = array (
       '#type' => 'textfield',
       '#title' => t ( "RA" ),
@@ -116,7 +116,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
-  
+
   $form ['radec'] ['DEC'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Dec" ),
@@ -137,7 +137,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
-  
+
   $form ['time'] = array (
       '#type' => 'item',
       '#prefix' => '<div class="row">',
@@ -171,7 +171,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
-  
+
   $form ['time'] ['T2'] = array (
       '#type' => 'textfield',
       '#title' => t ( "End time" ),
@@ -200,7 +200,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
-  
+
   $form ['time'] ['T_format'] = array (
       '#type' => 'select',
       '#title' => t ( "Time unit" ),
@@ -231,7 +231,7 @@ function astrooda_common($form, &$form_state) {
           )
       )
   );
-  
+
   //form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.common' );
   $form['#validate'] = array('astrooda_common_validate');
   return ($form);
@@ -244,12 +244,12 @@ function astrooda_common_validate ($form, &$form_state) {
 
 function resolve_object_name_callback($form, &$form_state) {
   module_load_include ( 'inc', 'astrooda', 'astrooda.nameresolver' );
-  
+
   $form ['radec'] ['RA'] ['#value'] = 50;
   $form ['radec'] ['DEC'] ['#value'] = 80;
-  
+
   $args = resolve_object_name ( $form_state ['input'] ['src_name'],  $form_state ['input'] ['use_resolver']);
-  
+
   $commands [] = array (
       'command' => 'set_ra_dec', // the name of your javascript callback
       'args' => $args

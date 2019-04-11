@@ -222,8 +222,8 @@ var waitingDialog;
 
 (function($, Drupal) {
 	Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-		// console.log('response.args');
-		// console.log(response.args);
+		//console.log('response.args');
+		//console.log(response.args);
 		waitingDialog.hide();    	
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -608,18 +608,18 @@ function get_waitingDialog($modal_dialog) {
 		waitingDialog =  get_waitingDialog();
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
-				var use_local_resolver = $('input[name="use_resolver[local]"]', '#astrooda-common').prop('checked');
-				var use_sesame_resolver = $('input[name="use_resolver[sesame]"]', '#astrooda-common').prop('checked');
-				var local_resolver= 'local resolver';
-				var sesame_resolver= '<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>: NED, Simbad and VizieR';
-				var name_resolvers = 'respectively '+local_resolver +', '+sesame_resolver;
-				if (use_local_resolver && !use_sesame_resolver) {
-					name_resolvers = local_resolver;
-				}
-				else if (!use_local_resolver && use_sesame_resolver) {
-					name_resolvers = 'respectively '+sesame_resolver;
-				}
-				var message = 'Resolving name using '+ name_resolvers +' ...';
+//				var use_local_resolver = $('input[name="use_resolver[local]"]', '#astrooda-common').prop('checked');
+//				var use_sesame_resolver = $('input[name="use_resolver[sesame]"]', '#astrooda-common').prop('checked');
+//				var local_resolver= 'local resolver';
+//				var sesame_resolver= '<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>: NED, Simbad and VizieR';
+//				var name_resolvers = 'respectively '+local_resolver +', '+sesame_resolver;
+//				if (use_local_resolver && !use_sesame_resolver) {
+//					name_resolvers = local_resolver;
+//				}
+//				else if (!use_local_resolver && use_sesame_resolver) {
+//					name_resolvers = 'respectively '+sesame_resolver;
+//				}
+				var message = 'Resolving object name ...';
 				waitingDialog.show('', message, {
 					progressType : 'success',
 					'showProgress' : true,

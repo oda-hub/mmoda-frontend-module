@@ -1,5 +1,5 @@
 function validate_timebin(value, validator, $thefield) {
-  console.log('validating time bin');
+ // console.log('validating time bin');
 
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
 
@@ -546,6 +546,12 @@ function validate_timebin(value, validator, $thefield) {
       var query_parameters = query_parameters_parent_panel.data('analysis_paramters');
       var url = get_query_url(query_parameters);
       copyToClipboard(url);
+    });
+
+    $("body").on('click', '.result-panel .api-code', function(e) {
+      e.preventDefault();
+      var query_parameters_parent_panel = $(this).closest('.result-panel');
+      copyToClipboard(query_parameters_parent_panel.data('api_code'));
     });
 
     $("body").on('click', '.result-panel .use-catalog', function(e) {
@@ -1210,6 +1216,8 @@ function validate_timebin(value, validator, $thefield) {
     var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+    showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1242,7 +1250,8 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
@@ -1365,7 +1374,9 @@ function validate_timebin(value, validator, $thefield) {
     var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to the clipboard" ></span></button>';
+    showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1386,7 +1397,8 @@ function validate_timebin(value, validator, $thefield) {
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
@@ -1579,7 +1591,8 @@ function validate_timebin(value, validator, $thefield) {
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     var session_id = data.session_id;
@@ -1601,6 +1614,8 @@ function validate_timebin(value, validator, $thefield) {
     var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+    showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
 
     var toolbar = '<div class="btn-group" role="group">' + downloadButton + showCataloghtml + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
