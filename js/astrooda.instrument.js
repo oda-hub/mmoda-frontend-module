@@ -1393,6 +1393,7 @@ function validate_timebin(value, validator, $thefield) {
         rmf_file_name : data.rmf_file_name[i],
         job_id : job_id,
         session_id : session_id,
+        instrument : data.instrument,
       }
     }
 
@@ -1417,7 +1418,22 @@ function validate_timebin(value, validator, $thefield) {
       name : "spectrum",
       defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
       orderable : false
-    }, ];
+    },{
+      data : null,
+      title : "Download",
+      name : "download",
+      render : function(data, type, full, meta) {
+        download_filename = 'spectra-' + data.source_name + '.tar.gz';
+        datafiles= data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
+        url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
+            + '&instrument=' + data.instrument;
+        url = url.replace(/\+/g, '%2B');
+        var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+            + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+       return (downloadButton);
+      },
+      orderable : false
+    },];
 
     var spectrum_table_fields = [ {
       name : "source_name",
@@ -1478,17 +1494,17 @@ function validate_timebin(value, validator, $thefield) {
       spectrum_parent_panel_id : current_row
     });
 
-    download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
-    url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + job_id
-        + '&instrument=' + instrument;
-    url = url.replace(/\+/g, '%2B');
-
-    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-        + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+//    download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
+//    url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + job_id
+//        + '&instrument=' + instrument;
+//    url = url.replace(/\+/g, '%2B');
+//
+//    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+//        + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+//    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
+//    $('#' + panel_ids.panel_body_id).append(toolbar);
 
     // $('#' + panel_ids.panel_body_id).append(
     // '<a href="/dispatch-data/download_products?' + url +
