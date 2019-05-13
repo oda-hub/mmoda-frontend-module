@@ -1,5 +1,5 @@
 function validate_timebin(value, validator, $thefield) {
- // console.log('validating time bin');
+  // console.log('validating time bin');
 
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
 
@@ -177,6 +177,10 @@ function validate_timebin(value, validator, $thefield) {
               display_spectrum_table(job_id, data.query_status, data.products);
             }
             waitingDialog.setClose();
+          }
+          // data.exit_status.comment = 'Hoho';
+          if (data.exit_status.comment) {
+            waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
           }
         }).complete(function(jqXHR, textStatus) {
       // console.log('Exec time : ' + (new
@@ -1217,7 +1221,7 @@ function validate_timebin(value, validator, $thefield) {
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1376,7 +1380,7 @@ function validate_timebin(value, validator, $thefield) {
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to the clipboard" ></span></button>';
     showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1403,37 +1407,41 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
-    var spectrum_table_column_names = [ {
-      title : "Source Name",
-      name : "source_name",
-      data : "source_name",
-    }, {
-      title : "Xspec Model",
-      name : "xspec_model",
-      data : "xspec_model",
-      orderable : false
-    }, {
-      data : null,
-      title : "Spectrum",
-      name : "spectrum",
-      defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
-      orderable : false
-    },{
-      data : null,
-      title : "Download",
-      name : "download",
-      render : function(data, type, full, meta) {
-        download_filename = 'spectra-' + data.source_name + '.tar.gz';
-        datafiles= data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
-        url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
-            + '&instrument=' + data.instrument;
-        url = url.replace(/\+/g, '%2B');
-        var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-            + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
-       return (downloadButton);
-      },
-      orderable : false
-    },];
+    var spectrum_table_column_names = [
+        {
+          title : "Source Name",
+          name : "source_name",
+          data : "source_name",
+        },
+        {
+          title : "Xspec Model",
+          name : "xspec_model",
+          data : "xspec_model",
+          orderable : false
+        },
+        {
+          data : null,
+          title : "Spectrum",
+          name : "spectrum",
+          defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
+          orderable : false
+        },
+        {
+          data : null,
+          title : "Download",
+          name : "download",
+          render : function(data, type, full, meta) {
+            download_filename = 'spectra-' + data.source_name + '.tar.gz';
+            datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
+            url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
+                + '&instrument=' + data.instrument;
+            url = url.replace(/\+/g, '%2B');
+            var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+                + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+            return (downloadButton);
+          },
+          orderable : false
+        }, ];
 
     var spectrum_table_fields = [ {
       name : "source_name",
@@ -1496,15 +1504,21 @@ function validate_timebin(value, validator, $thefield) {
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-//    download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
-//    url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + job_id
-//        + '&instrument=' + instrument;
-//    url = url.replace(/\+/g, '%2B');
-//
-//    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-//        + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
-//    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
-//    $('#' + panel_ids.panel_body_id).append(toolbar);
+    // download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
+    // url = 'session_id=' + metadata.session_id + '&file_list=' +
+    // metadata.files + '&download_file_name=' + download_filename +
+    // '&query_status=ready&job_id=' + job_id
+    // + '&instrument=' + instrument;
+    // url = url.replace(/\+/g, '%2B');
+    //
+    // var downloadButton = '<a class="btn btn-default" role="button"
+    // href="/dispatch-data/download_products?' + url
+    // + '" >Download <span class="glyphicon glyphicon-info-sign"
+    // data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format"
+    // ></span></a>';
+    // var toolbar = '<div class="btn-group" role="group">' + downloadButton +
+    // '</div>';
+    // $('#' + panel_ids.panel_body_id).append(toolbar);
 
     // $('#' + panel_ids.panel_body_id).append(
     // '<a href="/dispatch-data/download_products?' + url +
@@ -1631,7 +1645,7 @@ function validate_timebin(value, validator, $thefield) {
     showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     showQueryParameters += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-    + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
 
     var toolbar = '<div class="btn-group" role="group">' + downloadButton + showCataloghtml + showQueryParameters + showLoghtml + '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
