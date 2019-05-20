@@ -63,6 +63,7 @@ function validate_timebin(value, validator, $thefield) {
   var distinct_nodes;
 
   var current_ajax_call_params = {};
+  var last_dataserver_response = {};
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
 
@@ -93,6 +94,7 @@ function validate_timebin(value, validator, $thefield) {
       type : 'POST'
     }).done(
         function(data, textStatus, jqXHR) {
+          last_dataserver_response = data;
           // console.log('--- Query response ---');
           // console.log(data);
           job_id = '';
@@ -121,6 +123,7 @@ function validate_timebin(value, validator, $thefield) {
             waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
                 + data.exit_status.error_message + '</td></tr></table>', 'danger');
             waitingDialog.setClose();
+            add_dispatcher_response_to_feedback_form(data);
           } else if (data.query_status != 'done') {
             waitingDialog.showLegend();
             previous_summary = '';
@@ -149,6 +152,8 @@ function validate_timebin(value, validator, $thefield) {
             }
             requestTimer = setTimeout(AJAX_call, 5000);
           } else {
+            add_dispatcher_response_to_feedback_form(data);
+            
             waitingDialog.hideSpinner();
             instrument = $('input[name=instrument]', ".instrument-panel.active").val();
             waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
@@ -186,6 +191,7 @@ function validate_timebin(value, validator, $thefield) {
       // console.log('Exec time : ' + (new
       // Date().getTime() -
       // startAJAXTime));
+      $('#ldialog button.write-feedback-button').removeClass('hidden');
       $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.log('textStatus : ' + textStatus + '|');
@@ -217,6 +223,11 @@ function validate_timebin(value, validator, $thefield) {
     });
     // jqxhr
 
+  }
+
+  function add_dispatcher_response_to_feedback_form(data) {
+    // waitingDialog.showBugReportButton();
+    $('[name="dispatcher_response"]', '#astrooda-bug-report-form').val(JSON.stringify(data));
   }
 
   function get_server_message(response, data_units) {
@@ -347,6 +358,67 @@ function validate_timebin(value, validator, $thefield) {
   }
 
   function commonReady() {
+
+    $('#ldialog .modal-footer button.write-feedback-button').on('click', function(event) {
+      $('#lfeedback').modal({
+        show : true
+      });
+    });
+    $('#lfeedback').on('hidden.bs.modal', function() {
+      $('#feedback-messages', $(this)).html('');
+    })
+    $('#lfeedback').on('shown.bs.modal', function() {
+      $('#astrooda-bug-report-form').removeClass('hidden');
+    })
+    
+    $('#ldialog').on('hidden.bs.modal', function() {
+      $('#ldialog button.write-feedback-button').addClass('hidden');
+    })
+    
+
+   
+    // $('#lfeedback .modal-footer button.send-feedback-button').on('click',
+    // function(event) {
+    // event.preventDefault();
+    // console.log('Send it from modal');
+    // $('#lfeedback form#astrooda-bug-report-form').submit();
+    // });
+
+    $('#ldialog .modal-footer button.bug-buttonkkkk').on('click', function(event) {
+      event.preventDefault();
+      waitingDialog.showSpinner();
+      $(this).prop('disabled', true);
+      $('#astrooda_bug_report_form_container', '#ldialog').addClass('hidden');
+      var jqxhr = $.ajax({
+        type : 'POST',
+        url : 'send-bug-report',
+        data : 'comment=2010',
+        // data: form_elements,
+        dataType : 'json',
+        timeout : ajax_request_timeout,
+      }).done(function(data, textStatus, jqXHR) {
+        console.log('--- Bug report data');
+        console.log(data);
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('textStatus : ' + textStatus + '|');
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+        waitingDialog.hideSpinner();
+        var message = get_current_date_time() + ' ';
+        if (errorThrown == 'timeout') {
+          message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+        } else if (jqXHR.status > 0) {
+          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown;
+        } else {
+          message += 'Can not reach the server, unknown error';
+        }
+        waitingDialog.append('<div>' + message + '</div>', 'danger');
+      });
+
+      // $('form#astrooda-bug-report-form').submit();
+      console.log('Bug report clicked !!!');
+    });
 
     $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
       var current_row = $(this).parents('tr');

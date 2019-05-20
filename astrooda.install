@@ -99,6 +99,7 @@ function astrooda_del_custom_fields() {
  * Implements hook_install().
  */
 function astrooda_install() {
+  $astrooda_settings ['feedback_email'] = array('mohamed.meharga@unige.ch');
   $astrooda_settings ['common'] ['dispatcher_path'] = '/dispatcher-data';
   $astrooda_settings ['common'] ['src_name'] = '4U 1700-377';
   $astrooda_settings ['common'] ['RA'] = '257.815417';

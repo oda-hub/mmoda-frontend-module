@@ -90,10 +90,18 @@ function astrooda_menu() {
       'description' => 'Edit data analysis settings.',
       'file' => 'astrooda.admin.inc' 
   );
-  // 'weight' => -10,
+  
+  $items['send-bug-report'] = array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('astrooda_bug_report_form'),
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+  );
   
   return $items;
 }
+
+
 
 /**
  * Implements hook_block_view().
@@ -210,6 +218,7 @@ function astrooda_main_block_content() {
   $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
   
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
+  $items ['bug_report_form'] = drupal_get_form ( 'astrooda_bug_report_form' );
   // error_log ( "---------------------------------------------" );
   
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {

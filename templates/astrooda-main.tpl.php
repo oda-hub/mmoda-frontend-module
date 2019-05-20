@@ -44,58 +44,119 @@
  * @ingroup themeable
  */
 ?>
-<!-- Modal -->
-<div id="ldialog" class="modal fade astrooda-log" tabindex='-1' role="dialog" aria-hidden="true" data-backdrop="static"
-  data-keyboard="false"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <!--button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<!-- Modal Dialog-->
+<div id="ldialog" class="modal fade astrooda-log" tabindex='-1'
+	role="dialog" aria-hidden="true" data-backdrop="static"
+	data-keyboard="false">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!--button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button-->
-        <h4 class="modal-title"></h4>
-        <div class="header-message">
-          Session : <span class="session-id"></span> | Job Id : <span class="job-id"></span>
-        </div>
+				<h4 class="modal-title"></h4>
+				<div class="header-message">
+					Session : <span class="session-id"></span> | Job Id : <span
+						class="job-id"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="legend">
+					<div class="legend-element preparing"></div>
+					Preparing
+					<div class="legend-element calculating"></div>
+					Calculating
+					<div class="legend-element calculated"></div>
+					Done
+					<div class="legend-element from-cache"></div>
+					Restored from cache
+					<div class="legend-element analysis-exception"></div>
+					Analysis exception
+				</div>
+				<div class="summary"></div>
+				<div class="more-less-details">More details &gt;</div>
+				<div class="details"></div>
+				<i class="fa fa-spinner fa-spin" style="font-size: 24px"></i>
+				<div class="progress progress-striped active"
+					style="margin-bottom: 0;">
+					<div class="progress-bar" style="width: 100%"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button"
+					class="btn btn-primary form-button write-feedback-button hidden">Write a
+					feedback</button>
+				<button type="button"
+					class="btn btn-primary form-button submit-button"
+					data-dismiss="modal"></button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal Feedback-->
+<div id="lfeedback" class="modal fade" tabindex='-1' role="dialog"
+	aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Feedback / Bug report</h4>
+			</div>
+			<div class="modal-body">
+				<div id="feedback-messages">
+				</div>
+        <?=render($bug_report_form)?>
       </div>
-      <div class="modal-body">
-        <div class="legend">
-          <div class="legend-element preparing"></div>
-          Preparing
-          <div class="legend-element calculating"></div>
-          Calculating
-          <div class="legend-element calculated"></div>
-          Done
-          <div class="legend-element from-cache"></div>
-          Restored from cache
-          <div class="legend-element analysis-exception"></div>
-          Analysis exception
-        </div>
-        <div class="summary"></div>
-        <div class="more-less-details">More details &gt;</div>
-        <div class="details"></div>
-        <i class="fa fa-spinner fa-spin" style="font-size: 24px"></i>
-        <div class="progress progress-striped active" style="margin-bottom: 0;">
-          <div class="progress-bar" style="width: 100%"></div>
-        </div>
+			<div class="modal-footer">
+				<button type="button"
+					class="btn btn-primary form-button ask-token-button hidden">Send</button>
+			  <button type="button"
+					class="btn btn-primary form-button submit-button"
+					data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal Ask For Tooken -->
+<div id="ltoken" class="modal fade" tabindex='-1' role="dialog"
+	aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">API Token Request</h4>
+			</div>
+			<div class="modal-body">
+				<div id="token-messages">
+			</div>
+        <?=render($token_request_form)?>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary form-button" data-dismiss="modal"></button>
-      </div>
-    </div>
-  </div>
+			<div class="modal-footer">
+				<button type="button"
+					class="btn btn-primary form-button submit-button"
+					data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
 </div>
 <!-- Panel -->
-<div id="astrooda_panel_model" class="result-panel panel panel-default ldraggable ">
-  <div class="panel-heading lang-panel-header-tools">
-    <span class="panel-title"></span> <span class="panel-toolbox pull-right"> <span class="date">@ '+datetime+'</span> <span
-      class="clickable"
-    ><i class="fa fa-chevron-up"></i></span> <span class="fa fa-times close-panel"></span>
-    </span>
-  </div>
-  <div class="panel-body"></div>
-  <div class="panel-footer"></div>
+<div id="astrooda_panel_model"
+	class="result-panel panel panel-default ldraggable ">
+	<div class="panel-heading lang-panel-header-tools">
+		<span class="panel-title"></span> <span
+			class="panel-toolbox pull-right"> <span class="date">@ '+datetime+'</span>
+			<span class="clickable"><i class="fa fa-chevron-up"></i></span> <span
+			class="fa fa-times close-panel"></span>
+		</span>
+	</div>
+	<div class="panel-body"></div>
+	<div class="panel-footer"></div>
 </div>
 <?php  ?>
 <div>
@@ -108,45 +169,53 @@
 
    <div class="content" <?=$content_attributes?>>
    <?php if (! isset($instruments)): ?>
-   <div>No instruments module installed.<br>Please install and enable at least one instrument module.</div>
+   <div>
+			No instruments module installed.<br>Please install and enable at
+			least one instrument module.
+		</div>
    <?php  else : ?>
     <div class="panel panel-default">
-      <div class="panel-heading">
+			<div class="panel-heading">
         <?php  if ($astrooda_debug) :?>
         <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
         <?php endif; ?>
       </div>
-        <div id="formwrapper">
-          <div class="common-params">
+			<div id="formwrapper">
+				<div class="common-params">
            <?=render($common_form)?>
           </div>
-        <div class="instruments-panel panel with-nav-tabs panel-primary">
-          <div class="panel-heading"></div>
-          <div class="panel-body">
-            <div class="tabs">
-              <ul class="nav nav-tabs">
+				<div class="instruments-panel panel with-nav-tabs panel-primary">
+					<div class="panel-heading"></div>
+					<div class="panel-body">
+						<div class="tabs">
+							<ul class="nav nav-tabs">
              <?php  foreach ($instruments as $name => $instrument ) :?>
-                 <li id="<?=$name?>-tab" class="<?=$instrument['active']?>"><a href="#<?=$name?>" data-toggle="tab"><?=$instrument['title']?></a></li>
+                 <li id="<?=$name?>-tab"
+									class="<?=$instrument['active']?>"><a href="#<?=$name?>"
+									data-toggle="tab"><?=$instrument['title']?></a></li>
              <?php endforeach; ?>
               </ul>
-              <div class="tab-content">
+							<div class="tab-content">
              <?php  foreach ($instruments as $name => $instrument ) :?>
-              <div class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>" id="<?=$name?>">
-                  <div id="<?=$name?>-toolbox" class="instrument-toolbox">
-                    <a class="panel-help" href="<?=$instrument['help_page']?>">Help</a>
+              <div
+									class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>"
+									id="<?=$name?>">
+									<div id="<?=$name?>-toolbox" class="instrument-toolbox">
+										<a class="panel-help" href="<?=$instrument['help_page']?>">Help</a>
+									</div>
+									<div id="<?=$name?>-params"
+										class="panel panel-default instrument-params-panel">
+										<div class="panel-heading">Instrument query parameters :</div>
+										<div class="panel-body"><?=render($instrument['form'])?>
                   </div>
-                  <div id="<?=$name?>-params" class="panel panel-default instrument-params-panel">
-                    <div class="panel-heading">Instrument query parameters :</div>
-                    <div class="panel-body"><?=render($instrument['form'])?>
-                  </div>
-                  </div>
-                </div>
+									</div>
+								</div>
              <?php endforeach; ?>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
   <?php endif;?>
 </div>
