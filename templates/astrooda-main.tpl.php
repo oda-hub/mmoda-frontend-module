@@ -111,18 +111,16 @@
         <?=render($bug_report_form)?>
       </div>
 			<div class="modal-footer">
-				<button type="button"
-					class="btn btn-primary form-button ask-token-button hidden">Send</button>
 			  <button type="button"
-					class="btn btn-primary form-button submit-button"
-					data-dismiss="modal">Close</button>
+					class="btn btn-primary form-button cancel-button"
+					data-dismiss="modal">Cancel</button>
 			</div>
 		</div>
 	</div>
 </div>
 <!-- Modal Ask For Tooken -->
 <div id="ltoken" class="modal fade" tabindex='-1' role="dialog"
-	aria-hidden="true" data-backdrop="static">
+	aria-hidden="true" data-backdrop="static" data-auth-cookie="<?=$auth_cookie?>">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -135,12 +133,12 @@
 			<div class="modal-body">
 				<div id="token-messages">
 			</div>
-        <?=render($token_request_form)?>
+        <?=render($token_ask_form)?>
       </div>
 			<div class="modal-footer">
 				<button type="button"
-					class="btn btn-primary form-button submit-button"
-					data-dismiss="modal">Close</button>
+					class="btn btn-primary form-button cancel-button"
+					data-dismiss="modal">Cancel</button>
 			</div>
 		</div>
 	</div>

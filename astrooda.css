@@ -124,10 +124,6 @@ table.astro-ana tr td, table.astro-ana tr th {
   clear: right;
 }
 
-#edit-submit--2 {
-  margin-top: 2em;
-}
-
 .ui-resizable-s {
   background: #eee url(../../../../misc/grippie.png) no-repeat center 2px;
   border: 1px solid #ddd;

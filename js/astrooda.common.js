@@ -221,55 +221,74 @@ function get_current_date_time()  {
 var waitingDialog;
 
 (function($, Drupal) {
+  Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
+    $('input,select,textarea', '#lfeedback').prop('disabled', false);
+    $('.modal-footer button.cancel-button', '#lfeedback').show();
+  }
+
   Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
     $('#astrooda-bug-report-form').addClass('hidden');
     $('textarea#edit-comment', '#astrooda-bug-report-form').val('');
+    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
+    $('.modal-footer button#edit-submit', '#lfeedback').hide();
   }
-  
+
+  Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
+    $('input,select,textarea', '#ltoken').prop('disabled', false);
+    $('.modal-footer button.cancel-button', '#ltoken').show();
+  }
+
+  Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
+    $('input,textarea', '#ltoken').prop('disabled', false);
+    $('#astrooda-ask-token-form').addClass('hidden');
+    $('textarea#edit-message', '#astrooda-ask-token-form').val('');
+    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
+    $('.modal-footer button#edit-submit--2', '#ltoken').hide();
+  }
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-  // console.log('response.args');
-//console.log(response.args);
-  waitingDialog.hide();    	
-  html = '<div class="alert alert-dismissable">'
-    +'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
-    +response.args.message
-    +'</div>';
-  html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-    +response.args.message
-    +'</small>';
-  elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
-  elt.find('.alert').hide();
-  if (response.args.status == 0) {
-    if (response.args.ra) {
-      $('.form-item-RA input.form-control').val(response.args.ra);
-    }		
-    if (response.args.dec) {
-      $('.form-item-DEC input.form-control').val(response.args.dec);
-    }
-    if (response.args.t1) {
-      if ($('select[name="T_format"]', '#astrooda-common').val() == 'isot') {
-        $('input[name="T1"]', '#astrooda-common').val(response.args.t1.utc).trigger('input');
-        $('input[name="T2"]', '#astrooda-common').val(response.args.t2.utc).trigger('input');
+    // console.log('response.args');
+//  console.log(response.args);
+    waitingDialog.hide();    	
+    html = '<div class="alert alert-dismissable">'
+      +'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+      +response.args.message
+      +'</div>';
+    html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
+      +response.args.message
+      +'</small>';
+    elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
+    elt.find('.alert').hide();
+    if (response.args.status == 0) {
+      if (response.args.ra) {
+        $('.form-item-RA input.form-control').val(response.args.ra);
+      }		
+      if (response.args.dec) {
+        $('.form-item-DEC input.form-control').val(response.args.dec);
       }
-      else  {
-        $('input[name="T1"]', '#astrooda-common').val(response.args.t1.mjd).trigger('input');
-        $('input[name="T2"]', '#astrooda-common').val(response.args.t2.mjd).trigger('input');
+      if (response.args.t1) {
+        if ($('select[name="T_format"]', '#astrooda-common').val() == 'isot') {
+          $('input[name="T1"]', '#astrooda-common').val(response.args.t1.utc).trigger('input');
+          $('input[name="T2"]', '#astrooda-common').val(response.args.t2.utc).trigger('input');
+        }
+        else  {
+          $('input[name="T1"]', '#astrooda-common').val(response.args.t1.mjd).trigger('input');
+          $('input[name="T2"]', '#astrooda-common').val(response.args.t2.mjd).trigger('input');
+        }
       }
+      elt.find('.alert').addClass('alert-success').show();
     }
-    elt.find('.alert').addClass('alert-success').show();
+    else {
+      $('.form-item-src-name', '#astrooda-common').removeClass('has-success');
+      $('.form-item-src-name', '#astrooda-common').addClass('has-error').children('.form-control-feedback').removeClass('glyphicon-ok').addClass('glyphicon-remove');
+      $('.form-item-src-name', '#astrooda-common').addClass('has-error');
+      elt.find('.alert').addClass('alert-danger').show();
+      elt.find('small').addClass('help-block');
+      $('.form-item-RA input.form-control').val('');
+      $('.form-item-DEC input.form-control').val('');
+      // console.log('Error: ' + response.args.message)
+    }
+    $('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
   }
-  else {
-    $('.form-item-src-name', '#astrooda-common').removeClass('has-success');
-    $('.form-item-src-name', '#astrooda-common').addClass('has-error').children('.form-control-feedback').removeClass('glyphicon-ok').addClass('glyphicon-remove');
-    $('.form-item-src-name', '#astrooda-common').addClass('has-error');
-    elt.find('.alert').addClass('alert-danger').show();
-    elt.find('small').addClass('help-block');
-    $('.form-item-RA input.form-control').val('');
-    $('.form-item-DEC input.form-control').val('');
-    // console.log('Error: ' + response.args.message)
-  }
-  $('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
-}
 })(jQuery, Drupal);
 
 /**
@@ -632,20 +651,6 @@ function get_waitingDialog($modal_dialog) {
     waitingDialog =  get_waitingDialog();
     $( document ).ajaxSend(function( event, jqxhr, settings ) {
       if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
-//      var use_local_resolver = $('input[name="use_resolver[local]"]',
-//      '#astrooda-common').prop('checked');
-//      var use_sesame_resolver = $('input[name="use_resolver[sesame]"]',
-//      '#astrooda-common').prop('checked');
-//      var local_resolver= 'local resolver';
-//      var sesame_resolver= '<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame"
-//      target="_blank">Sesame</a>: NED, Simbad and VizieR';
-//      var name_resolvers = 'respectively '+local_resolver +', '+sesame_resolver;
-//      if (use_local_resolver && !use_sesame_resolver) {
-//      name_resolvers = local_resolver;
-//      }
-//      else if (!use_local_resolver && use_sesame_resolver) {
-//      name_resolvers = 'respectively '+sesame_resolver;
-//      }
         var message = 'Resolving object name ...';
         waitingDialog.show('', message, {
           progressType : 'success',
@@ -659,7 +664,18 @@ function get_waitingDialog($modal_dialog) {
         $('input:not(:file)', '#astrooda-common').val(function(_, value) {
           return $.trim(value.replace(/\s+/g, " "));
         });
-      }			
+      }
+      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'send-feedback-button') {
+        $('.modal-footer button.cancel-button', '#lfeedback').hide();
+        $('input,select,textarea', '#lfeedback').prop('disabled', true);
+        $('#feedback-messages', '#lfeedback').html('');
+      }
+      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'ask-token-button') {
+        $('.modal-footer button.cancel-button', '#ltoken').hide();
+        $('#token-messages', '#ltoken').html('');
+        $('input,select,textarea', '#ltoken').prop('disabled', true);
+      }
+
     });
 
     // Disable main submit if error in common parameters

@@ -15,7 +15,7 @@ function astrooda_bug_report_form($form, &$form_state) {
       '#type' => 'select',
       '#title' => t ( "Message type" ),
       '#options' => array (
-          'feedback' => 'Feadback',
+          'feedback' => 'Feedback',
           'bugreport' => 'Bug report'
       )
   );
@@ -51,6 +51,7 @@ function astrooda_bug_report_form($form, &$form_state) {
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Send' ),
+      '#name' => 'send-feedback-button',
       '#ajax' => array (
           'callback' => 'process_user_feedback_callback',
           'wrapper' => 'feedback-messages',
@@ -75,50 +76,153 @@ function astrooda_bug_report_form($form, &$form_state) {
  * Ajax callback function.
  */
 function process_user_feedback_callback($form, &$form_state) {
-  if (form_get_errors ()) {
-    return '';
-  }
-
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
-  $feedback_email = $astrooda_settings ['feedback_email'];
-
-  $from = $feedback_email [0];
-  $to = implode ( ',', $feedback_email );
-  $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
-
-  $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
-  $subject = '[Astrooda ' . $message_type . ' ' . date ( 'Y-m-d\TH:i:s' ) . '] ' . $form_state ['values'] ['subject'];
-
-  $body = 'Name : ' . $form_state ['values'] ['name'] . "\n";
-  $body .= 'E-mail : ' . $form_state ['values'] ['email'] . "\n\n\n";
-  $body .= "Comment :\n" . $form_state ['values'] ['comment'] . "\n";
-
-  $dispatcher_response_filename = 'dispatcher_response_' . date ( 'Ymd\THis' ) . '.json';
-
-  $attachment = array (
-      'filecontent' => $form_state ['values'] ['dispatcher_response'],
-      'filename' => $dispatcher_response_filename,
-      'filemime' => 'application/json'
-  );
-
-  $params = array (
-      'to' => $to,
-      'from' => $from,
-      'reply-to' => $reply_to,
-      'subject' => $subject,
-      'body' => $body,
-      'attachment' => $attachment
-  );
-
-  drupal_mail ( 'astrooda', 'user_feedback', $to, language_default (), $params, $from );
-
   $selector = '#feedback-messages';
   $commands = array ();
-  $commands [] = ajax_command_html ( $selector, '<div class="alert alert-block alert-dismissible alert-success">Your feedback has been successfully sent!</div>' );
-  $commands [] = array (
-      'command' => 'hide_feedback_form'
+  if (form_get_errors ()) {
+    $error_messages_html = theme ( 'status_messages' );
+    $commands [] = ajax_command_html ( $selector, $error_messages_html );
+    $commands [] = array (
+        'command' => 'enable_feedback_form'
+    );
+  } else {
+    $astrooda_settings = variable_get ( 'astrooda_settings' );
+    $astrooda_support_email = $astrooda_settings ['astrooda_support_email'];
+
+    $from = $astrooda_support_email [0];
+    $to = implode ( ',', $astrooda_support_email );
+    $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
+
+    $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
+    $subject = '[Astrooda ' . $message_type . ' ' . date ( 'Y-m-d\TH:i:s' ) . '] ' . $form_state ['values'] ['subject'];
+
+    $body = 'Name : ' . $form_state ['values'] ['name'] . "\n";
+    $body .= 'E-mail : ' . $form_state ['values'] ['email'] . "\n\n\n";
+    $body .= "Comment :\n" . $form_state ['values'] ['comment'] . "\n";
+
+    $dispatcher_response_filename = 'dispatcher_response_' . date ( 'Ymd\THis' ) . '.json';
+
+    $attachment = array (
+        'filecontent' => $form_state ['values'] ['dispatcher_response'],
+        'filename' => $dispatcher_response_filename,
+        'filemime' => 'application/json'
+    );
+
+    $params = array (
+        'to' => $to,
+        'from' => $from,
+        'reply-to' => $reply_to,
+        'subject' => $subject,
+        'body' => $body,
+        'attachment' => $attachment
+    );
+
+    drupal_mail ( 'astrooda', 'user_message', $to, language_default (), $params, $from );
+
+    $commands [] = ajax_command_html ( $selector, '<div class="alert alert-block alert-dismissible alert-success">Your feedback has been successfully sent!</div>' );
+    $commands [] = array (
+        'command' => 'hide_feedback_form'
+    );
+  }
+  return array (
+      '#type' => 'ajax',
+      '#commands' => $commands
+  );
+}
+
+function astrooda_ask_token_form($form, &$form_state) {
+  $form = array ();
+  $form ['#tree'] = FALSE;
+  $form ['#method'] = 'POST';
+
+  $form ['name'] = array (
+      '#type' => 'textfield',
+      '#title' => t ( 'Name' ),
+      '#required' => TRUE,
+      '#attributes' => array (
+          'placeholder' => t ( 'first and last name' )
+      )
+  );
+  $form ['email'] = array (
+      '#type' => 'emailfield',
+      '#title' => t ( 'E-mail' ),
+      '#required' => TRUE,
+      '#attributes' => array (
+          'placeholder' => t ( 'mail@example.com' )
+      )
+  );
+  $form ['message'] = array (
+      '#type' => 'textarea',
+      '#title' => t ( 'Message' ),
+      '#description' => t ( '' ),
+      '#required' => TRUE
   );
 
+  $form ['submit'] = array (
+      '#type' => 'submit',
+      '#value' => t ( 'Send' ),
+      '#name' => 'ask-token-button',
+      '#ajax' => array (
+          'callback' => 'process_ask_token_callback',
+          'wrapper' => 'token-messages',
+          'method' => 'html',
+          'effect' => 'fade',
+          'progress' => array (
+              'type' => 'throbber',
+              'message' => '...'
+          )
+      ),
+      '#attributes' => array (
+          'class' => array (
+              'btn-primary'
+          )
+      )
+  );
+
+  return ($form);
+}
+
+/**
+ * Ajax callback function.
+ */
+function process_ask_token_callback($form, &$form_state) {
+  $selector = '#token-messages';
+  $commands = array ();
+  if (form_get_errors ()) {
+    $error_messages_html = theme ( 'status_messages' );
+    $commands [] = ajax_command_html ( $selector, $error_messages_html );
+    $commands [] = array (
+        'command' => 'enable_token_form'
+    );
+  } else {
+    $astrooda_settings = variable_get ( 'astrooda_settings' );
+    $astrooda_support_email = $astrooda_settings ['astrooda_support_email'];
+
+    $from = $astrooda_support_email [0];
+    $to = implode ( ',', $astrooda_support_email );
+    $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
+
+    $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
+    $subject = '[Astrooda API Token request] ' . $form_state ['values'] ['name'];
+
+    $body = 'Name : ' . $form_state ['values'] ['name'] . "\n";
+    $body .= 'E-mail : ' . $form_state ['values'] ['email'] . "\n\n\n";
+    $body .= "Message :\n" . $form_state ['values'] ['message'] . "\n";
+
+    $params = array (
+        'to' => $to,
+        'from' => $from,
+        'reply-to' => $reply_to,
+        'subject' => $subject,
+        'body' => $body
+    );
+
+    drupal_mail ( 'astrooda', 'user_message', $to, language_default (), $params, $from );
+
+    $commands [] = ajax_command_html ( $selector, '<div class="alert alert-block alert-dismissible alert-success">Your API token request has been successfully sent!</div>' );
+    $commands [] = array (
+        'command' => 'hide_ask_token_form'
+    );
+  }
   return array (
       '#type' => 'ajax',
       '#commands' => $commands
@@ -129,9 +233,8 @@ function process_user_feedback_callback($form, &$form_state) {
  * Implements hook_mail().
  */
 function astrooda_mail($key, &$message, $params) {
-  error_log ( "In hook mail !\n" . "params:\n" . print_r ( $params, true ) );
   switch ($key) {
-    case 'user_feedback' :
+    case 'user_message' :
       $message ['to'] = $params ['to'];
       $message ['subject'] = $params ['subject'];
       $message ['body'] = array (
@@ -143,7 +246,6 @@ function astrooda_mail($key, &$message, $params) {
 
       // Add attachment when available.
       if (isset ( $params ['attachment'] )) {
-        error_log ( 'Sssssssssssssssting attachment !' );
         $message ['params'] ['attachments'] [] = $params ['attachment'];
       }
       break;
