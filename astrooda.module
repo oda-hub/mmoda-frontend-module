@@ -175,12 +175,16 @@ function astrooda_main_block_content() {
   $items = array ();
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
+//   unset($astrooda_settings['astrooda_support_email']);
+//   $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
+//   variable_set ( 'astrooda_settings', $astrooda_settings );
   
   // error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
   
   if (empty ( $astrooda_settings ['instruments'] )) {
     return theme ( 'astrooda_main_block_content', $items );
   }
+  
 //   setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
   
   $items ['session_id'] = $session_id;

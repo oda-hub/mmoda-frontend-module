@@ -86,20 +86,21 @@ function process_user_feedback_callback($form, &$form_state) {
     );
   } else {
     $astrooda_settings = variable_get ( 'astrooda_settings' );
-    $astrooda_support_email = $astrooda_settings ['astrooda_support_email'];
+    $support_email = $astrooda_settings ['support_email'];
 
-    $from = $astrooda_support_email [0];
-    $to = implode ( ',', $astrooda_support_email );
+    $from = $support_email [0];
+    $to = implode ( ',', array_slice($support_email, 1) );
     $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
 
     $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
     $subject = '[Astrooda ' . $message_type . ' ' . date ( 'Y-m-d\TH:i:s' ) . '] ' . $form_state ['values'] ['subject'];
 
+    $dispatcher_response_filename = 'dispatcher_response_' . date ( 'Ymd\THis' ) . '.json';
+
     $body = 'Name : ' . $form_state ['values'] ['name'] . "\n";
     $body .= 'E-mail : ' . $form_state ['values'] ['email'] . "\n\n\n";
-    $body .= "Comment :\n" . $form_state ['values'] ['comment'] . "\n";
-
-    $dispatcher_response_filename = 'dispatcher_response_' . date ( 'Ymd\THis' ) . '.json';
+    $body .= "Comment :\n" . $form_state ['values'] ['comment'] . "\n\n\n\n\n\n";
+    $body .= "Attached the last dispatcher response (a JSON): " .$dispatcher_response_filename. "\n";
 
     $attachment = array (
         'filecontent' => $form_state ['values'] ['dispatcher_response'],
@@ -195,10 +196,10 @@ function process_ask_token_callback($form, &$form_state) {
     );
   } else {
     $astrooda_settings = variable_get ( 'astrooda_settings' );
-    $astrooda_support_email = $astrooda_settings ['astrooda_support_email'];
+    $support_email = $astrooda_settings ['support_email'];
 
-    $from = $astrooda_support_email [0];
-    $to = implode ( ',', $astrooda_support_email );
+    $from = $support_email [0];
+    $to = implode ( ',', array_slice($support_email,1) );
     $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
 
     $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
@@ -233,6 +234,14 @@ function process_ask_token_callback($form, &$form_state) {
  * Implements hook_mail().
  */
 function astrooda_mail($key, &$message, $params) {
+//   $filename = '/tmp/momo/mail_params.php';
+//   unlink($filename);
+
+//   $f = fopen ( $filename, 'w' );
+//   fwrite ( $f, "mail params:\n" );
+//   fwrite ( $f, print_r ( $params, true ) );
+//   fclose ( $f );
+//   chmod ( $filename, 0777 );
   switch ($key) {
     case 'user_message' :
       $message ['to'] = $params ['to'];
