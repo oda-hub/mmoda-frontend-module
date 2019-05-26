@@ -1277,11 +1277,12 @@ function validate_timebin(value, validator, $thefield) {
 
     var toolbar = '<div class="btn-group" role="group">';
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
     + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
     + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
-    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1398,7 +1399,7 @@ function validate_timebin(value, validator, $thefield) {
     url = 'session_id=' + session_id + '&download_file_name=' + file_name + '&file_list=' + files_list + '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
     url = url.replace(/\+/g, '%2B');
 
-    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
+    var toolbar = '<div class="btn-group" role="group">';
     toolbar += '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
     + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
     toolbar += '</div>';
@@ -1438,11 +1439,12 @@ function validate_timebin(value, validator, $thefield) {
 
     var toolbar = '<div class="btn-group" role="group">';
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
     + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
     + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
-    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1676,15 +1678,13 @@ function validate_timebin(value, validator, $thefield) {
 
   function get_token_button() {
     var auth_cookie = $('#ltoken').data('auth-cookie');
-    if ($.cookie(auth_cookie)) {
-      return '<button class="btn btn-default api-token" type="button" data-datetime="' + datetime
-      + '" >API Token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy your API token to the clipboard" ></span></button>';
+    var title = 'Copy your API token to the clipboard';
+    var button = 'api-token';
+    if (! $.cookie(auth_cookie)) {
+       title = 'Request an API token';
+       button = 'api-token-ask';
     }
-    else {
-      return '<button class="btn btn-default api-token-ask" type="button" data-datetime="' + datetime
-      + '" >API Token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Request an API token" ></span></button>';
-    }
-
+    return '<button class="btn btn-default '+button+'" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="'+title+'" ></span></button>';
   }
 
   function display_image(data, job_id, instrument) {
@@ -1718,9 +1718,9 @@ function validate_timebin(value, validator, $thefield) {
       toolbar += '<button class="btn btn-default show-catalog" type="button" data-datetime="' + datetime + '" >Catalog</button>';
     }
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
     + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
-    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
     + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     toolbar += get_token_button();
