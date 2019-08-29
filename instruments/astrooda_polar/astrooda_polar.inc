@@ -15,7 +15,7 @@ function astrooda_polar($form, &$form_state) {
   //turn off form caching
   $mform_id= __FUNCTION__.'_';
 
-  $form ['#action'] = '/dispatch-data/run_analysis';
+  $form ['#action'] = 'dispatch-data/run_analysis';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'polar-form');
 
