@@ -1400,7 +1400,7 @@ function validate_timebin(value, validator, $thefield) {
     url = url.replace(/\+/g, '%2B');
 
     var toolbar = '<div class="btn-group" role="group">';
-    toolbar += '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+    toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
     + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1500,7 +1500,7 @@ function validate_timebin(value, validator, $thefield) {
                                            url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
                                            + '&instrument=' + data.instrument;
                                            url = url.replace(/\+/g, '%2B');
-                                           var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+                                           var downloadButton = '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
                                            + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
                                            return (downloadButton);
                                          },
@@ -1576,7 +1576,7 @@ function validate_timebin(value, validator, $thefield) {
     // url = url.replace(/\+/g, '%2B');
     //
     // var downloadButton = '<a class="btn btn-default" role="button"
-    // href="/dispatch-data/download_products?' + url
+    // href="dispatch-data/download_products?' + url
     // + '" >Download <span class="glyphicon glyphicon-info-sign"
     // data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format"
     // ></span></a>';
@@ -1585,7 +1585,7 @@ function validate_timebin(value, validator, $thefield) {
     // $('#' + panel_ids.panel_body_id).append(toolbar);
 
     // $('#' + panel_ids.panel_body_id).append(
-    // '<a href="/dispatch-data/download_products?' + url +
+    // '<a href="dispatch-data/download_products?' + url +
     // '">Download</a>');
 
     // mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
@@ -1710,7 +1710,7 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     var toolbar = '<div class="btn-group" role="group">';
-    toolbar += '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+    toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
     + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
