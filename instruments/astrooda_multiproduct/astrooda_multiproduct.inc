@@ -8,14 +8,14 @@
 /**
  */
 function astrooda_multi_product_lc($form, &$form_state) {
-  
+
   $form = array ();
-  
+
   $form ['#tree'] = FALSE;
   //turn off form caching
   $mform_id= __FUNCTION__.'_';
-  
-  $form ['#action'] = '/dispatch-data/run_analysis';
+
+  $form ['#action'] = 'dispatch-data/run_analysis';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'multi_product_lc-form');
 
@@ -23,9 +23,9 @@ function astrooda_multi_product_lc($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'multi_product_lc'
   );
-  
-  
-  
+
+
+
   $form ['query_type'] = array (
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
@@ -50,8 +50,8 @@ function astrooda_multi_product_lc($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />',
   );
-  
-  
+
+
   $form ['query_action'] = array (
       '#type' => 'radios',
       '#title' => t ( "Query Action" ),
@@ -72,7 +72,7 @@ function astrooda_multi_product_lc($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['time_bin'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
@@ -106,7 +106,7 @@ function astrooda_multi_product_lc($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['time_bin_format'] = array (
       '#type' => 'select',
       '#title' => t ( "Unit" ),
@@ -143,15 +143,15 @@ function astrooda_multi_product_lc($form, &$form_state) {
       ),
       '#suffix' => '</div>'
   );
-  
-  
+
+
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),
   );
-  
+
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.polar' );
-  
-   
+
+
   return ($form);
 }

@@ -90,7 +90,15 @@ function astrooda_menu() {
       'description' => 'Edit data analysis settings.',
       'file' => 'astrooda.admin.inc' 
   );
-  // 'weight' => -10,
+  
+  $items ['send-bug-report'] = array (
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'astrooda_bug_report_form' 
+      ),
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK 
+  );
   
   return $items;
 }
@@ -107,8 +115,6 @@ function astrooda_block_view($delta) {
           'subject' => '<none>',
           'content' => astrooda_main_block_content () 
       );
-      // 'content' => "A new content",
-      
       break;
   }
   return $block;
@@ -118,12 +124,6 @@ function astrooda_block_view($delta) {
  * Generates the actual content of the iPrayTimes block.
  */
 function astrooda_main_block_content() {
-  /*
-   * $library = libraries_detect ( 'praytimes' );
-   * if (empty ( $library ['installed'] ))
-   * return ('');
-   * astrooda_block_content ();
-   */
   $session_id = session_id ();
   
   if (! isset ( $_SESSION ['count'] )) {
@@ -133,8 +133,8 @@ function astrooda_main_block_content() {
   }
   $session_count = $_SESSION ['count'];
   
-  if (isset ( $_SERVER ["HTTP_REFERER"] ) and strlen($_SERVER ["HTTP_REFERER"]) and !isset($_SESSION ['url_parameters'])) {
-    parse_str(parse_url ( $_SERVER ["HTTP_REFERER"], PHP_URL_QUERY ), $params);
+  if (isset ( $_SERVER ["HTTP_REFERER"] ) and strlen ( $_SERVER ["HTTP_REFERER"] ) and ! isset ( $_SESSION ['url_parameters'] )) {
+    parse_str ( parse_url ( $_SERVER ["HTTP_REFERER"], PHP_URL_QUERY ), $params );
   } else {
     $params = drupal_get_query_parameters ();
   }
@@ -151,30 +151,8 @@ function astrooda_main_block_content() {
     unset ( $_SESSION ['url_parameters'] );
   }
   
-  // if (! ($library_d3 = libraries_load ( 'd3' )) || empty ( $library_d3 ['loaded'] )) {
-  // drupal_set_message ( t ( 'Error : can not load D3 library.' ), 'error' );
-  // return;
-  // }
-  
-  // if (! ($library_mpld3 = libraries_load ( 'mpld3' )) || empty ( $library_mpld3 ['loaded'] )) {
-  // drupal_set_message ( t ( 'Error : can not load mplD3 library.' ), 'error' );
-  // return;
-  // }
-  
   $libname = 'bootstrap-form-validator';
-  /*
-   * if (($library = libraries_detect($libname)) && !empty($library['installed'])) {
-   * // The library is installed. Awesome!
-   * }
-   * else {
-   * // Something went wrong. :(
-   * // This contains a short status code of what went wrong, such as 'not found'.
-   * $error = $library['error'];
-   * // This contains a detailed (localized) error message.
-   * $error_message = $library['error message'];
-   * drupal_set_message ( t ( 'Error ').$error.t(': can not load bootstrap form validator library. ' ).t($error_message), 'error' );
-   * }
-   */
+  
   if (! ($library = libraries_load ( $libname )) || empty ( $library ['loaded'] )) {
     $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
@@ -189,27 +167,55 @@ function astrooda_main_block_content() {
     // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
     // return;
   }
+//   drupal_add_js ( 'var $j = jQuery.noConflict();', array (
+//       'type' => 'inline',
+//       'scope' => 'header',
+//       'group' => JS_LIBRARY,
+//       'weight' => - 1 
+//   ) );
   
+//   drupal_add_css ( 'dispatch-data/js9/js9support.css' );
+//   drupal_add_css ( 'dispatch-data/js9/js9.css' );
   drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
+  
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9all.js' );
+//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9prefs.js' );
+  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9support.min.js' );
+  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9.min.js' );
+//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9plugins.js' );
+  
+  // drupal_add_js ( 'dispatch-data/js9/js9prefs.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9support.min.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9.min.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9plugins.js' );
+  
   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js' );
   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.instrument.js' );
   
   $items = array ();
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
+  // unset($astrooda_settings['astrooda_support_email']);
+  // $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
+  // variable_set ( 'astrooda_settings', $astrooda_settings );
   
   // error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
   
-  // require_once drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.common.inc';
   if (empty ( $astrooda_settings ['instruments'] )) {
     return theme ( 'astrooda_main_block_content', $items );
   }
+  
+  // setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
   
   $items ['session_id'] = $session_id;
   $items ['session_count'] = $session_count;
   $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
   
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
+  $items ['bug_report_form'] = drupal_get_form ( 'astrooda_bug_report_form' );
+  $items ['auth_cookie'] = '_oauth2_proxy';
+  $items ['token_ask_form'] = drupal_get_form ( 'astrooda_ask_token_form' );
+  
   // error_log ( "---------------------------------------------" );
   
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {

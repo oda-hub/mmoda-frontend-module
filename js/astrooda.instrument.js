@@ -1,5 +1,5 @@
 function validate_timebin(value, validator, $thefield) {
-  console.log('validating time bin');
+  // console.log('validating time bin');
 
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
 
@@ -63,6 +63,7 @@ function validate_timebin(value, validator, $thefield) {
   var distinct_nodes;
 
   var current_ajax_call_params = {};
+  var last_dataserver_response = {};
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
 
@@ -93,6 +94,7 @@ function validate_timebin(value, validator, $thefield) {
       type : 'POST'
     }).done(
         function(data, textStatus, jqXHR) {
+          last_dataserver_response = data;
           // console.log('--- Query response ---');
           // console.log(data);
           job_id = '';
@@ -121,6 +123,7 @@ function validate_timebin(value, validator, $thefield) {
             waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
                 + data.exit_status.error_message + '</td></tr></table>', 'danger');
             waitingDialog.setClose();
+            add_dispatcher_response_to_feedback_form(data);
           } else if (data.query_status != 'done') {
             waitingDialog.showLegend();
             previous_summary = '';
@@ -149,6 +152,10 @@ function validate_timebin(value, validator, $thefield) {
             }
             requestTimer = setTimeout(AJAX_call, 5000);
           } else {
+            add_dispatcher_response_to_feedback_form(data);
+            var url = window.location.href.replace(/\/*$/, '');
+            data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
+
             waitingDialog.hideSpinner();
             instrument = $('input[name=instrument]', ".instrument-panel.active").val();
             waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
@@ -165,10 +172,12 @@ function validate_timebin(value, validator, $thefield) {
 
             if (data.products.hasOwnProperty('image')) {
               if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-                display_lc_table(job_id, data.query_status, data.products);
+                display_lc_table(data.products, job_id, data.query_status);
               } else {
                 if (data.products.image.hasOwnProperty('spectral_fit_image')) {
                   display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+                } else if (Array.isArray(data.products.image)) {
+                  display_image_table(data.products, job_id, instrument);
                 } else {
                   display_image(data.products, job_id, instrument);
                 }
@@ -178,10 +187,15 @@ function validate_timebin(value, validator, $thefield) {
             }
             waitingDialog.setClose();
           }
+          // data.exit_status.comment = 'Hoho';
+          if (data.exit_status.comment) {
+            waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
+          }
         }).complete(function(jqXHR, textStatus) {
       // console.log('Exec time : ' + (new
       // Date().getTime() -
       // startAJAXTime));
+      $('#ldialog button.write-feedback-button').removeClass('hidden');
       $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.log('textStatus : ' + textStatus + '|');
@@ -213,6 +227,10 @@ function validate_timebin(value, validator, $thefield) {
     });
     // jqxhr
 
+  }
+
+  function add_dispatcher_response_to_feedback_form(data) {
+    $('[name="dispatcher_response"]', '#astrooda-bug-report-form').val(JSON.stringify(data));
   }
 
   function get_server_message(response, data_units) {
@@ -344,6 +362,42 @@ function validate_timebin(value, validator, $thefield) {
 
   function commonReady() {
 
+    $('#lfeedback button#edit-submit').prependTo($('#lfeedback .modal-footer'));
+
+    $('#ldialog .modal-footer button.write-feedback-button').on('click', function(event) {
+      $('#lfeedback').modal({
+        show : true
+      });
+    });
+
+    $('#lfeedback').on('hidden.bs.modal', function() {
+      $('#feedback-messages', $(this)).html('');
+      $('input,select,textarea', '#lfeedback').prop('disabled', false);
+    });
+
+    $('#lfeedback').on('shown.bs.modal', function() {
+      $('#astrooda-bug-report-form').removeClass('hidden');
+      $('.modal-footer button.cancel-button', $(this)).text('Cancel').show();
+      $('.modal-footer button#edit-submit', $(this)).show();
+    });
+
+    $('#ldialog').on('hidden.bs.modal', function() {
+      $('#ldialog button.write-feedback-button').addClass('hidden');
+    })
+
+    $('#ltoken button#edit-submit--2').prependTo($('#ltoken .modal-footer'));
+
+    $('#ltoken').on('hidden.bs.modal', function() {
+      $('#token-messages', $(this)).html('');
+      $('input,textarea', '#ltoken').prop('disabled', false);
+    });
+
+    $('#ltoken').on('shown.bs.modal', function() {
+      $('#astrooda-ask-token-form').removeClass('hidden');
+      $('.modal-footer button.cancel-button', $(this)).text('Cancel').show();
+      $('.modal-footer button#edit-submit--2', $(this)).show();
+    });
+
     $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
@@ -366,7 +420,7 @@ function validate_timebin(value, validator, $thefield) {
       }
     });
 
-    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve', function(e) {
+    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve, table.image-table tbody button.draw-image', function(e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var lightcurve_offset = {};
@@ -546,6 +600,25 @@ function validate_timebin(value, validator, $thefield) {
       var query_parameters = query_parameters_parent_panel.data('analysis_paramters');
       var url = get_query_url(query_parameters);
       copyToClipboard(url);
+    });
+
+    $("body").on('click', '.result-panel .api-code', function(e) {
+      e.preventDefault();
+      var query_parameters_parent_panel = $(this).closest('.result-panel');
+      copyToClipboard(query_parameters_parent_panel.data('api_code'));
+    });
+
+    $("body").on('click', '.result-panel .api-token-ask', function(e) {
+      e.preventDefault();
+      $('#ltoken').modal({
+        show : true
+      });
+    });
+
+    $("body").on('click', '.result-panel .api-token', function(e) {
+      e.preventDefault();
+      var auth_cookie = $('#ltoken').data('auth-cookie');
+      copyToClipboard($.cookie(auth_cookie));
     });
 
     $("body").on('click', '.result-panel .use-catalog', function(e) {
@@ -1195,7 +1268,7 @@ function validate_timebin(value, validator, $thefield) {
     });
   }
 
-  function display_lc_table(job_id, query_status, data) {
+  function display_lc_table(data, job_id, query_status) {
     datetime = get_current_date_time();
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
@@ -1206,11 +1279,15 @@ function validate_timebin(value, validator, $thefield) {
 
     $('#' + panel_ids.panel_id).data("product_type", 'lc');
 
-    var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
-    var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
-    showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
+    var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
-    var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
+    toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+    toolbar += get_token_button();
+    toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
     if (data.input_prod_list.length > 0) {
@@ -1242,7 +1319,8 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
@@ -1296,6 +1374,106 @@ function validate_timebin(value, validator, $thefield) {
 
   }
 
+  function display_image_table(data, job_id, query_status) {
+    datetime = get_current_date_time();
+
+    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image-table', datetime);
+
+    var session_id = data.session_id;
+    var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+
+    $('#' + panel_ids.panel_id).data("product_type", 'image');
+
+    var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
+        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+    toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+    toolbar += get_token_button();
+    toolbar += '</div>';
+    $('#' + panel_ids.panel_body_id).append(toolbar);
+
+    if (data.input_prod_list.length > 0) {
+      scw_list = data.input_prod_list.join(', ');
+      $('#' + panel_ids.panel_body_id).append(
+          '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
+      $('.copy-to-clipboard').on('click', function() {
+        copyToClipboard($(this).parent().find('.astrooda-popover-content').text());
+      });
+      $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
+      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+        e.preventDefault();
+        return true;
+      }).popover({
+        container : 'body',
+        content : function() {
+          return $(this).parent().find('.astrooda-popover-content').html();
+        },
+        html : true,
+        template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+      });
+    }
+    $('#' + panel_ids.panel_id).data({
+      'job_id' : job_id
+    });
+
+    $('#' + panel_ids.panel_id).data({
+      'products' : data
+    });
+
+    $('#' + panel_ids.panel_id).data({
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
+    });
+
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
+        'Source : ' + data.analysis_paramters.src_name + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, '
+            + data.analysis_paramters.time_bin + ' ' + data.analysis_paramters.time_bin_format);
+
+    var image_table_data = new Array(data.name.length);
+    for (var i = 0; i < data.name.length; i++) {
+      image_table_data[i] = {
+        DT_RowId : 'row_' + i,
+        source_name : data.name[i],
+        index : i,
+      }
+    }
+
+    $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
+    var image_table_column_names = [ {
+      title : "Source Name",
+      name : "source_name",
+      data : "source_name",
+    }, {
+      data : null,
+      title : "Image",
+      name : "image",
+      defaultContent : '<button type="button" class="btn btn-primary draw-image">View</button>',
+      orderable : false
+    }, ];
+
+    var image_table_container = $(".image-table", '#' + panel_ids.panel_id);
+
+    var dataTable = image_table_container.DataTable({
+      // "bAutoWidth": false,
+      data : image_table_data,
+      columns : image_table_column_names,
+      // dom : 'Brtflip',
+      dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
+      buttons : [],
+      order : [ [ 0, 'asc' ] ],
+      "rowCallback" : function(row, data) {
+        $(row).data(data);
+      }
+    });
+
+    $('#' + panel_ids.panel_id).highlight_result_panel();
+
+  }
+
   function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
@@ -1325,9 +1503,10 @@ function validate_timebin(value, validator, $thefield) {
     url = 'session_id=' + session_id + '&download_file_name=' + file_name + '&file_list=' + files_list + '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
     url = url.replace(/\+/g, '%2B');
 
-    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
+    var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
         + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
-    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
+    toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
     // mpld3.draw_figure(panel_ids.panel_body_id, image.image);
@@ -1362,11 +1541,15 @@ function validate_timebin(value, validator, $thefield) {
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
-    var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
-    var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
-    showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
+    var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
         + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
-    var toolbar = '<div class="btn-group" role="group">' + showQueryParameters + showLoghtml + '</div>';
+    toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+    toolbar += get_token_button();
+    toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + data.analysis_paramters.src_name);
@@ -1382,30 +1565,51 @@ function validate_timebin(value, validator, $thefield) {
         rmf_file_name : data.rmf_file_name[i],
         job_id : job_id,
         session_id : session_id,
+        instrument : data.instrument,
       }
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
-    var spectrum_table_column_names = [ {
-      title : "Source Name",
-      name : "source_name",
-      data : "source_name",
-    }, {
-      title : "Xspec Model",
-      name : "xspec_model",
-      data : "xspec_model",
-      orderable : false
-    }, {
-      data : null,
-      title : "Spectrum",
-      name : "spectrum",
-      defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
-      orderable : false
-    }, ];
+    var spectrum_table_column_names = [
+        {
+          title : "Source Name",
+          name : "source_name",
+          data : "source_name",
+        },
+        {
+          title : "Xspec Model",
+          name : "xspec_model",
+          data : "xspec_model",
+          orderable : false
+        },
+        {
+          data : null,
+          title : "Spectrum",
+          name : "spectrum",
+          defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
+          orderable : false
+        },
+        {
+          data : null,
+          title : "Download",
+          name : "download",
+          render : function(data, type, full, meta) {
+            download_filename = 'spectra-' + data.source_name + '.tar.gz';
+            datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
+            url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
+                + '&instrument=' + data.instrument;
+            url = url.replace(/\+/g, '%2B');
+            var downloadButton = '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
+                + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+            return (downloadButton);
+          },
+          orderable : false
+        }, ];
 
     var spectrum_table_fields = [ {
       name : "source_name",
@@ -1466,20 +1670,26 @@ function validate_timebin(value, validator, $thefield) {
       spectrum_parent_panel_id : current_row
     });
 
-    download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
-    url = 'session_id=' + metadata.session_id + '&file_list=' + metadata.files + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + job_id
-        + '&instrument=' + instrument;
-    url = url.replace(/\+/g, '%2B');
-
-    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-        + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    var toolbar = '<div class="btn-group" role="group">' + downloadButton + '</div>';
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    // download_filename = 'spectra-' + metadata.source_name + '.tar.gz';
+    // url = 'session_id=' + metadata.session_id + '&file_list=' +
+    // metadata.files + '&download_file_name=' + download_filename +
+    // '&query_status=ready&job_id=' + job_id
+    // + '&instrument=' + instrument;
+    // url = url.replace(/\+/g, '%2B');
+    //
+    // var downloadButton = '<a class="btn btn-default" role="button"
+    // href="dispatch-data/download_products?' + url
+    // + '" >Download <span class="glyphicon glyphicon-info-sign"
+    // data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format"
+    // ></span></a>';
+    // var toolbar = '<div class="btn-group" role="group">' + downloadButton +
+    // '</div>';
+    // $('#' + panel_ids.panel_body_id).append(toolbar);
 
     // $('#' + panel_ids.panel_body_id).append(
-    // '<a href="/dispatch-data/download_products?' + url +
+    // '<a href="dispatch-data/download_products?' + url +
     // '">Download</a>');
 
     // mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
@@ -1570,6 +1780,18 @@ function validate_timebin(value, validator, $thefield) {
     });
   }
 
+  function get_token_button() {
+    var auth_cookie = $('#ltoken').data('auth-cookie');
+    var title = 'Copy your API token to the clipboard';
+    var button = 'api-token';
+    if (!$.cookie(auth_cookie)) {
+      title = 'Request an API token';
+      button = 'api-token-ask';
+    }
+    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title
+        + '" ></span></button>';
+  }
+
   function display_image(data, job_id, instrument) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
@@ -1579,7 +1801,8 @@ function validate_timebin(value, validator, $thefield) {
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters
+      analysis_paramters : data.analysis_paramters,
+      api_code : data.api_code,
     });
 
     var session_id = data.session_id;
@@ -1587,22 +1810,26 @@ function validate_timebin(value, validator, $thefield) {
     url = 'session_id=' + session_id + '&download_file_name=' + data.download_file_name + '&file_list=' + data.file_name + '&query_status=ready&job_id=' + job_id + '&instrument='
         + instrument;
     url = url.replace(/\+/g, '%2B');
-    var downloadButton = '<a class="btn btn-default" role="button" href="/dispatch-data/download_products?' + url
-        + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
-    var showCataloghtml = '';
-    if (product_type.endsWith('image')) {
-      showCataloghtml = '<button class="btn btn-default show-catalog" type="button" data-datetime="' + datetime + '" >Catalog</button>';
-    }
 
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
-    var showLoghtml = '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
-    var showQueryParameters = '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
-    showQueryParameters += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
 
-    var toolbar = '<div class="btn-group" role="group">' + downloadButton + showCataloghtml + showQueryParameters + showLoghtml + '</div>';
+    var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
+        + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
+
+    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    if (product_type.endsWith('image')) {
+      toolbar += '<button class="btn btn-default show-catalog" type="button" data-datetime="' + datetime + '" >Catalog</button>';
+    }
+    toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
+    toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
+    toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
+        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+    toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
+        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+    toolbar += get_token_button();
+    toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
     if (data.input_prod_list.length > 0) {
@@ -1632,6 +1859,14 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
     $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
     $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
+    $('#' + panel_ids.panel_body_id).append($('<iframe>', {
+      src : 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path,
+      id : 'js9iframe',
+      width : '650',
+      height : '700',
+      frameborder : 0,
+      scrolling : 'no'
+    }));
 
     // source_name = $('input[name=src_name]',
     // 'form#astrooda-common').val();

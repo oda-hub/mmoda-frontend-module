@@ -8,33 +8,33 @@
 /**
  */
 function astrooda_isgri($form, &$form_state) {
-    
+
   $module_path= drupal_get_path('module', 'astrooda');
 
   $form = array ();
-  
+
   $form ['#tree'] = FALSE;
   //turn off form caching
   //$form_state['no_cache'] = TRUE;
-  
+
   $mform_id= __FUNCTION__.'_';
-  
-  $form ['#action'] = '/dispatch-data/run_analysis';
+
+  $form ['#action'] = 'dispatch-data/run_analysis';
   // $form['#action'] = '/test_post.php';
   // $form['#method'] = 'GET';
   $form ['#method'] = 'POST';
-  
-  
+
+
   $form['#attributes'] = array('class' => 'isgri-form');
-  
+
   $form ['instrument'] = array (
       '#type' => 'hidden',
       '#value' => 'isgri'
   );
-  
+
   $astrooda_settings = variable_get('astrooda_settings');
   $instrument_defaults= $astrooda_settings['instruments']['isgri'];
-  
+
   $form ['osa_version'] = array (
       '#type' => 'select',
       '#title' => t ( "OSA Version" ),
@@ -43,7 +43,7 @@ function astrooda_isgri($form, &$form_state) {
           'OSA10.2' => 'OSA10.2',
           'OSA11.0' => 'OSA11.0'
       ),
-      
+
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
@@ -58,7 +58,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">',
   );
-  
+
   $form ['radius'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
@@ -78,7 +78,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#suffix' => '</div><hr class="hr-default" />',
   );
-  
+
   $form ['use_scws'] = array (
       '#type' => 'radios',
       '#title' => t ( "Use Science Windows - ScWs" ),
@@ -99,7 +99,7 @@ function astrooda_isgri($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['scw_list'] = array (
       '#type' => 'textarea',
       '#title' => t ( "ScWs List" ),
@@ -133,7 +133,7 @@ function astrooda_isgri($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['user_scw_list_file'] = array (
       '#type' => 'file',
       '#title' => t ( "ScWs file" ),
@@ -169,7 +169,7 @@ function astrooda_isgri($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
@@ -192,7 +192,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['E2_keV'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
@@ -215,7 +215,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+
   $form ['query_type'] = array (
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
@@ -239,7 +239,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['detection_threshold'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Detection Threshold" ),
@@ -260,7 +260,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#suffix' => '</div><hr class="hr-default" />'
   );
-  
+
   $form ['product_type'] = array (
       '#type' => 'radios',
       '#title' => t ( "Product Type" ),
@@ -282,7 +282,7 @@ function astrooda_isgri($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-  
+
   $form ['time_bin'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
@@ -318,7 +318,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#prefix' => '<div class="row">'
   );
-  
+
   $form ['time_bin_format'] = array (
       '#type' => 'select',
       '#title' => t ( "Unit" ),
@@ -355,7 +355,7 @@ function astrooda_isgri($form, &$form_state) {
       ),
       '#suffix' => '</div>'
   );
-  
+
   $form ['user_catalog_file'] = array (
       '#type' => 'file',
       '#title' => t ( "User catalog" ),
@@ -373,14 +373,14 @@ function astrooda_isgri($form, &$form_state) {
           'control-label'
       )
   );
-  
+
   $form ['submit'] = array (
       '#type' => 'submit',
       '#value' => t ( 'Submit' ),
   );
-  
+
   form_load_include ( $form_state, 'inc', 'astrooda', 'astrooda.isgri' );
-  
-   
+
+
   return ($form);
 }
