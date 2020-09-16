@@ -1860,7 +1860,7 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
     $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src : 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path,
+      src : 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path+'&ext_id=4',
       id : 'js9iframe',
       width : '650',
       height : '700',
