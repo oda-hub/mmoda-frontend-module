@@ -114,7 +114,7 @@ function astrooda_block_view($delta) {
           // 'subject' => t ( "Astro Online Data Analysis" ),
           'subject' => '<none>',
           'content' => astrooda_main_block_content () 
-      );      
+      );
       break;
   }
   return $block;
@@ -150,9 +150,9 @@ function astrooda_main_block_content() {
     
     unset ( $_SESSION ['url_parameters'] );
   }
-    
+  
   $libname = 'bootstrap-form-validator';
-
+  
   if (! ($library = libraries_load ( $libname )) || empty ( $library ['loaded'] )) {
     $libraries_OK = False;
     drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
@@ -167,17 +167,37 @@ function astrooda_main_block_content() {
     // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
     // return;
   }
+//   drupal_add_js ( 'var $j = jQuery.noConflict();', array (
+//       'type' => 'inline',
+//       'scope' => 'header',
+//       'group' => JS_LIBRARY,
+//       'weight' => - 1 
+//   ) );
   
+//   drupal_add_css ( 'dispatch-data/js9/js9support.css' );
+//   drupal_add_css ( 'dispatch-data/js9/js9.css' );
   drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
+  
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9all.js' );
+//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9prefs.js' );
+  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9support.min.js' );
+  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9.min.js' );
+//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9plugins.js' );
+  
+  // drupal_add_js ( 'dispatch-data/js9/js9prefs.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9support.min.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9.min.js' );
+  // drupal_add_js ( 'dispatch-data/js9/js9plugins.js' );
+  
   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js' );
   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.instrument.js' );
   
   $items = array ();
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
-//   unset($astrooda_settings['astrooda_support_email']);
-//   $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
-//   variable_set ( 'astrooda_settings', $astrooda_settings );
+  // unset($astrooda_settings['astrooda_support_email']);
+  // $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
+  // variable_set ( 'astrooda_settings', $astrooda_settings );
   
   // error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
   
@@ -185,18 +205,17 @@ function astrooda_main_block_content() {
     return theme ( 'astrooda_main_block_content', $items );
   }
   
-//   setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
+  // setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
   
   $items ['session_id'] = $session_id;
   $items ['session_count'] = $session_count;
   $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
   
- 
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
   $items ['bug_report_form'] = drupal_get_form ( 'astrooda_bug_report_form' );
   $items ['auth_cookie'] = '_oauth2_proxy';
   $items ['token_ask_form'] = drupal_get_form ( 'astrooda_ask_token_form' );
-
+  
   // error_log ( "---------------------------------------------" );
   
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
