@@ -160,6 +160,8 @@ function validate_timebin(value, validator, $thefield) {
             instrument = $('input[name=instrument]', ".instrument-panel.active").val();
             waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
             $('#ldialog').find('.progress').hide();
+            //$('#paper-quote').clone().addClass('paper-quote').appendTo($(waitingDialog));
+            waitingDialog.append($('#paper-quote').clone().addClass('paper-quote').html());
             if (data.exit_status.status != 0) {
               debug_message = '';
               if (data.exit_status.debug_message) {

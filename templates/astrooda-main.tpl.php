@@ -44,6 +44,20 @@
  * @ingroup themeable
  */
 ?>
+<div id="paper-quote" class="alert-dismissible alert alert-info "
+	style="float: left;" role="alert">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close"
+		title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
+	<div class="header-info-text">
+		If you use results or material from our application, ODA, do not
+		forget to quote our paper:<br> <a
+			href="https://arxiv.org/abs/2002.12895">A. Neronov, V. Savchenko, A.
+			Tramacere, M. Meharga, C. Ferrigno, S.Paltani<br> An online data
+			analysis system of INTEGRAL telescope
+		</a>
+	</div>
+</div>
+
 <!-- Modal Dialog-->
 <div id="ldialog" class="modal fade astrooda-log" tabindex='-1'
 	role="dialog" aria-hidden="true" data-backdrop="static"
@@ -56,8 +70,10 @@
         </button-->
 				<h4 class="modal-title"></h4>
 				<div class="header-message">
-					Session : <span class="session-id"></span> | Job Id : <span
-						class="job-id"></span>
+					<div>
+						Session : <span class="session-id"></span> | Job Id : <span
+							class="job-id"></span>
+					</div>
 				</div>
 			</div>
 			<div class="modal-body">
@@ -84,8 +100,8 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button"
-					class="btn btn-primary form-button write-feedback-button hidden">Write a
-					feedback</button>
+					class="btn btn-primary form-button write-feedback-button hidden">Write
+					a feedback</button>
 				<button type="button"
 					class="btn btn-primary form-button submit-button"
 					data-dismiss="modal"></button>
@@ -106,12 +122,11 @@
 				<h4 class="modal-title">Feedback / Bug report</h4>
 			</div>
 			<div class="modal-body">
-				<div id="feedback-messages">
-				</div>
+				<div id="feedback-messages"></div>
         <?=render($bug_report_form)?>
       </div>
 			<div class="modal-footer">
-			  <button type="button"
+				<button type="button"
 					class="btn btn-primary form-button cancel-button"
 					data-dismiss="modal">Cancel</button>
 			</div>
@@ -120,7 +135,8 @@
 </div>
 <!-- Modal Ask For Tooken -->
 <div id="ltoken" class="modal fade" tabindex='-1' role="dialog"
-	aria-hidden="true" data-backdrop="static" data-auth-cookie="<?=$auth_cookie?>">
+	aria-hidden="true" data-backdrop="static"
+	data-auth-cookie="<?=$auth_cookie?>">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -131,8 +147,7 @@
 				<h4 class="modal-title">API Token Request</h4>
 			</div>
 			<div class="modal-body">
-				<div id="token-messages">
-			</div>
+				<div id="token-messages"></div>
         <?=render($token_ask_form)?>
       </div>
 			<div class="modal-footer">
@@ -172,12 +187,27 @@
 			least one instrument module.
 		</div>
    <?php  else : ?>
-    <div class="panel panel-default">
+	  <div class="alert-dismissible alert alert-info  header-info"
+			role="alert">
+			<a href="#" class="close" data-dismiss="alert" aria-label="close"
+				title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
+			<div class="header-info-text">
+				This interface can be used for public data only. <br>A feedback
+				button appears when the query returns its results to report on
+				possible issues.
+			</div>
+		</div>
+		<div class="panel panel-default">
 			<div class="panel-heading">
-        <?php  if ($astrooda_debug) :?>
+				<div>
+			<?php  if ($astrooda_debug) :?>
         <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
         <?php endif; ?>
-      </div>
+					</div>
+				<div class="float-right">
+					<a href="/cdci/astrooda/contact" class="automodal">Contact us</a>
+				</div>
+			</div>
 			<div id="formwrapper">
 				<div class="common-params">
            <?=render($common_form)?>
@@ -199,7 +229,8 @@
 									class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>"
 									id="<?=$name?>">
 									<div id="<?=$name?>-toolbox" class="instrument-toolbox">
-										<a class="panel-help" href="<?=$instrument['help_page']?>">Help</a>
+										<a class="btn-dark btn panel-help"
+											href="<?=$instrument['help_page']?>">Instrument Help</a>
 									</div>
 									<div id="<?=$name?>-params"
 										class="panel panel-default instrument-params-panel">
@@ -207,6 +238,7 @@
 										<div class="panel-body"><?=render($instrument['form'])?>
                   </div>
 									</div>
+
 								</div>
              <?php endforeach; ?>
             </div>

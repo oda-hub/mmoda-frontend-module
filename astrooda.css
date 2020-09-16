@@ -426,3 +426,20 @@ input[type=number] {
 .result-panel div.dataTables_wrapper .dataTables_paginate {
   white-space: normal;
 }
+
+.header-info {
+	width : auto;
+	margin: 0.5em;
+	padding: 1em;
+	background-color: 
+}
+
+.header-info-text {
+  display: inline-block;
+  margin-left : 0.5em;
+  vertical-align: top;
+}
+
+.paper-quote-ref {
+	display : none;
+}
