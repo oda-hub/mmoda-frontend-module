@@ -98,6 +98,27 @@ function astrooda_magic($form, &$form_state) {
       '#suffix' => '</div><hr class="hr-default" />',
   );
 
+  $form ['radius'] = array (
+      '#type' => 'textfield',
+      '#title' => t ( "Radius" ),
+      '#default_value' => $instrument_defaults['radius'],
+      '#parent_classes' => array (
+          'form-group',
+          'col-md-6'
+      ),
+      '#label_classes' => array (
+          'control-label'
+      ),
+      '#attributes' => array (
+          'class' => array (
+              'form-control'
+          ),
+          'data-bv-numeric' => 'true'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div><hr class="hr-default" />',
+  );
+
 
   $form ['product_type'] = array (
       '#type' => 'radios',
@@ -106,9 +127,10 @@ function astrooda_magic($form, &$form_state) {
       '#attributes' => array ('name' => $mform_id.'product_type'),
       '#default_value' => $instrument_defaults['product_type'],
       '#options' => array (
-   //       'magic_image' => 'Image',
-   //       'magic_spectrum' => 'Spectrum',
-          'magic_table' => 'MAGIC table'
+          'magic_image' => 'Image',
+          'magic_spectrum' => 'Spectrum',
+          'magic_lc' => 'Light curve',
+          'magic_table' => 'Table'
       ),
       '#parent_classes' => array (
           'form-group',

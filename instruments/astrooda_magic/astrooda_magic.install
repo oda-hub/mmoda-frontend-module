@@ -40,6 +40,7 @@ function astrooda_magic_install() {
       'title' => $instrument_info['title'],
       'E1_keV' => 20.0,
       'E2_keV' => 100.0,
+      'radius' => 15,
       'query_type' => 'Real',
       'product_type' => 'magic_table',
       'time_bin' => '2',
