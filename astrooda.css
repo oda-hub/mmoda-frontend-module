@@ -202,7 +202,7 @@ span.panel-toolbox span {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px 2px;
   /*background: rgba(200, 200, 200, 0.1);*/
 }
-
+Started implementing ticket #19746
 .instrument-toolbox {
   float: right;
 }
@@ -440,6 +440,25 @@ input[type=number] {
   vertical-align: top;
 }
 
-.paper-quote-ref {
+#paper-quote {
 	display : none;
+}
+
+.paper-quote {
+  margin-top : 1em;
+}
+
+.instrument-help-button {
+	float: right;
+}
+.instrument-params-panel-title {
+  float: left;
+}
+
+.instrument-params-panel .panel-heading {
+	height: 4em;
+}
+
+.alert-dismissable, .alert-dismissible {
+    padding-right: 35px !important;
 }

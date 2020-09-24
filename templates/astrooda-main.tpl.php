@@ -44,14 +44,15 @@
  * @ingroup themeable
  */
 ?>
-<div id="paper-quote" class="alert-dismissible alert alert-info "
-	style="float: left;" role="alert">
+<div id="paper-quote" class="alert alert-info alert-dismissible"
+	role="alert">
+	<hr>
 	<a href="#" class="close" data-dismiss="alert" aria-label="close"
 		title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
 	<div class="header-info-text">
 		If you use results or material from our application, ODA, do not
 		forget to quote our paper:<br> <a
-			href="https://arxiv.org/abs/2002.12895">A. Neronov, V. Savchenko, A.
+			href="https://arxiv.org/abs/2002.12895" target="_blank" >A. Neronov, V. Savchenko, A.
 			Tramacere, M. Meharga, C. Ferrigno, S.Paltani<br> An online data
 			analysis system of INTEGRAL telescope
 		</a>
@@ -229,12 +230,14 @@
 									class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>"
 									id="<?=$name?>">
 									<div id="<?=$name?>-toolbox" class="instrument-toolbox">
-										<a class="btn-dark btn panel-help"
-											href="<?=$instrument['help_page']?>">Instrument Help</a>
 									</div>
 									<div id="<?=$name?>-params"
 										class="panel panel-default instrument-params-panel">
-										<div class="panel-heading">Instrument query parameters :</div>
+										<div class="panel-heading">
+										<div class="instrument-params-panel-title">Instrument query parameters :</div>
+										<a class="btn btn-info instrument-help-button"
+											href="<?=$instrument['help_page']?>"><span class="glyphicon glyphicon-info-sign"> </span> Help</a>
+										</div>
 										<div class="panel-body"><?=render($instrument['form'])?>
                   </div>
 									</div>

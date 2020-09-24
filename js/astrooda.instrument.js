@@ -161,7 +161,7 @@ function validate_timebin(value, validator, $thefield) {
             waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
             $('#ldialog').find('.progress').hide();
             //$('#paper-quote').clone().addClass('paper-quote').appendTo($(waitingDialog));
-            waitingDialog.append($('#paper-quote').clone().addClass('paper-quote').html());
+            //waitingDialog.append($('#paper-quote').clone().addClass('paper-quote').html());
             if (data.exit_status.status != 0) {
               debug_message = '';
               if (data.exit_status.debug_message) {
@@ -174,17 +174,19 @@ function validate_timebin(value, validator, $thefield) {
 
             if (data.products.hasOwnProperty('image')) {
               if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-                display_lc_table(job_id, data.query_status, data.products);
+                product_panel_body = display_lc_table(job_id, data.query_status, data.products);
               } else {
                 if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-                  display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+                  product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
                 } else {
-                  display_image(data.products, job_id, instrument);
+                  product_panel_body = display_image(data.products, job_id, instrument);
                 }
               }
             } else if (data.products.hasOwnProperty('spectrum_name')) {
-              display_spectrum_table(job_id, data.query_status, data.products);
+              product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
             }
+            $('#paper-quote').clone().addClass('paper-quote').removeAttr('id').appendTo(product_panel_body);
+            
             waitingDialog.setClose();
           }
           // data.exit_status.comment = 'Hoho';
@@ -874,7 +876,7 @@ function validate_timebin(value, validator, $thefield) {
       AJAX_call();
     });
 
-    $('.panel-help').on('click', function(e) {
+    $('.instrument-help-button').on('click', function(e) {
       // e.preventDefault();
       $.get($(this).attr('href'), function(data) {
         var help_text = $(".region-content .block-system", data);
@@ -1371,6 +1373,8 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
+    
+    return($('#' + panel_ids.panel_body_id));
 
   }
 
@@ -1428,6 +1432,8 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
+    return($('#' + panel_ids.panel_body_id));
+
 
   }
 
@@ -1555,6 +1561,8 @@ function validate_timebin(value, validator, $thefield) {
 
     // highlight_result_panel(panel_ids.panel_id);
     $('#' + panel_ids.panel_id).highlight_result_panel();
+    return($('#' + panel_ids.panel_body_id));
+
   }
 
   function display_spectrum(metadata, data, job_id, instrument) {
@@ -1613,6 +1621,8 @@ function validate_timebin(value, validator, $thefield) {
     spectrum_offset.left = last_click_position.left - parent_spectrum_offset.left;
 
     $('#' + panel_ids.panel_id).highlight_result_panel(spectrum_offset);
+    return($('#' + panel_ids.panel_body_id));
+
   }
 
   function format_output(data) {
@@ -1766,6 +1776,8 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV');
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
+    return($('#' + panel_ids.panel_body_id));
+
   }
 
 })(jQuery);
