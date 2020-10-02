@@ -879,7 +879,8 @@ function validate_timebin(value, validator, $thefield) {
     $('.instrument-help-button').on('click', function(e) {
       // e.preventDefault();
       $.get($(this).attr('href'), function(data) {
-        var help_text = $(".region-content .block-system", data);
+        var html = $.parseHTML( data );
+        var help_text = $(".region-content .block-system", html);
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
