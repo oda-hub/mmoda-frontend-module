@@ -4,7 +4,7 @@ Date.prototype.getJulian = function() {
   return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
 }
 
-//Sleep time in seconds
+// Sleep time in seconds
 function sleep (sleepDuration) {
   var now = new Date().getTime();
   while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
@@ -56,7 +56,9 @@ function valid_mjd_date(value) {
 }
 
 function validate_scws(value, nb_scws) {
-//  var scws_pattern = new RegExp("^$|^(\\d{12}\\.\\d{3})(\\s*,\\s*\\d{12}\\.\\d{3}){0,"+(nb_scws - 1)+"}$"); 
+// var scws_pattern = new
+// RegExp("^$|^(\\d{12}\\.\\d{3})(\\s*,\\s*\\d{12}\\.\\d{3}){0,"+(nb_scws -
+// 1)+"}$");
   var scws_pattern = new RegExp("^$|^(\\d{12}\\.001)(\\s*,\\s*\\d{12}\\.001){0,"+(nb_scws - 1)+"}$"); 
   if (!scws_pattern.test(value)) {
     return {
@@ -248,7 +250,7 @@ var waitingDialog;
   }
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
     // console.log('response.args');
-//  console.log(response.args);
+// console.log(response.args);
     waitingDialog.hide();    	
     html = '<div class="alert alert-dismissable">'
       +'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
@@ -648,8 +650,32 @@ function get_waitingDialog($modal_dialog) {
 
       });
     });
-
     waitingDialog =  get_waitingDialog();
+    $('.oda-banner .views-more-link, .oda-banner .views-slideshow-pager-field-item a, .oda-banner .views-field-title a').on('click', function (e) {
+      e.preventDefault();
+      console.log('modre link clicked !');
+      $.get( $(this).attr('href'), function( data ) {
+        console.log('------------');
+        html = $.parseHTML( data ),
+
+        console.log($(html).filter('.main-container').html());
+        /*
+        $(data).find('.main-container').each(function(){
+          //console.log($(this).html());
+        });
+        */
+        
+        waitingDialog.show('', $(html).filter('.main-container').html(), {
+        progressType : 'success',
+        'showProgress' : true,
+        'showButton' : true,
+        'buttonText': 'Close'
+      });
+      })
+    });
+      
+    
+    
     $( document ).ajaxSend(function( event, jqxhr, settings ) {
       if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
         var message = 'Resolving object name ...';
@@ -754,10 +780,10 @@ function get_waitingDialog($modal_dialog) {
       },
     }).data('bootstrapValidator'); // .validate();
 
-//  if (! validator.isValid()) {
-//  console.log('disabling submit');
-//  validator.disableSubmitButtons(true);
-//  }
+// if (! validator.isValid()) {
+// console.log('disabling submit');
+// validator.disableSubmitButtons(true);
+// }
   }
 
 })(jQuery);
