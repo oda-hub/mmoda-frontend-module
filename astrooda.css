@@ -462,3 +462,22 @@ input[type=number] {
 .alert-dismissable, .alert-dismissible {
     padding-right: 35px !important;
 }
+
+.pppd-heading-table {
+  margin: auto;	
+}
+
+ol.reference-list > li {
+    list-style: none;
+    position: relative;
+}
+
+ol.reference-list > li:before {
+    counter-increment: list;
+    content: "["counter(list, decimal) "] ";
+    position: absolute;
+    left: -1.4em;
+}
+.pppd-heading-table tr td:nth-child(2) {
+	padding-left: 1em;
+}

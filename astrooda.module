@@ -169,7 +169,7 @@ function astrooda_main_block_content() {
   }
   
   drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
-  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js' );
+  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js');
   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.instrument.js' );
   
   $items = array ();
