@@ -188,7 +188,7 @@
 			least one instrument module.
 		</div>
    <?php  else : ?>
-	  <div class="alert-dismissible alert alert-info  header-info"
+	  <!--div class="alert-dismissible alert alert-info header-info"
 			role="alert">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close"
 				title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
@@ -197,7 +197,7 @@
 				button appears when the query returns its results to report on
 				possible issues.
 			</div>
-		</div>
+		</div-->
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div>
