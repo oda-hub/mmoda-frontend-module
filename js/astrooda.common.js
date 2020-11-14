@@ -254,6 +254,7 @@ var waitingDialog;
 		// console.log('response.args');
 //		console.log(response.args);
 		waitingDialog.hide();    	
+
 		html = '<div class="alert alert-dismissable">'
 			+'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
 			+response.args.message
@@ -290,7 +291,10 @@ var waitingDialog;
 			elt.find('small').addClass('help-block');
 			$('.form-item-RA input.form-control').val('');
 			$('.form-item-DEC input.form-control').val('');
+<<<<<<< HEAD
 			// console.log('Error: ' + response.args.message)
+=======
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
 		}
 		$('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
 	}
@@ -657,6 +661,7 @@ function get_waitingDialog($modal_dialog) {
 
 		$('#block-views-oda-events-block-1').set_collapsible();
 		waitingDialog =  get_waitingDialog();
+<<<<<<< HEAD
 
 		function openPageInModal(href) {
 			$.get( href, function( data ) {
@@ -694,6 +699,9 @@ function get_waitingDialog($modal_dialog) {
 			openPageInModal($(this).attr('href'));
 		});
 
+=======
+		
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
 		$( document ).ajaxSend(function( event, jqxhr, settings ) {
 			if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
 				var message = 'Resolving object name ...';
@@ -796,11 +804,18 @@ function get_waitingDialog($modal_dialog) {
 				invalid : 'glyphicon glyphicon-remove',
 				validating : 'glyphicon glyphicon-refresh'
 			},
+<<<<<<< HEAD
 		}).data('bootstrapValidator'); // .validate();
 
 //		if (! validator.isValid()) {
 //		console.log('disabling submit');
 //		validator.disableSubmitButtons(true);
+=======
+		}).data('bootstrapValidator'); //.validate();
+		
+//		if (! validator.isValid()) {
+//			validator.disableSubmitButtons(true);
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
 //		}
 	}
 

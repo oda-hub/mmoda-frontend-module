@@ -264,19 +264,30 @@ function astrooda_mail($key, &$message, $params) {
 /**
  */
 function astrooda_common($form, &$form_state) {
+<<<<<<< HEAD
   drupal_get_messages ();
 
+=======
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   $form = array ();
   $session_id = session_id ();
 
   $form ['#tree'] = FALSE;
   // turn off form caching
   // $form_state['no_cache'] = TRUE;
+<<<<<<< HEAD
 
   // $form ['session_id'] = array (
   // '#type' => 'hidden',
   // '#value' => $session_id
   // );
+=======
+  
+  $form ['session_id'] = array (
+      '#type' => 'hidden',
+      '#value' => $session_id
+  );
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   // $form ['#action'] = '/dispatch-data/test';
   $form ['#method'] = 'POST';
 
@@ -328,6 +339,7 @@ function astrooda_common($form, &$form_state) {
       '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
       '#suffix' => '</span></div></div></div>'
   );
+<<<<<<< HEAD
 
   // $form ['use_resolver'] = array (
   // '#type' => 'checkboxes',
@@ -346,6 +358,26 @@ function astrooda_common($form, &$form_state) {
   // '#suffix' => '</div>'
   // );
 
+=======
+  
+  $form ['use_resolver'] = array (
+      '#type' => 'checkboxes',
+      '#title' => t ( "Resolvers :" ),
+      //'#default_value' => '',
+      '#options' => array (
+          'local' => 'Local',
+          'sesame' => 'Sesame service',
+      ),
+     '#default_value' => array('local'),
+      '#parent_classes' => array (
+          'form-group',
+          'col-md-12'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+  );
+  
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   $form ['radec'] = array (
       '#type' => 'item',
       '#prefix' => '<div class="row">',
@@ -371,6 +403,10 @@ function astrooda_common($form, &$form_state) {
               'form-control'
           )
       )
+      // 'data-bv-between' => 'true',
+      // 'data-bv-between-min' => 0,
+      // 'data-bv-between-max' => 360
+       
   );
 
   $form ['radec'] ['DEC'] = array (
@@ -392,6 +428,10 @@ function astrooda_common($form, &$form_state) {
               'form-control'
           )
       )
+      // 'data-bv-between' => 'true',
+      // 'data-bv-between-min' => - 90,
+      // 'data-bv-between-max' => 90
+       
   );
 
   $form ['time'] = array (
@@ -486,13 +526,17 @@ function astrooda_common($form, &$form_state) {
               )
           )
       )
+<<<<<<< HEAD
   );
 
   $form ['#validate'] = array (
       'astrooda_common_validate'
+=======
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   );
   return ($form);
 }
+<<<<<<< HEAD
 function astrooda_common_validate($form, &$form_state) {
   // error_log('Validating common form ');
   form_clear_error ();
@@ -505,6 +549,28 @@ function resolve_object_name_callback($form, &$form_state) {
 
   $args = resolve_object_name ( $form_state ['input'] ['src_name'], $form_state ['input'] ['use_resolver'] );
 
+=======
+function resolve_object_name_callback($form, &$form_state) {
+  module_load_include ( 'inc', 'astrooda', 'astrooda.nameresolver' );
+//   error_log ( 'Resolve callback !' );
+//   $filename = '/tmp/form_state.txt';
+//   $f = fopen ( $filename, 'w' );
+//   fwrite ( $f, "form_state\n" );
+//   fwrite ( $f, print_r ( $form_state ['input'], true ) );
+//   fclose ( $f );
+//   chmod ( $filename, 0777 );
+  
+  $form ['radec'] ['RA'] ['#value'] = 50;
+  $form ['radec'] ['DEC'] ['#value'] = 80;
+  // $commands = array();
+  
+  // $args= [ 'ra' => 67,
+  // 'dec' => 88
+  // ];
+  
+  $args = resolve_object_name ( $form_state ['input'] ['src_name'],  $form_state ['input'] ['use_resolver']);
+  
+>>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   $commands [] = array (
       'command' => 'set_ra_dec', // the name of your javascript callback
       'args' => $args
