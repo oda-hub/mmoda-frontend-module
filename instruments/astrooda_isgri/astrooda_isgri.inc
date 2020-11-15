@@ -176,8 +176,7 @@ function astrooda_isgri($form, &$form_state) {
       '#description' => t ( "The minimum of the energy band." ),
       '#default_value' => $instrument_defaults['E1_keV'],
       '#required' => TRUE,
-      '#size' => 8,
-      '#field_suffix' => t('keV'),
+      '#size' => 10,
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
@@ -200,11 +199,10 @@ function astrooda_isgri($form, &$form_state) {
       '#description' => t ( "The maximum of the energy band." ),
       '#default_value' => $instrument_defaults['E2_keV'],
       '#required' => TRUE,
-      '#size' => 8,
-      '#field_suffix' => t('keV'),
+      '#size' => 10,
       '#parent_classes' => array (
           'form-group',
-          'col-md-6'
+          'col-md-5'
       ),
       '#label_classes' => array (
           'control-label'

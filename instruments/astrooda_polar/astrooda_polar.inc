@@ -31,18 +31,13 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Min" ),
       '#description' => t ( "The minimum of the energy band." ),
-<<<<<<< HEAD:instruments/astrooda_polar/astrooda_polar.inc
       '#default_value' => $instrument_defaults['E1_keV'],
-=======
-      '#default_value' => '0.0',
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc:astrooda.polar.inc
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
           'form-group',
           'col-md-6'
       ),
-      '#field_suffix' => t('keV'),
       '#label_classes' => array (
           'control-label'
       ),
@@ -59,17 +54,12 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Energy Max" ),
       '#description' => t ( "The maximum of the energy band." ),
-<<<<<<< HEAD:instruments/astrooda_polar/astrooda_polar.inc
       '#default_value' => $instrument_defaults['E2_keV'],
-=======
-      '#default_value' => '2000.0',
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc:astrooda.polar.inc
       '#required' => TRUE,
       '#size' => 10,
-      '#field_suffix' => t('keV'),
       '#parent_classes' => array (
           'form-group',
-          'col-md-6'
+          'col-md-5'
       ),
       '#label_classes' => array (
           'control-label'
@@ -135,11 +125,7 @@ function astrooda_polar($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Time bin" ),
       //'#description' => t ( "Minimum value is 20 seconds." ),
-<<<<<<< HEAD:instruments/astrooda_polar/astrooda_polar.inc
       '#default_value' => $instrument_defaults['time_bin'],
-=======
-      '#default_value' => '0.1',
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc:astrooda.polar.inc
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (
@@ -177,11 +163,7 @@ function astrooda_polar($form, &$form_state) {
           'sec' => 'Seconds',
           'jd' => 'Days'
       ),
-<<<<<<< HEAD:instruments/astrooda_polar/astrooda_polar.inc
       '#default_value' => $instrument_defaults['time_bin_format'],
-=======
-      '#default_value' => 'sec',
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc:astrooda.polar.inc
       '#states' => array (
           'visible' => array (
               ':input[name="'.$mform_id.'product_type"]' => array (

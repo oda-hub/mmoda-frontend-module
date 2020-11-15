@@ -13,7 +13,6 @@ function astrooda_init() {
   drupal_add_library ( 'system', 'effects.highlight' );
   
   module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
-<<<<<<< HEAD
   
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   if (! isset ( $astrooda_settings ['instruments'] ))
@@ -23,13 +22,6 @@ function astrooda_init() {
       module_load_include ( 'inc', 'astrooda_' . $name, 'astrooda_' . $name );
     }
   }
-=======
-  module_load_include ( 'inc', 'astrooda', 'astrooda.isgri' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.jemx' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.polar' );
-  module_load_include ( 'inc', 'astrooda', 'astrooda.multi_product_lc' );
-  // module_load_include ( 'inc', 'astrooda', 'astrooda.mockup' );
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
 }
 
 /**
@@ -132,21 +124,6 @@ function astrooda_block_view($delta) {
  * Generates the actual content of the iPrayTimes block.
  */
 function astrooda_main_block_content() {
-<<<<<<< HEAD
-=======
-  /*
-   * $library = libraries_detect ( 'praytimes' );
-   * if (empty ( $library ['installed'] ))
-   * return ('');
-   * astrooda_block_content ();
-   */
-  if (session_status () != PHP_SESSION_NONE) {
-    session_destroy ();
-  }
-  // if (session_status() == PHP_SESSION_NONE) {
-  session_start ();
-  // }
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   $session_id = session_id ();
   
   if (! isset ( $_SESSION ['count'] )) {
@@ -216,20 +193,11 @@ function astrooda_main_block_content() {
   
  
   $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
-<<<<<<< HEAD
   $items ['bug_report_form'] = drupal_get_form ( 'astrooda_bug_report_form' );
   $items ['auth_cookie'] = '_oauth2_proxy';
   $items ['token_ask_form'] = drupal_get_form ( 'astrooda_ask_token_form' );
 
   // error_log ( "---------------------------------------------" );
-=======
-  $items ['isgri_form'] = drupal_get_form ( 'astrooda_isgri' );
-  $items ['jemx_form'] = drupal_get_form ( 'astrooda_jemx' );
-  // $items ['mockup_form'] = drupal_get_form ( 'astrooda_mockup' );
-  $items ['polar_form'] = drupal_get_form ( 'astrooda_polar' );
-  $items ['multi_product_lc_form'] = drupal_get_form ( 'astrooda_multi_product_lc' );
-  $items ['isgri_help_page'] = 'node/' . variable_get ( 'astrooda_isgri_help_page_nid' );
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   
   foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
     $instruments [$instrument ['weight']] = $name;
@@ -358,11 +326,7 @@ function astrooda_libraries_info() {
               'Buttons/js/dataTables.buttons.min.js',
               'Responsive/js/dataTables.responsive.min.js',
               'Editor/js/dataTables.editor.min.js',
-<<<<<<< HEAD
               'Editor/js/editor.bootstrap.min.js' 
-=======
-              'Editor/js/editor.bootstrap.min.js'
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
           ),
           'css' => array (
               // 'datatables.min.css',
@@ -371,15 +335,9 @@ function astrooda_libraries_info() {
               'Responsive/css/responsive.dataTables.min.css',
               // 'Editor/css/editor.dataTables.min.css',
               'Select/css/select.dataTables.min.css',
-<<<<<<< HEAD
               'Editor/css/editor.bootstrap.css' 
           ) 
       ) 
-=======
-              'Editor/css/editor.bootstrap.css'
-          )
-      )
->>>>>>> c10e998784be11db7deafc74a51e777aaa0cddbc
   );
   $libraries ['bootstrap-form-validator'] = array (
       'name' => 'Bootstrap Form Validator library',
