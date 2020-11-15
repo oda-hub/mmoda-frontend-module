@@ -446,7 +446,7 @@ function validate_timebin(value, validator, $thefield) {
 
     $('body').on('click', 'table.spectrum-table tbody button.draw-spectrum', function(e) {
       var current_row = $(this).parents('tr');
-      var data = current_row.data();
+      var data = current_row.data(); 
       var spectrum_offset = {};
       spectrum_offset.top = e.pageY;
       spectrum_offset.left = e.pageX;
