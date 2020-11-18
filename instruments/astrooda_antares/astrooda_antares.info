@@ -1,0 +1,8 @@
+name = Astrooda Antares
+description = Astro Online Data Analysis module for Antares
+core = 7.x
+dependencies[] = astrooda
+
+files[] = astrooda.antares.inc
+
+configure = admin/config/astrooda/antares
