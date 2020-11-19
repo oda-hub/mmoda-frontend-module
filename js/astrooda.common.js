@@ -5,29 +5,29 @@ Date.prototype.getJulian = function() {
 }
 
 // Sleep time in seconds
-function sleep (sleepDuration) {
+function sleep(sleepDuration) {
   var now = new Date().getTime();
-  while(new Date().getTime() < now + sleepDuration*1000){ /* do nothing */ } 
+  while (new Date().getTime() < now + sleepDuration * 1000) { /* do nothing */ }
 }
 
 function checkIFrame() {
   try {
-    if (window.parent.location.href !=  null && window.parent.location.href != window.location.href) {
-      locationHref= window.parent.location.href;
+    if (window.parent.location.href != null && window.parent.location.href != window.location.href) {
+      locationHref = window.parent.location.href;
       // --- in iframe, same domain
-      return(2);
+      return (2);
     }
-    else if (window.parent.location.href !=  null) {
+    else if (window.parent.location.href != null) {
       // --- not in iframe
-      return(1);
+      return (1);
     }
   }
-  catch(err) {
+  catch (err) {
     // --- permission denied, not in the same domain (iFrameStatus == 0);
-    return(0)
+    return (0)
   }
   // --- in iframe, not in the same domain (iFrameStatus == 0) ;
-  return(0)
+  return (0)
 }
 
 function pad(number, length) {
@@ -41,139 +41,138 @@ function pad(number, length) {
 function get_today_mjd() {
   var today = new Date(); // set any date
   var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian
-  return(today_mjd);
+  return (today_mjd);
 }
 
 function valid_iso_date(value) {
   var iso_date_pattern = new RegExp("^([1|2]\\d\\d\\d)(?:-?(10|11|12|0\\d)(?:-?(30|31|[0-2]\\d)" +
-  "(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$");
-  return(iso_date_pattern.test(value));
+    "(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$");
+  return (iso_date_pattern.test(value));
 }
 
 function valid_mjd_date(value) {
-  var mjd_date_pattern = new RegExp("^(\\d+\.?\\d*)$");				
+  var mjd_date_pattern = new RegExp("^(\\d+\.?\\d*)$");
   return (mjd_date_pattern.test(value) && value >= 0 && value <= max_mjd_date);
 }
 
 function validate_scws(value, nb_scws) {
-// var scws_pattern = new
-// RegExp("^$|^(\\d{12}\\.\\d{3})(\\s*,\\s*\\d{12}\\.\\d{3}){0,"+(nb_scws -
-// 1)+"}$");
-  var scws_pattern = new RegExp("^$|^(\\d{12}\\.001)(\\s*,\\s*\\d{12}\\.001){0,"+(nb_scws - 1)+"}$"); 
+  // var scws_pattern = new
+  // RegExp("^$|^(\\d{12}\\.\\d{3})(\\s*,\\s*\\d{12}\\.\\d{3}){0,"+(nb_scws -
+  // 1)+"}$");
+  var scws_pattern = new RegExp("^$|^(\\d{12}\\.001)(\\s*,\\s*\\d{12}\\.001){0," + (nb_scws - 1) + "}$");
   if (!scws_pattern.test(value)) {
     return {
       valid: false,
-      message: 'Please enter a validdd list of ScWs, maximum '+ nb_scws
+      message: 'Please enter a validdd list of ScWs, maximum ' + nb_scws
     }
   }
   return true;
 }
 
-function HMS2Decimal (hmsVal, decimalVal) {
-  decimalVal= 0;
+function HMS2Decimal(hmsVal, decimalVal) {
+  decimalVal = 0;
   if (hmsVal.match(/^ *$/)) {
-    decimalVal= -1;
-    return(true);
+    decimalVal = -1;
+    return (true);
   }
-  var sign         = '[+-]?';
-  var integer      = sign+'\\d{1,3}';
-  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
-  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
-  var hr_min       = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
-  var hr_min_sec   = sign+'\\d{1,2}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var sign = '[+-]?';
+  var integer = sign + '\\d{1,3}';
+  var decimal_exp = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+  var decimal = sign + '((\\d{1,3}(\\.\\d*)?|\\.\\d+)|' + decimal_exp + ')';
+  var hr_min = sign + '\\d{1,2}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var hr_min_sec = sign + '\\d{1,2}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
 
-  var integer_regexp      = new RegExp('^('+integer+')$');
-  var decimal_regexp      = new RegExp('^('+decimal+')$');
-  var hr_min_regexp       = new RegExp('^('+hr_min+')$');
-  var hr_min_sec_regexp   = new RegExp('^('+hr_min_sec+')$');
+  var integer_regexp = new RegExp('^(' + integer + ')$');
+  var decimal_regexp = new RegExp('^(' + decimal + ')$');
+  var hr_min_regexp = new RegExp('^(' + hr_min + ')$');
+  var hr_min_sec_regexp = new RegExp('^(' + hr_min_sec + ')$');
   var bad_value = {
-      valid: false,
-      message: 'Must be in degrees [0,360] or H:M:S'
+    valid: false,
+    message: 'Must be in degrees [0,360] or H:M:S'
   };
   if (hmsVal.match(integer_regexp)) { // coordinate is in integral hours
-    if (hmsVal *1 < 25) decimalVal = hmsVal * 15; // return decimal
+    if (hmsVal * 1 < 25) decimalVal = hmsVal * 15; // return decimal
     // degrees
     else decimalVal = hmsVal * 1;
   } else if (hmsVal.match(decimal_regexp)) { // coordinate is decimal, so
     // assume degrees
-    decimalVal = hmsVal*1; // return decimal degrees
+    decimalVal = hmsVal * 1; // return decimal degrees
   } else if (hmsVal.match(hr_min_sec_regexp)) {
     var hms = hmsVal.split(/[:|\s]+/);
     if (hms[0].match(/^-/)) { hms[1] *= -1; hms[2] *= -1; }
-    decimalVal = (hms[0]*1+ (hms[1]/60.0) + (hms[2]/3600.0)) * 15.0;
+    decimalVal = (hms[0] * 1 + (hms[1] / 60.0) + (hms[2] / 3600.0)) * 15.0;
   } else if (hmsVal.match(hr_min_regexp)) {
     var hms = hmsVal.split(/[:|\s]+/);
     if (hms[0].match(/^-/)) { hms[1] *= -1; }
-    decimalVal = (hms[0]*1 + (hms[1]/60.0)) * 15.0;
+    decimalVal = (hms[0] * 1 + (hms[1] / 60.0)) * 15.0;
   } else {
-    return(bad_value);
+    return (bad_value);
   }
 
-  return(valid_RA(decimalVal) ? true : bad_value);
+  return (valid_RA(decimalVal) ? true : bad_value);
 
 } // end--HMS2Decimal
 
 function valid_RA(decimalVal) {
-  if (decimalVal < -360 || decimalVal > 360) return(false);
+  if (decimalVal < -360 || decimalVal > 360) return (false);
   if (decimalVal < 0.0) {
     decimalVal += 360.0;
   } else if (decimalVal == 360.0) {
     decimalVal = 0.0;
   }
-  return(true);
+  return (true);
 } // end--correctRA
 
-function DMS2Decimal (dmsVal, decimalVal) {
+function DMS2Decimal(dmsVal, decimalVal) {
 
-  decimalVal= 0;
+  decimalVal = 0;
   if (dmsVal.match(/^ *$/)) {
-    decimalVal= -1;
-    return(true);
+    decimalVal = -1;
+    return (true);
   }
 
-  var sign         = '[+-]?';
-  var decimal_exp  = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
-  var decimal      = sign+'((\\d{1,3}(\\.\\d*)?|\\.\\d+)|'+decimal_exp+')';
-  var deg_min       = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
-  var deg_min_sec   = sign+'\\d{1,3}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var sign = '[+-]?';
+  var decimal_exp = '(\\d\\.\\d*|\\.\\d+)[eE][+-]?\\d{1,3}';
+  var decimal = sign + '((\\d{1,3}(\\.\\d*)?|\\.\\d+)|' + decimal_exp + ')';
+  var deg_min = sign + '\\d{1,3}[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
+  var deg_min_sec = sign + '\\d{1,3}[:|\\s]+([0-5]?[0-9])[:|\\s]+([0-5]?[0-9](\\.\\d*)?|\\.\\d+)';
 
-  var decimal_regexp      = new RegExp('^('+decimal+')$');
-  var deg_min_regexp      = new RegExp('^('+deg_min+')$');
-  var deg_min_sec_regexp  = new RegExp('^('+deg_min_sec+')$');
+  var decimal_regexp = new RegExp('^(' + decimal + ')$');
+  var deg_min_regexp = new RegExp('^(' + deg_min + ')$');
+  var deg_min_sec_regexp = new RegExp('^(' + deg_min_sec + ')$');
   var bad_value = {
-      valid: false,
-      message: 'Must be in degrees [-90,+90] or D:M:S'
+    valid: false,
+    message: 'Must be in degrees [-90,+90] or D:M:S'
   };
 
   if (dmsVal.match(decimal_regexp)) { // coordinate is decimal, so assume
     // degrees
-    decimalVal = dmsVal*1; // return decimal degrees
+    decimalVal = dmsVal * 1; // return decimal degrees
   } else if (dmsVal.match(deg_min_sec_regexp)) {
     var dms = dmsVal.split(/[:|\s]+/);
     if (dms[0].match(/^-/)) { dms[1] *= -1; dms[2] *= -1; }
-    decimalVal = dms[0]*1+ (dms[1]/60.0) + (dms[2]/3600.0);
+    decimalVal = dms[0] * 1 + (dms[1] / 60.0) + (dms[2] / 3600.0);
   } else if (dmsVal.match(deg_min_regexp)) {
     var dms = dmsVal.split(/[:|\s]+/);
     if (dms[0].match(/^-/)) { dms[1] *= -1; }
-    decimalVal = dms[0]*1 + (dms[1]/60.0);
+    decimalVal = dms[0] * 1 + (dms[1] / 60.0);
   } else {
-    return(bad_value);
+    return (bad_value);
   }
-  return(valid_DEC(decimalVal) ? true : bad_value);
+  return (valid_DEC(decimalVal) ? true : bad_value);
 
 } // end--DMS2Decimal
 
 function valid_DEC(decimalVal) {
-  if (decimalVal < -90 || decimalVal > 90) return(false);
-  return(true);
+  if (decimalVal < -90 || decimalVal > 90) return (false);
+  return (true);
 }
 
-function jsUcfirst(string) 
-{
+function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function set_panel_resizable (thisPanel) {
+function set_panel_resizable(thisPanel) {
   thisPanel.resizable({
   });
 }
@@ -181,49 +180,49 @@ function set_panel_resizable (thisPanel) {
 function clone(old_obj) {
   // Deep copy
   return jQuery.extend(true, {}, old_obj);
-}	
+}
 
 function copyToClipboard(text) {
 
-  var textArea = document.createElement( "textarea" );
+  var textArea = document.createElement("textarea");
   textArea.value = text;
-  document.body.appendChild( textArea );
+  document.body.appendChild(textArea);
 
   textArea.select();
 
   try {
-    var successful = document.execCommand( 'copy' );
+    var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
   } catch (err) {
   }
 
-  document.body.removeChild( textArea );
+  document.body.removeChild(textArea);
 }
 
 function add3Dots(field_name, field_description, limit) {
-  var dots = '<a href="#" data-toggle="popover" title="'+field_name+'" class="popover-help"> ...</a>';
-  if(field_description.length > limit)
-  {
+  var dots = '<a href="#" data-toggle="popover" title="' + field_name + '" class="popover-help"> ...</a>';
+  if (field_description.length > limit) {
     // you can also use substr instead of substring
-    field_description = '<div class="astrooda-popover-content">' + field_description + '</div><span>'+field_description.substring(0,limit) + '</span>'+ dots;
+    field_description = '<div class="astrooda-popover-content">' + field_description + '</div><span>' + field_description.substring(0, limit) + '</span>' + dots;
   }
 
   return field_description;
 }
 
-function get_current_date_time()  {
+function get_current_date_time() {
   var currentdate = new Date();
   return currentdate.getFullYear() + "."
-  + ("0" + (currentdate.getMonth()+1)).slice(-2) + "."
-  + ("0" + currentdate.getDate()).slice(-2) + "T"  
-  + ("0" + currentdate.getHours()).slice(-2) + ":"
-  + ("0" + currentdate.getMinutes()).slice(-2) + ":"
-  + ("0" + currentdate .getSeconds()).slice(-2);
+    + ("0" + (currentdate.getMonth() + 1)).slice(-2) + "."
+    + ("0" + currentdate.getDate()).slice(-2) + "T"
+    + ("0" + currentdate.getHours()).slice(-2) + ":"
+    + ("0" + currentdate.getMinutes()).slice(-2) + ":"
+    + ("0" + currentdate.getSeconds()).slice(-2);
 }
 
 var waitingDialog;
 
 (function($, Drupal) {
+
   Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
     $('input,select,textarea', '#lfeedback').prop('disabled', false);
     $('.modal-footer button.cancel-button', '#lfeedback').show();
@@ -250,21 +249,21 @@ var waitingDialog;
   }
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
     // console.log('response.args');
-// console.log(response.args);
-    waitingDialog.hide();    	
+    // console.log(response.args);
+    waitingDialog.hide();
     html = '<div class="alert alert-dismissable">'
-      +'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
-      +response.args.message
-      +'</div>';
+      + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
+      + response.args.message
+      + '</div>';
     html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-      +response.args.message
-      +'</small>';
+      + response.args.message
+      + '</small>';
     elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
     elt.find('.alert').hide();
     if (response.args.status == 0) {
       if (response.args.ra) {
         $('.form-item-RA input.form-control').val(response.args.ra);
-      }		
+      }
       if (response.args.dec) {
         $('.form-item-DEC input.form-control').val(response.args.dec);
       }
@@ -273,7 +272,7 @@ var waitingDialog;
           $('input[name="T1"]', '#astrooda-common').val(response.args.t1.utc).trigger('input');
           $('input[name="T2"]', '#astrooda-common').val(response.args.t2.utc).trigger('input');
         }
-        else  {
+        else {
           $('input[name="T1"]', '#astrooda-common').val(response.args.t1.mjd).trigger('input');
           $('input[name="T2"]', '#astrooda-common').val(response.args.t2.mjd).trigger('input');
         }
@@ -290,7 +289,7 @@ var waitingDialog;
       $('.form-item-DEC input.form-control').val('');
       // console.log('Error: ' + response.args.message)
     }
-    $('form#astrooda-common').bootstrapValidator({ 'live' : 'enabled'});
+    $('form#astrooda-common').bootstrapValidator({ 'live': 'enabled' });
   }
 })(jQuery, Drupal);
 
@@ -302,209 +301,208 @@ var waitingDialog;
 
 function get_waitingDialog($modal_dialog) {
   var waitingDialog = waitingDialog
-  || (function($) {
-    'use strict';
+    || (function($) {
+      'use strict';
 
-    var $dialog = $("#ldialog");
-    // Move modal dialog to the end of body
-    $dialog.detach().appendTo('body');
+      var $dialog = $("#ldialog");
+      // Move modal dialog to the end of body
+      $dialog.detach().appendTo('body');
 
-    return {
-      /**
-       * Opens alog
-       * 
-       * @param message
-       *          Custom message
-       * @param options
-       *          Custom options: options.dialogSize - bootstrap postfix for
-       *          dialog size, e.g. "sm", "m"; options.progressType - bootstrap
-       *          postfix for progress bar type, e.g. "success", "warning".
-       */
-      show : function(title, message, options) {
-        // Assigning defaults
-        if (typeof options === 'undefined') {
-          options = {};
-        }
-        if (typeof title === 'undefined') {
-          title = 'Loading ...';
-        }
-        if (typeof message === 'undefined') {
-          message = '';
-        }
-        var settings = $.extend({
-          dialogSize : 'm', 
-          progressType : '',
-          onHide : null,
-          showProgressBar : false,
-          showSpinner : false,
-          showLegend : false,
-          showCloseInHeader : false,
-          showButton : true,
-          buttonText : 'Cancel'
-            // This callback runs after the dialog was hidden
-        }, options);
-
-        // Configuring dialog
-        // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
-        $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
-        .addClass('modal-' + settings.dialogSize);
-
-        if (!settings.showCloseInHeader) {
-          $dialog.find('.modal-header .close').hide();
-        }
-
-        if (!settings.showProgressBar) {
-          $dialog.find('.progress').addClass('hidden');
-        }
-        else {
-          $dialog.find('.progress').removeClass('hidden');
-          $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
-          if (settings.progressType) {
-            $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+      return {
+        /**
+         * Opens alog
+         * 
+         * @param message
+         *          Custom message
+         * @param options
+         *          Custom options: options.dialogSize - bootstrap postfix for
+         *          dialog size, e.g. "sm", "m"; options.progressType - bootstrap
+         *          postfix for progress bar type, e.g. "success", "warning".
+         */
+        show: function(title, message, options) {
+          // Assigning defaults
+          if (typeof options === 'undefined') {
+            options = {};
           }
-        }
+          if (typeof title === 'undefined') {
+            title = 'Loading ...';
+          }
+          if (typeof message === 'undefined') {
+            message = '';
+          }
+          var settings = $.extend({
+            dialogSize: 'm',
+            progressType: '',
+            onHide: null,
+            showProgressBar: false,
+            showSpinner: false,
+            showLegend: false,
+            showCloseInHeader: false,
+            showButton: true,
+            buttonText: 'Cancel'
+            // This callback runs after the dialog was hidden
+          }, options);
 
-        if (settings.showButton) {
-          $dialog.find('button').show();												
-        }
-        else {
-          $dialog.find('button').hide();						
-        }
-        $dialog.find('h4').html(title);
-        $dialog.find('.summary').html(message);
-        $dialog.find('.modal-footer button.submit-button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
+          // Configuring dialog
+          // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
+          $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
+            .addClass('modal-' + settings.dialogSize);
 
-        // Adding callbacks
-        if (typeof settings.onHide === 'function') {
-          $dialog.off('hidden.bs.modal').on('hidden.bs.modal',
+          if (!settings.showCloseInHeader) {
+            $dialog.find('.modal-header .close').hide();
+          }
+
+          if (!settings.showProgressBar) {
+            $dialog.find('.progress').addClass('hidden');
+          }
+          else {
+            $dialog.find('.progress').removeClass('hidden');
+            $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
+            if (settings.progressType) {
+              $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+            }
+          }
+
+          if (settings.showButton) {
+            $dialog.find('button').show();
+          }
+          else {
+            $dialog.find('button').hide();
+          }
+          $dialog.find('h4').html(title);
+          $dialog.find('.summary').html(message);
+          $dialog.find('.modal-footer button.submit-button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
+
+          // Adding callbacks
+          if (typeof settings.onHide === 'function') {
+            $dialog.off('hidden.bs.modal').on('hidden.bs.modal',
               function(e) {
-            settings.onHide.call($dialog);
+                settings.onHide.call($dialog);
+              });
+          }
+          if (!settings.showSpinner) {
+            $dialog.find('.fa-spinner').addClass('hidden');
+          }
+          else {
+            $dialog.find('.fa-spinner').removeClass('hidden');
+          }
+
+          if (!settings.showLegend) {
+            $dialog.find('.legend').hide();
+          }
+          else {
+            $dialog.find('.legend').show();
+          }
+          // Opening dialog
+          $dialog.modal({ keyboard: true });
+          $dialog.find('.close-panel').on("click", function() {
+
           });
-        }
-        if (!settings.showSpinner) {
-          $dialog.find('.fa-spinner').addClass('hidden');				
-        }
-        else {
-          $dialog.find('.fa-spinner').removeClass('hidden');									
-        }
+          // sleep(5);
 
-        if (!settings.showLegend) {
-          $dialog.find('.legend').hide();				
+        },
+        /**
+         * Closes dialog
+         */
+        hide: function() {
+          $dialog.modal('hide');
+          // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
+          $('#astrooda_bug_report_form_container', $dialog).addClass('hidden');
+        },
+        append: function(message, alert_type) {
+          // element = $dialog.find('.message');
+          var message_class = '';
+          if (typeof alert_type !== 'undefined') {
+            message_class += 'alert alert-' + alert_type;
+          }
+          $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
+          // $('.message', $dialog).animate({scrollTop: $('.message',
+          // $dialog).prop("scrollHeight")}, 500);
+        },
+        replace: function(messages, alert_type) {
+          var message_class = '';
+          if (typeof alert_type !== 'undefined') {
+            message_class += 'alert alert-' + alert_type;
+          }
+          $('.summary', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
+          $('.details', $dialog).html(messages.details);
+          if (messages.details !== '') {
+            $('#ldialog .modal-body .more-less-details').show();
+          }
+        },
+        hideSpinner: function() {
+          $dialog.find('.fa-spinner').addClass('hidden');
+        },
+        showSpinner: function() {
+          $dialog.find('.fa-spinner').removeClass('hidden');
+        },
+        setTitle: function(title) {
+          $dialog.find('h4').html(title);
+        },
+        setClose: function(title) {
+          $dialog.find('.modal-footer button.submit-button').text('Close');
+        },
+        showBugReportButton: function(title) {
+          $dialog.find('.modal-footer button.bug-button').removeClass('hidden');
+          $('#astrooda_bug_report_form_container', $dialog).removeClass('hidden');
+        },
+        setHeaderMessagesSessionId: function(session_id) {
+          $dialog.find('.header-message .session-id').html(session_id);
+        },
+        setHeaderMessageJobId: function(job_id) {
+          $dialog.find('.header-message .job-id').html(job_id);
+        },
+        showHeaderMessage: function() {
+          $dialog.find('.header-message').show();
+        },
+        hideHeaderMessage: function() {
+          $dialog.find('.header-message').hide();
+        },
+        showLegend: function() {
+          $dialog.find('.legend').show();
+        },
+        hideLegend: function() {
+          $dialog.find('.legend').hide();
         }
-        else {
-          $dialog.find('.legend').show();									
-        }
-        // Opening dialog
-        $dialog.modal({keyboard: true});
-        $dialog.find('.close-panel').on("click", function() {
+      };
 
-        });
-        // sleep(5);
-
-      },
-      /**
-       * Closes dialog
-       */
-      hide : function() {
-        $dialog.modal('hide');
-        // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
-        $('#astrooda_bug_report_form_container', $dialog).addClass('hidden');
-      },
-      append : function(message, alert_type) {
-        // element = $dialog.find('.message');
-        var message_class='';
-        if (typeof alert_type !== 'undefined') {
-          message_class+='alert alert-'+alert_type;
-        }
-        $('.summary', $dialog).append($('<div>'+message+'</div>').addClass(message_class));				
-        // $('.message', $dialog).animate({scrollTop: $('.message',
-        // $dialog).prop("scrollHeight")}, 500);
-      },
-      replace : function(messages, alert_type) {
-        var message_class= '';
-        if (typeof alert_type !== 'undefined') {
-          message_class+='alert alert-'+alert_type;
-        }
-        $('.summary', $dialog).html($('<span>'+messages.summary+'</span>').addClass(message_class));				
-        $('.details', $dialog).html(messages.details);
-        if (messages.details !== '') {
-          $('#ldialog .modal-body .more-less-details').show();
-        }
-      },
-      hideSpinner : function() {
-        $dialog.find('.fa-spinner').addClass('hidden');				
-      },
-      showSpinner : function() {
-        $dialog.find('.fa-spinner').removeClass('hidden');       
-      },
-      setTitle : function(title) {
-        $dialog.find('h4').html(title);
-      },
-      setClose : function(title) {
-        $dialog.find('.modal-footer button.submit-button').text('Close');
-      },
-      showBugReportButton : function(title) {
-        $dialog.find('.modal-footer button.bug-button').removeClass('hidden');
-        $('#astrooda_bug_report_form_container', $dialog).removeClass('hidden');
-      },
-      setHeaderMessagesSessionId : function(session_id) {
-        $dialog.find('.header-message .session-id').html(session_id);
-      },
-      setHeaderMessageJobId : function(job_id) {
-        $dialog.find('.header-message .job-id').html(job_id);
-      },
-      showHeaderMessage : function() {
-        $dialog.find('.header-message').show();
-      },
-      hideHeaderMessage : function() {
-        $dialog.find('.header-message').hide();
-      },
-      showLegend : function() {
-        $dialog.find('.legend').show();
-      },
-      hideLegend : function() {
-        $dialog.find('.legend').hide();
-      }
-    };
-
-  })(jQuery);
-  return(waitingDialog);
+    })(jQuery);
+  return (waitingDialog);
 }
 
 (function($) {
-  $.fn.set_panel_draggable = function () {
+  $.fn.set_panel_draggable = function() {
     $(this).draggable({
       handle: '.panel-heading, .panel-footer',
-      stack : '.ldraggable',
+      stack: '.ldraggable',
       containment: "parent"
     });
   }
 
-  $.fn.set_collapsible = function () {
+  $.fn.set_collapsible = function() {
     // $('#'+panel_id + ' .panel-heading span.clickable').on('click',
     // function(e){
-    $(this).find('.panel-heading span.clickable').on('click', function(e){
+    $(this).find('.panel-heading span.clickable').on('click', function(e) {
       var $this = $(this);
-      if(!$this.hasClass('panel-collapsed')) {
+      if (!$this.hasClass('panel-collapsed')) {
         $this.closest('.panel').find('.panel-body').slideUp();
         $this.addClass('panel-collapsed');
         $this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
       }
       else {
         $this.closest('.panel').find('.panel-body').slideDown();
-        $this.removeClass('panel-collapsed');$this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+        $this.removeClass('panel-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
       }
     });
   }
 
-  // $.fn.insert_new_panel = function(i, product_type, insertAfter, datetime) {
   $.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
     var panel_id = product_type + '-wrapper-' + i;
     var panel_body_id = product_type + '-' + i;
 
     $result_panel = $('#astrooda_panel_model').clone();
     $result_panel.attr('id', panel_id);
-    $result_panel.find('.date').text('['+datetime+']');
+    $result_panel.find('.date').text('[' + datetime + ']');
     $result_panel.find('.panel-body').attr('id', panel_body_id);
 
     // $($result_panel).insertAfter(insertAfter);
@@ -516,36 +514,36 @@ function get_waitingDialog($modal_dialog) {
       $result_panel.css('top', top + 'px');
     }
 
-    $('#'+panel_id).set_panel_draggable();
-    $('#'+panel_id).set_collapsible();
-    return({ 'panel_id' : panel_id, 'panel_body_id' :panel_body_id});
+    $('#' + panel_id).set_panel_draggable();
+    $('#' + panel_id).set_collapsible();
+    return ({ 'panel_id': panel_id, 'panel_body_id': panel_body_id });
   }
 
   $.fn.highlight_result_panel = function(offset) {
-    max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() {return parseInt($(this).zIndex());}).get());
-    $(this).css('z-index', max_zindexes+1);
+    max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).zIndex()); }).get());
+    $(this).css('z-index', max_zindexes + 1);
     var thisObject = $(this);
     instrument_panel = $(this).closest('.instrument-panel');
 
     if (offset) {
       $(this).offset(offset);
-      thisObject.show('highlight', {color: '#adebad'}, 1000);		
-      var instrument_panel_resized_height= thisObject.height() + thisObject.offset().top  + instrument_panel_margin;
-      if (instrument_panel_resized_height  > instrument_panel.height()) {
+      thisObject.show('highlight', { color: '#adebad' }, 1000);
+      var instrument_panel_resized_height = thisObject.height() + thisObject.offset().top + instrument_panel_margin;
+      if (instrument_panel_resized_height > instrument_panel.height()) {
         instrument_panel.height(instrument_panel_resized_height);
       }
-    } 
+    }
     else {
-      position_left = parseInt(($(this).parent().width() - $(this).width())/2);
+      position_left = parseInt(($(this).parent().width() - $(this).width()) / 2);
       $(this).css('left', position_left);
 
       var y = instrument_panel.position().top - 100;
       // console.log('y: '+y);
 
-      $('body').animate({'scrollTop': y+ 'px'}, 500, function() {
+      $('body').animate({ 'scrollTop': y + 'px' }, 500, function() {
         // Animation complete.
-        thisObject.show('highlight', {color: '#adebad'}, 1000);
-        var instrument_panel_resized_height= thisObject.height() + thisObject.offset().top  + instrument_panel_margin;
+        thisObject.show('highlight', { color: '#adebad' }, 1000);
+        var instrument_panel_resized_height = thisObject.height() + thisObject.offset().top + instrument_panel_margin;
         // resize instrument panel to fit the product panel
         if (instrument_panel_resized_height > instrument_panel.height()) {
           instrument_panel.height(instrument_panel_resized_height);
@@ -557,7 +555,7 @@ function get_waitingDialog($modal_dialog) {
   $(document).ready(commonReady);
 
   function validate_date(value, validator, thefield) {
-    max_mjd_date= get_today_mjd();
+    max_mjd_date = get_today_mjd();
     // var time_format_type = $('select[name="T_format"]',
     // 'form#astrooda-common').val();
     var time_format_type = validator.getFieldElements('T_format').val();
@@ -571,7 +569,7 @@ function get_waitingDialog($modal_dialog) {
     else if (time_format_type == 'mjd' && !valid_mjd_date(value)) {
       return {
         valid: false,
-        message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, '+max_mjd_date+']</span>'
+        message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, ' + max_mjd_date + ']</span>'
       }
     }
     return true;
@@ -579,7 +577,7 @@ function get_waitingDialog($modal_dialog) {
 
   function commonReady() {
 
-    $(document).on('show.bs.modal', '.modal', function () {
+    $(document).on('show.bs.modal', '.modal', function() {
       var zIndex = 1040 + (10 * $('.modal:visible').length);
       $(this).css('z-index', zIndex);
       setTimeout(function() {
@@ -593,7 +591,7 @@ function get_waitingDialog($modal_dialog) {
         return true;
       }
       return false;
-    });	
+    });
 
     var iframeStatus = checkIFrame();
     // iframeStatus = 0 Astrooda in iframe, iframe and parent are not on the
@@ -601,18 +599,18 @@ function get_waitingDialog($modal_dialog) {
     // iframeStatus = 1 Astrooda not in iframe
     // iframeStatus = 2 Astrooda in iframe, iframe and parent are on the same
     // domain
-    if (iframeStatus > 0 && (window.parent.location.search || window.location.search) ) {
+    if (iframeStatus > 0 && (window.parent.location.search || window.location.search)) {
       var thelocation;
       var url_base;
       thelocation = window.parent.location;
       url_base = thelocation.protocol + "//"
-      + thelocation.hostname + thelocation.pathname;
+        + thelocation.hostname + thelocation.pathname;
       // redirect to astrooda base url to get rid of the parameters
       thelocation.replace(url_base);
     }
 
     // A cross symbol after an input to clear it
-    $('.clear-left-input').on('click', function (e) {
+    $('.clear-left-input').on('click', function(e) {
       $(this).parent().prev('input').val('');
     });
 
@@ -623,26 +621,26 @@ function get_waitingDialog($modal_dialog) {
     $('.form-item .description').each(function() {
       $(this).html(add3Dots($(this).parent().find('label:first').html(), $(this).html(), 240));
     });
-    $('.popover-help').on('click', function(e) {e.preventDefault(); return true;}).popover({
+    $('.popover-help').on('click', function(e) { e.preventDefault(); return true; }).popover({
       container: 'body',
-      content : function () { return $(this).parent().find('.astrooda-popover-content').html();},
-      html : true,
-      template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+      content: function() { return $(this).parent().find('.astrooda-popover-content').html(); },
+      html: true,
+      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
     });
 
-    $('.popover-error').on('click', function(e) {e.preventDefault(); return true;}).popover({
+    $('.popover-error').on('click', function(e) { e.preventDefault(); return true; }).popover({
       container: 'body',
-      content : function () { return $(this).parent().find('.astrooda-popover-content').html();},
-      html : true,
-      template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+      content: function() { return $(this).parent().find('.astrooda-popover-content').html(); },
+      html: true,
+      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
     });
 
-    $(document).on('click', function (e) {
-      $('[data-toggle="popover"],[data-original-title]').each(function () {
+    $(document).on('click', function(e) {
+      $('[data-toggle="popover"],[data-original-title]').each(function() {
         // the 'is' for buttons that trigger popups
         // the 'has' for icons within a button that triggers a popup
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {                
-          (($(this).popover('hide').data('bs.popover')||{}).inState||{}).click = false  // fix
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false  // fix
           // for
           // BS
           // 3.3.6
@@ -650,39 +648,54 @@ function get_waitingDialog($modal_dialog) {
 
       });
     });
-    waitingDialog =  get_waitingDialog();
-    $('.oda-banner .views-more-link, .oda-banner .views-slideshow-pager-field-item a, .oda-banner .views-field-title a').on('click', function (e) {
-      e.preventDefault();
-      console.log('modre link clicked !');
-      $.get( $(this).attr('href'), function( data ) {
-        console.log('------------');
-        html = $.parseHTML( data ),
 
-        console.log($(html).filter('.main-container').html());
-        /*
-        $(data).find('.main-container').each(function(){
-          //console.log($(this).html());
-        });
-        */
-        
-        waitingDialog.show('', $(html).filter('.main-container').html(), {
-        progressType : 'success',
-        'showProgress' : true,
-        'showButton' : true,
-        'buttonText': 'Close'
-      });
+    $('#block-views-oda-events-block-1').set_collapsible();
+    waitingDialog = get_waitingDialog();
+
+    function openPageInModal(href) {
+      $.get(href, function(data) {
+        html = $.parseHTML(data),
+          waitingDialog.show('', $(html).filter('.main-container').html(), {
+            dialogSize: 'lg',
+            buttonText: 'Close',
+            showCloseInHeader: true,
+          })
       })
+    }
+    $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').on('click', function(e) {
+      Drupal.eu_cookie_compliance.moreInfoAction;
     });
-      
-    
-    
-    $( document ).ajaxSend(function( event, jqxhr, settings ) {
+
+    $('.eu-cookie-compliance-more-button').off('click').on('click', function(e) {
+      ;
+      if (Drupal.settings.eu_cookie_compliance.disagree_do_not_show_popup) {
+        Drupal.eu_cookie_compliance.setStatus(0);
+        if (Drupal.settings.eu_cookie_compliance.withdraw_enabled && Drupal.settings.eu_cookie_compliance.withdraw_button_on_info_popup) {
+          $('#sliding-popup .eu-cookie-compliance-banner').trigger('eu_cookie_compliance_popup_close').hide();
+          $('body').removeClass('eu-cookie-compliance-popup-open');
+        }
+        else {
+          $('#sliding-popup').trigger('eu_cookie_compliance_popup_close').remove();
+          $('body').removeClass('eu-cookie-compliance-popup-open');
+        }
+      }
+      else {
+        openPageInModal(Drupal.settings.eu_cookie_compliance.popup_link);
+      }
+    });
+
+    $('.oda-banner .views-more-link, .oda-banner .views-slideshow-pager-field-item a, .oda-banner .views-field-title a, a.open-link-modal').on('click', function(e) {
+      e.preventDefault();
+      openPageInModal($(this).attr('href'));
+    });
+
+    $(document).ajaxSend(function(event, jqxhr, settings) {
       if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
         var message = 'Resolving object name ...';
         waitingDialog.show('', message, {
-          progressType : 'success',
-          'showProgress' : true,
-          'showButton' : false
+          progressType: 'success',
+          'showProgress': true,
+          'showButton': false
         });
         waitingDialog.hideHeaderMessage();
         $('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
@@ -732,72 +745,74 @@ function get_waitingDialog($modal_dialog) {
     var validator = $('form#astrooda-common').bootstrapValidator({
       // live :'disabled',
       fields: {
-        'RA' : {
+        'RA': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 var decimalRA;
                 return (HMS2Decimal(value, decimalRA));
               }
             }
           }
         },
-        'DEC' : {
+        'DEC': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 var decimalDEC;
                 return (DMS2Decimal(value, decimalDEC));
               }
             }
           }
         },
-        'T1' : {
+        'T1': {
           // enabled: false,
-          validators : { callback: {
-            callback: function (value, cbvalidator, $field) {
-              return (validate_date(value, cbvalidator, $field));
+          validators: {
+            callback: {
+              callback: function(value, cbvalidator, $field) {
+                return (validate_date(value, cbvalidator, $field));
+              }
             }
-          }
           }
         },
-        'T2' : {
+        'T2': {
           // enabled: false,
-          validators : { callback: {
-            callback: function (value, cbvalidator, $field) {
-              return (validate_date(value, cbvalidator, $field));
+          validators: {
+            callback: {
+              callback: function(value, cbvalidator, $field) {
+                return (validate_date(value, cbvalidator, $field));
+              }
             }
-          }
           }
         }
       },
-      feedbackIcons : {
-        valid : 'glyphicon glyphicon-ok',
-        invalid : 'glyphicon glyphicon-remove',
-        validating : 'glyphicon glyphicon-refresh'
+      feedbackIcons: {
+        valid: 'glyphicon glyphicon-ok',
+        invalid: 'glyphicon glyphicon-remove',
+        validating: 'glyphicon glyphicon-refresh'
       },
     }).data('bootstrapValidator'); // .validate();
 
-// if (! validator.isValid()) {
-// console.log('disabling submit');
-// validator.disableSubmitButtons(true);
-// }
+    // if (! validator.isValid()) {
+    // console.log('disabling submit');
+    // validator.disableSubmitButtons(true);
+    // }
   }
 
 })(jQuery);
 
-function cloneFormData (formData1) {
+function cloneFormData(formData1) {
   formData2 = new FormData();
-  for(var parameter of formData1.entries()) {
+  for (var parameter of formData1.entries()) {
     formData2.append(parameter[0], parameter[1]);
   }
-  return(formData2);
+  return (formData2);
 }
 
 function get_text_table(table) {
-  if (! table.hasOwnProperty('column_names')) {
+  if (!table.hasOwnProperty('column_names')) {
     return '';
   }
   var header = '<tr>';
@@ -814,8 +829,8 @@ function get_text_table(table) {
     body += '</tr>';
   }
   var html = '<table class="spectrum-text-table"><thead>' + header
-  + '</thead><tbody>' + body + '</tbody></table>';
-  return(html);
+    + '</thead><tbody>' + body + '</tbody></table>';
+  return (html);
 }
 
 function round_catalog_values(catalog) {
