@@ -876,10 +876,11 @@ function validate_timebin(value, validator, $thefield) {
       AJAX_call();
     });
 
-    $('.panel-help').on('click', function(e) {
+    $('.instrument-help-button').on('click', function(e) {
       // e.preventDefault();
       $.get($(this).attr('href'), function(data) {
-        var help_text = $(".region-content .block-system", data);
+        var html = $.parseHTML(data);
+        var help_text = $(".region-content .block-system", html);
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
@@ -1474,6 +1475,8 @@ function validate_timebin(value, validator, $thefield) {
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
 
+    return ($('#' + panel_ids.panel_body_id));
+
   }
 
   function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
@@ -1530,6 +1533,8 @@ function validate_timebin(value, validator, $thefield) {
     });
 
     $('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
+    return ($('#' + panel_ids.panel_body_id));
+
 
   }
 
@@ -1657,6 +1662,8 @@ function validate_timebin(value, validator, $thefield) {
 
     // highlight_result_panel(panel_ids.panel_id);
     $('#' + panel_ids.panel_id).highlight_result_panel();
+    return ($('#' + panel_ids.panel_body_id));
+
   }
 
   function display_spectrum(metadata, data, job_id, instrument) {
@@ -1715,6 +1722,8 @@ function validate_timebin(value, validator, $thefield) {
     spectrum_offset.left = last_click_position.left - parent_spectrum_offset.left;
 
     $('#' + panel_ids.panel_id).highlight_result_panel(spectrum_offset);
+    return ($('#' + panel_ids.panel_body_id));
+
   }
 
   function format_output(data) {
@@ -1790,8 +1799,7 @@ function validate_timebin(value, validator, $thefield) {
       title = 'Request an API token';
       button = 'api-token-ask';
     }
-    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title
-      + '" ></span></button>';
+    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title+ '" ></span></button>';
   }
 
   function display_image(data, job_id, instrument) {
@@ -1877,6 +1885,8 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV');
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
+    return ($('#' + panel_ids.panel_body_id));
+
   }
 
 })(jQuery);
