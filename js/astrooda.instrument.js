@@ -153,7 +153,8 @@ function validate_timebin(value, validator, $thefield) {
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
           add_dispatcher_response_to_feedback_form(data);
-          var url = window.location.href.replace(/\/*$/, '');
+          var regex = /[\/]*$/;
+          var url = window.location.href.replace(regex, '');
           data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
 
           waitingDialog.hideSpinner();
