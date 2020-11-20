@@ -1271,7 +1271,7 @@ function validate_timebin(value, validator, $thefield) {
     });
   }
 
-  function display_lc_table(data, job_id, query_status) {
+  function display_lc_table(job_id, query_status, data) {
     datetime = get_current_date_time();
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
