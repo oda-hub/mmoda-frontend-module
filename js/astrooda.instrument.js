@@ -12,8 +12,8 @@ function validate_timebin(value, validator, $thefield) {
     }
     if (value < time_bin_min) {
       return {
-        valid : false,
-        message : 'Please enter a time bin higher than ' + time_bin_format_message
+        valid: false,
+        message: 'Please enter a time bin higher than ' + time_bin_format_message
       }
     }
   }
@@ -38,8 +38,8 @@ function validate_timebin(value, validator, $thefield) {
       value_inf /= 1000;
       value_sup /= 1000;
       return {
-        valid : false,
-        message : 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
+        valid: false,
+        message: 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
       }
     }
   }
@@ -57,7 +57,7 @@ function validate_timebin(value, validator, $thefield) {
   var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
   // var ajax_request_timeout= 10 * 1000; // test timeout
 
-  var ignore_params_url = [ 'job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file' ];
+  var ignore_params_url = ['job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file'];
 
   // all processing distinct nodes during a request
   var distinct_nodes;
@@ -84,135 +84,135 @@ function validate_timebin(value, validator, $thefield) {
     var requestTimer = null;
     var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
-      url : current_ajax_call_params.action,
-      data : current_ajax_call_params.currentFormData,
+      url: current_ajax_call_params.action,
+      data: current_ajax_call_params.currentFormData,
       // data: form_elements,
-      dataType : 'json',
-      processData : false,
-      contentType : false,
-      timeout : ajax_request_timeout,
-      type : 'POST'
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      timeout: ajax_request_timeout,
+      type: 'POST'
     }).done(
-        function(data, textStatus, jqXHR) {
-          last_dataserver_response = data;
-          // console.log('--- Query response ---');
-          // console.log(data);
-          job_id = '';
-          session_id = '';
-          if (data['job_monitor'].hasOwnProperty('job_id')) {
-            job_id = data['job_monitor']['job_id'];
+      function(data, textStatus, jqXHR) {
+        last_dataserver_response = data;
+        // console.log('--- Query response ---');
+        // console.log(data);
+        job_id = '';
+        session_id = '';
+        if (data['job_monitor'].hasOwnProperty('job_id')) {
+          job_id = data['job_monitor']['job_id'];
+        }
+        if (data.hasOwnProperty('session_id')) {
+          session_id = data['session_id'];
+        }
+        if (session_id && job_id) {
+          waitingDialog.setHeaderMessagesSessionId(session_id);
+          waitingDialog.setHeaderMessageJobId(job_id);
+          waitingDialog.showHeaderMessage();
+        }
+        var query_failed = false;
+        if (data.query_status == 'failed' || (data.products.hasOwnProperty('image') && data.products.image == null)) {
+          current_nb_attempts_after_failed++;
+          query_failed = true;
+        } else {
+          current_nb_attempts_after_failed = 0;
+        }
+        // console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
+        if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
+          waitingDialog.hideSpinner();
+          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
+            + data.exit_status.error_message + '</td></tr></table>', 'danger');
+          waitingDialog.setClose();
+          add_dispatcher_response_to_feedback_form(data);
+        } else if (data.query_status != 'done') {
+          waitingDialog.showLegend();
+          previous_summary = '';
+          if (data.products.hasOwnProperty('input_prod_list')) {
+            data_units = data.products.input_prod_list;
           }
-          if (data.hasOwnProperty('session_id')) {
-            session_id = data['session_id'];
-          }
-          if (session_id && job_id) {
-            waitingDialog.setHeaderMessagesSessionId(session_id);
-            waitingDialog.setHeaderMessageJobId(job_id);
-            waitingDialog.showHeaderMessage();
-          }
-          var query_failed = false;
-          if (data.query_status == 'failed' || (data.products.hasOwnProperty('image') && data.products.image == null)) {
-            current_nb_attempts_after_failed++;
-            query_failed = true;
-          } else {
-            current_nb_attempts_after_failed = 0;
-          }
-          // console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
-          if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
-            waitingDialog.hideSpinner();
-            waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
-                + data.exit_status.error_message + '</td></tr></table>', 'danger');
-            waitingDialog.setClose();
-            add_dispatcher_response_to_feedback_form(data);
-          } else if (data.query_status != 'done') {
-            waitingDialog.showLegend();
-            previous_summary = '';
-            if (data.products.hasOwnProperty('input_prod_list')) {
-              data_units = data.products.input_prod_list;
-            }
 
-            if (typeof messages !== 'undefined') {
-              previous_summary = messages.summary;
-            }
-            messages = get_server_message(data, data_units);
-            current_summary = messages.summary;
-            messages.summary = get_current_date_time() + messages.summary;
-            if (current_summary != previous_summary) {
-              waitingDialog.replace(messages);
-              $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
-                trigger : 'hover'
-              });
-            }
+          if (typeof messages !== 'undefined') {
+            previous_summary = messages.summary;
+          }
+          messages = get_server_message(data, data_units);
+          current_summary = messages.summary;
+          messages.summary = get_current_date_time() + messages.summary;
+          if (current_summary != previous_summary) {
+            waitingDialog.replace(messages);
+            $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
+              trigger: 'hover'
+            });
+          }
 
-            current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-            current_ajax_call_params.currentFormData.append('query_status', data.query_status);
-            if (!current_ajax_call_params.currentFormData.has('job_id')) {
-              current_ajax_call_params.currentFormData.append('job_id', job_id);
-              current_ajax_call_params.currentFormData.append('session_id', session_id);
-            }
-            requestTimer = setTimeout(AJAX_call, 5000);
-          } else {
-            add_dispatcher_response_to_feedback_form(data);
-            var url = window.location.href.replace(/\/*$/, '');
-            data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
+          current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
+          current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+          if (!current_ajax_call_params.currentFormData.has('job_id')) {
+            current_ajax_call_params.currentFormData.append('job_id', job_id);
+            current_ajax_call_params.currentFormData.append('session_id', session_id);
+          }
+          requestTimer = setTimeout(AJAX_call, 5000);
+        } else {
+          add_dispatcher_response_to_feedback_form(data);
+          var url = window.location.href.replace(/\/*$/, '');
+          data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
 
-            waitingDialog.hideSpinner();
-            instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-            waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
+          waitingDialog.hideSpinner();
+          instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+          waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
+          $('#ldialog').find('.progress').hide();
+          if (data.exit_status.status != 0) {
+            debug_message = '';
+            if (data.exit_status.debug_message) {
+              debug_message = '<hr>' + debug_message;
+            }
             $('#ldialog').find('.progress').hide();
-            if (data.exit_status.status != 0) {
-              debug_message = '';
-              if (data.exit_status.debug_message) {
-                debug_message = '<hr>' + debug_message;
-              }
-              $('#ldialog').find('.progress').hide();
-            }
-            data.products['session_id_old'] = data.products.session_id;
-            data.products['session_id'] = data.session_id;
+          }
+          data.products['session_id_old'] = data.products.session_id;
+          data.products['session_id'] = data.session_id;
 
-            if (data.products.hasOwnProperty('image')) {
-              if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-                display_lc_table(data.products, job_id, data.query_status);
+          if (data.products.hasOwnProperty('image')) {
+            if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
+              display_lc_table(data.products, job_id, data.query_status);
+            } else {
+              if (data.products.image.hasOwnProperty('spectral_fit_image')) {
+                display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+              } else if (Array.isArray(data.products.image)) {
+                display_image_table(data.products, job_id, instrument);
               } else {
-                if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-                  display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
-                } else if (Array.isArray(data.products.image)) {
-                  display_image_table(data.products, job_id, instrument);
-                } else {
-                  display_image(data.products, job_id, instrument);
-                }
+                display_image(data.products, job_id, instrument);
               }
-            } else if (data.products.hasOwnProperty('spectrum_name')) {
-              display_spectrum_table(job_id, data.query_status, data.products);
             }
-            waitingDialog.setClose();
+          } else if (data.products.hasOwnProperty('spectrum_name')) {
+            display_spectrum_table(job_id, data.query_status, data.products);
           }
-          // data.exit_status.comment = 'Hoho';
-          if (data.exit_status.comment) {
-            waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
-          }
-        }).complete(function(jqXHR, textStatus) {
-      // console.log('Exec time : ' + (new
-      // Date().getTime() -
-      // startAJAXTime));
-      $('#ldialog button.write-feedback-button').removeClass('hidden');
-      $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-      console.log('textStatus : ' + textStatus + '|');
-      console.log('errorThrown :' + errorThrown);
-      console.log('jqXHR');
-      console.log(jqXHR);
-      waitingDialog.hideSpinner();
-      var message = get_current_date_time() + ' ';
-      if (errorThrown == 'timeout') {
-        message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
-      } else if (jqXHR.status > 0) {
-        message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown;
-      } else {
-        message += 'Can not reach the data server, unknown error';
-      }
-      waitingDialog.append('<div>' + message + '</div>', 'danger');
-    });
+          waitingDialog.setClose();
+        }
+        // data.exit_status.comment = 'Hoho';
+        if (data.exit_status.comment) {
+          waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
+        }
+      }).complete(function(jqXHR, textStatus) {
+        // console.log('Exec time : ' + (new
+        // Date().getTime() -
+        // startAJAXTime));
+        $('#ldialog button.write-feedback-button').removeClass('hidden');
+        $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('textStatus : ' + textStatus + '|');
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+        waitingDialog.hideSpinner();
+        var message = get_current_date_time() + ' ';
+        if (errorThrown == 'timeout') {
+          message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+        } else if (jqXHR.status > 0) {
+          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown;
+        } else {
+          message += 'Can not reach the data server, unknown error';
+        }
+        waitingDialog.append('<div>' + message + '</div>', 'danger');
+      });
 
     $('#ldialog .cancel-button').on('click', function() {
       if (requestTimer) {
@@ -235,8 +235,8 @@ function validate_timebin(value, validator, $thefield) {
 
   function get_server_message(response, data_units) {
     var messages = {
-      summary : ' Status : ' + response['job_monitor']['status'] + '<br>',
-      details : ''
+      summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
+      details: ''
     };
 
     if ((!response['job_monitor'].hasOwnProperty('full_report_dict_list') || response['job_monitor'].full_report_dict_list.length == 0) && (data_units.length == 0)) {
@@ -293,7 +293,7 @@ function validate_timebin(value, validator, $thefield) {
         value = '';
         var cssClass = '';
         if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
-            && Object.keys(current_status_table[data_unit][node]).length) {
+          && Object.keys(current_status_table[data_unit][node]).length) {
           cssClass = get_node_status_class(current_status_table[data_unit][node]);
         }
         messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
@@ -307,7 +307,7 @@ function validate_timebin(value, validator, $thefield) {
       messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
       for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
         messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
-            + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+          + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
       }
       messages.details += '</tbody></table>';
     }
@@ -338,24 +338,24 @@ function validate_timebin(value, validator, $thefield) {
       return ('analysis-exception');
 
     switch (last_node_message) {
-    case 'treating dependencies':
-      cssClass = 'calculating';
-      break;
-    case 'analysis exception':
-      cssClass = 'analysis-exception';
-      break;
-    case 'restored from cache':
-      if ('main done' in node_messages) {
+      case 'treating dependencies':
+        cssClass = 'calculating';
+        break;
+      case 'analysis exception':
+        cssClass = 'analysis-exception';
+        break;
+      case 'restored from cache':
+        if ('main done' in node_messages) {
+          cssClass = 'calculated';
+        } else {
+          cssClass = 'from-cache';
+        }
+        break;
+      case 'main done':
+      case 'task complete':
         cssClass = 'calculated';
-      } else {
-        cssClass = 'from-cache';
-      }
-      break;
-    case 'main done':
-    case 'task complete':
-      cssClass = 'calculated';
-      break;
-    default:
+        break;
+      default:
     }
     return (cssClass);
   }
@@ -366,7 +366,7 @@ function validate_timebin(value, validator, $thefield) {
 
     $('#ldialog .modal-footer button.write-feedback-button').on('click', function(event) {
       $('#lfeedback').modal({
-        show : true
+        show: true
       });
     });
 
@@ -477,8 +477,8 @@ function validate_timebin(value, validator, $thefield) {
         $(this).data('files', data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name);
 
         $(".instrument-panel.active").data("last_click_position", {
-          'top' : e.pageY,
-          'left' : e.pageX
+          'top': e.pageY,
+          'left': e.pageX
         });
         $(".instrument-panel.active").data("spectrum_table_current_row", current_row);
         $(".form-submit", ".instrument-panel.active").click();
@@ -611,7 +611,7 @@ function validate_timebin(value, validator, $thefield) {
     $("body").on('click', '.result-panel .api-token-ask', function(e) {
       e.preventDefault();
       $('#ltoken').modal({
-        show : true
+        show: true
       });
     });
 
@@ -629,17 +629,17 @@ function validate_timebin(value, validator, $thefield) {
       var dataTable = catalog_panel.data('dataTable');
       // delete none-selected sources from the catalog in the copy
       if (dataTable.rows({
-        selected : true
+        selected: true
       }).count() > 0) {
         dataTable.rows({
-          selected : false
+          selected: false
         }).remove();
 
       }
       catalog.data = dataTable.data().toArray();
       $(".instrument-panel.active .instrument-params-panel").data({
-        catalog : catalog,
-        dataTable : dataTable
+        catalog: catalog,
+        dataTable: dataTable
       });
       $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
 
@@ -647,8 +647,8 @@ function validate_timebin(value, validator, $thefield) {
       var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
       var catalog_position = showCatalog.position();
       var new_catalog_position = {
-        left : catalog_position.left + showCatalog.width() / 2,
-        top : catalog_position.top + showCatalog.height() * 2
+        left: catalog_position.left + showCatalog.width() / 2,
+        top: catalog_position.top + showCatalog.height() * 2
       }
 
       var catalog_offset = showCatalog.offset();
@@ -687,37 +687,37 @@ function validate_timebin(value, validator, $thefield) {
     // where indeed the old values are still in the form
     var validator = $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
-      fields : {
-        'scw_list' : {
+      fields: {
+        'scw_list': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 return (validate_scws(value, 50));
               }
             }
           }
         },
-        'time_bin' : {
+        'time_bin': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 return (validate_timebin(value, validator, $field));
               }
             }
           }
         },
-        'E1_keV' : {
+        'E1_keV': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 var E2_keV = validator.getFieldElements('E2_keV').val();
                 if (Number(value) >= Number(E2_keV)) {
                   return {
-                    valid : false,
-                    message : 'Energy min must be lower that energy max'
+                    valid: false,
+                    message: 'Energy min must be lower that energy max'
                   }
                 }
                 return true;
@@ -725,16 +725,16 @@ function validate_timebin(value, validator, $thefield) {
             }
           }
         },
-        'E2_keV' : {
+        'E2_keV': {
           // enabled: false,
-          validators : {
-            callback : {
-              callback : function(value, validator, $field) {
+          validators: {
+            callback: {
+              callback: function(value, validator, $field) {
                 var E1_keV = validator.getFieldElements('E1_keV').val();
                 if (Number(value) <= Number(E1_keV)) {
                   return {
-                    valid : false,
-                    message : 'Energy max must be higher that energy min'
+                    valid: false,
+                    message: 'Energy max must be higher that energy min'
                   }
                 }
                 return true;
@@ -743,10 +743,10 @@ function validate_timebin(value, validator, $thefield) {
           }
         },
       },
-      feedbackIcons : {
-        valid : 'glyphicon glyphicon-ok',
-        invalid : 'glyphicon glyphicon-remove',
-        validating : 'glyphicon glyphicon-refresh'
+      feedbackIcons: {
+        valid: 'glyphicon glyphicon-ok',
+        invalid: 'glyphicon glyphicon-remove',
+        validating: 'glyphicon glyphicon-refresh'
       }
     }).data('bootstrapValidator');// .validate();
 
@@ -850,9 +850,9 @@ function validate_timebin(value, validator, $thefield) {
       request_draw_spectrum = false;
 
       waitingDialog.show('Processing ...', '', {
-        progressType : 'success',
-        showProgressBar : false,
-        showSpinner : true
+        progressType: 'success',
+        showProgressBar: false,
+        showSpinner: true
       });
       waitingDialog.hideHeaderMessage();
 
@@ -884,9 +884,9 @@ function validate_timebin(value, validator, $thefield) {
         help_text.find('#table-of-contents-links').addClass('rounded');
         instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         waitingDialog.show(instrument.toUpperCase() + ' Help', help_text, {
-          dialogSize : 'lg',
-          buttonText : 'Close',
-          showCloseInHeader : true,
+          dialogSize: 'lg',
+          buttonText: 'Close',
+          showCloseInHeader: true,
         });
       });
       return false;
@@ -930,112 +930,112 @@ function validate_timebin(value, validator, $thefield) {
 
   function create_catalog_datatable(editor, catalog, catalog_container) {
     return (catalog_container.DataTable({
-      data : catalog.data,
-      columns : catalog.column_names,
+      data: catalog.data,
+      columns: catalog.column_names,
       // dom : 'Brtflip',
-      dom : '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
-      buttons : [
-          'selectAll',
-          'selectNone',
-          {
-            text : 'New',
-            className : 'btn-primary',
-            extend : "create",
-            formTitle : '<h3>Add new object</h3>',
-            editor : editor,
-            formButtons : [ {
-              text : 'Add',
-              className : 'btn-primary save-row',
-              action : function() {
+      dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
+      buttons: [
+        'selectAll',
+        'selectNone',
+        {
+          text: 'New',
+          className: 'btn-primary',
+          extend: "create",
+          formTitle: '<h3>Add new object</h3>',
+          editor: editor,
+          formButtons: [{
+            text: 'Add',
+            className: 'btn-primary save-row',
+            action: function() {
+              this.submit();
+            }
+          }, {
+            text: 'Cancel',
+            className: 'btn-primary',
+            action: function() {
+              this.close();
+            }
+          }]
+        },
+        {
+          text: 'Edit',
+          className: 'btn-primary',
+          extend: "editSingle",
+          formTitle: '<h3>Edit object</h3>',
+          editor: editor,
+          formButtons: [{
+            label: 'Save',
+            className: 'btn-primary save-row',
+            action: function() {
+              this.submit();
+            }
+          }, {
+            label: 'Cancel',
+            className: 'btn-primary',
+            action: function() {
+              this.close();
+            }
+          }]
+        },
+        {
+          extend: "remove",
+          className: 'btn-primary',
+          formTitle: '<h3>Delete source(s)</h3>',
+          editor: editor,
+          formMessage: function(e, dt) {
+            var rows = dt.rows(e.modifier()).data().pluck('src_names');
+            return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
+          }
+        },
+        {
+          text: 'Save as TXT',
+          className: 'btn-primary',
+          action: function(e, dt, button, config) {
+            var data = dt.buttons.exportData();
+            data.header[0] = "meta_ID";
+            var file_content = '';
+            for (var i = 0; i < data.header.length; i++) {
+              data.header[i] = data.header[i].replace(' ', '_');
+            }
+            file_content = data.header.join(' ') + "\n";
+            for (var i = 0; i < data.body.length; i++) {
+              data.body[i][0] = i;
+              file_content += data.body[i].join(' ') + "\n";
+            }
+            $.fn.dataTable.fileSave(new Blob([file_content]), 'catalog.txt');
+          }
+        },
+        {
+          text: 'Add query object',
+          className: 'btn-primary',
+          action: function(e, dt, button, config) {
+            editor.title('<h3>Add query object</h3>').buttons([{
+              text: 'Add',
+              className: 'btn-primary save-row',
+              action: function() {
                 this.submit();
               }
             }, {
-              text : 'Cancel',
-              className : 'btn-primary',
-              action : function() {
+              text: 'Cancel',
+              className: 'btn-primary',
+              action: function() {
                 this.close();
               }
-            } ]
-          },
-          {
-            text : 'Edit',
-            className : 'btn-primary',
-            extend : "editSingle",
-            formTitle : '<h3>Edit object</h3>',
-            editor : editor,
-            formButtons : [ {
-              label : 'Save',
-              className : 'btn-primary save-row',
-              action : function() {
-                this.submit();
-              }
-            }, {
-              label : 'Cancel',
-              className : 'btn-primary',
-              action : function() {
-                this.close();
-              }
-            } ]
-          },
-          {
-            extend : "remove",
-            className : 'btn-primary',
-            formTitle : '<h3>Delete source(s)</h3>',
-            editor : editor,
-            formMessage : function(e, dt) {
-              var rows = dt.rows(e.modifier()).data().pluck('src_names');
-              return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
-            }
-          },
-          {
-            text : 'Save as TXT',
-            className : 'btn-primary',
-            action : function(e, dt, button, config) {
-              var data = dt.buttons.exportData();
-              data.header[0] = "meta_ID";
-              var file_content = '';
-              for (var i = 0; i < data.header.length; i++) {
-                data.header[i] = data.header[i].replace(' ', '_');
-              }
-              file_content = data.header.join(' ') + "\n";
-              for (var i = 0; i < data.body.length; i++) {
-                data.body[i][0] = i;
-                file_content += data.body[i].join(' ') + "\n";
-              }
-              $.fn.dataTable.fileSave(new Blob([ file_content ]), 'catalog.txt');
-            }
-          },
-          {
-            text : 'Add query object',
-            className : 'btn-primary',
-            action : function(e, dt, button, config) {
-              editor.title('<h3>Add query object</h3>').buttons([ {
-                text : 'Add',
-                className : 'btn-primary save-row',
-                action : function() {
-                  this.submit();
-                }
-              }, {
-                text : 'Cancel',
-                className : 'btn-primary',
-                action : function() {
-                  this.close();
-                }
-              } ]).create().set('src_names', $('input[name=src_name]', 'form#astrooda-common').val()).set('ra', $('input[name=RA]', 'form#astrooda-common').val()).set('dec',
-                  $('input[name=DEC]', 'form#astrooda-common').val());
-              // Make Editor draggable (movable)
-              // $('.DTE_Action_Create').draggable({
-              // handle : '.DTE_Header, .DTE_Footer',
-              // stack : '.ldraggable',
-              // containment : "parent"
-              // });
-            }
-          } ],
-      select : {
-        style : 'os',
-        selector : 'td:first-child'
+            }]).create().set('src_names', $('input[name=src_name]', 'form#astrooda-common').val()).set('ra', $('input[name=RA]', 'form#astrooda-common').val()).set('dec',
+              $('input[name=DEC]', 'form#astrooda-common').val());
+            // Make Editor draggable (movable)
+            // $('.DTE_Action_Create').draggable({
+            // handle : '.DTE_Header, .DTE_Footer',
+            // stack : '.ldraggable',
+            // containment : "parent"
+            // });
+          }
+        }],
+      select: {
+        style: 'os',
+        selector: 'td:first-child'
       },
-      order : [ [ 1, 'asc' ] ],
+      order: [[1, 'asc']],
     }))
   }
 
@@ -1048,20 +1048,20 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
 
     $(afterDiv).data({
-      catalog_panel_id : '#' + panel_ids.panel_id
+      catalog_panel_id: '#' + panel_ids.panel_id
     });
     catalog_panel.data({
-      catalog_parent_panel_id : afterDiv
+      catalog_parent_panel_id: afterDiv
     });
 
     if (showUseCatalog) {
       $('.panel-footer', '#' + panel_ids.panel_id).append(
-          '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
+        '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
 
     var editor = new $.fn.dataTable.Editor({
-      table : '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
-      fields : catalog.fields,
+      table: '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
+      fields: catalog.fields,
     });
 
     var catalog_container = $(".catalog-wrapper .astro-ana", '#' + panel_ids.panel_id);
@@ -1087,46 +1087,46 @@ function validate_timebin(value, validator, $thefield) {
         var confirmation = ($('.DTE button.save-row').data('confirmation'));
         if (!confirmation) {
           ldataTable.rows().every(
-              function(rowIdx, tableLoop, rowLoop) {
-                // ignore compare with
-                // the current row !
-                if (this.id() === rowId)
-                  return;
+            function(rowIdx, tableLoop, rowLoop) {
+              // ignore compare with
+              // the current row !
+              if (this.id() === rowId)
+                return;
 
-                var d = this.data();
-                var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
-                // var distance_same =
-                // d.ERR_RAD * 2;
-                var distance_same = 0.00001;
-                if (distance <= distance_same) {
-                  // Highlight the row
-                  // in the table
-                  $(this.node()).addClass('alert alert-danger');
-                  $(this).show();
+              var d = this.data();
+              var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
+              // var distance_same =
+              // d.ERR_RAD * 2;
+              var distance_same = 0.00001;
+              if (distance <= distance_same) {
+                // Highlight the row
+                // in the table
+                $(this.node()).addClass('alert alert-danger');
+                $(this).show();
 
-                  // Change the editor
-                  // button to "Save
-                  // anyway"
-                  $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
-                  // Fix a bug where
-                  // the opacity of
-                  // the error
-                  // message element
-                  // is set to 0:
-                  // not displayed
-                  $('.DTE .DTE_Form_Error').css({
-                    'opacity' : ''
-                  });
+                // Change the editor
+                // button to "Save
+                // anyway"
+                $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
+                // Fix a bug where
+                // the opacity of
+                // the error
+                // message element
+                // is set to 0:
+                // not displayed
+                $('.DTE .DTE_Form_Error').css({
+                  'opacity': ''
+                });
 
-                  editor.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
-                      + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
-                  setTimeout(function() {
-                    var row = $(".catalog-wrapper .astro-ana", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
+                editor.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
+                  + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
+                setTimeout(function() {
+                  var row = $(".catalog-wrapper .astro-ana", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
 
-                    $(row).removeClass('alert alert-danger')
-                  }, 5000);
-                }
-              });
+                  $(row).removeClass('alert alert-danger')
+                }, 5000);
+              }
+            });
         } else {
           $('.DTE button.save-row').html('Save').removeClass('btn-warning').addClass('btn-primary').removeData('confirmation').removeData('ltext');
         }
@@ -1162,16 +1162,16 @@ function validate_timebin(value, validator, $thefield) {
           var catalog = catalog_parent_panel.data('catalog');
           catalog.data = dataTable.data().toArray();
           catalog_parent_panel.data({
-            'catalog' : catalog,
-            'dataTable' : dataTable
+            'catalog': catalog,
+            'dataTable': dataTable
           });
         }
       });
     }
 
     catalog_panel.data({
-      dataTable : dataTable,
-      currentRowId : catalog.data.length
+      dataTable: dataTable,
+      currentRowId: catalog.data.length
     });
     source_name = $('input[name=src_name]', 'form#astrooda-common').val();
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Image catalog');
@@ -1197,10 +1197,10 @@ function validate_timebin(value, validator, $thefield) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-log', datetime);
     $('#' + panel_ids.panel_body_id).append('<div class="log-wrapper">' + log + '</div>');
     $(afterDiv).data({
-      log_panel_id : '#' + panel_ids.panel_id
+      log_panel_id: '#' + panel_ids.panel_id
     });
     $('#' + panel_ids.panel_id).data({
-      log_product_panel_id : afterDiv
+      log_product_panel_id: afterDiv
     });
     source_name = $('input[name=src_name]', 'form#astrooda-common').val();
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Log');
@@ -1214,7 +1214,7 @@ function validate_timebin(value, validator, $thefield) {
 
     var header = '<tr><th>Parameter</th><th>Value</th><th/></tr>';
     var body = '';
-    for ( var parameter in query_parameters) {
+    for (var parameter in query_parameters) {
       if (query_parameters.hasOwnProperty(parameter)) {
         body += '<tr><td>' + parameter + '</td><td>' + query_parameters[parameter] + '</td>' + '</tr>';
       }
@@ -1223,10 +1223,10 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append('<div class="query_parameters-wrapper">' + html + '</div>');
 
     $(afterDiv).data({
-      query_parameters_panel_id : '#' + panel_ids.panel_id
+      query_parameters_panel_id: '#' + panel_ids.panel_id
     });
     $('#' + panel_ids.panel_id).data({
-      query_parameters_product_panel_id : afterDiv
+      query_parameters_product_panel_id: afterDiv
     });
 
     source_name = $('input[name=src_name]', 'form#astrooda-common').val();
@@ -1238,11 +1238,11 @@ function validate_timebin(value, validator, $thefield) {
 
   function get_query_url(query_parameters) {
     var url_parameters = new Array();
-    for ( var parameter in query_parameters) {
+    for (var parameter in query_parameters) {
       if (ignore_params_url.indexOf(parameter) == -1) {
         url_parameters.push({
-          'name' : parameter,
-          'value' : query_parameters[parameter]
+          'name': parameter,
+          'value': query_parameters[parameter]
         });
       }
     }
@@ -1283,9 +1283,9 @@ function validate_timebin(value, validator, $thefield) {
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+      + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+      + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1293,7 +1293,7 @@ function validate_timebin(value, validator, $thefield) {
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
-          '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
+        '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.astrooda-popover-content').text());
       });
@@ -1302,70 +1302,70 @@ function validate_timebin(value, validator, $thefield) {
         e.preventDefault();
         return true;
       }).popover({
-        container : 'body',
-        content : function() {
+        container: 'body',
+        content: function() {
           return $(this).parent().find('.astrooda-popover-content').html();
         },
-        html : true,
-        template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+        html: true,
+        template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
     $('#' + panel_ids.panel_id).data({
-      'job_id' : job_id
+      'job_id': job_id
     });
 
     $('#' + panel_ids.panel_id).data({
-      'products' : data
+      'products': data
     });
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters,
-      api_code : data.api_code,
+      analysis_paramters: data.analysis_paramters,
+      api_code: data.api_code,
     });
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-        'Source : ' + data.analysis_paramters.src_name + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, '
-            + data.analysis_paramters.time_bin + ' ' + data.analysis_paramters.time_bin_format);
+      'Source : ' + data.analysis_paramters.src_name + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, '
+      + data.analysis_paramters.time_bin + ' ' + data.analysis_paramters.time_bin_format);
 
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       lightcurve_table_data[i] = {
-        DT_RowId : 'row_' + i,
-        source_name : data.name[i],
-        index : i,
+        DT_RowId: 'row_' + i,
+        source_name: data.name[i],
+        index: i,
       }
     }
 
     $('#' + panel_ids.panel_body_id).append('<div class="lightcurve-table-wrapper"><table class="lightcurve-table table-striped"></table></div>');
-    var lightcurve_table_column_names = [ {
-      title : "Source Name",
-      name : "source_name",
-      data : "source_name",
+    var lightcurve_table_column_names = [{
+      title: "Source Name",
+      name: "source_name",
+      data: "source_name",
     }, {
-      data : null,
-      title : "Light Curve",
-      name : "lightcurve",
-      defaultContent : '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
-      orderable : false
+      data: null,
+      title: "Light Curve",
+      name: "lightcurve",
+      defaultContent: '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
+      orderable: false
     }, {
-      data : null,
-      title : "Multi-product",
-      name : "multi_product",
-      defaultContent : '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
-      orderable : false
-    }, ];
+      data: null,
+      title: "Multi-product",
+      name: "multi_product",
+      defaultContent: '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
+      orderable: false
+    },];
 
     var lightcurve_table_container = $(".lightcurve-table", '#' + panel_ids.panel_id);
 
     var dataTable = lightcurve_table_container.DataTable({
       // "bAutoWidth": false,
-      data : lightcurve_table_data,
-      columns : lightcurve_table_column_names,
+      data: lightcurve_table_data,
+      columns: lightcurve_table_column_names,
       // dom : 'Brtflip',
-      dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
-      buttons : [],
-      order : [ [ 0, 'asc' ] ],
-      "rowCallback" : function(row, data) {
+      dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
+      buttons: [],
+      order: [[0, 'asc']],
+      "rowCallback": function(row, data) {
         $(row).data(data);
       }
     });
@@ -1389,9 +1389,9 @@ function validate_timebin(value, validator, $thefield) {
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+      + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+      + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1399,7 +1399,7 @@ function validate_timebin(value, validator, $thefield) {
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
-          '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
+        '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.astrooda-popover-content').text());
       });
@@ -1408,64 +1408,64 @@ function validate_timebin(value, validator, $thefield) {
         e.preventDefault();
         return true;
       }).popover({
-        container : 'body',
-        content : function() {
+        container: 'body',
+        content: function() {
           return $(this).parent().find('.astrooda-popover-content').html();
         },
-        html : true,
-        template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+        html: true,
+        template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
     $('#' + panel_ids.panel_id).data({
-      'job_id' : job_id
+      'job_id': job_id
     });
 
     $('#' + panel_ids.panel_id).data({
-      'products' : data
+      'products': data
     });
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters,
-      api_code : data.api_code,
+      analysis_paramters: data.analysis_paramters,
+      api_code: data.api_code,
     });
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-        'Source : ' + data.analysis_paramters.src_name + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, '
-            + data.analysis_paramters.time_bin + ' ' + data.analysis_paramters.time_bin_format);
+      'Source : ' + data.analysis_paramters.src_name + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, '
+      + data.analysis_paramters.time_bin + ' ' + data.analysis_paramters.time_bin_format);
 
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       image_table_data[i] = {
-        DT_RowId : 'row_' + i,
-        source_name : data.name[i],
-        index : i,
+        DT_RowId: 'row_' + i,
+        source_name: data.name[i],
+        index: i,
       }
     }
 
     $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
-    var image_table_column_names = [ {
-      title : "Source Name",
-      name : "source_name",
-      data : "source_name",
+    var image_table_column_names = [{
+      title: "Source Name",
+      name: "source_name",
+      data: "source_name",
     }, {
-      data : null,
-      title : "Image",
-      name : "image",
-      defaultContent : '<button type="button" class="btn btn-primary draw-image">View</button>',
-      orderable : false
-    }, ];
+      data: null,
+      title: "Image",
+      name: "image",
+      defaultContent: '<button type="button" class="btn btn-primary draw-image">View</button>',
+      orderable: false
+    },];
 
     var image_table_container = $(".image-table", '#' + panel_ids.panel_id);
 
     var dataTable = image_table_container.DataTable({
       // "bAutoWidth": false,
-      data : image_table_data,
-      columns : image_table_column_names,
+      data: image_table_data,
+      columns: image_table_column_names,
       // dom : 'Brtflip',
-      dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
-      buttons : [],
-      order : [ [ 0, 'asc' ] ],
-      "rowCallback" : function(row, data) {
+      dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
+      buttons: [],
+      order: [[0, 'asc']],
+      "rowCallback": function(row, data) {
         $(row).data(data);
       }
     });
@@ -1479,10 +1479,10 @@ function validate_timebin(value, validator, $thefield) {
 
     var current_row = $(".instrument-panel.active").data("lightcurve_table_current_row");
     $(current_row).data({
-      lightcurve_panel_id : '#' + panel_ids.panel_id
+      lightcurve_panel_id: '#' + panel_ids.panel_id
     });
     $('#' + panel_ids.panel_id).data({
-      lightcurve_parent_panel_id : current_row
+      lightcurve_parent_panel_id: current_row
     });
 
     var data = current_panel.data('products');
@@ -1505,7 +1505,7 @@ function validate_timebin(value, validator, $thefield) {
 
     var toolbar = '<div class="btn-group" role="group">';
     toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
-        + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
+      + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Light curve in FITS format" ></span></a>';
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
 
@@ -1519,12 +1519,12 @@ function validate_timebin(value, validator, $thefield) {
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-        'Source : ' + data.name[lc_index] + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, ' + data.analysis_paramters.time_bin + ' '
-            + data.analysis_paramters.time_bin_format);
+      'Source : ' + data.name[lc_index] + ', ' + data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV, ' + data.analysis_paramters.time_bin + ' '
+      + data.analysis_paramters.time_bin_format);
 
     // set_draggable();
     $('#' + panel_ids.panel_id).css({
-    // 'width' : $('#' + panel_ids.panel_id).width()
+      // 'width' : $('#' + panel_ids.panel_id).width()
     });
 
     $('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
@@ -1545,9 +1545,9 @@ function validate_timebin(value, validator, $thefield) {
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+      + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+      + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1557,84 +1557,84 @@ function validate_timebin(value, validator, $thefield) {
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
       spectrum_table_data[i] = {
-        DT_RowId : 'row_' + i,
-        source_name : data.spectrum_name[i],
-        xspec_model : 'powerlaw',
-        arf_file_name : data.arf_file_name[i],
-        ph_file_name : data.ph_file_name[i],
-        rmf_file_name : data.rmf_file_name[i],
-        job_id : job_id,
-        session_id : session_id,
-        instrument : data.instrument,
+        DT_RowId: 'row_' + i,
+        source_name: data.spectrum_name[i],
+        xspec_model: 'powerlaw',
+        arf_file_name: data.arf_file_name[i],
+        ph_file_name: data.ph_file_name[i],
+        rmf_file_name: data.rmf_file_name[i],
+        job_id: job_id,
+        session_id: session_id,
+        instrument: data.instrument,
       }
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters,
-      api_code : data.api_code,
+      analysis_paramters: data.analysis_paramters,
+      api_code: data.api_code,
     });
 
     $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
     var spectrum_table_column_names = [
-        {
-          title : "Source Name",
-          name : "source_name",
-          data : "source_name",
+      {
+        title: "Source Name",
+        name: "source_name",
+        data: "source_name",
+      },
+      {
+        title: "Xspec Model",
+        name: "xspec_model",
+        data: "xspec_model",
+        orderable: false
+      },
+      {
+        data: null,
+        title: "Spectrum",
+        name: "spectrum",
+        defaultContent: '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
+        orderable: false
+      },
+      {
+        data: null,
+        title: "Download",
+        name: "download",
+        render: function(data, type, full, meta) {
+          download_filename = 'spectra-' + data.source_name + '.tar.gz';
+          datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
+          url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
+            + '&instrument=' + data.instrument;
+          url = url.replace(/\+/g, '%2B');
+          var downloadButton = '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
+            + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
+          return (downloadButton);
         },
-        {
-          title : "Xspec Model",
-          name : "xspec_model",
-          data : "xspec_model",
-          orderable : false
-        },
-        {
-          data : null,
-          title : "Spectrum",
-          name : "spectrum",
-          defaultContent : '<button type="button" class="btn btn-primary draw-spectrum">Fit</button>',
-          orderable : false
-        },
-        {
-          data : null,
-          title : "Download",
-          name : "download",
-          render : function(data, type, full, meta) {
-            download_filename = 'spectra-' + data.source_name + '.tar.gz';
-            datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
-            url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
-                + '&instrument=' + data.instrument;
-            url = url.replace(/\+/g, '%2B');
-            var downloadButton = '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
-                + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
-            return (downloadButton);
-          },
-          orderable : false
-        }, ];
+        orderable: false
+      },];
 
-    var spectrum_table_fields = [ {
-      name : "source_name",
-      type : "readonly",
+    var spectrum_table_fields = [{
+      name: "source_name",
+      type: "readonly",
     }, {
-      name : "xspec_model",
+      name: "xspec_model",
     }, {
-      name : "spectrum",
-      type : "readonly",
-    }, ];
+      name: "spectrum",
+      type: "readonly",
+    },];
     var editor = new $.fn.dataTable.Editor({
-      table : '#' + panel_ids.panel_id + ' .spectrum-table',
-      fields : spectrum_table_fields,
+      table: '#' + panel_ids.panel_id + ' .spectrum-table',
+      fields: spectrum_table_fields,
     });
     var spectrum_table_container = $(".spectrum-table", '#' + panel_ids.panel_id);
 
     var dataTable = spectrum_table_container.DataTable({
       // "bAutoWidth": false,
-      data : spectrum_table_data,
-      columns : spectrum_table_column_names,
+      data: spectrum_table_data,
+      columns: spectrum_table_column_names,
       // dom : 'Brtflip',
-      dom : '<"top"Bif>rt<"bottom"<l>p><"clear">',
-      buttons : [],
-      order : [ [ 0, 'asc' ] ],
-      "rowCallback" : function(row, data) {
+      dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
+      buttons: [],
+      order: [[0, 'asc']],
+      "rowCallback": function(row, data) {
         $(row).data(data);
       }
     });
@@ -1664,10 +1664,10 @@ function validate_timebin(value, validator, $thefield) {
 
     var current_row = $(".instrument-panel.active").data("spectrum_table_current_row");
     $(current_row).data({
-      spectrum_panel_id : '#' + panel_ids.panel_id
+      spectrum_panel_id: '#' + panel_ids.panel_id
     });
     $('#' + panel_ids.panel_id).data({
-      spectrum_parent_panel_id : current_row
+      spectrum_parent_panel_id: current_row
     });
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
@@ -1703,7 +1703,7 @@ function validate_timebin(value, validator, $thefield) {
 
     var x = $('#' + panel_ids.panel_id).offset().top - 100;
     jQuery('body').animate({
-      scrollTop : x
+      scrollTop: x
     }, 500);
     var parent_spectrum_offset = $(".instrument-panel.active").offset();
     var last_click_position = $(".instrument-panel.active").data('last_click_position');
@@ -1724,24 +1724,24 @@ function validate_timebin(value, validator, $thefield) {
     var columns = [];
     var fields = [];
     columns[0] = {
-      title : '',
-      data : null,
-      defaultContent : '',
-      className : 'select-checkbox',
-      orderable : false
+      title: '',
+      data: null,
+      defaultContent: '',
+      className: 'select-checkbox',
+      orderable: false
     };
     for (var i = 1; i < catalog.cat_column_descr.length; i++) {
       columns[i] = {
-        title : catalog.cat_column_descr[i][0].replace('_', ' '),
-        name : catalog.cat_column_descr[i][0],
-        data : catalog.cat_column_descr[i][0],
+        title: catalog.cat_column_descr[i][0].replace('_', ' '),
+        name: catalog.cat_column_descr[i][0],
+        data: catalog.cat_column_descr[i][0],
       };
       fields[i - 1] = {
-        label : catalog.cat_column_descr[i][0].replace('_', ' ').toUpperCase(),
-        name : catalog.cat_column_descr[i][0],
+        label: catalog.cat_column_descr[i][0].replace('_', ' ').toUpperCase(),
+        name: catalog.cat_column_descr[i][0],
       };
-      var readonlyFields = [ 'significance', 'err_rad', 'new_source' ];
-      var defaultValFields = [ 'isgri_flag', 'flag' ];
+      var readonlyFields = ['significance', 'err_rad', 'new_source'];
+      var defaultValFields = ['isgri_flag', 'flag'];
       if (catalog.cat_column_descr[i][0].toLowerCase() == 'ra') {
         fields[i - 1].def = '1';
       }
@@ -1770,12 +1770,12 @@ function validate_timebin(value, validator, $thefield) {
     }
     var selectedRows = new Array(catalog.cat_column_list[0].length);
     JQpanel.data({
-      catalog : {
-        initial_catalog : catalog,
-        data : dataSet,
-        column_names : columns,
-        fields : fields,
-        datetime : datetime,
+      catalog: {
+        initial_catalog: catalog,
+        data: dataSet,
+        column_names: columns,
+        fields: fields,
+        datetime: datetime,
       }
     });
   }
@@ -1789,7 +1789,7 @@ function validate_timebin(value, validator, $thefield) {
       button = 'api-token-ask';
     }
     return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title
-        + '" ></span></button>';
+      + '" ></span></button>';
   }
 
   function display_image(data, job_id, instrument) {
@@ -1801,14 +1801,14 @@ function validate_timebin(value, validator, $thefield) {
     }
 
     $('#' + panel_ids.panel_id).data({
-      analysis_paramters : data.analysis_paramters,
-      api_code : data.api_code,
+      analysis_paramters: data.analysis_paramters,
+      api_code: data.api_code,
     });
 
     var session_id = data.session_id;
 
     url = 'session_id=' + session_id + '&download_file_name=' + data.download_file_name + '&file_list=' + data.file_name + '&query_status=ready&job_id=' + job_id + '&instrument='
-        + instrument;
+      + instrument;
     url = url.replace(/\+/g, '%2B');
 
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
@@ -1816,7 +1816,7 @@ function validate_timebin(value, validator, $thefield) {
 
     var toolbar = '<div class="btn-group" role="group">';
     toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
-        + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
+      + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
     if (product_type.endsWith('image')) {
@@ -1825,9 +1825,9 @@ function validate_timebin(value, validator, $thefield) {
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
     toolbar += '<button class="btn btn-default show-log"  type="button" data-datetime="' + datetime + '" >Log</button>';
     toolbar += '<button class="btn btn-default share-query"  type="button" data-datetime="' + datetime
-        + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
+      + '" >Share <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the product URL to clipboard" ></span></button>';
     toolbar += '<button class="btn btn-default api-code"  type="button" data-datetime="' + datetime
-        + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
+      + '" >API code <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Copy the API code to the clipboard" ></span></button>';
     toolbar += get_token_button();
     toolbar += '</div>';
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1835,7 +1835,7 @@ function validate_timebin(value, validator, $thefield) {
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
-          '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
+        '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.scw-list .astrooda-popover-content').text());
       });
@@ -1844,12 +1844,12 @@ function validate_timebin(value, validator, $thefield) {
         e.preventDefault();
         return true;
       }).popover({
-        container : 'body',
-        content : function() {
+        container: 'body',
+        content: function() {
           return $(this).parent().find('.astrooda-popover-content').html();
         },
-        html : true,
-        template : '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+        html: true,
+        template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
 
@@ -1860,12 +1860,12 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
     $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src : 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path+'&ext_id=4',
-      id : 'js9iframe',
-      width : '650',
-      height : '700',
-      frameborder : 0,
-      scrolling : 'no'
+      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path + '&ext_id=4',
+      id: 'js9iframe',
+      width: '650',
+      height: '700',
+      frameborder: 0,
+      scrolling: 'no'
     }));
 
     // source_name = $('input[name=src_name]',
