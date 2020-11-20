@@ -156,7 +156,7 @@ function validate_timebin(value, validator, $thefield) {
           var regex = /[\/]*$/;
           var url = window.location.href.replace(regex, '');
           data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
-
+          
           waitingDialog.hideSpinner();
           instrument = $('input[name=instrument]', ".instrument-panel.active").val();
           waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
@@ -170,8 +170,7 @@ function validate_timebin(value, validator, $thefield) {
           }
           data.products['session_id_old'] = data.products.session_id;
           data.products['session_id'] = data.session_id;
-
-
+          
           if (data.products.hasOwnProperty('image')) {
             if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
               product_panel_body = display_lc_table(job_id, data.query_status, data.products);
@@ -1799,7 +1798,7 @@ function validate_timebin(value, validator, $thefield) {
       title = 'Request an API token';
       button = 'api-token-ask';
     }
-    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title+ '" ></span></button>';
+    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title + '" ></span></button>';
   }
 
   function display_image(data, job_id, instrument) {
