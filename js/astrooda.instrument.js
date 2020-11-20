@@ -171,21 +171,22 @@ function validate_timebin(value, validator, $thefield) {
           data.products['session_id_old'] = data.products.session_id;
           data.products['session_id'] = data.session_id;
 
+
           if (data.products.hasOwnProperty('image')) {
             if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-              display_lc_table(data.products, job_id, data.query_status);
+              product_panel_body = display_lc_table(job_id, data.query_status, data.products);
             } else {
               if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-                display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
-              } else if (Array.isArray(data.products.image)) {
-                display_image_table(data.products, job_id, instrument);
+                product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
               } else {
-                display_image(data.products, job_id, instrument);
+                product_panel_body = display_image(data.products, job_id, instrument);
               }
             }
           } else if (data.products.hasOwnProperty('spectrum_name')) {
-            display_spectrum_table(job_id, data.query_status, data.products);
+            product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
+          $('#paper-quote').clone().addClass('paper-quote').removeAttr('id').appendTo(product_panel_body);
+
           waitingDialog.setClose();
         }
         // data.exit_status.comment = 'Hoho';
