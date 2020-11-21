@@ -4,22 +4,23 @@
  * @file
  * Provides a block
  */
-function astrooda_init() {
-  drupal_add_library ( 'system', 'ui.draggable' );
-  drupal_add_library ( 'system', 'ui.resizable' );
+function astrooda_init()
+{
+  drupal_add_library('system', 'ui.draggable');
+  drupal_add_library('system', 'ui.resizable');
   // drupal_add_library('system', 'effects.bounce');
   // drupal_add_library('system', 'effects.transfer');
   // drupal_add_library('system', 'effects.shake');
-  drupal_add_library ( 'system', 'effects.highlight' );
-  
-  module_load_include ( 'inc', 'astrooda', 'astrooda.common' );
-  
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
-  if (! isset ( $astrooda_settings ['instruments'] ))
+  drupal_add_library('system', 'effects.highlight');
+
+  module_load_include('inc', 'astrooda', 'astrooda.common');
+
+  $astrooda_settings = variable_get('astrooda_settings');
+  if (! isset($astrooda_settings['instruments']))
     return;
-  foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
-    if ($instrument ['enabled']) {
-      module_load_include ( 'inc', 'astrooda_' . $name, 'astrooda_' . $name );
+  foreach ($astrooda_settings['instruments'] as $name => $instrument) {
+    if ($instrument['enabled']) {
+      module_load_include('inc', 'astrooda_' . $name, 'astrooda_' . $name);
     }
   }
 }
@@ -27,12 +28,13 @@ function astrooda_init() {
 /**
  * Implements hook_help().
  */
-function astrooda_help($path, $arg) {
+function astrooda_help($path, $arg)
+{
   $output = '';
   switch ($path) {
-    case 'admin/help#astrooda' :
+    case 'admin/help#astrooda':
       $output = '<p>';
-      $output .= t ( "Online data analysis system." );
+      $output .= t("Online data analysis system.");
       $output .= '</p>';
       break;
   }
@@ -42,35 +44,37 @@ function astrooda_help($path, $arg) {
 /**
  * Implements hook_block_info().
  */
-function astrooda_block_info() {
-  $blocks = array ();
-  $blocks ['astrooda_main'] = array (
-      'info' => t ( "Astrooda" ),
-      'status' => TRUE,
-      'region' => 'content',
-      'visibility' => BLOCK_VISIBILITY_LISTED,
-      'pages' => '<front>',
-      'cache' => DRUPAL_NO_CACHE 
+function astrooda_block_info()
+{
+  $blocks = array();
+  $blocks['astrooda_main'] = array(
+    'info' => t("Astrooda"),
+    'status' => TRUE,
+    'region' => 'content',
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => '<front>',
+    'cache' => DRUPAL_NO_CACHE
   );
-  
+
   return $blocks;
 }
 
 /**
  * Implementation of hook_permission().
  */
-function astrooda_permission() {
-  return array (
-      'administer astrooda' => array (
-          'description' => t ( 'Administer Data Analysis' ),
-          'title' => t ( 'Administer Data Analysis' ),
-          'restrict access' => TRUE 
-      ),
-      'access astrooda' => array (
-          'description' => t ( 'Access Data Analysis' ),
-          'title' => t ( 'Access Data Analysis' ),
-          'restrict access' => TRUE 
-      ) 
+function astrooda_permission()
+{
+  return array(
+    'administer astrooda' => array(
+      'description' => t('Administer Data Analysis'),
+      'title' => t('Administer Data Analysis'),
+      'restrict access' => TRUE
+    ),
+    'access astrooda' => array(
+      'description' => t('Access Data Analysis'),
+      'title' => t('Access Data Analysis'),
+      'restrict access' => TRUE
+    )
   );
 }
 
@@ -78,42 +82,44 @@ function astrooda_permission() {
  * Menu callback.
  * Prints a listing of active nodes on the site.
  */
-function astrooda_menu() {
-  $items = array ();
-  
-  $items ['admin/config/astrooda'] = array (
-      'title' => 'Administer Data Analysis',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array (
-          'astrooda_admin_settings' 
-      ),
-      'description' => 'Edit data analysis settings.',
-      'file' => 'astrooda.admin.inc' 
+function astrooda_menu()
+{
+  $items = array();
+
+  $items['admin/config/astrooda'] = array(
+    'title' => 'Administer Data Analysis',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'astrooda_admin_settings'
+    ),
+    'description' => 'Edit data analysis settings.',
+    'file' => 'astrooda.admin.inc'
   );
-  
-  $items ['send-bug-report'] = array (
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array (
-          'astrooda_bug_report_form' 
-      ),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK 
+
+  $items['send-bug-report'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'astrooda_bug_report_form'
+    ),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
   );
-  
+
   return $items;
 }
 
 /**
  * Implements hook_block_view().
  */
-function astrooda_block_view($delta) {
-  $block = array ();
+function astrooda_block_view($delta)
+{
+  $block = array();
   switch ($delta) {
-    case 'astrooda_main' :
-      $block = array (
-          // 'subject' => t ( "Astro Online Data Analysis" ),
-          'subject' => '<none>',
-          'content' => astrooda_main_block_content () 
+    case 'astrooda_main':
+      $block = array(
+        // 'subject' => t ( "Astro Online Data Analysis" ),
+        'subject' => '<none>',
+        'content' => astrooda_main_block_content()
       );
       break;
   }
@@ -123,167 +129,172 @@ function astrooda_block_view($delta) {
 /**
  * Generates the actual content of the iPrayTimes block.
  */
-function astrooda_main_block_content() {
-  $session_id = session_id ();
-  
-  if (! isset ( $_SESSION ['count'] )) {
-    $_SESSION ['count'] = 0;
+function astrooda_main_block_content()
+{
+  $session_id = session_id();
+
+  if (! isset($_SESSION['count'])) {
+    $_SESSION['count'] = 0;
   } else {
-    $_SESSION ['count'] ++;
+    $_SESSION['count'] ++;
   }
-  $session_count = $_SESSION ['count'];
-  
-  if (isset ( $_SERVER ["HTTP_REFERER"] ) and strlen ( $_SERVER ["HTTP_REFERER"] ) and ! isset ( $_SESSION ['url_parameters'] )) {
-    parse_str ( parse_url ( $_SERVER ["HTTP_REFERER"], PHP_URL_QUERY ), $params );
+  $session_count = $_SESSION['count'];
+
+  if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! isset($_SESSION['url_parameters'])) {
+    parse_str(parse_url($_SERVER["HTTP_REFERER"], PHP_URL_QUERY), $params);
   } else {
-    $params = drupal_get_query_parameters ();
+    $params = drupal_get_query_parameters();
   }
   if ($params) {
-    $_SESSION ['url_parameters'] = $params;
-  } else if (array_key_exists ( 'url_parameters', $_SESSION )) {
-    drupal_add_js ( array (
-        'url_parameters' => $_SESSION ['url_parameters'] 
-    ), array (
-        'type' => 'setting',
-        'scope' => JS_DEFAULT 
-    ) );
-    
-    unset ( $_SESSION ['url_parameters'] );
+    $_SESSION['url_parameters'] = $params;
+  } else if (array_key_exists('url_parameters', $_SESSION)) {
+    drupal_add_js(array(
+      'url_parameters' => $_SESSION['url_parameters']
+    ), array(
+      'type' => 'setting',
+      'scope' => JS_DEFAULT
+    ));
+
+    unset($_SESSION['url_parameters']);
   }
-  
+
   $libname = 'bootstrap-form-validator';
-  
-  if (! ($library = libraries_load ( $libname )) || empty ( $library ['loaded'] )) {
+
+  if (! ($library = libraries_load($libname)) || empty($library['loaded'])) {
     $libraries_OK = False;
-    drupal_set_message ( t ( 'Error : can not load bootstrap form validator library.' ), 'error' );
+    drupal_set_message(t('Error : can not load bootstrap form validator library.'), 'error');
     return;
   }
-  
-  if (! ($library_datatables = libraries_load ( 'datatables' )) || empty ( $library_datatables ['loaded'] )) {
-    drupal_set_message ( t ( 'Error : can not load DataTables library.' ), 'error' );
+
+  if (! ($library_datatables = libraries_load('datatables')) || empty($library_datatables['loaded'])) {
+    drupal_set_message(t('Error : can not load DataTables library.'), 'error');
     return;
   }
-  if (! ($library_bokeh = libraries_load ( 'bokeh' )) || empty ( $library_bokeh ['bokeh'] )) {
+  if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
     // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
     // return;
   }
-//   drupal_add_js ( 'var $j = jQuery.noConflict();', array (
-//       'type' => 'inline',
-//       'scope' => 'header',
-//       'group' => JS_LIBRARY,
-//       'weight' => - 1 
-//   ) );
-  
-//   drupal_add_css ( 'dispatch-data/js9/js9support.css' );
-//   drupal_add_css ( 'dispatch-data/js9/js9.css' );
-  drupal_add_css ( drupal_get_path ( 'module', 'astrooda' ) . '/astrooda.css' );
-  
+  // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
+  // 'type' => 'inline',
+  // 'scope' => 'header',
+  // 'group' => JS_LIBRARY,
+  // 'weight' => - 1
+  // ) );
+
+  // drupal_add_css ( 'dispatch-data/js9/js9support.css' );
+  // drupal_add_css ( 'dispatch-data/js9/js9.css' );
+  drupal_add_css(drupal_get_path('module', 'astrooda') . '/astrooda.css');
+
   // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9all.js' );
-//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9prefs.js' );
-  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9support.min.js' );
-  //drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9.min.js' );
-//   drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9plugins.js' );
-  
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9prefs.js' );
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9support.min.js' );
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9.min.js' );
+  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9plugins.js' );
+
   // drupal_add_js ( 'dispatch-data/js9/js9prefs.js' );
   // drupal_add_js ( 'dispatch-data/js9/js9support.min.js' );
   // drupal_add_js ( 'dispatch-data/js9/js9.min.js' );
   // drupal_add_js ( 'dispatch-data/js9/js9plugins.js' );
-  
-  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.common.js' );
-  drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/astrooda.instrument.js' );
-  
-  $items = array ();
-  
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
+
+  drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.common.js');
+  drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.instrument.js');
+
+  $items = array();
+
+  $astrooda_settings = variable_get('astrooda_settings');
   // unset($astrooda_settings['astrooda_support_email']);
   // $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   // variable_set ( 'astrooda_settings', $astrooda_settings );
-  
+
   // error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
-  
-  if (empty ( $astrooda_settings ['instruments'] )) {
-    return theme ( 'astrooda_main_block_content', $items );
+
+  if (empty($astrooda_settings['instruments'])) {
+    return theme('astrooda_main_block_content', $items);
   }
-  
+
   // setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
-  
-  $items ['session_id'] = $session_id;
-  $items ['session_count'] = $session_count;
-  $items ['astrooda_debug'] = variable_get ( 'astrooda_debug' );
-  
-  $items ['common_form'] = drupal_get_form ( 'astrooda_common' );
-  $items ['bug_report_form'] = drupal_get_form ( 'astrooda_bug_report_form' );
-  $items ['auth_cookie'] = '_oauth2_proxy';
-  $items ['token_ask_form'] = drupal_get_form ( 'astrooda_ask_token_form' );
-  
+
+  $items['session_id'] = $session_id;
+  $items['session_count'] = $session_count;
+  $items['astrooda_debug'] = variable_get('astrooda_debug');
+
+  $items['common_form'] = drupal_get_form('astrooda_common');
+  $items['bug_report_form'] = drupal_get_form('astrooda_bug_report_form');
+  $items['auth_cookie'] = '_oauth2_proxy';
+  $items['token_ask_form'] = drupal_get_form('astrooda_ask_token_form');
+
   // error_log ( "---------------------------------------------" );
-  
-  foreach ( $astrooda_settings ['instruments'] as $name => $instrument ) {
-    $instruments [$instrument ['weight']] = $name;
+
+  foreach ($astrooda_settings['instruments'] as $name => $instrument) {
+    $instruments[$instrument['weight']] = $name;
   }
-  ksort ( $instruments );
-  $weight_sorted_instruments = array_values ( $instruments );
+  ksort($instruments);
+  $weight_sorted_instruments = array_values($instruments);
   $first_instrument = true;
-  foreach ( $weight_sorted_instruments as $instrument_name ) {
-    $instrument = $astrooda_settings ['instruments'] [$instrument_name];
+  foreach ($weight_sorted_instruments as $instrument_name) {
+    $instrument = $astrooda_settings['instruments'][$instrument_name];
     // error_log ( 'Instrument:' . $instrument ['name'] . "\n" );
-    if ($instrument ['enabled']) {
-      $items ['instruments'] [$instrument ['name']] = array (
-          'name' => $instrument ['name'],
-          'title' => $instrument ['title'],
-          'help_page' => 'node/' . $instrument ['help_page_nid'],
-          'form' => drupal_get_form ( 'astrooda_' . $instrument ['name'] ),
-          'active' => '' 
+    if ($instrument['enabled']) {
+      $items['instruments'][$instrument['name']] = array(
+        'name' => $instrument['name'],
+        'title' => $instrument['title'],
+        'help_page' => 'node/' . $instrument['help_page_nid'],
+        'form' => drupal_get_form('astrooda_' . $instrument['name']),
+        'active' => ''
       );
       if ($first_instrument) {
-        $items ['instruments'] [$instrument ['name']] ['active'] = 'active';
+        $items['instruments'][$instrument['name']]['active'] = 'active';
         $first_instrument = false;
       }
     }
   }
-  
+
   // $lfile = fopen ( '/tmp/astrooda_instruments.php', "w" );
   // fwrite ( $lfile, print_r ( $items, true ) );
   // fclose ( $lfile );
-  
+
   // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets
   // registered below
-  return theme ( 'astrooda_main_block_content', $items );
+  return theme('astrooda_main_block_content', $items);
 }
 
 /**
  * Generates the actual content of the iPrayTimes block.
  */
-function astrooda_get_settings() {
-  $js = array ();
-  
+function astrooda_get_settings()
+{
+  $js = array();
+
   return ($js);
 }
 
 /**
  * Implements hook_theme().
  */
-function astrooda_theme($existing, $type, $theme, $path) {
-  return array (
-      'astrooda_main_block_content' => array (
-          'path' => drupal_get_path ( 'module', 'astrooda' ) . '/templates/',
-          'template' => 'astrooda-main',
-          'variables' => array (
-              'items' => NULL 
-          ) 
-      ),
-      'astrooda_month_block' => array (
-          'path' => drupal_get_path ( 'module', 'astrooda' ),
-          'template' => 'astrooda-month-block',
-          'variables' => array (
-              'location' => NULL,
-              'error' => NULL 
-          ) 
-      ) 
+function astrooda_theme($existing, $type, $theme, $path)
+{
+  return array(
+    'astrooda_main_block_content' => array(
+      'path' => drupal_get_path('module', 'astrooda') . '/templates/',
+      'template' => 'astrooda-main',
+      'variables' => array(
+        'items' => NULL
+      )
+    ),
+    'astrooda_month_block' => array(
+      'path' => drupal_get_path('module', 'astrooda'),
+      'template' => 'astrooda-month-block',
+      'variables' => array(
+        'location' => NULL,
+        'error' => NULL
+      )
+    )
   );
 }
-function astrooda_array_member($val, $myArray) {
-  foreach ( $myArray as $av ) {
+
+function astrooda_array_member($val, $myArray)
+{
+  foreach ($myArray as $av) {
     if ($av == $val) {
       return (true);
     }
@@ -296,8 +307,9 @@ function astrooda_array_member($val, $myArray) {
  *
  * For defining external libraries.
  */
-function astrooda_libraries_info() {
-  
+function astrooda_libraries_info()
+{
+
   // A very simple library. No changing APIs (hence, no versions), no variants.
   // Expected to be extracted into 'sites/all/libraries/simple'.
   // $libraries ['d3'] = array (
@@ -314,7 +326,7 @@ function astrooda_libraries_info() {
   // )
   // )
   // );
-  
+
   // $libraries ['mpld3'] = array (
   // 'name' => 'Data Driven-Documents library',
   // 'vendor url' => 'http://mpld3.github.io/',
@@ -329,76 +341,80 @@ function astrooda_libraries_info() {
   // )
   // )
   // );
-  $libraries ['datatables'] = array (
-      'name' => 'Table plug-in for jQuery',
-      'vendor url' => 'https://datatables.net/',
-      'download url' => 'https://datatables.net/download/index',
-      // 'version arguments' => array (
-      // 'file' => 'datatables.js', // Could be any file with version info
-      // 'pattern' => '/version +(\d+\.\d+\.\d+)$/'
-      // ),
-      'version callback' => 'short_circuit_version',
-      'files' => array (
-          'js' => array (
-              'datatables.min.js',
-              'Select/js/dataTables.select.min.js',
-              'Buttons/js/dataTables.buttons.min.js',
-              'Responsive/js/dataTables.responsive.min.js',
-              'Editor/js/dataTables.editor.min.js',
-              'Editor/js/editor.bootstrap.min.js' 
-          ),
-          'css' => array (
-              // 'datatables.min.css',
-              'dataTables.bootstrap.min.css',
-              'Buttons/css/buttons.dataTables.min.css',
-              'Responsive/css/responsive.dataTables.min.css',
-              // 'Editor/css/editor.dataTables.min.css',
-              'Select/css/select.dataTables.min.css',
-              'Editor/css/editor.bootstrap.css' 
-          ) 
-      ) 
+  $libraries['datatables'] = array(
+    'name' => 'Table plug-in for jQuery',
+    'vendor url' => 'https://datatables.net/',
+    'download url' => 'https://datatables.net/download/index',
+    // 'version arguments' => array (
+    // 'file' => 'datatables.js', // Could be any file with version info
+    // 'pattern' => '/version +(\d+\.\d+\.\d+)$/'
+    // ),
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'datatables.min.js',
+        'Select/js/dataTables.select.min.js',
+        'Buttons/js/dataTables.buttons.min.js',
+        'Responsive/js/dataTables.responsive.min.js',
+        'Editor/js/dataTables.editor.min.js',
+        'Editor/js/editor.bootstrap.min.js'
+      ),
+      'css' => array(
+        // 'datatables.min.css',
+        'dataTables.bootstrap.min.css',
+        'Buttons/css/buttons.dataTables.min.css',
+        'Responsive/css/responsive.dataTables.min.css',
+        // 'Editor/css/editor.dataTables.min.css',
+        'Select/css/select.dataTables.min.css',
+        'Editor/css/editor.bootstrap.css'
+      )
+    )
   );
-  $libraries ['bootstrap-form-validator'] = array (
-      'name' => 'Bootstrap Form Validator library',
-      'vendor url' => 'http://bootstrapvalidator.com',
-      'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
-      'version callback' => 'short_circuit_version',
+  $libraries['bootstrap-form-validator'] = array(
+    'name' => 'Bootstrap Form Validator library',
+    'vendor url' => 'http://bootstrapvalidator.com',
+    'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
+    'version callback' => 'short_circuit_version',
       /*
       'version arguments' => array (
           'file' => 'js/bootstrapValidator.min.js', // Could be any file with version info
          // 'pattern' => '/@Version (.*)$,/'
       ),*/
-      'files' => array (
-          'js' => array (
-              'js/bootstrapValidator.min.js' 
-          ) 
-      ) 
+      'files' => array(
+      'js' => array(
+        'js/bootstrapValidator.min.js'
+      )
+    )
   );
-  
-  $libraries ['bokeh'] = array (
-      'name' => 'Bokeh',
-      'vendor url' => 'https://bokeh.pydata.org',
-      'download url' => 'https://bokeh.pydata.org',
-      'version callback' => 'short_circuit_version',
-      'files' => array (
-          'js' => array (
-              'bokeh.min.js',
-              'bokeh-widgets.min.js' 
-          ),
-          'css' => array (
-              'bokeh.min.css',
-              'bokeh-widgets.min.css' 
-          ) 
-      ) 
+
+  $libraries['bokeh'] = array(
+    'name' => 'Bokeh',
+    'vendor url' => 'https://bokeh.pydata.org',
+    'download url' => 'https://bokeh.pydata.org',
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'bokeh.min.js',
+        'bokeh-widgets.min.js'
+      ),
+      'css' => array(
+        'bokeh.min.css',
+        'bokeh-widgets.min.css'
+      )
+    )
   );
-  
+
   return $libraries;
 }
-function short_circuit_version() {
+
+function short_circuit_version()
+{
   // use some fancy magic to get the version number... or don't
   return TRUE;
 }
-function astrooda_form_alter(&$form, &$form_state, $form_id) {
+
+function astrooda_form_alter(&$form, &$form_state, $form_id)
+{
   // foreach ( $form as $item_name => $item_value ) {
   // if (is_array ( $item_value ) and array_key_exists ( '#states', $item_value )) {
   // foreach ( $item_value ['#states'] as $state_name => $state_value ) {
@@ -413,7 +429,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id) {
   // error_log ( $form ['#id'] );
   // $filename = '/tmp/momo/form_' . $form_id . '.php';
   // unlink($filename);
-  
+
   // $f = fopen ( $filename, 'w' );
   // fwrite ( $f, "form:\n" );
   // fwrite ( $f, print_r ( $form, true ) );
