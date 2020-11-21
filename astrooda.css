@@ -19,12 +19,6 @@
   width: auto;
 }
 
-#ldialog {
-  /*padding-top:15%;
-	overflow-y:visible;*/
-  
-}
-
 .block-astrooda {
   display: none;
 }
@@ -91,14 +85,7 @@ table.message-table tr td {
 }
 
 /***************** End vertically center modal   ***/
-/*
-#catalog-wrapper {
-	display: inline-block;
-	float : left;
-	vertical-align: top;
-	margin-bottom:1em;
-}
-*/
+
 #formwrapper {
   width: 100%;
 }
@@ -211,11 +198,6 @@ span.panel-toolbox span {
   float: right;
   padding: 1em;
   background-color: lightgray;
-}
-
-.node-astrooda-help {
-  /*float: left;*/
-  
 }
 
 #astrooda_panel_model {
@@ -427,129 +409,57 @@ input[type=number] {
   white-space: normal;
 }
 
-.header-info {
-  width: auto;
-  margin: 0.5em;
-  padding: 1em;
-  background-color:
-}
-
-.header-info-text {
-  display: inline-block;
-  margin-left: 0.5em;
-  vertical-align: top;
-}
-
-.header-info {
-  width: auto;
-  margin: 0.5em;
-  padding: 1em;
-  background-color:
-}
-
-.header-info-text {
-  display: inline-block;
-  margin-left: 0.5em;
-  vertical-align: top;
-}
-
 #paper-quote {
-  display: none;
+	display : none;
 }
 
 .paper-quote {
-  margin-top: 1em;
+  margin-top : 1em;
 }
 
 .instrument-help-button {
-  float: right;
+	float: right;
 }
-
 .instrument-params-panel-title {
   float: left;
 }
 
 .instrument-params-panel .panel-heading {
-  height: 4em;
+	height: 4em;
 }
 
 .alert-dismissable, .alert-dismissible {
-  padding-right: 35px !important;
+    padding-right: 35px !important;
 }
 
 .pppd-heading-table {
-  margin: auto;
+  margin: auto;	
 }
 
-ol.reference-list>li {
-  list-style: none;
-  position: relative;
+ol.reference-list > li {
+    list-style: none;
+    position: relative;
 }
 
-ol.reference-list>li:before {
-  counter-increment: list;
-  content: "[" counter(list, decimal) "] ";
-  position: absolute;
-  left: -1.4em;
+ol.reference-list > li:before {
+    counter-increment: list;
+    content: "["counter(list, decimal) "] ";
+    position: absolute;
+    left: -1.4em;
 }
-
 .pppd-heading-table tr td:nth-child(2) {
-  padding-left: 1em;
+	padding-left: 1em;
 }
 
 .header-info {
   width: auto;
   margin: 0.5em;
   padding: 1em;
-  background-color:
+  /*background-color:*/
 }
 
 .header-info-text {
   display: inline-block;
   margin-left: 0.5em;
   vertical-align: top;
-}
-
-#paper-quote {
-  display: none;
-}
-
-.paper-quote {
-  margin-top: 1em;
-}
-
-.instrument-help-button {
-  float: right;
-}
-
-.instrument-params-panel-title {
-  float: left;
-}
-
-.instrument-params-panel .panel-heading {
-  height: 4em;
-}
-
-.alert-dismissable, .alert-dismissible {
-  padding-right: 35px !important;
-}
-
-.pppd-heading-table {
-  margin: auto;
-}
-
-ol.reference-list>li {
-  list-style: none;
-  position: relative;
-}
-
-ol.reference-list>li:before {
-  counter-increment: list;
-  content: "[" counter(list, decimal) "] ";
-  position: absolute;
-  left: -1.4em;
-}
-
-.pppd-heading-table tr td:nth-child(2) {
-  padding-left: 1em;
 }
