@@ -201,13 +201,20 @@
 		</div-->
     <div class="panel panel-default">
       <div class="panel-heading">
-        <div>
 			<?php  if ($astrooda_debug) :?>
         <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
         <?php endif; ?>
-				</div>
-        <div class="float-right">
-          <a href="/cdci/astrooda/contact" class="automodal">Contact us</a>
+        <div class="btn-group pull-right" role="group">
+          <a
+            class="btn btn-sm btn-info help-button"
+            href="contact"><span
+            class="glyphicon glyphicon-envelope"> </span>
+          </a>
+          <a
+            class="btn btn-sm btn-info help-button"
+            href="<?=$help_page?>"> <span
+            class="glyphicon glyphicon-info-sign"> </span>
+          </a>
         </div>
       </div>
       <div id="formwrapper">
@@ -237,10 +244,9 @@
                     <div class="panel-heading">
                       <div class="instrument-params-panel-title">Instrument
                         query parameters :</div>
-                      <a class="btn btn-info instrument-help-button"
+                      <a class="btn btn-sm btn-info help-button"
                         href="<?=$instrument['help_page']?>"><span
-                        class="glyphicon glyphicon-info-sign"> </span>
-                        Help</a>
+                        class="glyphicon glyphicon-info-sign"> </span> </a>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
                   </div>

@@ -417,15 +417,15 @@ input[type=number] {
   margin-top : 1em;
 }
 
-.instrument-help-button {
+.help-button {
 	float: right;
 }
 .instrument-params-panel-title {
-  float: left;
+  display: inline-block;
 }
 
-.instrument-params-panel .panel-heading {
-	height: 4em;
+.panel-heading {
+	overflow: hidden;
 }
 
 .alert-dismissable, .alert-dismissible {
@@ -462,4 +462,8 @@ ol.reference-list > li:before {
   display: inline-block;
   margin-left: 0.5em;
   vertical-align: top;
+}
+
+.panel-heading {
+  
 }

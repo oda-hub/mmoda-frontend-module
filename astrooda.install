@@ -34,13 +34,13 @@ function astrooda_requirements($phase) {
       );
     }
   }
-  
+
   if ($phase == 'runtime') {
     $t = get_t ();
     $library = libraries_detect ( 'd3' );
     $error_type = isset ( $library ['error'] ) ? drupal_ucfirst ( $library ['error'] ) : '';
     $error_message = isset ( $library ['error message'] ) ? $library ['error message'] : '';
-    
+
     if (empty ( $library ['installed'] )) {
       $requirements ['D3_library'] = array (
           'title' => $t ( 'D3 library' ),
@@ -75,7 +75,7 @@ function astrooda_requirements($phase) {
       );
     }
   }
-  
+
   return $requirements;
 }
 function astrooda_add_custom_fields() {
@@ -110,40 +110,45 @@ function astrooda_install() {
   $astrooda_settings ['common'] ['T_format'] = 'isot';
   variable_set ( 'astrooda_settings', $astrooda_settings );
   variable_set ( 'astrooda_debug', true );
-  
+
   // Add node types
   node_types_rebuild ();
-  
+
   // Default to not to be promoted
   variable_set ( 'node_options_astrooda_help', array (
       'status'
   ) );
-  
+
   // Disable comments
   variable_set ( 'comment_astrooda_help', COMMENT_NODE_CLOSED );
-  
+
   // Hide date and author information
   variable_set ( 'node_submitted_astrooda_help', FALSE );
-  
+
   astrooda_add_custom_fields ();
-  
+
   // Disable node preview
   // variable_set('node_preview_astrooda_help', 0);
-  
+
   // Disable menu entry
   // variable_set('menu_options_astrooda_help', array(0));
-  
+
   // Do we need to do anything with the body field?
   // Remove next line if 'body' => 0.
   // node_add_body_field($bundle);
-  
+
   // Add fields
-  
+
   // add help node
   $node_array = astrooda_help_page_node_export_features_default ();
-  $import_output = node_export_import ( $node_array ['code_string'] );
+  $default_astrooda_base_url= '/cdci/astrooda';
+  $astrooda_base_url= variable_get ( 'astrooda_base_url', $default_astrooda_base_url);
+  $astrooda_base_url= !empty($astrooda_base_url) ? $astrooda_base_url : $default_astrooda_base_url;
+    $node_array_code_string = preg_replace('/src=\\\\"[\/|\w]*\/sites\/default\/files\//', 'src=\\"'.$astrooda_base_url.'/sites/default/files/', $node_array ['code_string']);
+  $import_output = node_export_import ( $node_array_code_string );
   if ($import_output ['success']) {
     $node = node_load ( $import_output ['nids'] [0] );
+    $node->uid= 1;
     $node->status = 1;
     node_save ( $node );
     variable_set ( 'astrooda_help_page_nid', $node->nid );
@@ -180,13 +185,13 @@ function astrooda_uninstall() {
     node_type_delete ( $bundle );
   }
   node_types_rebuild ();
-  
+
   if (variable_get ( 'astrooda_help_page_nid' )) {
     variable_del ( 'astrooda_help_page_nid' );
   }
   menu_rebuild ();
   field_purge_batch ( 500 );
-  
+
   // Delete settings
   variable_del ( 'astrooda_settings' );
 }

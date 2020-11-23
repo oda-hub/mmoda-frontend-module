@@ -25,54 +25,9 @@ function astrooda_magic($form, &$form_state) {
   );
 
   $astrooda_settings = variable_get('astrooda_settings');
+  error_log(print_r($astrooda_settings, true));
   $instrument_defaults= $astrooda_settings['instruments']['magic'];
-/*
-  $form ['E1_keV'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Energy Min" ),
-      '#description' => t ( "The minimum of the energy band." ),
-      '#default_value' => $instrument_defaults['E1_keV'],
-      '#required' => TRUE,
-      '#size' => 10,
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#prefix' => '<div class="row">'
-  );
 
-  $form ['E2_keV'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Energy Max" ),
-      '#description' => t ( "The maximum of the energy band." ),
-      '#default_value' => $instrument_defaults['E2_keV'],
-      '#required' => TRUE,
-      '#size' => 10,
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-5'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true'
-      ),
-      '#suffix' => '</div><hr class="hr-default" />'
-  );
-*/
   $form ['query_type'] = array (
       '#type' => 'select',
       '#title' => t ( "Query Type" ),
@@ -142,79 +97,6 @@ function astrooda_magic($form, &$form_state) {
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
   );
-/*
-  $form ['time_bin'] = array (
-      '#type' => 'textfield',
-      '#title' => t ( "Time bin" ),
-      //'#description' => t ( "Minimum value is 20 seconds." ),
-      '#default_value' => $instrument_defaults['time_bin'],
-      '#states' => array (
-          'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  'value' => 'magic_lc'
-              )
-          ),
-          'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  array (
-                      'value' => 'magic_lc'
-                  )
-              )
-          )
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control'
-          ),
-          'data-bv-numeric' => 'true',
-      ),
-      '#prefix' => '<div class="row">'
-  );
-
-  $form ['time_bin_format'] = array (
-      '#type' => 'select',
-      '#title' => t ( "Unit" ),
-      '#options' => array (
-          'sec' => 'Seconds',
-          'jd' => 'Days'
-      ),
-      '#default_value' => $instrument_defaults['time_bin_format'],
-      '#states' => array (
-          'visible' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  'value' => 'magic_lc'
-              )
-          ),
-          'enabled' => array (
-              ':input[name="'.$mform_id.'product_type"]' => array (
-                  array (
-                      'value' => 'magic_lc'
-                  )
-              )
-          )
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-4'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#attributes' => array (
-          'class' => array (
-              'form-control time_bin_format'
-          )
-      ),
-      '#suffix' => '</div><hr class="hr-default" />'
-  );
-  */
 
   $form ['submit'] = array (
       '#type' => 'submit',

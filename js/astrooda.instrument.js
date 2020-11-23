@@ -877,17 +877,18 @@ function validate_timebin(value, validator, $thefield) {
       AJAX_call();
     });
 
-    $('.instrument-help-button').on('click', function(e) {
+    $('.help-button').on('click', function(e) {
       // e.preventDefault();
       $.get($(this).attr('href'), function(data) {
+        
         var html = $.parseHTML(data);
         var help_text = $(".region-content .block-system", html);
+        var title = $(".page-header", html).text();
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
         help_text.find('#table-of-contents-links').addClass('rounded');
-        instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-        waitingDialog.show(instrument.toUpperCase() + ' Help', help_text, {
+        waitingDialog.show(title + ' Help', help_text, {
           dialogSize: 'lg',
           buttonText: 'Close',
           showCloseInHeader: true,

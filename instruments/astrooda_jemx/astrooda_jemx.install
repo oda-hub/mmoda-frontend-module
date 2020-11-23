@@ -24,15 +24,15 @@ function astrooda_jemx_requirements($phase) {
   $conflicts = array ();
   if ('install' == $phase) {
   }
-  
+
   if ($phase == 'runtime') {
   }
-  
+
   return $requirements;
 }
 function astrooda_jemx_install() {
   $instrument_info = astrooda_jemx_instrument_info();
-  
+
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   $astrooda_settings ['instruments'] [$instrument_info['name']] = array (
       'enabled' => TRUE,
@@ -50,21 +50,24 @@ function astrooda_jemx_install() {
       'time_bin_format' => 'sec',
       'weight' => 20,
   );
-  
+
   // add help node
   $node_array = jemx_help_page_node_export_features_default ();
-  $astrooda_base_url= variable_get ( 'astrooda_base_url' );
+  $default_astrooda_base_url= '/cdci/astrooda';
+  $astrooda_base_url= variable_get ( 'astrooda_base_url', $default_astrooda_base_url);
+  $astrooda_base_url= !empty($astrooda_base_url) ? $astrooda_base_url : $default_astrooda_base_url;
   $node_array_code_string = preg_replace('/src=\\\\"[\/|\w]*\/sites\/default\/files\//', 'src=\\"'.$astrooda_base_url.'/sites/default/files/', $node_array ['code_string']);
   $import_output = node_export_import ( $node_array_code_string );
-  
+
   if ($import_output ['success']) {
     //print "New help page nid :" . $import_output ['nids'] [0] . "\n";
     $node = node_load ( $import_output ['nids'] [0] );
     $node->status = 1;
+    $node->uid= 1;
     node_save ( $node );
     $astrooda_settings ['instruments'] [$instrument_info['name']] ['help_page_nid'] = $node->nid;
   }
-  
+
   variable_set ( 'astrooda_settings', $astrooda_settings );
 }
 
@@ -74,16 +77,16 @@ function astrooda_jemx_install() {
 function astrooda_jemx_uninstall() {
   $instrument_info = astrooda_jemx_instrument_info();
   $astrooda_settings = variable_get ( 'astrooda_settings' );
-  
+
   if (array_key_exists('help_page_nid', $astrooda_settings ['instruments'] [$instrument_info['name']])) {
     node_delete ( $astrooda_settings ['instruments'] [$instrument_info['name']]['help_page_nid'] );
   }
-  
+
   $astrooda_settings = variable_get ( 'astrooda_settings' );
   unset ( $astrooda_settings ['instruments'] [$instrument_info['name']] );
-  
+
   variable_set ( 'astrooda_settings', $astrooda_settings );
-  
+
   menu_rebuild ();
 }
 
