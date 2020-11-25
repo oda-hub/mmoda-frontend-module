@@ -66,9 +66,10 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <!--button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="Close">
           <span aria-hidden="true">&times;</span>
-        </button-->
+        </button>
         <h4 class="modal-title"></h4>
         <div class="header-message">
           <div>
@@ -189,29 +190,43 @@
       least one instrument module.
     </div>
    <?php  else : ?>
-	  <!--div class="alert-dismissible alert alert-info header-info"
-			role="alert">
-			<a href="#" class="close" data-dismiss="alert" aria-label="close"
-				title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
-			<div class="header-info-text">
-				This interface can be used for public data only. <br>A feedback
-				button appears when the query returns its results to report on
-				possible issues.
-			</div>
-		</div-->
+    <!--div class="alert-dismissible alert alert-info header-info"
+      role="alert">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close"
+        title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
+      <div class="header-info-text">
+        This interface can be used for public data only. <br>A feedback
+        button appears when the query returns its results to report on
+        possible issues.
+      </div>
+    </div-->
     <div class="panel panel-default">
       <div class="panel-heading">
-			<?php  if ($astrooda_debug) :?>
+      <?php  if ($astrooda_debug) :?>
         <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
         <?php endif; ?>
-        <div class="btn-group pull-right" role="group">
-          <a
-            class="btn btn-sm btn-info help-button"
-            href="contact"><span
+        <div class="main-toolbar btn-group pull-right" role="group">
+          <button
+            class="btn btn-sm btn-primary form-button write-feedback-button"
+            ><span
             class="glyphicon glyphicon-envelope"> </span>
-          </a>
-          <a
-            class="btn btn-sm btn-info help-button"
+          </button>
+          <!--a data-toggle="tooltip" title=""
+            data-original-title="Contact us"
+            class="btn btn-sm btn-primary" href="contact"> <span
+            class="glyphicon glyphicon-envelope"> </span>
+          </a--> <a data-toggle="tooltip" title=""
+            data-original-title="Sign in"
+            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-sm btn-primary user-log login-link"
+            href="modal_forms/nojs/login"> <span
+            class="glyphicon glyphicon-log-in"> </span>
+          </a> <a data-toggle="tooltip" title=""
+            data-original-title="Sign out"
+            class="btn btn-sm btn-primary user-log logout-link"
+            href="user/logout"> <span
+            class="glyphicon glyphicon-log-out"> </span>
+          </a> <a data-toggle="tooltip" title=""
+            data-original-title="Help" class="btn btn-sm btn-primary help-button"
             href="<?=$help_page?>"> <span
             class="glyphicon glyphicon-info-sign"> </span>
           </a>
@@ -244,9 +259,13 @@
                     <div class="panel-heading">
                       <div class="instrument-params-panel-title">Instrument
                         query parameters :</div>
-                      <a class="btn btn-sm btn-info help-button"
-                        href="<?=$instrument['help_page']?>"><span
-                        class="glyphicon glyphicon-info-sign"> </span> </a>
+                      <div class="intrument-toolbar btn-group pull-right"
+                        role="group">
+                        <a class="btn btn-sm btn-primary help-button"
+                          href="<?=$instrument['help_page']?>"><span
+                          class="glyphicon glyphicon-info-sign"> </span>
+                        </a>
+                      </div>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
                   </div>

@@ -367,7 +367,7 @@ function validate_timebin(value, validator, $thefield) {
 
     $('#lfeedback button#edit-submit').prependTo($('#lfeedback .modal-footer'));
 
-    $('#ldialog .modal-footer button.write-feedback-button').on('click', function(event) {
+    $('button.write-feedback-button').on('click', function(event) {
       $('#lfeedback').modal({
         show: true
       });

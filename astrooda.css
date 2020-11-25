@@ -173,8 +173,8 @@ table.astro-ana tr td, table.astro-ana tr th {
 
 /*
 .catalog-wrapper tr td ,  .spectrum-table-wrapper tr td {
-	clear: left;
-	text-align: right;
+  clear: left;
+  text-align: right;
 }
 */
 span.panel-toolbox span {
@@ -182,7 +182,7 @@ span.panel-toolbox span {
 }
 
 .panel {
-  margin-left: 0.5em;
+  margin: 0.5em;
 }
 
 .panel:hover {
@@ -410,7 +410,7 @@ input[type=number] {
 }
 
 #paper-quote {
-	display : none;
+  display : none;
 }
 
 .paper-quote {
@@ -418,14 +418,14 @@ input[type=number] {
 }
 
 .help-button {
-	float: right;
+  float: right;
 }
 .instrument-params-panel-title {
   display: inline-block;
 }
 
 .panel-heading {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .alert-dismissable, .alert-dismissible {
@@ -433,7 +433,7 @@ input[type=number] {
 }
 
 .pppd-heading-table {
-  margin: auto;	
+  margin: auto; 
 }
 
 ol.reference-list > li {
@@ -447,15 +447,15 @@ ol.reference-list > li:before {
     position: absolute;
     left: -1.4em;
 }
+
 .pppd-heading-table tr td:nth-child(2) {
-	padding-left: 1em;
+  padding-left: 1em;
 }
 
 .header-info {
   width: auto;
   margin: 0.5em;
   padding: 1em;
-  /*background-color:*/
 }
 
 .header-info-text {
@@ -464,6 +464,15 @@ ol.reference-list > li:before {
   vertical-align: top;
 }
 
-.panel-heading {
-  
+div.ctools-modal-content .modal-content {
+  padding: 1em;
+  margin: 2.5em;
+  box-shadow: none;
+  border: none;
 }
+/*
+.main-toolbar .logout-link {
+  display: none;
+}
+*/
+

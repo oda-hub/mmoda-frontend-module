@@ -576,7 +576,19 @@ function get_waitingDialog($modal_dialog) {
   }
 
   function commonReady() {
-
+    if (Drupal.settings.user_uid == 0) {
+      $('.main-toolbar .login-link').show();
+      $('.main-toolbar .logout-link').hide();
+    }
+    else {
+      $('.main-toolbar .login-link').hide();
+      $('.main-toolbar .logout-link').show();
+    }
+/*
+    $('.main-toolbar .user-log').on('click', function() {
+      $('.main-toolbar .user-log').toggle();
+    });
+*/
     $(document).on('show.bs.modal', '.modal', function() {
       var zIndex = 1040 + (10 * $('.modal:visible').length);
       $(this).css('z-index', zIndex);

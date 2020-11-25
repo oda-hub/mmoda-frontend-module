@@ -23,6 +23,8 @@ function astrooda_init()
       module_load_include('inc', 'astrooda_' . $name, 'astrooda_' . $name);
     }
   }
+  global $user;
+  drupal_add_js(array('user_uid' => $user->uid), 'setting');
 }
 
 /**
@@ -274,23 +276,15 @@ function astrooda_get_settings()
  */
 function astrooda_theme($existing, $type, $theme, $path)
 {
-  return array(
-    'astrooda_main_block_content' => array(
-      'path' => drupal_get_path('module', 'astrooda') . '/templates/',
-      'template' => 'astrooda-main',
-      'variables' => array(
-        'items' => NULL
-      )
-    ),
-    'astrooda_month_block' => array(
-      'path' => drupal_get_path('module', 'astrooda'),
-      'template' => 'astrooda-month-block',
-      'variables' => array(
-        'location' => NULL,
-        'error' => NULL
-      )
+  // Custom template for that overrides the default block.tpl.php.
+  $theme_items['astrooda_main_block_content'] = array(
+    'template' => 'astrooda-main',
+    'path' => drupal_get_path('module', 'astrooda') . '/templates',
+    'variables' => array(
+      'items' => NULL
     )
   );
+  return $theme_items;
 }
 
 function astrooda_array_member($val, $myArray)
