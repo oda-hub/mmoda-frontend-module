@@ -1,5 +1,9 @@
 # Description and installation
 
+|||
+| :-- | :-- |
+|||
+
 ## Description
 
 Astrooda is the frontend of the CDCI Online Data Analysis system.  
