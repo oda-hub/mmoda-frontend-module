@@ -117,7 +117,7 @@ function process_user_feedback_callback($form, &$form_state) {
         'attachment' => $attachment
     );
 
-    drupal_mail ( 'astrooda', 'user_message', $to, language_default (), $params, $from );
+    drupal_mail ( 'astrooda', 'user_message', $to, language_default (), $params, $from, true );
 
     $commands [] = ajax_command_html ( $selector, '<div class="alert alert-block alert-dismissible alert-success">Your feedback has been successfully sent!</div>' );
     $commands [] = array (

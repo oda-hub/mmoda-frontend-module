@@ -66,10 +66,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"
-          aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+          <span  class="close" data-dismiss="modal"
+          aria-label="Close" aria-hidden="true">&times;</span>
         <h4 class="modal-title"></h4>
         <div class="header-message">
           <div>
@@ -107,30 +105,6 @@
         <button type="button"
           class="btn btn-primary form-button submit-button"
           data-dismiss="modal"></button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal Feedback-->
-<div id="lfeedback" class="modal fade" tabindex='-1' role="dialog"
-  aria-hidden="true" data-backdrop="static">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"
-          aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">Feedback / Bug report</h4>
-      </div>
-      <div class="modal-body">
-        <div id="feedback-messages"></div>
-        <?=render($bug_report_form)?>
-      </div>
-      <div class="modal-footer">
-        <button type="button"
-          class="btn btn-primary form-button cancel-button"
-          data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
@@ -206,19 +180,15 @@
         <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
         <?php endif; ?>
         <div class="main-toolbar btn-group pull-right" role="group">
-          <button
-            class="btn btn-sm btn-primary form-button write-feedback-button"
-            ><span
-            class="glyphicon glyphicon-envelope"> </span>
-          </button>
-          <!--a data-toggle="tooltip" title=""
+          <button data-toggle="tooltip" title=""
             data-original-title="Contact us"
-            class="btn btn-sm btn-primary" href="contact"> <span
-            class="glyphicon glyphicon-envelope"> </span>
-          </a--> <a data-toggle="tooltip" title=""
+            class="btn btn-sm btn-primary form-button write-feedback-button">
+            <span class="glyphicon glyphicon-envelope"> </span>
+          </button>
+          <a data-toggle="tooltip" title=""
             data-original-title="Sign in"
-            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-sm btn-primary user-log login-link"
-            href="modal_forms/nojs/login"> <span
+            class="btn btn-sm btn-primary user-log login-link"
+            href="user/login"> <span
             class="glyphicon glyphicon-log-in"> </span>
           </a> <a data-toggle="tooltip" title=""
             data-original-title="Sign out"
@@ -226,7 +196,8 @@
             href="user/logout"> <span
             class="glyphicon glyphicon-log-out"> </span>
           </a> <a data-toggle="tooltip" title=""
-            data-original-title="Help" class="btn btn-sm btn-primary help-button"
+            data-original-title="Help"
+            class="btn btn-sm btn-primary help-button"
             href="<?=$help_page?>"> <span
             class="glyphicon glyphicon-info-sign"> </span>
           </a>
@@ -259,9 +230,12 @@
                     <div class="panel-heading">
                       <div class="instrument-params-panel-title">Instrument
                         query parameters :</div>
-                      <div class="intrument-toolbar btn-group pull-right"
+                      <div
+                        class="intrument-toolbar btn-group pull-right"
                         role="group">
-                        <a class="btn btn-sm btn-primary help-button"
+                        <a data-toggle="tooltip" title=""
+                          data-original-title="Help"
+                          class="btn btn-sm btn-primary help-button"
                           href="<?=$instrument['help_page']?>"><span
                           class="glyphicon glyphicon-info-sign"> </span>
                         </a>

@@ -860,6 +860,11 @@ function validate_timebin(value, validator, $thefield) {
       waitingDialog.hideHeaderMessage();
 
       current_ajax_call_params = {};
+      console.log('Drupal.visitor.token : ' + $.cookie('Drupal.visitor.token'));
+      if ($.cookie('Drupal.visitor.token')) {
+        var access_token = $.cookie('Drupal.visitor.token');
+        formData.append('token', access_token);
+      }
       current_ajax_call_params.initialFormData = formData;
       current_ajax_call_params.currentFormData = cloneFormData(formData);
       if (!current_ajax_call_params.currentFormData.has('query_status')) {
@@ -877,10 +882,34 @@ function validate_timebin(value, validator, $thefield) {
       AJAX_call();
     });
 
+    $('button.write-feedback-button').on('click', function(event) {
+      $.get('send-bug-report', function(data) {
+
+        var html = $.parseHTML(data);
+        console.log(data);
+        /*
+        var help_text = $(".region-content .block-system", html);
+        var title = $(".page-header", html).text();
+        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
+          $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
+        });
+        help_text.find('#table-of-contents-links').addClass('rounded');
+        waitingDialog.show(title + ' Help', help_text, {
+          dialogSize: 'lg',
+          buttonText: 'Close',
+          showCloseInHeader: true,
+        });
+        */
+      });
+      $('#lfeedback').modal({
+        show: true
+      });
+    });
+
     $('.help-button').on('click', function(e) {
       // e.preventDefault();
       $.get($(this).attr('href'), function(data) {
-        
+
         var html = $.parseHTML(data);
         var help_text = $(".region-content .block-system", html);
         var title = $(".page-header", html).text();
@@ -1872,7 +1901,7 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
     $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path + '&ext_id=4',
+      src: '/cdci/astrooda/dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path + '&ext_id=4',
       id: 'js9iframe',
       width: '650',
       height: '700',

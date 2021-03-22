@@ -47,7 +47,8 @@ function astrooda_polar($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#prefix' => '<div class="row">'
+    '#field_suffix' => t('keV'),
+    '#prefix' => '<div class="row">'
   );
 
   $form ['E2_keV'] = array (
@@ -70,7 +71,8 @@ function astrooda_polar($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#suffix' => '</div><hr class="hr-default" />'
+    '#field_suffix' => t('keV'),
+    '#suffix' => '</div><hr class="hr-default" />'
   );
 
   $form ['query_type'] = array (

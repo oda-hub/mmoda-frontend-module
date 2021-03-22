@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * @file
  * Provides a block
@@ -24,7 +25,49 @@ function astrooda_init()
     }
   }
   global $user;
-  drupal_add_js(array('user_uid' => $user->uid), 'setting');
+  drupal_add_js(array(
+    'user_uid' => $user->uid
+  ), 'setting');
+}
+
+require_once drupal_get_path('module', 'jwt_link').'/JWT/Authentication/JWT.php';
+use \Firebase\JWT\JWT;
+
+/**
+ * Implements hook_user_login().
+ */
+function astrooda_user_login(&$edit, $account)
+{
+  if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
+    //$astrooda_roles = preg_grep('/astrooda/i', $account->roles);
+    $astrooda_roles = $account->roles;
+    watchdog('ODA', 'Login - User Astrooda roles :' . implode(', ', $astrooda_roles));
+
+    if (count($astrooda_roles)) {
+      $jwt= jwt_link_url();
+      $alg = variable_get('jwt_link_alg', 'HS256');
+      $key = variable_get('jwt_link_key', '');
+      $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array($alg));
+      watchdog('ODA', 'Login - Adding token Cookie: '.print_r($jwt_decoded_token, TRUE));
+      user_cookie_save([
+        'token' => $jwt['jwt_encoded_token']
+      ]);
+      //drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
+    }
+  }
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function astrooda_user_logout($account) {
+  //$astrooda_roles = preg_grep('/astrooda/i', $account->roles);
+  $astrooda_roles = $account->roles;
+
+  if (count($astrooda_roles)) {
+    watchdog('ODA', 'Logout - removing the cookie token');
+    user_cookie_delete('token');
+  }
 }
 
 /**
@@ -99,12 +142,13 @@ function astrooda_menu()
   );
 
   $items['send-bug-report'] = array(
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'user_feedback_form_content',
     'page arguments' => array(
       'astrooda_bug_report_form'
     ),
     'access callback' => TRUE,
-    'type' => MENU_CALLBACK
+    'type' => MENU_CALLBACK,
+    'file' => 'astrooda.common.inc'
   );
 
   return $items;
@@ -123,9 +167,26 @@ function astrooda_block_view($delta)
         'subject' => '<none>',
         'content' => astrooda_main_block_content()
       );
-      break;
   }
   return $block;
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function user_feedback_form_content($form)
+{
+  $theme_args['bug_report_form'] = drupal_get_form($form);
+  $filename = 'formus.php';
+  $f = fopen($filename, 'w');
+  fwrite($f, "form:" . $form . "\n");
+  fwrite($f, print_r($items['bug_report_form'], true));
+  fclose($f);
+  chmod($filename, 0777);
+
+  $theme_args['#theme'] = 'send-bug-report';
+
+  return drupal_render($theme_args);
 }
 
 /**
@@ -215,7 +276,7 @@ function astrooda_main_block_content()
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;
   $items['common_form'] = drupal_get_form('astrooda_common');
-  $items['bug_report_form'] = drupal_get_form('astrooda_bug_report_form');
+  // $items['bug_report_form'] = drupal_get_form('astrooda_bug_report_form');
   $items['token_ask_form'] = drupal_get_form('astrooda_ask_token_form');
   $items['astrooda_debug'] = variable_get('astrooda_debug');
 
@@ -284,6 +345,14 @@ function astrooda_theme($existing, $type, $theme, $path)
       'items' => NULL
     )
   );
+  $theme_items['send-bug-report'] = array(
+    'template' => 'user-feedback',
+    'path' => drupal_get_path('module', 'astrooda') . '/templates',
+    'variables' => array(
+      'items' => NULL
+    )
+  );
+
   return $theme_items;
 }
 

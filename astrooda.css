@@ -2,8 +2,11 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
-.form-item-E1-keV .form-control, .form-item-E2-keV .form-control {
+.form-item-E1-keV .form-control, .form-item-E2-keV .form-control, .form-item-radius .form-control {
   display: inline-block !important;
+}
+
+.instrument-params-panel .form-control {
   width: 80% !important;
 }
 

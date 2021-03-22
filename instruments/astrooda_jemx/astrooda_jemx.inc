@@ -61,7 +61,8 @@ function astrooda_jemx($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "Radius" ),
       '#default_value' => $instrument_defaults ['radius'],
-      '#parent_classes' => array (
+    '#size' => 10,
+    '#parent_classes' => array (
           'form-group',
           'col-md-6'
       ),
@@ -74,6 +75,7 @@ function astrooda_jemx($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
+    '#field_suffix' => t('deg'),
       '#suffix' => '</div><hr class="hr-default" />'
   );
 
@@ -208,7 +210,8 @@ function astrooda_jemx($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#prefix' => '<div class="row">'
+    '#field_suffix' => t('keV'),
+    '#prefix' => '<div class="row">'
   );
 
   $form ['E2_keV'] = array (
@@ -231,7 +234,8 @@ function astrooda_jemx($form, &$form_state) {
           ),
           'data-bv-numeric' => 'true'
       ),
-      '#suffix' => '</div><hr class="hr-default" />'
+    '#field_suffix' => t('keV'),
+    '#suffix' => '</div><hr class="hr-default" />'
   );
 
   $form ['query_type'] = array (
