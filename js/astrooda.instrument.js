@@ -556,6 +556,10 @@ function validate_timebin(value, validator, $thefield) {
         display_catalog(catalog, '#' + catalog_parent_panel.attr('id'), catalog_offset, showUseCatalog);
       }
     });
+    $("body").on('click', '.result-panel .show-js9', function(e) {
+      e.preventDefault();
+      display_image_js9($(this).data("image_file_path"), $(this).data("e1_kev"), $(this).data("e2_kev"), $(this).data("datetime"));
+    });
     $("body").on('click', '.result-panel .show-log', function(e) {
       e.preventDefault();
       var log_parent_panel = $(this).closest('.result-panel');
@@ -1856,11 +1860,13 @@ function validate_timebin(value, validator, $thefield) {
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     var toolbar = '<div class="btn-group" role="group">';
+    toolbar += '<button class="btn btn-default show-js9" type="button" data-datetime="' + datetime + '" data-image_file_path="'+data.image.file_path+
+    '" data-E1_keV="'+data.analysis_paramters.E1_keV+'" data-E2_keV="'+data.analysis_paramters.E2_keV+'" >JS9</button>';
     toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
       + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
-    if (product_type.endsWith('image')) {
+    if (product_type.endsWith('image')) {""
       toolbar += '<button class="btn btn-default show-catalog" type="button" data-datetime="' + datetime + '" >Catalog</button>';
     }
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
@@ -1893,15 +1899,23 @@ function validate_timebin(value, validator, $thefield) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-
-    // mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
     $('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
 
     $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
     $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
     $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV');
+
+    $('#' + panel_ids.panel_id).highlight_result_panel();
+    return ($('#' + panel_ids.panel_body_id));
+  }
+  function display_image_js9(image_file_path, E1_keV, E2_keV, datetime) {
+
+    // mpld3.draw_figure(panel_ids.panel_body_id, data.image.image);
+    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', datetime);
+
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src: '/cdci/astrooda/dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + data.image.file_path + '&ext_id=4',
+      src: '/cdci/astrooda/dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
       id: 'js9iframe',
       width: '650',
       height: '700',
@@ -1913,10 +1927,10 @@ function validate_timebin(value, validator, $thefield) {
     // 'form#astrooda-common').val();
     // $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
     // 'Source : ' + source_name + ' - ' + product_type);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(data.analysis_paramters.E1_keV + ' - ' + data.analysis_paramters.E2_keV + ' keV');
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(E1_keV + ' - ' + E2_keV + ' keV');
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
-    return ($('#' + panel_ids.panel_body_id));
+    //return ($('#' + panel_ids.panel_body_id));
 
   }
 
