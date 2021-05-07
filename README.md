@@ -1,14 +1,17 @@
--- SUMMARY --
+SUMMARY
+-------
 
 The astrooda module provides a theme-able Drupal block which provides astro data online analysis.
 No instrument is available in this module.
 
--- REQUIREMENTS --
+REQUIREMENTS
+---
 
 * Block module
 * Libraries module (2.x)
 
--- INSTALLATION --
+INSTALLATION
+--
 
  * Download and install block and libraries (2.) by uploading them in sites/all/modules
  * Enable the two modules
@@ -16,7 +19,7 @@ No instrument is available in this module.
  * Enable the module
 
 
--- CONFIGURATION --
+CONFIGURATION
+--
 
 Navigate to admin/settings/astrooda to change the following settings.
-
