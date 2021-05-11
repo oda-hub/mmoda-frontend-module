@@ -113,7 +113,7 @@ function astrooda_antares($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-numeric' => 'true'
+          'data-bv-numeric' => 'true',
           'data-bv-field' => 'antares-radius'
       ),
       '#prefix' => '<div class="row">',
