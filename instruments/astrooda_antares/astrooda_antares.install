@@ -40,7 +40,8 @@ function astrooda_antares_install() {
       'title' => $instrument_info['title'],
       'radius' => 2,
       'query_type' => 'Real',
-      'product_type' => 'antares_spectra',
+      'product_type' => 'antares_spectrum',
+      'weight' => 60,
   );
 
   // add help node
