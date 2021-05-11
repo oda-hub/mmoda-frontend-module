@@ -114,34 +114,35 @@ function astrooda_antares($form, &$form_state) {
               'form-control'
           ),
           'data-bv-numeric' => 'true'
+          'data-bv-field' => 'antares-radius'
       ),
       '#prefix' => '<div class="row">',
       '#suffix' => '</div><hr class="hr-default" />',
   );
 
 
-  $form ['product_type'] = array (
-      '#type' => 'radios',
-      '#title' => t ( "Product Type" ),
-      '#description' => t ( "Select product type" ),
-      '#attributes' => array ('name' => $mform_id.'product_type'),
-      '#default_value' => $instrument_defaults['product_type'],
-      '#options' => array (
-          'antares_image' => 'Image',
-          'antares_spectrum' => 'Spectrum',
-          'antares_lc' => 'Light curve',
-          'antares_table' => 'Table'
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
-      ),
-      '#label_classes' => array (
-          'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-  );
+//   $form ['product_type'] = array (
+//       '#type' => 'radios',
+//       '#title' => t ( "Product Type" ),
+//       '#description' => t ( "Select product type" ),
+//       '#attributes' => array ('name' => $mform_id.'product_type'),
+//       '#default_value' => $instrument_defaults['product_type'],
+//       '#options' => array (
+//           'antares_image' => 'Image',
+//           'antares_spectrum' => 'Spectrum',
+//           'antares_lc' => 'Light curve',
+//           'antares_table' => 'Table'
+//       ),
+//       '#parent_classes' => array (
+//           'form-group',
+//           'col-md-6'
+//       ),
+//       '#label_classes' => array (
+//           'control-label'
+//       ),
+//       '#prefix' => '<div class="row">',
+//       '#suffix' => '</div>'
+//   );
 /*
   $form ['time_bin'] = array (
       '#type' => 'textfield',
