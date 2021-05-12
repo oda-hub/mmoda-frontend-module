@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(document).ready(function($){
     $('.antares-form').bootstrapValidator({
         // live :'disabled',
         fields: {
