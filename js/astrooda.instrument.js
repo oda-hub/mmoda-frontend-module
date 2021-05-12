@@ -760,16 +760,19 @@ function validate_timebin(value, validator, $thefield) {
     
     $('.antares-form').bootstrapValidator('addField', 'radius', {
       validators: {
-          lessThan: {
-              value: 2.5,
-              inclusive: true,
-              message: 'Please enter value between 0.1 and 2.5'
-          },
-          greaterThan: {
-              value: 0.1,
-              inclusive: true,
-              message: 'Please enter value between 0.1 and 2.5'
-          }
+        lessThan: {
+          value: 2.5,
+          inclusive: true,
+          message: 'Please enter value between 0.1 and 2.5'
+        },
+        greaterThan: {
+          value: 0.1,
+          inclusive: true,
+          message: 'Please enter value between 0.1 and 2.5'
+        },
+        notEmpty: {
+          message: 'This field couldn\'t be empty'
+        }
       }
     })
 
