@@ -767,7 +767,7 @@ function validate_timebin(value, validator, $thefield) {
           },
           greaterThan: {
               value: 0.1,
-              inclusive: false,
+              inclusive: true,
               message: 'Please enter value between 0.1 and 2.5'
           }
       }
