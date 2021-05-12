@@ -27,10 +27,6 @@ function astrooda_antares($form, &$form_state) {
   $astrooda_settings = variable_get('astrooda_settings');
   $instrument_defaults= $astrooda_settings['instruments']['antares'];
 
-  $form['#attached']['js'] = array(
-    drupal_get_path('module', 'astrooda_antares') . '/astrooda_antares.js',
-  );
-
 /*
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
