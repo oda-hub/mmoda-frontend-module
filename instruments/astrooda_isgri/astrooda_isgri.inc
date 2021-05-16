@@ -211,6 +211,29 @@ function astrooda_isgri($form, &$form_state)
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
+
+  $form['integral_data_rights'] = array(
+    '#type' => 'radios',
+    '#title' => t("INTEGRAL data access priviledge"),    
+    '#attributes' => array(
+      'name' => $mform_id . 'integral_data_rights'
+    ),
+    '#default_value' => 'public',
+    '#options' => array(
+      'public' => 'Public',      
+      'all-private' => 'All Private'
+    ),
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#prefix' => '<div class="row">',
+    '#suffix' => '</div>'
+  );
+
   $form['E1_keV'] = array(
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
