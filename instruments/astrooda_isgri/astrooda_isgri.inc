@@ -103,6 +103,42 @@ function astrooda_isgri($form, &$form_state)
     '#suffix' => '</div>'
   );
 
+
+  $form['max_pointings'] = array(
+    '#type' => 'textarea',
+    '#title' => t("ScWs List"),
+    '#default_value' => $instrument_defaults['max_pointings'],
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-12'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'class' => array(
+        'form-control'
+      )
+    ),
+    '#states' => array(
+      'visible' => array( // action to take.
+        ':input[name="' . $mform_id . 'use_scws"]' => array(
+          'value' => 'no'
+        )
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'use_scws"]' => array(
+          array(
+            'value' => 'no'
+          )
+        )
+      )
+    ),
+    '#prefix' => '<div class="row">',
+    '#suffix' => '</div>'
+  );
+
+
   $form['scw_list'] = array(
     '#type' => 'textarea',
     '#title' => t("ScWs List"),
