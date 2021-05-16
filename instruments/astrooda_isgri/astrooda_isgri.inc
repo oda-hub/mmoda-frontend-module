@@ -106,7 +106,7 @@ function astrooda_isgri($form, &$form_state)
   $form['max_pointings'] = array(
     '#type' => 'textfield',
     '#title' => t("Maximum number of ScWs"),
-    '#description' => t("randomly selected in the time range")
+    '#description' => t("randomly selected in the time range"),
     '#size' => 10,
     '#default_value' => $instrument_defaults['max_pointings'],
     '#parent_classes' => array(
