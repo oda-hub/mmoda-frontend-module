@@ -236,7 +236,7 @@ function astrooda_jemx($form, &$form_state) {
 
   $form ['jemx_num'] = array (
       '#type' => 'radios',
-      '#title' => t ( "JEMX number" ),
+      '#title' => t ( "JEMX module number" ),
       '#description' => t ( "" ),
       '#attributes' => array (
           'name' => $mform_id . 'jemx_num'
