@@ -105,12 +105,13 @@ function astrooda_isgri($form, &$form_state)
 
 
   $form['max_pointings'] = array(
-    '#type' => 'textarea',
-    '#title' => t("ScWs List"),
+    '#type' => 'textfield',
+    '#title' => t("Max ScWs"),
+    '#size' => 10,
     '#default_value' => $instrument_defaults['max_pointings'],
     '#parent_classes' => array(
       'form-group',
-      'col-md-12'
+      'col-md-6'
     ),
     '#label_classes' => array(
       'control-label'
@@ -118,7 +119,8 @@ function astrooda_isgri($form, &$form_state)
     '#attributes' => array(
       'class' => array(
         'form-control'
-      )
+      ),
+      'data-bv-numeric' => 'true'
     ),
     '#states' => array(
       'visible' => array( // action to take.
