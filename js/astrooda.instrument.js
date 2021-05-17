@@ -57,7 +57,7 @@ function validate_timebin(value, validator, $thefield) {
   var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
   // var ajax_request_timeout= 10 * 1000; // test timeout
 
-  var ignore_params_url = ['job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file'];
+  var ignore_params_url = ['job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file', 'token'];
 
   // all processing distinct nodes during a request
   var distinct_nodes;
