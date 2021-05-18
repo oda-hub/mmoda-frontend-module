@@ -46,6 +46,14 @@ function validate_timebin(value, validator, $thefield) {
   return true;
 }
 
+function panel_title(param) {
+  'Source : ' + param.src_name + '; ' + 
+    (typeof param.E1_keV !== 'undefined' ? param.E1_keV + ' - ' + param.E2_keV + ' keV, ' : '') + 
+    (typeof param.time_bin !== 'undefined' ? param.time_bin + ' ' + 
+      (typeof param.time_bin_format !== 'undefined' ? param.time_bin_format : 'sec'): '');
+      // or what is the default for timebin?
+}
+
 (function($) {
 
   $(document).ready(commonReady);
@@ -1361,9 +1369,7 @@ function validate_timebin(value, validator, $thefield) {
       api_code: data.api_code,
     });
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-      'Source : ' + data.analysis_parameters.src_name + ', ' + data.analysis_parameters.E1_keV + ' - ' + data.analysis_parameters.E2_keV + ' keV, '
-      + data.analysis_parameters.time_bin + ' ' + data.analysis_parameters.time_bin_format);
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters));
 
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
@@ -1467,9 +1473,7 @@ function validate_timebin(value, validator, $thefield) {
       api_code: data.api_code,
     });
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-      'Source : ' + data.analysis_parameters.src_name + ', ' + data.analysis_parameters.E1_keV + ' - ' + data.analysis_parameters.E2_keV + ' keV, '
-      + data.analysis_parameters.time_bin + ' ' + data.analysis_parameters.time_bin_format);
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters));
 
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
@@ -1558,9 +1562,7 @@ function validate_timebin(value, validator, $thefield) {
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-      'Source : ' + data.name[lc_index] + ', ' + data.analysis_parameters.E1_keV + ' - ' + data.analysis_parameters.E2_keV + ' keV, ' + data.analysis_parameters.time_bin + ' '
-      + data.analysis_parameters.time_bin_format);
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters));
 
     // set_draggable();
     $('#' + panel_ids.panel_id).css({
