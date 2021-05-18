@@ -42,6 +42,7 @@ function astrooda_jemx_install() {
       'radius' => 12,
       'scw_list' => '005100410010.001,005100420010.001',
       'max_pointings' => 50,
+      'integral_data_rights' => 'public',
       'E1_keV' => 3.0,
       'E2_keV' => 35.0,
       'query_type' => 'Real',
