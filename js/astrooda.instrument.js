@@ -47,7 +47,7 @@ function validate_timebin(value, validator, $thefield) {
 }
 
 function panel_title(param) {
-  'Source : ' + param.src_name + '; ' + 
+  return 'Source : ' + param.src_name + '; ' + 
     (typeof param.E1_keV !== 'undefined' ? param.E1_keV + ' - ' + param.E2_keV + ' keV, ' : '') + 
     (typeof param.time_bin !== 'undefined' ? param.time_bin + ' ' + 
       (typeof param.time_bin_format !== 'undefined' ? param.time_bin_format : 'sec'): '');
