@@ -48,7 +48,14 @@ function astrooda_jemx_install() {
       'product_type' => 'jemx_image',
       'time_bin' => 1000,
       'time_bin_format' => 'sec',
-      'weight' => 20,
+    'weight' => 20,
+    'acknowledgement' => '
+    If you use results or material from this instrument in our application, ODA, do not
+    forget to quote our paper:<br> <a
+      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
+      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
+      S.Paltani<br> An online data analysis system of INTEGRAL telescope
+    </a>'
   );
 
   // add help node

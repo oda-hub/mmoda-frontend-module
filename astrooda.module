@@ -302,6 +302,7 @@ function astrooda_main_block_content()
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
         'title' => $instrument['title'],
+        'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] :'',
         'help_page' => drupal_get_path_alias('node/' . $instrument['help_page_nid']),
         'form' => drupal_get_form('astrooda_' . $instrument['name']),
         'active' => ''
