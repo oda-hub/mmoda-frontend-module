@@ -186,7 +186,7 @@ function validate_timebin(value, validator, $thefield) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
-          $('#paper-quote').clone().addClass('paper-quote').removeAttr('id').appendTo(product_panel_body);
+          $('.instrument-panel.active .paper-quote').clone().removeClass('hidden').addClass('paper-quote').removeAttr('id').appendTo(product_panel_body);
 
           waitingDialog.setClose();
         }

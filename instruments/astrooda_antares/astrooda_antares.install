@@ -45,7 +45,11 @@ function astrooda_antares_install() {
       'product_type' => 'antares_table',
       'time_bin' => '2',
       'time_bin_format' => 'sec',
-      'weight' => 60,
+    'weight' => 60,
+    'acknowledgement' => '
+    If you use results or material from this instrument in our application, ODA, do not
+    forget to quote the paper:<br> J.Aublin et al. (for the ANTARES Collaboration),
+    <br>"Searches for point-like sources of cosmic neutrinos with 11 years of ANTARES data", PoS(ICRC2019)920'
   );
 
   // add help node

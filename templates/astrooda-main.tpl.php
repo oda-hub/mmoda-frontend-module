@@ -44,20 +44,6 @@
  * @ingroup themeable
  */
 ?>
-<div id="paper-quote" class="alert alert-info alert-dismissible"
-  role="alert">
-  <hr>
-  <a href="#" class="close" data-dismiss="alert" aria-label="close"
-    title="close">×</a> <span class="glyphicon glyphicon-info-sign"> </span>
-  <div class="header-info-text">
-    If you use results or material from our application, ODA, do not
-    forget to quote our paper:<br> <a
-      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
-      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
-      S.Paltani<br> An online data analysis system of INTEGRAL telescope
-    </a>
-  </div>
-</div>
 
 <!-- Modal Dialog-->
 <div id="ldialog" class="modal fade astrooda-log" tabindex='-1'
@@ -66,8 +52,8 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-          <span  class="close" data-dismiss="modal"
-          aria-label="Close" aria-hidden="true">&times;</span>
+        <span class="close" data-dismiss="modal" aria-label="Close"
+          aria-hidden="true">&times;</span>
         <h4 class="modal-title"></h4>
         <div class="header-message">
           <div>
@@ -188,8 +174,8 @@
           <a data-toggle="tooltip" title=""
             data-original-title="Sign in"
             class="btn btn-sm btn-primary user-log login-link"
-            href="user/login"> <span
-            class="glyphicon glyphicon-log-in"> </span>
+            href="user/login"> <span class="glyphicon glyphicon-log-in">
+          </span>
           </a> <a data-toggle="tooltip" title=""
             data-original-title="Sign out"
             class="btn btn-sm btn-primary user-log logout-link"
@@ -242,7 +228,18 @@
                       </div>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
-                  </div>
+                    <?php  if ($instrument['acknowledgement']) :?>
+                    <div id="<?=$name?>-paper-quote"
+                        class="paper-quote alert alert-info alert-dismissible hidden"
+                        role="alert">
+                        <hr>
+                        <a href="#" class="close" data-dismiss="alert"
+                          aria-label="close" title="close">×</a> <span
+                          class="glyphicon glyphicon-info-sign"> </span>
+                        <div class="header-info-text"><?=$instrument['acknowledgement']?></div>
+                      </div>
+                      <?php endif; ?>
+                    </div>
                   </div>
 
                 </div>
