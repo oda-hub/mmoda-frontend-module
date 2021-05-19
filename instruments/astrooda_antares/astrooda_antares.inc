@@ -26,6 +26,7 @@ function astrooda_antares($form, &$form_state) {
 
   $astrooda_settings = variable_get('astrooda_settings');
   $instrument_defaults= $astrooda_settings['instruments']['antares'];
+
 /*
   $form ['E1_keV'] = array (
       '#type' => 'textfield',
@@ -113,9 +114,16 @@ function astrooda_antares($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-numeric' => 'true'
+	  'data-bv-numeric' => 'true',
+	  'data-bv-between' => 'true',
+      'data-bv-between-inclusive' => 'true',
+	  'data-bv-between-max' => 2.5,
+	  'data-bv-between-min' => 0.1,
+	  'data-bv-between-message' => 'Please enter value between 0.1 and 2.5',
+	  'data-bv-notempty' => 'true',
       ),
       '#prefix' => '<div class="row">',
+      '#field_suffix' => t('deg'),
       '#suffix' => '</div><hr class="hr-default" />',
   );
 
@@ -127,10 +135,10 @@ function astrooda_antares($form, &$form_state) {
       '#attributes' => array ('name' => $mform_id.'product_type'),
       '#default_value' => $instrument_defaults['product_type'],
       '#options' => array (
-          'antares_image' => 'Image',
+        //   'antares_image' => 'Image',
           'antares_spectrum' => 'Spectrum',
-          'antares_lc' => 'Light curve',
-          'antares_table' => 'Table'
+        //   'antares_lc' => 'Light curve',
+        //   'antares_table' => 'Table'
       ),
       '#parent_classes' => array (
           'form-group',
