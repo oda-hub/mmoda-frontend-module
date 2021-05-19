@@ -1562,7 +1562,7 @@ function panel_title(srcname, param) {
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters.src_name, data.analysis_parameters));
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.name[lc_index], data.analysis_parameters));
 
     // set_draggable();
     $('#' + panel_ids.panel_id).css({
