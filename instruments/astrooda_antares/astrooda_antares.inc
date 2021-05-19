@@ -100,7 +100,7 @@ function astrooda_antares($form, &$form_state) {
   );
 
   $form ['radius'] = array (
-      '#type' => 'textfield',
+      '#type' => 'range',
       '#title' => t ( "Radius" ),
       '#default_value' => $instrument_defaults['radius'],
       '#parent_classes' => array (
@@ -115,7 +115,8 @@ function astrooda_antares($form, &$form_state) {
               'form-control'
           ),
 	  'data-bv-numeric' => 'true',
-	  'data-bv-between-inclusive' => 'true',
+	  'data-bv-between' => 'true',
+      'data-bv-between-inclusive' => 'true',
 	  'data-bv-between-max' => 2.5,
 	  'data-bv-between-min' => 0.1,
 	  'data-bv-between-message' => 'Please enter value between 0.1 and 2.5',
