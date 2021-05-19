@@ -42,7 +42,14 @@ function astrooda_spi_acs_install() {
       'product_type' => 'spi_acs_lc',
       'time_bin' => '2',
       'time_bin_format' => 'sec',
-      'weight' => 30,
+    'weight' => 30,
+    'acknowledgement' => '
+    If you use results or material from this instrument in our application, ODA, do not
+    forget to quote our paper:<br> <a
+      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
+      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
+      S.Paltani<br> An online data analysis system of INTEGRAL telescope
+    </a>'
   );
 
   // add help node

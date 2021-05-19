@@ -42,6 +42,10 @@ function astrooda_antares_install() {
       'query_type' => 'Real',
       'product_type' => 'antares_spectrum',
       'weight' => 60,
+      'acknowledgement' => '
+        If you use results or material from this instrument in our application, ODA, do not
+        forget to quote the paper:<br><a href="https://pos.sissa.it/358/920/pdf" target=_blank>J.Aublin et al. (for the ANTARES Collaboration),
+        <br>"Searches for point-like sources of cosmic neutrinos with 11 years of ANTARES data", PoS(ICRC2019)920</a>'
   );
 
   // add help node

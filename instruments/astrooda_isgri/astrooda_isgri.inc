@@ -84,15 +84,14 @@ function astrooda_isgri($form, &$form_state)
 
   $form['use_scws'] = array(
     '#type' => 'radios',
-    '#title' => t("Use Science Windows - ScWs"),
-    '#description' => t("Maximum number of ScWs is 50."),
+    '#title' => t("Use INTEGRAL pointing Science Windows (ScWs)"),
     '#attributes' => array(
       'name' => $mform_id . 'use_scws'
     ),
     '#options' => array(
-      'no' => t('No'),
-      'form_list' => t('List'),
-      'user_file' => t('File')
+      'no' => t('Select for time range'),
+      'form_list' => t('Custom list'),
+      'user_file' => t('Custom list in file')
     ),
     '#default_value' => 'no',
     '#parent_classes' => array(
@@ -102,6 +101,45 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">',
     '#suffix' => '</div>'
   );
+
+
+  $form['max_pointings'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Maximum number of ScWs"),
+    '#description' => t("randomly selected in the time range"),
+    '#size' => 10,
+    '#default_value' => $instrument_defaults['max_pointings'],
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'class' => array(
+        'form-control'
+      ),
+      'data-bv-numeric' => 'true'
+    ),
+    '#states' => array(
+      'visible' => array( // action to take.
+        ':input[name="' . $mform_id . 'use_scws"]' => array(
+          'value' => 'no'
+        )
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'use_scws"]' => array(
+          array(
+            'value' => 'no'
+          )
+        )
+      )
+    ),
+    '#prefix' => '<div class="row">',
+    '#suffix' => '</div>'
+  );
+
 
   $form['scw_list'] = array(
     '#type' => 'textarea',
@@ -171,6 +209,29 @@ function astrooda_isgri($form, &$form_state)
     '#field_suffix' => '<span class="fa fa-times clear-left-input"></span>',
     '#prefix' => '<div class="row">',
     '#suffix' => '</div><hr class="hr-default" />'
+  );
+
+
+  $form['integral_data_rights'] = array(
+    '#type' => 'radios',
+    '#title' => t("INTEGRAL data access priviledge"),    
+    '#attributes' => array(
+      'name' => $mform_id . 'integral_data_rights'
+    ),
+    '#default_value' => 'public',
+    '#options' => array(
+      'public' => 'Public',      
+      'all-private' => 'All Private'
+    ),
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#prefix' => '<div class="row">',
+    '#suffix' => '</div>'
   );
 
   $form['E1_keV'] = array(
