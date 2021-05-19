@@ -100,7 +100,7 @@ function astrooda_antares($form, &$form_state) {
   );
 
   $form ['radius'] = array (
-      '#type' => 'range',
+      '#type' => 'textfield',
       '#title' => t ( "Radius" ),
       '#default_value' => $instrument_defaults['radius'],
       '#parent_classes' => array (
