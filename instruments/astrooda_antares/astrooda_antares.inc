@@ -114,7 +114,12 @@ function astrooda_antares($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
-          'data-bv-numeric' => 'true'
+	  'data-bv-numeric' => 'true',
+	  'data-bv-between-inclusive' => 'true',
+	  'data-bv-between-max' => 2.5,
+	  'data-bv-between-min' => 0.1,
+	  'data-bv-between-message' => 'Please enter value between 0.1 and 2.5',
+	  'data-bv-notempty' => 'true',
       ),
       '#prefix' => '<div class="row">',
       '#field_suffix' => t('deg'),
