@@ -73,6 +73,7 @@ function astrooda_isgri($form, &$form_state)
       'control-label'
     ),
     '#attributes' => array(
+      'name' => $mform_id . 'radius',
       'class' => array(
         'form-control'
       ),
@@ -101,7 +102,6 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">',
     '#suffix' => '</div>'
   );
-
 
   $form['max_pointings'] = array(
     '#type' => 'textfield',
@@ -139,7 +139,6 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">',
     '#suffix' => '</div>'
   );
-
 
   $form['scw_list'] = array(
     '#type' => 'textarea',
@@ -211,16 +210,15 @@ function astrooda_isgri($form, &$form_state)
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
-
   $form['integral_data_rights'] = array(
     '#type' => 'radios',
-    '#title' => t("INTEGRAL data access priviledge"),    
+    '#title' => t("INTEGRAL data access priviledge"),
     '#attributes' => array(
       'name' => $mform_id . 'integral_data_rights'
     ),
     '#default_value' => 'public',
     '#options' => array(
-      'public' => 'Public',      
+      'public' => 'Public',
       'all-private' => 'All Private'
     ),
     '#parent_classes' => array(

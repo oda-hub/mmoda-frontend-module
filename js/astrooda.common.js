@@ -63,7 +63,7 @@ function validate_scws(value, nb_scws) {
   if (!scws_pattern.test(value)) {
     return {
       valid: false,
-      message: 'Please enter a validdd list of ScWs, maximum ' + nb_scws
+      message: 'Please enter a valid list of ScWs, maximum ' + nb_scws
     }
   }
   return true;
@@ -584,11 +584,11 @@ function get_waitingDialog($modal_dialog) {
       $('.main-toolbar .login-link').hide();
       $('.main-toolbar .logout-link').show();
     }
-/*
-    $('.main-toolbar .user-log').on('click', function() {
-      $('.main-toolbar .user-log').toggle();
-    });
-*/
+    /*
+        $('.main-toolbar .user-log').on('click', function() {
+          $('.main-toolbar .user-log').toggle();
+        });
+    */
     $(document).on('show.bs.modal', '.modal', function() {
       var zIndex = 1040 + (10 * $('.modal:visible').length);
       $(this).css('z-index', zIndex);
@@ -735,7 +735,7 @@ function get_waitingDialog($modal_dialog) {
       // Disabling submit
       $('[type="submit"]', '.instrument-panel').prop('disabled', true);
     }).on('success.field.bv', function() {
-      // Enabling submit')
+      // Enabling submit
       $('[type="submit"]', '.instrument-panel').prop('disabled', false);
 
     });

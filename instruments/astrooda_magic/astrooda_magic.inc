@@ -65,7 +65,8 @@ function astrooda_magic($form, &$form_state) {
           'control-label'
       ),
       '#attributes' => array (
-          'class' => array (
+        'name' => $mform_id . 'radius',
+        'class' => array (
               'form-control'
           ),
           'data-bv-numeric' => 'true'

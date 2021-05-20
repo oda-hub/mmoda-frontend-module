@@ -70,7 +70,8 @@ function astrooda_jemx($form, &$form_state) {
           'control-label'
       ),
       '#attributes' => array (
-          'class' => array (
+        'name' => $mform_id . 'radius',
+        'class' => array (
               'form-control'
           ),
           'data-bv-numeric' => 'true'
@@ -212,13 +213,13 @@ function astrooda_jemx($form, &$form_state) {
 
   $form['integral_data_rights'] = array(
     '#type' => 'radios',
-    '#title' => t("INTEGRAL data access priviledge"),    
+    '#title' => t("INTEGRAL data access priviledge"),
     '#attributes' => array(
       'name' => $mform_id . 'integral_data_rights'
     ),
     '#default_value' => 'public',
     '#options' => array(
-      'public' => 'Public',      
+      'public' => 'Public',
       'all-private' => 'All Private'
     ),
     '#parent_classes' => array(

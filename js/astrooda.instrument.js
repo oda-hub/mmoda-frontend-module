@@ -76,19 +76,17 @@ function panel_title(srcname, param) {
   var current_nb_attempts_after_failed = 0;
 
   function AJAX_call() {
-    // Display the key/value pairs
-    // console.log('--- initialFormData');
-    // for(var parameter of
-    // current_ajax_call_params.initialFormData.entries())
-    // {
-    // console.log(parameter[0]+ '='+ parameter[1]);
-    // }
-    // console.log('--- currentFormData');
-    // for(var parameter of
-    // current_ajax_call_params.currentFormData.entries())
-    // {
-    // console.log(parameter[0]+ '='+ parameter[1]);
-    // }
+    // Display the key / value pairs
+//    console.log('--- initialFormData');
+//    for (var parameter of
+//      current_ajax_call_params.initialFormData.entries()) {
+//      console.log(parameter[0] + '=' + parameter[1]);
+//    }
+//    console.log('--- currentFormData');
+//    for (var parameter of
+//      current_ajax_call_params.currentFormData.entries()) {
+//      console.log(parameter[0] + '=' + parameter[1]);
+//    }
     var requestTimer = null;
     var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
