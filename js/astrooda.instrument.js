@@ -192,7 +192,6 @@ function panel_title(srcname, param) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
-          console.log('add paper quote');
           $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
 
           waitingDialog.setClose();
