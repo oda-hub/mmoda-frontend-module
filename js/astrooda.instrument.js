@@ -47,11 +47,11 @@ function validate_timebin(value, validator, $thefield) {
 }
 
 function panel_title(srcname, param) {
-  return 'Source: ' + srcname + '; ' + 
-    (typeof param.E1_keV !== 'undefined' ? param.E1_keV + ' - ' + param.E2_keV + ' keV, ' : '') + 
-    (typeof param.time_bin !== 'undefined' ? param.time_bin + ' ' + 
-      (typeof param.time_bin_format !== 'undefined' ? param.time_bin_format : 'sec'): '');
-      // or what is the default for timebin?
+  return (srcname !== '' ? 'Source: ' + srcname + '; ' : '') +
+    (typeof param.E1_keV !== 'undefined' ? param.E1_keV + ' - ' + param.E2_keV + ' keV, ' : '') +
+    (typeof param.time_bin !== 'undefined' ? param.time_bin + ' ' +
+      (typeof param.time_bin_format !== 'undefined' ? param.time_bin_format : 'sec') : '');
+  // or what is the default for timebin?
 }
 
 (function($) {
@@ -77,16 +77,16 @@ function panel_title(srcname, param) {
 
   function AJAX_call() {
     // Display the key / value pairs
-//    console.log('--- initialFormData');
-//    for (var parameter of
-//      current_ajax_call_params.initialFormData.entries()) {
-//      console.log(parameter[0] + '=' + parameter[1]);
-//    }
-//    console.log('--- currentFormData');
-//    for (var parameter of
-//      current_ajax_call_params.currentFormData.entries()) {
-//      console.log(parameter[0] + '=' + parameter[1]);
-//    }
+    //    console.log('--- initialFormData');
+    //    for (var parameter of
+    //      current_ajax_call_params.initialFormData.entries()) {
+    //      console.log(parameter[0] + '=' + parameter[1]);
+    //    }
+    //    console.log('--- currentFormData');
+    //    for (var parameter of
+    //      current_ajax_call_params.currentFormData.entries()) {
+    //      console.log(parameter[0] + '=' + parameter[1]);
+    //    }
     var requestTimer = null;
     var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
@@ -192,7 +192,8 @@ function panel_title(srcname, param) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
-          $('.instrument-panel.active .paper-quote').clone().removeClass('hidden').addClass('paper-quote').removeAttr('id').appendTo(product_panel_body);
+          console.log('add paper quote');
+          $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
 
           waitingDialog.setClose();
         }
@@ -1554,9 +1555,11 @@ function panel_title(srcname, param) {
     // mpld3.draw_figure(panel_ids.panel_body_id, image.image);
     $('#' + panel_ids.panel_body_id).append(image.image.script + image.image.div);
 
-    $('#' + panel_ids.panel_body_id).append(image.header_text.replace(/\n/g, "<br />"));
-    $('#' + panel_ids.panel_body_id).append(get_text_table(image.table_text));
-    $('#' + panel_ids.panel_body_id).append(image.footer_text.replace(/\n/g, "<br />"));
+    panel_body_append_header_footer(panel_ids, data);
+
+//    $('#' + panel_ids.panel_body_id).append(image.header_text.replace(/\n/g, "<br />"));
+//    $('#' + panel_ids.panel_body_id).append(get_text_table(image.table_text));
+//    $('#' + panel_ids.panel_body_id).append(image.footer_text.replace(/\n/g, "<br />"));
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
@@ -1739,9 +1742,10 @@ function panel_title(srcname, param) {
     // mpld3.draw_figure(panel_ids.panel_body_id, data.spectral_fit_image);
     $('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
 
-    $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
-    $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
-    $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
+    panel_body_append_header_footer(panel_ids, data);
+//    $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
+//    $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
+//    $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + metadata.source_name);
 
@@ -1837,6 +1841,15 @@ function panel_title(srcname, param) {
     return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title + '" ></span></button>';
   }
 
+  function panel_body_append_header_footer(panel_ids, data) {
+    if (data.image.hasOwnProperty('header_text'))
+      $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
+    if (data.image.hasOwnProperty('table_text'))
+    $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
+    if (data.image.hasOwnProperty('footer_text'))
+    $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
+  }
+
   function display_image(data, job_id, instrument) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
@@ -1860,13 +1873,14 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     var toolbar = '<div class="btn-group" role="group">';
-    toolbar += '<button class="btn btn-default show-js9" type="button" data-datetime="' + datetime + '" data-image_file_path="'+data.image.file_path+
-    '" data-E1_keV="'+data.analysis_parameters.E1_keV+'" data-E2_keV="'+data.analysis_parameters.E2_keV+'" >JS9</button>';
+    toolbar += '<button class="btn btn-default show-js9" type="button" data-datetime="' + datetime + '" data-image_file_path="' + data.image.file_path +
+      '" data-E1_keV="' + data.analysis_parameters.E1_keV + '" data-E2_keV="' + data.analysis_parameters.E2_keV + '" >JS9</button>';
     toolbar += '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
       + '" >Download <span class="glyphicon glyphicon-info-sign remove-catolog" data-toggle="tooltip" title="image, catalog and region file" ></span></a>';
 
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
-    if (product_type.endsWith('image')) {""
+    if (product_type.endsWith('image')) {
+      ""
       toolbar += '<button class="btn btn-default show-catalog" type="button" data-datetime="' + datetime + '" >Catalog</button>';
     }
     toolbar += '<button class="btn btn-default show-query-parameters"  type="button" data-datetime="' + datetime + '" >Query parameters</button>';
@@ -1901,10 +1915,8 @@ function panel_title(srcname, param) {
     }
     $('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
 
-    $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
-    $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
-    $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(data.analysis_parameters.E1_keV + ' - ' + data.analysis_parameters.E2_keV + ' keV');
+    panel_body_append_header_footer(panel_ids, data);
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('',data.analysis_parameters));
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
