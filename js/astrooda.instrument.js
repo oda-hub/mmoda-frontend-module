@@ -1938,7 +1938,7 @@ function panel_title(srcname, param) {
     // 'form#astrooda-common').val();
     // $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
     // 'Source : ' + source_name + ' - ' + product_type);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(E1_keV + ' - ' + E2_keV + ' keV');
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(typeof E1_keV !== 'undefined' ? E1_keV + ' - ' + E2_keV + ' keV, ' : '');
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
     //return ($('#' + panel_ids.panel_body_id));
