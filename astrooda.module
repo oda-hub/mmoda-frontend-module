@@ -142,7 +142,8 @@ function astrooda_menu()
   );
 
   $items['send-bug-report'] = array(
-    'page callback' => 'user_feedback_form_content',
+    //'page callback' => 'user_feedback_form_content',
+    'page callback' => 'astrooda_bug_report_form',
     'page arguments' => array(
       'astrooda_bug_report_form'
     ),
@@ -279,7 +280,6 @@ function astrooda_main_block_content()
   // $items['bug_report_form'] = drupal_get_form('astrooda_bug_report_form');
   $items['token_ask_form'] = drupal_get_form('astrooda_ask_token_form');
   $items['astrooda_debug'] = variable_get('astrooda_debug');
-
   $items['auth_cookie'] = '_oauth2_proxy';
 
   if (empty($astrooda_settings['instruments'])) {
@@ -287,6 +287,12 @@ function astrooda_main_block_content()
   }
 
   // error_log ( "---------------------------------------------" );
+  $items['api_token_tip'] ='Request API token';
+  $items['api_token_request_or_copy'] ='ctools-use-modal';
+  if (user_is_logged_in()) {
+    $items['api_token_tip'] ='Copy API token to clipboard';
+    $items['api_token_request_or_copy'] ='copy-token-clipboard';
+  }
   $items['help_page'] = drupal_get_path_alias('node/' . variable_get('astrooda_help_page_nid'));
 
   foreach ($astrooda_settings['instruments'] as $name => $instrument) {

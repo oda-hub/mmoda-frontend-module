@@ -502,7 +502,7 @@ function get_waitingDialog($modal_dialog) {
 
     $result_panel = $('#astrooda_panel_model').clone();
     $result_panel.attr('id', panel_id);
-    $result_panel.find('.date').text('[' + datetime + ']');
+    if (datetime) $result_panel.find('.date').text('[' + datetime + ']');
     $result_panel.find('.panel-body').attr('id', panel_body_id);
 
     // $($result_panel).insertAfter(insertAfter);
@@ -520,6 +520,8 @@ function get_waitingDialog($modal_dialog) {
   }
 
   $.fn.highlight_result_panel = function(offset) {
+    //console.log('offset us ');
+    //console.log(offset);
     max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).zIndex()); }).get());
     $(this).css('z-index', max_zindexes + 1);
     var thisObject = $(this);
@@ -576,6 +578,19 @@ function get_waitingDialog($modal_dialog) {
   }
 
   function commonReady() {
+
+    //    setTimeout(function() {
+    //      //$("span.oda-icon-label").hide("slide", { direction: "right" }, 1000);
+    //      $("span.oda-icon-label").hide("slow")
+    //    }, 5000);
+
+    //    $(".main-toolbar").focusin(function() {
+    //      $("span.oda-icon-label").show("slow")
+    //    });
+    //    $(".main-toolbar").focusOut(function() {
+    //      $("span.oda-icon-label").hide("slow")
+    //    });
+
     if (Drupal.settings.user_uid == 0) {
       $('.main-toolbar .login-link').show();
       $('.main-toolbar .logout-link').hide();
@@ -584,11 +599,7 @@ function get_waitingDialog($modal_dialog) {
       $('.main-toolbar .login-link').hide();
       $('.main-toolbar .logout-link').show();
     }
-    /*
-        $('.main-toolbar .user-log').on('click', function() {
-          $('.main-toolbar .user-log').toggle();
-        });
-    */
+
     $(document).on('show.bs.modal', '.modal', function() {
       var zIndex = 1040 + (10 * $('.modal:visible').length);
       $(this).css('z-index', zIndex);
@@ -717,16 +728,16 @@ function get_waitingDialog($modal_dialog) {
           return $.trim(value.replace(/\s+/g, " "));
         });
       }
-      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'send-feedback-button') {
-        $('.modal-footer button.cancel-button', '#lfeedback').hide();
-        $('input,select,textarea', '#lfeedback').prop('disabled', true);
-        $('#feedback-messages', '#lfeedback').html('');
-      }
-      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'ask-token-button') {
-        $('.modal-footer button.cancel-button', '#ltoken').hide();
-        $('#token-messages', '#ltoken').html('');
-        $('input,select,textarea', '#ltoken').prop('disabled', true);
-      }
+      //      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'send-feedback-button') {
+      //        $('.modal-footer button.cancel-button', '#lfeedback').hide();
+      //        $('input,select,textarea', '#lfeedback').prop('disabled', true);
+      //        $('#feedback-messages', '#lfeedback').html('');
+      //      }
+      //      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'ask-token-button') {
+      //        $('.modal-footer button.cancel-button', '#ltoken').hide();
+      //        $('#token-messages', '#ltoken').html('');
+      //        $('input,select,textarea', '#ltoken').prop('disabled', true);
+      //      }
 
     });
 

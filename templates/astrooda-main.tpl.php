@@ -46,7 +46,7 @@
 ?>
 
 <!-- Modal Dialog-->
-<div id="ldialog" class="modal fade astrooda-log" tabindex='-1'
+<div id="ldialog" class="modal fade astrooda-log"
   role="dialog" aria-hidden="true" data-backdrop="static"
   data-keyboard="false">
   <div class="modal-dialog modal-lg">
@@ -85,37 +85,18 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button"
+          <a id="oda-api-token" data-toggle="tooltip" title=""
+            data-original-title="Report a bug or write us a feedback"
+            class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
+            href="modal_forms/nojs/webform/392"><span class="oda-icon-label">Write a feedback</span><span class="glyphicon glyphicon-envelope">
+          </span>
+          </a>
+                  <!--button type="button"
           class="btn btn-primary form-button write-feedback-button hidden">Write
-          a feedback</button>
+          a feedback</button-->
         <button type="button"
           class="btn btn-primary form-button submit-button"
           data-dismiss="modal"></button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal Ask For Tooken -->
-<div id="ltoken" class="modal fade" tabindex='-1' role="dialog"
-  aria-hidden="true" data-backdrop="static"
-  data-auth-cookie="<?=$auth_cookie?>">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"
-          aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">API Token Request</h4>
-      </div>
-      <div class="modal-body">
-        <div id="token-messages"></div>
-        <?=render($token_ask_form)?>
-      </div>
-      <div class="modal-footer">
-        <button type="button"
-          class="btn btn-primary form-button cancel-button"
-          data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
@@ -125,8 +106,8 @@
   class="result-panel panel panel-default ldraggable ">
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span
-      class="panel-toolbox pull-right"> <span class="date">@
-        '+datetime+'</span> <span class="clickable"><i
+      class="panel-toolbox pull-right"> <span class="date"></span>
+      <span class="clickable"><i
         class="fa fa-chevron-up"></i></span> <span
       class="fa fa-times close-panel"></span>
     </span>
@@ -163,28 +144,41 @@
     <div class="panel panel-default">
       <div class="panel-heading">
       <?php  if ($astrooda_debug) :?>
-        <span>Session ID : <?=$session_id?>, count= <?=$session_count?></span>
+        <!--span>Session ID : <?=$session_id?>, count= <?=$session_count?></span-->
         <?php endif; ?>
         <div class="main-toolbar btn-group pull-right" role="group">
-          <button data-toggle="tooltip" title=""
+          <a data-toggle="tooltip" title=""
             data-original-title="Contact us"
-            class="btn btn-sm btn-primary form-button write-feedback-button">
-            <span class="glyphicon glyphicon-envelope"> </span>
-          </button>
+            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
+            href="modal_forms/nojs/webform/383"><span class="oda-icon-label">Contact us</span><span class="glyphicon glyphicon-envelope">
+          </span>
+          </a>
           <a data-toggle="tooltip" title=""
             data-original-title="Sign in"
-            class="btn btn-sm btn-primary user-log login-link"
-            href="user/login"> <span class="glyphicon glyphicon-log-in">
+            class="btn btn-primary user-log login-link"
+            href="user/login"><span class="oda-icon-label">Sign in</span><span class="glyphicon glyphicon-log-in">
           </span>
-          </a> <a data-toggle="tooltip" title=""
+          </a>
+          <a data-toggle="tooltip" title=""
             data-original-title="Sign out"
-            class="btn btn-sm btn-primary user-log logout-link"
-            href="user/logout"> <span
-            class="glyphicon glyphicon-log-out"> </span>
-          </a> <a data-toggle="tooltip" title=""
+            class="btn btn-primary user-log logout-link"
+            href="user/logout"><span class="oda-icon-label">Sign out</span><span
+            class="glyphicon glyphicon-log-out"></span>
+          </a>
+          <button id="oda-api-token" type="button" class="btn btn-primary show-api-token" data-toggle="tooltip" data-original-title="Show API token, copy it or request it by email">
+            <span class="oda-icon-label">API token </span>
+            <span class="glyphicon glyphicon-star"></span>
+          </button>
+          <!--a id="oda-api-token" data-toggle="tooltip" title=""
+            data-original-title="<?=$api_token_tip?>"
+            class="<?=$api_token_request_or_copy?> ctools-modal-modal-popup-large btn btn-primary"
+            href="modal_forms/nojs/webform/384"><span class="oda-icon-label">API token</span><span class="glyphicon glyphicon-star">
+          </span>
+          </a-->
+          <a data-toggle="tooltip" title=""
             data-original-title="Help"
-            class="btn btn-sm btn-primary help-button"
-            href="<?=$help_page?>"> <span
+            class="btn btn-primary help-button"
+            href="<?=$help_page?>"><span class="oda-icon-label">Help</span><span
             class="glyphicon glyphicon-info-sign"> </span>
           </a>
         </div>
@@ -221,7 +215,7 @@
                         role="group">
                         <a data-toggle="tooltip" title=""
                           data-original-title="Help"
-                          class="btn btn-sm btn-primary help-button"
+                          class="btn btn-primary help-button"
                           href="<?=$instrument['help_page']?>"><span
                           class="glyphicon glyphicon-info-sign"> </span>
                         </a>

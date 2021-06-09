@@ -69,7 +69,7 @@ function astrooda_bug_report_form($form, &$form_state) {
       )
   );
 
-  return ($form);
+  return theme($form);
 }
 
 /**
