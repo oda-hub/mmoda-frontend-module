@@ -85,15 +85,15 @@
         </div>
       </div>
       <div class="modal-footer">
+          <!-- add notice in progress modal that request can be closed and re-sent #31  -->
+          <span>The ongoing request can be closed and re-submitted again</span>
+          </span>
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
             href="modal_forms/nojs/webform/392"><span class="oda-icon-label">Write a feedback</span><span class="glyphicon glyphicon-envelope">
           </span>
           </a>
-                  <!--button type="button"
-          class="btn btn-primary form-button write-feedback-button hidden">Write
-          a feedback</button-->
         <button type="button"
           class="btn btn-primary form-button submit-button"
           data-dismiss="modal"></button>
