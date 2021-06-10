@@ -86,8 +86,9 @@
       </div>
       <div class="modal-footer">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-          <span style="float: left;">The ongoing request can be closed and re-submitted again</span>
-          </span>
+          <span class="notice-progress-message">Please note that you may close this window and re-submit the same 
+            request at a later time to check its status</span>
+          <span class="notice-progress-message email">You may also follow the link we received in the email.</span>
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
