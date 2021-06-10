@@ -86,7 +86,7 @@
       </div>
       <div class="modal-footer">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-          <span>The ongoing request can be closed and re-submitted again</span>
+          <span style="float: left;">The ongoing request can be closed and re-submitted again</span>
           </span>
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
