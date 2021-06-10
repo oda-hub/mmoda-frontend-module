@@ -88,7 +88,7 @@
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
           <span class="notice-progress-message">Please note that you may close this window and re-submit the same 
             request at a later time to check its status</span>
-          <span class="notice-progress-message email">You may also follow the link we received in the email.</span>
+          <span class="notice-progress-message email">You may also follow the link in the email you received.</span>
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
