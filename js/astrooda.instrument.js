@@ -87,11 +87,6 @@ function panel_title(srcname, param) {
     //      current_ajax_call_params.currentFormData.entries()) {
     //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
-    if ($.cookie('Drupal.visitor.token')) {
-      $(".notice-progress-message.email").show();
-    } else {
-      $(".notice-progress-message.email").hide();
-    }
     var requestTimer = null;
     var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({

@@ -343,6 +343,13 @@ function get_waitingDialog($modal_dialog) {
             // This callback runs after the dialog was hidden
           }, options);
 
+
+          if ($.cookie('Drupal.visitor.token')) {
+            $dialog.find(".notice-progress-message.email").show();
+          } else {
+            $dialog.find(".notice-progress-message.email").hide();
+          }
+
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
