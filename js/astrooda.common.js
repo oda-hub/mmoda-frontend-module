@@ -339,7 +339,7 @@ function get_waitingDialog($modal_dialog) {
             showLegend: false,
             showCloseInHeader: false,
             showButton: true,
-            buttonText: 'Cancel'
+            buttonText: 'Close'
             // This callback runs after the dialog was hidden
           }, options);
 

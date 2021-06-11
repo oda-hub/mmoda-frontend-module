@@ -10,8 +10,18 @@
   width: 80% !important;
 }
 
+.notice-progress-container {
+  width: 70%;
+}
+
+.buttons-container {
+  width: 30%;
+  float: inline-end;
+}
+
 .notice-progress-message {
   float: left;
+  font-size: 13px;
 }
 
 #formwrapper {

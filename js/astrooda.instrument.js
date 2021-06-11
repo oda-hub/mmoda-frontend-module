@@ -393,7 +393,7 @@ function panel_title(srcname, param) {
 
     $('#lfeedback').on('shown.bs.modal', function() {
       $('#astrooda-bug-report-form').removeClass('hidden');
-      $('.modal-footer button.cancel-button', $(this)).text('Cancel').show();
+      $('.modal-footer button.cancel-button', $(this)).text('Close').show();
       $('.modal-footer button#edit-submit', $(this)).show();
     });
 
@@ -410,7 +410,7 @@ function panel_title(srcname, param) {
 
     $('#ltoken').on('shown.bs.modal', function() {
       $('#astrooda-ask-token-form').removeClass('hidden');
-      $('.modal-footer button.cancel-button', $(this)).text('Cancel').show();
+      $('.modal-footer button.cancel-button', $(this)).text('Close').show();
       $('.modal-footer button#edit-submit--2', $(this)).show();
     });
 
