@@ -225,7 +225,7 @@ function panel_title(srcname, param) {
         waitingDialog.append('<div>' + message + '</div>', 'danger');
       });
 
-    $('#ldialog .cancel-button').on('click', function() {
+    $('#ldialog .close-button').on('click', function() {
       if (requestTimer) {
         window.clearTimeout(requestTimer);
       }
