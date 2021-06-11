@@ -225,26 +225,26 @@ var waitingDialog;
 
   Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
     $('input,select,textarea', '#lfeedback').prop('disabled', false);
-    $('.modal-footer button.close-button', '#lfeedback').show();
+    $('.modal-footer button.cancel-button', '#lfeedback').show();
   }
 
   Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
     $('#astrooda-bug-report-form').addClass('hidden');
     $('textarea#edit-comment', '#astrooda-bug-report-form').val('');
-    $('.modal-footer button.close-button', '#lfeedback').text('Close').show();
+    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
     $('.modal-footer button#edit-submit', '#lfeedback').hide();
   }
 
   Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
     $('input,select,textarea', '#ltoken').prop('disabled', false);
-    $('.modal-footer button.close-button', '#ltoken').show();
+    $('.modal-footer button.cancel-button', '#ltoken').show();
   }
 
   Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
     $('input,textarea', '#ltoken').prop('disabled', false);
     $('#astrooda-ask-token-form').addClass('hidden');
     $('textarea#edit-message', '#astrooda-ask-token-form').val('');
-    $('.modal-footer button.close-button', '#ltoken').text('Close').show();
+    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
     $('.modal-footer button#edit-submit--2', '#ltoken').hide();
   }
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
