@@ -946,13 +946,15 @@ function panel_title(srcname, param) {
   }
 
   function make_request(request_parameters) {
+    // set active instrument panel
 
     // Set catalog in the corresponding instrument form
     if (request_parameters.hasOwnProperty('selected_catalog')) {
       var catalog = JSON.parse(request_parameters.selected_catalog);
       var datetime = get_current_date_time();
-      attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
-      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
+      // $(".instrument-panel. .instrument-params-panel").removeClass('has-success');
+      attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
+      $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
     }
 
     $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
@@ -1770,7 +1772,7 @@ function panel_title(srcname, param) {
     return (Number(data).toFixed(4));
   }
 
-  function attach_catalog_data_image_panel(datetime, catalog, JQpanel) {
+  function attach_catalog_data_image_panel(datetime, catalog, activePanel) {
     // var catalog = data.catalog;
     var columns = [];
     var fields = [];
@@ -1820,7 +1822,7 @@ function panel_title(srcname, param) {
       }
     }
     var selectedRows = new Array(catalog.cat_column_list[0].length);
-    JQpanel.data({
+    activePanel.data({
       catalog: {
         initial_catalog: catalog,
         data: dataSet,
