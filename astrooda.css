@@ -10,13 +10,19 @@
   width: 80% !important;
 }
 
+.modal-footer {
+  display: flex;
+}
+
 .notice-progress-container {
   width: 70%;
 }
 
 .buttons-container {
   width: 30%;
-  float: inline-end;
+  right: 19px;
+  bottom: 20px;
+  position: absolute;
 }
 
 .notice-progress-message {

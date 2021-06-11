@@ -85,12 +85,15 @@
         </div>
       </div>
       <div class="modal-footer">
+        
         <div class="notice-progress-container">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
           <span class="notice-progress-message">You can close this window and resubmit the same request at a later time to check its status or retrieve results</span>
           <span class="notice-progress-message email">This can be equally achieved by clicking on the link received by email</span>
+          <br><br>
           <span class="notice-progress-message email">You will receive a notification at job completion</span>
         </div>
+
         <div class="buttons-container">
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
@@ -102,6 +105,7 @@
             class="btn btn-primary form-button submit-button"
             data-dismiss="modal"></button>
         </div>
+
       </div>
     </div>
   </div>
