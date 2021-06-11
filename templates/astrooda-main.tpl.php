@@ -46,9 +46,8 @@
 ?>
 
 <!-- Modal Dialog-->
-<div id="ldialog" class="modal fade astrooda-log"
-  role="dialog" aria-hidden="true" data-backdrop="static"
-  data-keyboard="false">
+<div id="ldialog" class="modal fade astrooda-log" role="dialog"
+  aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -87,17 +86,21 @@
       <div class="modal-footer">
         <div class="notice-progress-container">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-          <span class="notice-progress-message">You can close this window and resubmit the same request at a later time to check its status or retrieve results</span>
-          <span class="notice-progress-message email">This can be equally achieved by clicking on the link received by email</span>
-          <span class="notice-progress-message email">You will receive a notification at job completion</span>
+          <span class="notice-progress-message">You can close this
+            window and resubmit the same request at a later time to
+            check its status or retrieve results</span> <span
+            class="notice-progress-message email">This can be equally
+            achieved by clicking on the link received by email</span> <span
+            class="notice-progress-message email">You will receive a
+            notification at job completion</span>
         </div>
         <div class="buttons-container">
           <a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
-            href="modal_forms/nojs/webform/392"><span class="oda-icon-label">Write a feedback</span><span class="glyphicon glyphicon-envelope">
-          </span>
-          </a>
+            href="modal_forms/nojs/webform/392"><span
+            class="oda-icon-label">Write a feedback</span><span
+            class="glyphicon glyphicon-envelope"> </span> </a>
           <button type="button"
             class="btn btn-primary form-button submit-button"
             data-dismiss="modal"></button>
@@ -111,9 +114,8 @@
   class="result-panel panel panel-default ldraggable ">
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span
-      class="panel-toolbox pull-right"> <span class="date"></span>
-      <span class="clickable"><i
-        class="fa fa-chevron-up"></i></span> <span
+      class="panel-toolbox pull-right"> <span class="date"></span> <span
+      class="clickable"><i class="fa fa-chevron-up"></i></span> <span
       class="fa fa-times close-panel"></span>
     </span>
   </div>
@@ -155,37 +157,53 @@
           <a data-toggle="tooltip" title=""
             data-original-title="Contact us"
             class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
-            href="modal_forms/nojs/webform/383"><span class="oda-icon-label">Contact us</span><span class="glyphicon glyphicon-envelope">
-          </span>
-          </a>
-          <a data-toggle="tooltip" title=""
-            data-original-title="Sign in"
+            href="modal_forms/nojs/webform/383"><span
+            class="oda-icon-label">Contact us</span><span
+            class="glyphicon glyphicon-envelope"> </span>
+            </a>
+          <a
+            data-toggle="tooltip" title="" data-original-title="Sign in"
             class="btn btn-primary user-log login-link"
-            href="user/login"><span class="oda-icon-label">Sign in</span><span class="glyphicon glyphicon-log-in">
-          </span>
+            href="user/login"><span class="oda-icon-label">Sign in</span><span
+            class="glyphicon glyphicon-log-in"> </span>
           </a>
-          <a data-toggle="tooltip" title=""
+          <a
+            data-toggle="tooltip" title=""
             data-original-title="Sign out"
             class="btn btn-primary user-log logout-link"
             href="user/logout"><span class="oda-icon-label">Sign out</span><span
             class="glyphicon glyphicon-log-out"></span>
           </a>
-          <button id="oda-api-token" type="button" class="btn btn-primary show-api-token" data-toggle="tooltip" data-original-title="Show API token, copy it or request it by email">
-            <span class="oda-icon-label">API token </span>
-            <span class="glyphicon glyphicon-star"></span>
-          </button>
+          <?php  if (user_is_logged_in()) :?>
+            <button id="oda-api-token" type="button"
+              class="btn btn-primary show-api-token" data-toggle="tooltip"
+              data-original-title="Show API token, copy it or request it by email">
+              <span class="oda-icon-label">API token </span>
+              <span class="glyphicon glyphicon-star"></span>
+            </button>
+          <div class="hidden">
+            <button
+              type="button"
+              class="btn btn-default copy-api-token">Copy API token to clipboard
+              <span class="glyphicon glyphicon-copy"></span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-default email-api-token">Receive API token by e-mail
+              <span class="glyphicon glyphicon-envelope"></span>
+            </button>
+          </div>
+          <?php endif;?>
           <!--a id="oda-api-token" data-toggle="tooltip" title=""
             data-original-title="<?=$api_token_tip?>"
             class="<?=$api_token_request_or_copy?> ctools-modal-modal-popup-large btn btn-primary"
             href="modal_forms/nojs/webform/384"><span class="oda-icon-label">API token</span><span class="glyphicon glyphicon-star">
           </span>
           </a-->
-          <a data-toggle="tooltip" title=""
-            data-original-title="Help"
-            class="btn btn-primary help-button"
-            href="<?=$help_page?>"><span class="oda-icon-label">Help</span><span
-            class="glyphicon glyphicon-info-sign"> </span>
-          </a>
+          <a data-toggle="tooltip" title="" data-original-title="Help"
+            class="btn btn-primary help-button" href="<?=$help_page?>"><span
+            class="oda-icon-label">Help</span><span
+            class="glyphicon glyphicon-info-sign"> </span> </a>
         </div>
       </div>
       <div id="formwrapper">
