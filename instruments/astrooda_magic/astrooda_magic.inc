@@ -25,7 +25,6 @@ function astrooda_magic($form, &$form_state) {
   );
 
   $astrooda_settings = variable_get('astrooda_settings');
-  error_log(print_r($astrooda_settings, true));
   $instrument_defaults= $astrooda_settings['instruments']['magic'];
 
   $form ['query_type'] = array (

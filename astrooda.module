@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @file
  * Provides a block
@@ -30,8 +29,8 @@ function astrooda_init()
   ), 'setting');
 }
 
-require_once drupal_get_path('module', 'jwt_link').'/JWT/Authentication/JWT.php';
-use \Firebase\JWT\JWT;
+require_once drupal_get_path('module', 'jwt_link') . '/JWT/Authentication/JWT.php';
+use Firebase\JWT\JWT;
 
 /**
  * Implements hook_user_login().
@@ -39,20 +38,22 @@ use \Firebase\JWT\JWT;
 function astrooda_user_login(&$edit, $account)
 {
   if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
-    //$astrooda_roles = preg_grep('/astrooda/i', $account->roles);
+    // $astrooda_roles = preg_grep('/astrooda/i', $account->roles);
     $astrooda_roles = $account->roles;
     watchdog('ODA', 'Login - User Astrooda roles :' . implode(', ', $astrooda_roles));
 
     if (count($astrooda_roles)) {
-      $jwt= jwt_link_url();
+      $jwt = jwt_link_url();
       $alg = variable_get('jwt_link_alg', 'HS256');
       $key = variable_get('jwt_link_key', '');
-      $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array($alg));
-      watchdog('ODA', 'Login - Adding token Cookie: '.print_r($jwt_decoded_token, TRUE));
+      $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
+        $alg
+      ));
+      watchdog('ODA', 'Login - Adding token Cookie: ' . print_r($jwt_decoded_token, TRUE));
       user_cookie_save([
         'token' => $jwt['jwt_encoded_token']
       ]);
-      //drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
+      // drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
     }
   }
 }
@@ -60,8 +61,9 @@ function astrooda_user_login(&$edit, $account)
 /**
  * Implements hook_user_logout().
  */
-function astrooda_user_logout($account) {
-  //$astrooda_roles = preg_grep('/astrooda/i', $account->roles);
+function astrooda_user_logout($account)
+{
+  // $astrooda_roles = preg_grep('/astrooda/i', $account->roles);
   $astrooda_roles = $account->roles;
 
   if (count($astrooda_roles)) {
@@ -142,7 +144,7 @@ function astrooda_menu()
   );
 
   $items['send-bug-report'] = array(
-    //'page callback' => 'user_feedback_form_content',
+    // 'page callback' => 'user_feedback_form_content',
     'page callback' => 'astrooda_bug_report_form',
     'page arguments' => array(
       'astrooda_bug_report_form'
@@ -287,11 +289,11 @@ function astrooda_main_block_content()
   }
 
   // error_log ( "---------------------------------------------" );
-  $items['api_token_tip'] ='Request API token';
-  $items['api_token_request_or_copy'] ='ctools-use-modal';
+  $items['api_token_tip'] = 'Request API token';
+  $items['api_token_request_or_copy'] = 'ctools-use-modal';
   if (user_is_logged_in()) {
-    $items['api_token_tip'] ='Copy API token to clipboard';
-    $items['api_token_request_or_copy'] ='copy-token-clipboard';
+    $items['api_token_tip'] = 'Copy API token to clipboard';
+    $items['api_token_request_or_copy'] = 'copy-token-clipboard';
   }
   $items['help_page'] = drupal_get_path_alias('node/' . variable_get('astrooda_help_page_nid'));
 
@@ -308,7 +310,7 @@ function astrooda_main_block_content()
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
         'title' => $instrument['title'],
-        'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] :'',
+        'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] : '',
         'help_page' => drupal_get_path_alias('node/' . $instrument['help_page_nid']),
         'form' => drupal_get_form('astrooda_' . $instrument['name']),
         'active' => ''
@@ -484,26 +486,40 @@ function short_circuit_version()
   return TRUE;
 }
 
+/*
+ * function astrooda_form_submit($form, &$form_state) {
+ * if ($form_id == 'webform_client_form_384') {
+ * ctools_include('modal');
+ * ctools_include('ajax');
+ *
+ * $output = array(ctools_modal_command_dismiss());
+ *
+ * print ajax_render($output);
+ * }
+ * }
+ */
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
-  // foreach ( $form as $item_name => $item_value ) {
-  // if (is_array ( $item_value ) and array_key_exists ( '#states', $item_value )) {
-  // foreach ( $item_value ['#states'] as $state_name => $state_value ) {
-  // foreach ( $state_value as $condition_name => $condition_value ) {
-  // $form [$item_name] ['#states'] [$state_name] = array (
-  // '#' . $form ['#id'] . ' ' . $condition_name => $condition_value
-  // );
-  // }
-  // }
-  // }
-  // }
-  // error_log ( $form ['#id'] );
-
-  // $f = fopen ( $filename, 'w' );
-  // fwrite ( $f, "form:\n" );
-  // fwrite ( $f, print_r ( $form, true ) );
-  // fclose ( $f );
-  // chmod ( $filename, 0777 );
+  switch ($form_id) {
+    case 'webform_client_form_384':
+      // $filename = 'sites/default/files/form.php';
+      // $f = fopen($filename, 'w');
+      // fwrite($f, "form:\n");
+      // fwrite($f, print_r($form, true));
+      // fclose($f);
+      // chmod($filename, 0777);
+      if ($form['details']['finished']['#value']) {
+        unset($form['actions']['submit']);
+        $form['actions']['close'] = array(
+          '#markup' => l(t('Close'), '#', array(
+            'attributes' => array(
+              'class' => 'btn btn-primary ctools-close-modal'
+            )
+          ))
+        );
+      }
+      break;
+  }
 }
 
 /**

@@ -10,26 +10,6 @@
   width: 80% !important;
 }
 
-.modal-footer {
-  display: flex;
-}
-
-.notice-progress-container {
-  width: 70%;
-}
-
-.buttons-container {
-  width: 30%;
-  right: 19px;
-  bottom: 20px;
-  position: absolute;
-}
-
-.notice-progress-message {
-  float: left;
-  font-size: 13px;
-}
-
 #formwrapper {
   display: inline-block;
 }
@@ -499,7 +479,7 @@ div.ctools-modal-content .modal-content {
   margin: 2.5em;
   box-shadow: none;
   border: none;
-}
+  }
 
 .oda-icon-label {
   padding-right: 0.5em;
@@ -511,4 +491,26 @@ div.ctools-modal-content .modal-content {
 }
 */
 
+.wrap { 
+   white-space: pre-wrap;      /* CSS3 */   
+   white-space: -moz-pre-wrap; /* Firefox */    
+   white-space: -pre-wrap;     /* Opera <7 */   
+   white-space: -o-pre-wrap;   /* Opera 7 */    
+   word-wrap: break-word;      /* IE */
+}
+
+.write-feedback-button {
+  display: none;
+}
+
+.notice-progress-container {
+  display: none;
+  width: 70%;
+  text-align: left;
+  font-size: 13px;
+}
+
+.result-panel {
+  max-width: 60%;
+}
 
