@@ -56,10 +56,7 @@ function valid_mjd_date(value) {
 }
 
 function validate_scws(value, nb_scws) {
-  // var scws_pattern = new
-  // RegExp("^$|^(\\d{12}\\.\\d{3})(\\s*,\\s*\\d{12}\\.\\d{3}){0,"+(nb_scws -
-  // 1)+"}$");
-  var scws_pattern = new RegExp("^$|^(\\d{12}\\.001)(\\s*,\\s*\\d{12}\\.001){0," + (nb_scws - 1) + "}$");
+  var scws_pattern = new RegExp("^$|^(\\d{12}\\.00\\d)(\\s*,\\s*\\d{12}\\.00\\d){0," + (nb_scws - 1) + "}$");
   if (!scws_pattern.test(value)) {
     return {
       valid: false,
