@@ -936,8 +936,10 @@ function panel_title(srcname, param) {
     if (request_parameters.hasOwnProperty('selected_catalog')) {
       var catalog = JSON.parse(request_parameters.selected_catalog);
       var datetime = get_current_date_time();
-      attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
-      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
+      // attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
+      // $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
+      attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
+      $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
     }
 
     $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
