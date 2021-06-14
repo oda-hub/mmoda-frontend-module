@@ -87,13 +87,9 @@ function panel_title(srcname, param) {
     //      current_ajax_call_params.currentFormData.entries()) {
     //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
-    if ($.cookie('Drupal.visitor.token')) {
-      $(".notice-progress-message.email").show();
-    } else {
-      $(".notice-progress-message.email").hide();
-    }
+
     var requestTimer = null;
-    var startAJAXTime = new Date().getTime();
+    //var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
       url: current_ajax_call_params.action,
       data: current_ajax_call_params.currentFormData,
@@ -164,7 +160,6 @@ function panel_title(srcname, param) {
           }
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
-          $(".notice-progress-message").hide();
           add_dispatcher_response_to_feedback_form(data);
           var regex = /[\/]*$/;
           var url = window.location.href.replace(regex, '');
@@ -211,6 +206,8 @@ function panel_title(srcname, param) {
         // console.log('Exec time : ' + (new
         // Date().getTime() -
         // startAJAXTime));
+        $(".notice-progress-container").hide();
+        $(".write-feedback-button").hide();
         $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
       }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -641,10 +638,9 @@ function panel_title(srcname, param) {
       return false;
     });
 
-    $("body").on('click', '.result-panel .api-token', function(e) {
+    $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
-      var auth_cookie = $('#ltoken').data('auth-cookie');
-      copyToClipboard($.cookie(auth_cookie));
+      copyToClipboard($.cookie('Drupal.visitor.token'));
     });
 
     $("body").on('click', '.result-panel .use-catalog', function(e) {
@@ -881,9 +877,10 @@ function panel_title(srcname, param) {
         showSpinner: true
       });
       waitingDialog.hideHeaderMessage();
+      $('.write-feedback-button').show();
+      $('.notice-progress-container').show();
 
       current_ajax_call_params = {};
-      console.log('Drupal.visitor.token : ' + $.cookie('Drupal.visitor.token'));
       if ($.cookie('Drupal.visitor.token')) {
         var access_token = $.cookie('Drupal.visitor.token');
         formData.append('token', access_token);
@@ -905,32 +902,8 @@ function panel_title(srcname, param) {
       AJAX_call();
     });
 
-    $('button.write-feedback-button').on('click', function(event) {
-      $.get('send-bug-report', function(data) {
-
-        var html = $.parseHTML(data);
-        console.log(data);
-        /*
-        var help_text = $(".region-content .block-system", html);
-        var title = $(".page-header", html).text();
-        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
-          $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
-        });
-        help_text.find('#table-of-contents-links').addClass('rounded');
-        waitingDialog.show(title + ' Help', help_text, {
-          dialogSize: 'lg',
-          buttonText: 'Close',
-          showCloseInHeader: true,
-        });
-        */
-      });
-      $('#lfeedback').modal({
-        show: true
-      });
-    });
-
     $('.help-button').on('click', function(e) {
-      // e.preventDefault();
+      e.preventDefault();
       $.get($(this).attr('href'), function(data) {
 
         var html = $.parseHTML(data);
@@ -950,7 +923,6 @@ function panel_title(srcname, param) {
     });
 
     if (Drupal.settings.hasOwnProperty('url_parameters')) {
-      // console.log(Drupal.settings.url_parameters);
       make_request(Drupal.settings.url_parameters);
     }
 
@@ -1272,7 +1244,7 @@ function panel_title(srcname, param) {
     var header = '<tr><th>Parameter</th><th>Value</th><th/></tr>';
     var body = '';
     for (var parameter in query_parameters) {
-      if (query_parameters.hasOwnProperty(parameter)) {
+      if (parameter != 'token' && query_parameters.hasOwnProperty(parameter)) {
         body += '<tr><td>' + parameter + '</td><td>' + query_parameters[parameter] + '</td>' + '</tr>';
       }
     }
@@ -1402,13 +1374,15 @@ function panel_title(srcname, param) {
       name: "lightcurve",
       defaultContent: '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
       orderable: false
-    }, {
-      data: null,
-      title: "Multi-product",
-      name: "multi_product",
-      defaultContent: '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
-      orderable: false
-    },];
+    },
+//    {
+//      data: null,
+//      title: "Multi-product",
+//      name: "multi_product",
+//      defaultContent: '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
+//      orderable: false
+//    },
+    ];
 
     var lightcurve_table_container = $(".lightcurve-table", '#' + panel_ids.panel_id);
 
