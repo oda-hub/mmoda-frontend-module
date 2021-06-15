@@ -124,15 +124,16 @@ function panel_title(srcname, param) {
         } else {
           current_nb_attempts_after_failed = 0;
         }
-        // console.log('current_nb_attempts_after_failed='+current_nb_attempts_after_failed);
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
           waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
             + data.exit_status.error_message + '</td></tr></table>', 'danger');
-          console.log('')
           waitingDialog.setClose();
           add_dispatcher_response_to_feedback_form(data);
         } else if (data.query_status != 'done') {
+          if ($('.notice-progress-container').is(":hidden")) {
+            $('.notice-progress-container').show();
+          }
           waitingDialog.showLegend();
           previous_summary = '';
 
@@ -161,6 +162,7 @@ function panel_title(srcname, param) {
           }
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
+          $(".notice-progress-container").hide();
           add_dispatcher_response_to_feedback_form(data);
           var regex = /[\/]*$/;
           var url = window.location.href.replace(regex, '');
@@ -207,7 +209,6 @@ function panel_title(srcname, param) {
         // console.log('Exec time : ' + (new
         // Date().getTime() -
         // startAJAXTime));
-        $(".notice-progress-container").hide();
         $(".write-feedback-button").hide();
         $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
@@ -216,20 +217,20 @@ function panel_title(srcname, param) {
         console.log('errorThrown :' + errorThrown);
         console.log('jqXHR');
         waitingDialog.hideSpinner();
-        serverResponse= $.parseJSON(jqXHR.responseText);
+        serverResponse = $.parseJSON(jqXHR.responseText);
         console.log(serverResponse);
         var message = get_current_date_time() + ' ';
         if (errorThrown == 'timeout') {
           message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown+ ', '+serverResponse.error_message;
+          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ' + serverResponse.error_message;
         } else {
           message += 'Can not reach the data server, unknown error';
         }
         waitingDialog.append('<div>' + message + '</div>', 'danger');
       });
 
-    $('#ldialog .cancel-button').on('click', function() {
+    $('#ldialog .close-button').on('click', function() {
       if (requestTimer) {
         window.clearTimeout(requestTimer);
       }
@@ -398,6 +399,7 @@ function panel_title(srcname, param) {
 
     $('#ldialog').on('hidden.bs.modal', function() {
       $('#ldialog button.write-feedback-button').addClass('hidden');
+      $(".notice-progress-container").hide();
     })
 
     $('#ltoken button#edit-submit--2').prependTo($('#ltoken .modal-footer'));
@@ -880,7 +882,6 @@ function panel_title(srcname, param) {
       });
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
-      $('.notice-progress-container').show();
 
       current_ajax_call_params = {};
       if ($.cookie('Drupal.visitor.token')) {
@@ -1379,13 +1380,13 @@ function panel_title(srcname, param) {
       defaultContent: '<button type="button" class="btn btn-primary draw-lightcurve">View</button>',
       orderable: false
     },
-//    {
-//      data: null,
-//      title: "Multi-product",
-//      name: "multi_product",
-//      defaultContent: '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
-//      orderable: false
-//    },
+      //    {
+      //      data: null,
+      //      title: "Multi-product",
+      //      name: "multi_product",
+      //      defaultContent: '<button type="button" class="btn btn-primary copy-multi-product">Copy</button>',
+      //      orderable: false
+      //    },
     ];
 
     var lightcurve_table_container = $(".lightcurve-table", '#' + panel_ids.panel_id);
