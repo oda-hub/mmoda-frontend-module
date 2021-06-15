@@ -575,8 +575,6 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.result-panel .show-js9', function(e) {
       e.preventDefault();
-      console.log('show js9 data');
-      console.log($(this).data());
       display_image_js9($(this).data("image_file_path"), $(this).data("E1_keV"), $(this).data("E2_keV"), $(this).data("datetime"));
     });
 
