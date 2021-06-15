@@ -47,14 +47,14 @@ function validate_timebin(value, validator, $thefield) {
 }
 
 function panel_title(srcname, param) {
-  var title_items= [];
+  var title_items = [];
   if (srcname !== '') title_items.push('Source: ' + srcname);
   if (param.hasOwnProperty('E1_keV')) title_items.push(param.E1_keV + ' - ' + param.E2_keV + ' keV');
-  var time_bin_format='sec';
-  if (param.hasOwnProperty('time_bin_format')) time_bin_format= param.time_bin_format;
+  var time_bin_format = 'sec';
+  if (param.hasOwnProperty('time_bin_format')) time_bin_format = param.time_bin_format;
   if (param.hasOwnProperty('time_bin')) title_items.push(param.time_bin + ' ' + time_bin_format);
   // or what is the default for timebin?
-  return(title_items.join(', '));
+  return (title_items.join(', '));
 }
 
 (function($) {
@@ -575,7 +575,7 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.result-panel .show-js9', function(e) {
       e.preventDefault();
-      display_image_js9($(this).data("image_file_path"), $(this).data("E1_keV"), $(this).data("E2_keV"), $(this).data("datetime"));
+      display_image_js9($(this).data("image_file_path"), $(this).data());
     });
 
     $("body").on('click', '.result-panel .show-log', function(e) {
@@ -1320,6 +1320,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
     $('#' + panel_ids.panel_id).data("product_type", 'lc');
 
+    // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
@@ -1354,6 +1355,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
     activate_modal('#' + panel_ids.panel_body_id);
+    // -------------- Toolbar end 
 
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
@@ -1450,6 +1452,7 @@ function panel_title(srcname, param) {
 
     $('#' + panel_ids.panel_id).data("product_type", 'image');
 
+    // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
@@ -1484,6 +1487,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
     activate_modal('#' + panel_ids.panel_body_id);
+    // -------------- Toolbar end 
 
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
@@ -1779,7 +1783,7 @@ function panel_title(srcname, param) {
     });
 
     // Activate inline edit on click of a table cell
-    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function(e) {
+    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function() {
       editor.inline(this);
     });
     editor.on('initEdit', function(e, json, data) {
@@ -2045,10 +2049,9 @@ function panel_title(srcname, param) {
     });
   }
 
-  function display_image_js9(image_file_path, E1_keV, E2_keV, datetime) {
-
+  function display_image_js9(image_file_path, data) {
     var panel_ids = $(".instrument-params-panel",
-     ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', datetime);
+      ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
       src: '/cdci/astrooda/dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
       id: 'js9iframe',
@@ -2058,15 +2061,8 @@ function panel_title(srcname, param) {
       scrolling: 'no'
     }));
 
-    // source_name = $('input[name=src_name]',
-    // 'form#astrooda-common').val();
-    // $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(
-    // 'Source : ' + source_name + ' - ' + product_type);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(E1_keV + ' - ' + E2_keV + ' keV');
-
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data));
     $('#' + panel_ids.panel_id).highlight_result_panel();
-    //return ($('#' + panel_ids.panel_body_id));
-
   }
 
 })(jQuery);
