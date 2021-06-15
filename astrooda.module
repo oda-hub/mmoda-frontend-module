@@ -500,15 +500,29 @@ function short_circuit_version()
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
-//     case 'webform_client_form_TTTT':
-//     case 'webform_client_form_TTTT':
-//       $filename = 'sites/default/files/form.php';
-//       $f = fopen($filename, 'w');
-//       fwrite($f, "form:\n");
-//       fwrite($f, print_r($form, true));
-//       fclose($f);
-//       chmod($filename, 0777);
-//      break;
+    case 'webform_client_form_383':
+    case 'webform_client_form_384':
+      $form['actions']['close'] = array(
+        '#type' => 'submit',
+        '#access' => TRUE,
+        '#value' => 'Close',
+        '#weight' => 60,
+        '#submit' => array(
+          'node_form_cancel'
+        ), // This is the name of a function reproduced below
+        '#attributes' => array(
+          'class' => array('ctools-close-modal', 'btn', 'btn-primary')
+        )
+      );
+      $form['actions']['submit']['#attributes']['class'][] = 'btn';
+      $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
+      // $filename = 'sites/default/files/form.php';
+      // $f = fopen($filename, 'w');
+      // fwrite($f, "form:\n");
+      // fwrite($f, print_r($form, true));
+      // fclose($f);
+      // chmod($filename, 0777);
+      break;
   }
 }
 

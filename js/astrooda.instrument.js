@@ -1581,7 +1581,6 @@ function panel_title(srcname, param) {
     var data = current_panel.data('products');
 
     var image = data.image[lc_index];
-    var session_id = data.session_id;
     var job_id = current_panel.data('job_id');
 
     var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
@@ -1593,8 +1592,6 @@ function panel_title(srcname, param) {
     } else {
       file_name += '.gz';
     }
-    url = 'session_id=' + session_id + '&download_file_name=' + file_name + '&file_list=' + files_list + '&query_status=ready&job_id=' + job_id + '&instrument=' + instrument;
-    url = url.replace(/\+/g, '%2B');
 
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
@@ -1602,7 +1599,16 @@ function panel_title(srcname, param) {
     dbutton.data("datetime", datetime);
 
     // Add button "Download" : download light curve in FITS format
-    var link = $('<a>').attr({ href: 'dispatch-data/download_products?' + url, role: 'button' }).text('Download ');
+    var url_params = {
+      session_id: data.session_id,
+      download_file_name: file_name,
+      file_list: files_list,
+      query_status: 'ready',
+      job_id: job_id,
+      instrument: instrument
+    };
+    var download_url = get_download_url(url_params);
+    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
     link.addClass('btn btn-default');
     var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Light curve in FITS format" });
@@ -1639,8 +1645,7 @@ function panel_title(srcname, param) {
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
 
-    var session_id = data.session_id;
-    var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
+    var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     // --------------- Toolbar start
@@ -1649,12 +1654,21 @@ function panel_title(srcname, param) {
     dbutton.data("datetime", datetime);
 
     // Add button "Download" : download image, catalog and region file
-    var link = $('<a>').attr({ href: 'dispatch-data/download_products?' + url, role: 'button' }).text('Download ');
-    link.addClass('btn btn-default');
-    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "image, catalog and region file" });
-    link.append(glyphicon);
-    toolbar.append(link);
+    //    var url_params = {
+    //      session_id: data.session_id,
+    //      download_file_name: file_name,
+    //      file_list: files_list,
+    //      query_status: 'ready',
+    //      job_id: job_id,
+    //      instrument: instrument
+    //    };
+    //    var download_url = get_download_url(url_params);
+    //    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
+    //    link.addClass('btn btn-default');
+    //    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+    //    glyphicon.attr({ title: "image, catalog and region file" });
+    //    link.append(glyphicon);
+    //    toolbar.append(link);
 
     // Add button "Catalog": show catalog
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
@@ -1707,7 +1721,7 @@ function panel_title(srcname, param) {
         ph_file_name: data.ph_file_name[i],
         rmf_file_name: data.rmf_file_name[i],
         job_id: job_id,
-        session_id: session_id,
+        session_id: data.session_id,
         instrument: data.instrument,
       }
     }
@@ -1741,13 +1755,19 @@ function panel_title(srcname, param) {
         data: null,
         title: "Download",
         name: "download",
-        render: function(data, type, full, meta) {
+        render: function(data) {
           download_filename = 'spectra-' + data.source_name + '.tar.gz';
           datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
-          url = 'session_id=' + data.session_id + '&file_list=' + datafiles + '&download_file_name=' + download_filename + '&query_status=ready&job_id=' + data.job_id
-            + '&instrument=' + data.instrument;
-          url = url.replace(/\+/g, '%2B');
-          var downloadButton = '<a class="btn btn-default" role="button" href="dispatch-data/download_products?' + url
+          var url_params = {
+            session_id: data.session_id,
+            download_file_name: download_filename,
+            file_list: datafiles,
+            query_status: 'ready',
+            job_id: data.job_id,
+            instrument: data.instrument
+          };
+          var download_url = get_download_url(url_params);
+          var downloadButton = '<a class="btn btn-default" role="button" href="' + download_url
             + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
           return (downloadButton);
         },
@@ -1936,13 +1956,7 @@ function panel_title(srcname, param) {
       api_code: data.api_code,
     });
 
-    var session_id = data.session_id;
-
-    url = 'session_id=' + session_id + '&download_file_name=' + data.download_file_name + '&file_list=' + data.file_name + '&query_status=ready&job_id=' + job_id + '&instrument='
-      + instrument;
-    url = url.replace(/\+/g, '%2B');
-
-    var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
+    var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     // --------------- Toolbar start
@@ -1952,15 +1966,28 @@ function panel_title(srcname, param) {
 
 
     // Add button "JS9" : show the image in JS9 (DS9)
-    var button = dbutton.clone().addClass('show-js9');
-    button.data("image_file_path", data.image.file_path);
-    button.data("E1_keV", data.analysis_parameters.E1_keV);
-    button.data("E2_keV", data.analysis_parameters.E2_keV);
-    button.append("JS9");
-    toolbar.append(button);
+    if (data.image.hasOwnProperty('file_path')) {
+      var button = dbutton.clone().addClass('show-js9');
+      button.data("image_file_path", data.image.file_path);
+      button.data("E1_keV", data.analysis_parameters.E1_keV);
+      button.data("E2_keV", data.analysis_parameters.E2_keV);
+      button.append("JS9");
+      toolbar.append(button);
+    }
 
     // Add button "Download" : download image, catalog and region file
-    var link = $('<a>').attr({ href: 'dispatch-data/download_products?' + url, role: 'button' }).text('Download ');
+    var file_name = data.file_name;
+    if (Array.isArray(file_name)) file_name = file_name.join(',');
+    url_params = {
+      session_id: data.session_id,
+      download_file_name: data.download_file_name,
+      file_list: file_name,
+      query_status: 'ready',
+      job_id: job_id,
+      instrument: instrument
+    };
+    var download_url = get_download_url(url_params);
+    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
     link.addClass('btn btn-default');
     var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "image, catalog and region file" });
@@ -2032,6 +2059,12 @@ function panel_title(srcname, param) {
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
+  }
+  function get_download_url(parameters) {
+    if ($.cookie('Drupal.visitor.token'))
+      parameters['token'] = $.cookie('Drupal.visitor.token');
+    url = 'dispatch-data/download_products?' + $.param(parameters);
+    return (url);
   }
   function activate_modal($element) {
     $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function() {
