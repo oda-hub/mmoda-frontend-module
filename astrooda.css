@@ -354,8 +354,8 @@ input.user_scw_list_file {
 
 .popover {
   max-width: 30%;
+  z-index: 3000 !important;
 }
-
 .table-striped>tbody>tr:nth-child(2n+1)>td, .table-striped>tbody>tr:nth-child(2n+1)>th
   {
   background-color: inherit;
