@@ -28,7 +28,6 @@ function astrooda_init()
     'user_uid' => $user->uid
   ), 'setting');
 }
-
 require_once drupal_get_path('module', 'jwt_link') . '/JWT/Authentication/JWT.php';
 use Firebase\JWT\JWT;
 
@@ -501,24 +500,15 @@ function short_circuit_version()
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
-    case 'webform_client_form_384':
-      // $filename = 'sites/default/files/form.php';
-      // $f = fopen($filename, 'w');
-      // fwrite($f, "form:\n");
-      // fwrite($f, print_r($form, true));
-      // fclose($f);
-      // chmod($filename, 0777);
-      if ($form['details']['finished']['#value']) {
-        unset($form['actions']['submit']);
-        $form['actions']['close'] = array(
-          '#markup' => l(t('Close'), '#', array(
-            'attributes' => array(
-              'class' => 'btn btn-primary ctools-close-modal'
-            )
-          ))
-        );
-      }
-      break;
+//     case 'webform_client_form_TTTT':
+//     case 'webform_client_form_TTTT':
+//       $filename = 'sites/default/files/form.php';
+//       $f = fopen($filename, 'w');
+//       fwrite($f, "form:\n");
+//       fwrite($f, print_r($form, true));
+//       fclose($f);
+//       chmod($filename, 0777);
+//      break;
   }
 }
 

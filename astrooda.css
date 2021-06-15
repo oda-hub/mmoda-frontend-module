@@ -503,9 +503,14 @@ div.ctools-modal-content .modal-content {
   display: none;
 }
 
-.notice-progress-container {
+.modal-footer .buttons-container {
+  float: righ;
+}
+
+.modal-footer .notice-progress-container {
   display: none;
   width: 70%;
+  float: left;
   text-align: left;
   font-size: 13px;
 }
