@@ -235,6 +235,10 @@ function astrooda_main_block_content()
     drupal_set_message(t('Error : can not load DataTables library.'), 'error');
     return;
   }
+  if (! ($library_highlightjs = libraries_load('highlight')) || empty($library_datatables['loaded'])) {
+    drupal_set_message(t('Error : can not load highlightjs library.'), 'error');
+    return;
+  }
   if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
     // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
     // return;
@@ -246,20 +250,7 @@ function astrooda_main_block_content()
   // 'weight' => - 1
   // ) );
 
-  // drupal_add_css ( 'dispatch-data/js9/js9support.css' );
-  // drupal_add_css ( 'dispatch-data/js9/js9.css' );
   drupal_add_css(drupal_get_path('module', 'astrooda') . '/astrooda.css');
-
-  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9all.js' );
-  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9prefs.js' );
-  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9support.min.js' );
-  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9.min.js' );
-  // drupal_add_js ( drupal_get_path ( 'module', 'astrooda' ) . '/js/js9plugins.js' );
-
-  // drupal_add_js ( 'dispatch-data/js9/js9prefs.js' );
-  // drupal_add_js ( 'dispatch-data/js9/js9support.min.js' );
-  // drupal_add_js ( 'dispatch-data/js9/js9.min.js' );
-  // drupal_add_js ( 'dispatch-data/js9/js9plugins.js' );
 
   drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.common.js');
   drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.instrument.js');
@@ -271,15 +262,10 @@ function astrooda_main_block_content()
   // $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   // variable_set ( 'astrooda_settings', $astrooda_settings );
 
-  // error_log ('Settings:'.print_r ( $astrooda_settings, true ) );
-
-  // setcookie('_oauth2_proxy', 'okan4rt81jf76z23456sdnbf');
 
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;
   $items['common_form'] = drupal_get_form('astrooda_common');
-  // $items['bug_report_form'] = drupal_get_form('astrooda_bug_report_form');
-  $items['token_ask_form'] = drupal_get_form('astrooda_ask_token_form');
   $items['astrooda_debug'] = variable_get('astrooda_debug');
   $items['auth_cookie'] = '_oauth2_proxy';
 
@@ -382,37 +368,6 @@ function astrooda_array_member($val, $myArray)
 function astrooda_libraries_info()
 {
 
-  // A very simple library. No changing APIs (hence, no versions), no variants.
-  // Expected to be extracted into 'sites/all/libraries/simple'.
-  // $libraries ['d3'] = array (
-  // 'name' => 'Data Driven-Documents library',
-  // 'vendor url' => 'https://d3js.org',
-  // 'download url' => 'https://d3js.org',
-  // 'version arguments' => array (
-  // 'file' => 'd3.js', // Could be any file with version info
-  // 'pattern' => '/Version (\d+\.\d+\.\d+\.?) /'
-  // ),
-  // 'files' => array (
-  // 'js' => array (
-  // 'd3.js'
-  // )
-  // )
-  // );
-
-  // $libraries ['mpld3'] = array (
-  // 'name' => 'Data Driven-Documents library',
-  // 'vendor url' => 'http://mpld3.github.io/',
-  // 'download url' => 'http://mpld3.github.io/install.html',
-  // 'version arguments' => array (
-  // 'file' => 'mpld3.js', // Could be any file with version info
-  // 'pattern' => '/Version (.*)$/'
-  // ),
-  // 'files' => array (
-  // 'js' => array (
-  // 'mpld3.js'
-  // )
-  // )
-  // );
   $libraries['datatables'] = array(
     'name' => 'Table plug-in for jQuery',
     'vendor url' => 'https://datatables.net/',
@@ -432,11 +387,9 @@ function astrooda_libraries_info()
         'Editor/js/editor.bootstrap.min.js'
       ),
       'css' => array(
-        // 'datatables.min.css',
         'dataTables.bootstrap.min.css',
         'Buttons/css/buttons.dataTables.min.css',
         'Responsive/css/responsive.dataTables.min.css',
-        // 'Editor/css/editor.dataTables.min.css',
         'Select/css/select.dataTables.min.css',
         'Editor/css/editor.bootstrap.css'
       )
@@ -447,11 +400,6 @@ function astrooda_libraries_info()
     'vendor url' => 'http://bootstrapvalidator.com',
     'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
     'version callback' => 'short_circuit_version',
-      /*
-      'version arguments' => array (
-          'file' => 'js/bootstrapValidator.min.js', // Could be any file with version info
-         // 'pattern' => '/@Version (.*)$,/'
-      ),*/
       'files' => array(
       'js' => array(
         'js/bootstrapValidator.min.js'
@@ -472,6 +420,21 @@ function astrooda_libraries_info()
       'css' => array(
         'bokeh.min.css',
         'bokeh-widgets.min.css'
+      )
+    )
+  );
+
+  $libraries['highlight'] = array(
+    'name' => 'highlight.js',
+    'vendor url' => 'https://highlightjs.org/',
+    'download url' => 'https://highlightjs.org/download/',
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'highlight.min.js'
+      ),
+      'css' => array(
+        'default.min.css',
       )
     )
   );
@@ -509,7 +472,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
         '#weight' => 60,
         '#submit' => array(
           'node_form_cancel'
-        ), // This is the name of a function reproduced below
+        ),
         '#attributes' => array(
           'class' => array('ctools-close-modal', 'btn', 'btn-primary')
         )
