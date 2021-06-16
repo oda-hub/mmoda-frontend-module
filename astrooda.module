@@ -142,17 +142,6 @@ function astrooda_menu()
     'file' => 'astrooda.admin.inc'
   );
 
-  $items['send-bug-report'] = array(
-    // 'page callback' => 'user_feedback_form_content',
-    'page callback' => 'astrooda_bug_report_form',
-    'page arguments' => array(
-      'astrooda_bug_report_form'
-    ),
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
-    'file' => 'astrooda.common.inc'
-  );
-
   return $items;
 }
 
@@ -311,8 +300,6 @@ function astrooda_main_block_content()
   // fwrite ( $lfile, print_r ( $items, true ) );
   // fclose ( $lfile );
 
-  // this is where the $items get sent to your default MYMODULE_BLOCK.tpl.php that gets
-  // registered below
   return theme('astrooda_main_block_content', $items);
 }
 
@@ -448,18 +435,6 @@ function short_circuit_version()
   return TRUE;
 }
 
-/*
- * function astrooda_form_submit($form, &$form_state) {
- * if ($form_id == 'webform_client_form_384') {
- * ctools_include('modal');
- * ctools_include('ajax');
- *
- * $output = array(ctools_modal_command_dismiss());
- *
- * print ajax_render($output);
- * }
- * }
- */
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
