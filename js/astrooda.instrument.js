@@ -541,6 +541,11 @@ function panel_title(srcname, param) {
         $(log_product_panel_id).removeData('log_panel_id');
       }
 
+      if (panel.data('api_code_product_panel_id')) {
+        log_product_panel_id = panel.data('api_code_product_panel_id');
+        $(log_product_panel_id).removeData('api_code_panel_id');
+      }
+
       if (panel.data('query_parameters_product_panel_id')) {
         query_parameters_product_panel_id = panel.data('query_parameters_product_panel_id');
         $(query_parameters_product_panel_id).removeData('query_parameters_panel_id');
@@ -580,11 +585,9 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.result-panel .show-log', function(e) {
       e.preventDefault();
-      var log_parent_panel = $(this).closest('.result-panel');
-      var log = log_parent_panel.data('log'); var parent_log_offset;
-      if ($(this).closest(".instrument-panel.active"))
-        parent_log_offset = $(this).closest(".instrument-panel.active").offset();
-      else parent_log_offset = $(this).closest(".panel").offset();
+      var log_parent_panel = $(this).closest('.panel');
+      var log = log_parent_panel.data('log');
+      var parent_log_offset = $(this).closest(".instrument-panel").offset();
 
       var log_offset = {};
       log_offset.top = e.pageY;
@@ -600,6 +603,34 @@ function panel_title(srcname, param) {
 
         display_log(log, '#' + log_parent_panel.attr('id'), datetime, log_offset);
       }
+    });
+
+    $("body").on('click', '.result-panel .api-code', function(e) {
+      e.preventDefault();
+      var api_code_parent_panel = $(this).closest('.panel');
+      var parent_api_code_offset = $(this).closest(".instrument-panel").offset();
+      
+      var api_code_offset = {};
+      api_code_offset.top = e.pageY;
+      api_code_offset.left = e.pageX;
+      if (api_code_panel_id = api_code_parent_panel.data('api_code_panel_id')) {
+        $(api_code_panel_id).highlight_result_panel(api_code_offset);
+        $('.fa-chevron-down', api_code_panel_id).click();
+      } else {
+        // Show api_code
+        var datetime = $(this).attr('data-datetime');
+        api_code_offset.top -= parent_api_code_offset.top;
+        api_code_offset.left -= parent_api_code_offset.left;
+
+        display_api_code(api_code_parent_panel.data('api_code'), '#' + api_code_parent_panel.attr('id'), datetime, api_code_offset);
+      }
+    });
+
+    $("body").on('click', '.panel .copy-api-code', function(e) {
+      e.preventDefault();
+      var parent_panel = $(this).closest('.panel');
+      api_code_product_panel_id = parent_panel.data('api_code_product_panel_id');
+      copyToClipboard($(api_code_product_panel_id).data('api_code'));
     });
 
     $("body").on('click', '.result-panel .show-query-parameters', function(e) {
@@ -629,25 +660,6 @@ function panel_title(srcname, param) {
       var query_parameters = query_parameters_parent_panel.data('analysis_parameters');
       var url = get_query_url(query_parameters);
       copyToClipboard(url);
-    });
-
-    $("body").on('click', '.result-panel .api-code', function(e) {
-      e.preventDefault();
-      var query_parameters_parent_panel = $(this).closest('.result-panel');
-      copyToClipboard(query_parameters_parent_panel.data('api_code'));
-    });
-
-    $("body").on('click', '.show-api-token', function(e) {
-      e.preventDefault();
-      title = 'API token';
-      var api_token = $('<p>').addClass('wrap').append(($.cookie('Drupal.visitor.token')));
-      content = $('<div>').append(api_token.wrap()).append($(this).next().html());
-      waitingDialog.show(title, content, {
-        dialogSize: 'lg',
-        buttonText: 'Close',
-        showCloseInHeader: true,
-      });
-      return false;
     });
 
     $("body").on('click', '.copy-api-token', function(e) {
@@ -694,7 +706,7 @@ function panel_title(srcname, param) {
       });
     });
     // delete catalog when attached to panel
-    $(".instrument-panel.active .instrument-params-panel .inline-user-catalog").on('click', ".remove-catolog", function(e) {
+    $(".instrument-panel.active .instrument-params-panel .inline-user-catalog").on('click', ".remove-catolog", function() {
       $(this).parent().addClass('hidden');
       var panel = $(".instrument-panel.active .instrument-params-panel");
       if (panel.data('catalog')) {
@@ -1233,6 +1245,25 @@ function panel_title(srcname, param) {
 
   function deg2rad(deg) {
     return deg * (Math.PI / 180)
+  }
+  
+  function display_api_code(api_code, afterDiv, datetime, offset) {
+    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-api-code', datetime);
+    $('#' + panel_ids.panel_body_id).append('<div class="api-code-wrapper"><pre><code class="language-python">' + api_code + '</code></pre></div>');
+      
+    $('#' + panel_ids.panel_body_id).append('<button type="button" class="btn btn-default copy-api-code">Copy API code to clipboard<span class="glyphicon glyphicon-copy"></span></button>');
+    $(afterDiv).data({
+      api_code_panel_id: '#' + panel_ids.panel_id
+    });
+    $('#' + panel_ids.panel_id).data({
+      api_code_product_panel_id: afterDiv
+    });
+    source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - API code');
+    $('#' + panel_ids.panel_id).addClass('astrooda-api-code');
+    $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+    hljs.highlightAll();
+
   }
 
   function display_log(log, afterDiv, datetime, offset) {
