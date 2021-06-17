@@ -110,7 +110,7 @@ table.astro-ana tr td, table.astro-ana tr th {
   float: left;
   display: block;
   vertical-align: top;
-  width: 30%;
+  width: 40%;
   clear: right;
 }
 
@@ -163,23 +163,15 @@ table.astro-ana tr td, table.astro-ana tr th {
   padding-right: 1em;
 }
 
-/*
-.spectrum-table tr td:not(:first-child),
-#catalog-wrapper table tr td:not(:first-child) {
-  text-align : right;
-}
-*/
 .catalog-wrapper table tr td.optional, .catalog-wrapper table tr th.optional,
   .catalog-wrapper .more, .catalog-wrapper .less {
   display: none;
 }
 
-/*
-.catalog-wrapper tr td ,  .spectrum-table-wrapper tr td {
-  clear: left;
-  text-align: right;
+.inline-user-catalog.btn-group {
+  display: none;
 }
-*/
+
 span.panel-toolbox span {
   padding-left: 0.5em;
 }
@@ -371,10 +363,6 @@ tr.selected td {
 
 table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
   background-color: #007d64;
-}
-
-.inline-user-catalog .show-catalog {
-  padding-right: 0.5em;
 }
 
 /* Turn Off Number Input Spinners */
