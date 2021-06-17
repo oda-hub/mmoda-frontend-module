@@ -431,7 +431,9 @@ function astrooda_isgri($form, &$form_state)
       'name' => 'user_catalog_file'
     ),
     '#prefix' => '<hr class="hr-default" /><div class="row">',
-    '#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catolog"></span></div></div><hr class="hr-default" />',
+    //'#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
+    //'#suffix' => '<div class="inline-user-catalog hidden"><button class="btn btn-default show-catalog" href="#" >Inline catalog</button><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
+    '#suffix' => '</div><hr class="hr-default" />',
     '#parent_classes' => array(
       'form-group',
       'col-md-8'

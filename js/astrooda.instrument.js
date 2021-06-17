@@ -609,7 +609,7 @@ function panel_title(srcname, param) {
       e.preventDefault();
       var api_code_parent_panel = $(this).closest('.panel');
       var parent_api_code_offset = $(this).closest(".instrument-panel").offset();
-      
+
       var api_code_offset = {};
       api_code_offset.top = e.pageY;
       api_code_offset.left = e.pageX;
@@ -666,6 +666,22 @@ function panel_title(srcname, param) {
       e.preventDefault();
       copyToClipboard($.cookie('Drupal.visitor.token'));
     });
+    // --------------- Catalog Toolbar start
+    var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+
+    // Add button : Show inline catalogue
+    button = dbutton.clone().addClass('show-catalog').text('Inline catalog');
+    toolbar.append(button);
+
+    // Add button : Remove inline catalogue
+    button = dbutton.clone().addClass('remove-catalog');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-remove");
+    glyphicon.attr({ title: "Remove inline catalogue" });
+    button.append(glyphicon);
+    toolbar.append(button);
+    $('.form-item-files-user-catalog-file').after(toolbar);
+    // --------------- Catalog Toolbar end
 
     $("body").on('click', '.result-panel .use-catalog', function(e) {
       e.preventDefault();
@@ -687,7 +703,7 @@ function panel_title(srcname, param) {
         catalog: catalog,
         dataTable: dataTable
       });
-      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
+      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').show();
 
       var event = $.Event('click');
       var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
@@ -706,11 +722,15 @@ function panel_title(srcname, param) {
       });
     });
     // delete catalog when attached to panel
-    $(".instrument-panel.active .instrument-params-panel .inline-user-catalog").on('click', ".remove-catolog", function() {
-      $(this).parent().addClass('hidden');
-      var panel = $(".instrument-panel.active .instrument-params-panel");
+    $(".instrument-panel .instrument-params-panel .inline-user-catalog").on('click', ".remove-catalog", function() {
+      $(this).parent().hide();
+      var panel = $(this).closest(".instrument-params-panel");
       if (panel.data('catalog')) {
         panel.removeData('catalog');
+      }
+      if (panel.data('catalog_panel_id')) {
+        catalog_panel_id = panel.data('catalog_panel_id');
+        $(catalog_panel_id).remove();
       }
     });
 
@@ -1246,11 +1266,11 @@ function panel_title(srcname, param) {
   function deg2rad(deg) {
     return deg * (Math.PI / 180)
   }
-  
+
   function display_api_code(api_code, afterDiv, datetime, offset) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-api-code', datetime);
     $('#' + panel_ids.panel_body_id).append('<div class="api-code-wrapper"><pre><code class="language-python">' + api_code + '</code></pre></div>');
-      
+
     $('#' + panel_ids.panel_body_id).append('<button type="button" class="btn btn-default copy-api-code">Copy API code to clipboard<span class="glyphicon glyphicon-copy"></span></button>');
     $(afterDiv).data({
       api_code_panel_id: '#' + panel_ids.panel_id
