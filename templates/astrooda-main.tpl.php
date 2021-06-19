@@ -117,7 +117,7 @@
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span
       class="panel-toolbox pull-right"> <span class="date"></span> <span
-      class="clickable"><i class="fa fa-chevron-up"></i></span> <span
+      class="collapsible"><i class="fa fa-chevron-up"></i></span> <span
       class="fa fa-times close-panel"></span>
     </span>
   </div>
@@ -204,7 +204,7 @@
           </span>
           </a-->
           <a data-toggle="tooltip" title="" data-original-title="Help"
-            class="btn btn-primary help-button" href="<?=$help_page?>"><span
+            class="btn btn-primary open-in-modal" href="<?=$help_page?>"><span
             class="oda-icon-label">Help</span><span
             class="glyphicon glyphicon-info-sign"> </span> </a>
         </div>
@@ -236,12 +236,13 @@
                     <div class="panel-heading">
                       <div class="instrument-params-panel-title">Instrument
                         query parameters :</div>
+                      <div class="collapsible pull-right"><span class="glyphicon glyphicon-chevron-up"> </span></div>
                       <div
                         class="intrument-toolbar btn-group pull-right"
                         role="group">
                         <a data-toggle="tooltip" title=""
                           data-original-title="Help"
-                          class="btn btn-primary help-button"
+                          class="btn btn-primary open-in-modal"
                           href="<?=$instrument['help_page']?>"><span
                           class="glyphicon glyphicon-info-sign"> </span>
                         </a>
