@@ -945,10 +945,27 @@ function panel_title(srcname, param) {
       AJAX_call();
     });
 
-    $('.help-button').on('click', function(e) {
-      e.preventDefault();
-      $.get($(this).attr('href'), function(data) {
+    $('a').filter(function() {
+      return this.hostname && this.hostname !== location.hostname;
+    }).addClass("external");
 
+    $('body').on('click', '.open-in-modal', function(e) {
+      e.preventDefault();
+
+      open_in_modal_base_path = $(this).attr('href');
+      let path_items = open_in_modal_base_path.split("/");
+      path_items.pop(); // remove the last
+      open_in_modal_base_path = path_items.join("/") + "/";
+
+      var current_modal = $(this).closest('.modal');
+      home_url= 'help/astrooda';
+      home_link = '';
+      var previous_title_text = $('.modal-title', current_modal).text();
+      if (previous_title_text.length && $(this).attr('href') != home_url) {
+        home_link_elt = $("<a>", { text: 'Astrooda Help', class: 'open-in-modal', href: home_url });
+        home_link = home_link_elt[0].outerHTML + ' > ';
+      }
+      $.get($(this).attr('href'), function(data) {
         var html = $.parseHTML(data);
         var help_text = $(".region-content .block-system", html);
         var title = $(".page-header", html).text();
@@ -956,11 +973,19 @@ function panel_title(srcname, param) {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
         help_text.find('#table-of-contents-links').addClass('rounded');
-        waitingDialog.show(title + ' Help', help_text, {
+
+        $("a[href]", help_text).each(function() {
+          if (!(this.hostname && this.hostname !== location.hostname) && !$(this).attr('href').startsWith("#")) {
+            $(this).addClass('open-in-modal').attr('href', open_in_modal_base_path + $(this).attr('href'));
+          }
+          else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
+        });
+        waitingDialog.show(home_link + title + ' Help', help_text, {
           dialogSize: 'lg',
           buttonText: 'Close',
           showCloseInHeader: true,
         });
+        $('#ldialog .modal-body').scrollTop(0);
       });
       return false;
     });
