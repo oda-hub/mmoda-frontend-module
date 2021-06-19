@@ -945,10 +945,6 @@ function panel_title(srcname, param) {
       AJAX_call();
     });
 
-    $('a').filter(function() {
-      return this.hostname && this.hostname !== location.hostname;
-    }).addClass("external");
-
     $('body').on('click', '.open-in-modal', function(e) {
       e.preventDefault();
 
