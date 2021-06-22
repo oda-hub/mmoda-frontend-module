@@ -479,7 +479,7 @@ function get_waitingDialog($modal_dialog) {
   $.fn.set_collapsible = function() {
     // $('#'+panel_id + ' .panel-heading span.clickable').on('click',
     // function(e){
-    $(this).find('.panel-heading span.clickable').on('click', function(e) {
+    $(this).find('.panel-heading span.collapsible').on('click', function(e) {
       var $this = $(this);
       if (!$this.hasClass('panel-collapsed')) {
         $this.closest('.panel').find('.panel-body').slideUp();
