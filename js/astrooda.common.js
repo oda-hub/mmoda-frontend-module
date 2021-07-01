@@ -391,7 +391,6 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.legend').show();
           }
           // Opening dialog
-          console.log('show modal please');
           $dialog.modal({ keyboard: true });
           $dialog.find('.close-panel').on("click", function() {
 
