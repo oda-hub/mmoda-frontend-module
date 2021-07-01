@@ -2,6 +2,14 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
+body {
+  font-size : 12px !important;
+}
+
+label.control-label {
+  display: block;;
+}
+
 .form-item-E1-keV .form-control, .form-item-E2-keV .form-control, .form-item-radius .form-control {
   display: inline-block !important;
 }
@@ -102,7 +110,7 @@ table.message-table tr td {
   margin-bottom: 0.2em;
 }
 
-table.astro-ana tr td, table.astro-ana tr th {
+table.mmoda tr td, table.mmoda tr th {
   padding: 0.4em 1em;
 }
 
@@ -507,3 +515,6 @@ div.ctools-modal-content .modal-content {
   max-width: 60%;
 }
 
+.modal-default .form-actions {
+  text-align: right;
+}

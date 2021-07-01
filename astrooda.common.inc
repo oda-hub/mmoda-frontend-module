@@ -92,7 +92,7 @@ function process_user_feedback_callback($form, &$form_state) {
     $to = implode ( ',', array_slice($support_email, 1) );
     $reply_to = $form_state ['values'] ['name'] . '<' . $form_state ['values'] ['email'] . '>';
 
-    $message_type = $foldername = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
+    $message_type = $form ['message_type'] ['#options'] [$form_state ['values'] ['message_type']];
     $subject = '[Astrooda ' . $message_type . ' ' . date ( 'Y-m-d\TH:i:s' ) . '] ' . $form_state ['values'] ['subject'];
 
     $dispatcher_response_filename = 'dispatcher_response_' . date ( 'Ymd\THis' ) . '.json';
@@ -134,14 +134,6 @@ function process_user_feedback_callback($form, &$form_state) {
  * Implements hook_mail().
  */
 function astrooda_mail($key, &$message, $params) {
-//   $filename = '/tmp/momo/mail_params.php';
-//   unlink($filename);
-
-//   $f = fopen ( $filename, 'w' );
-//   fwrite ( $f, "mail params:\n" );
-//   fwrite ( $f, print_r ( $params, true ) );
-//   fclose ( $f );
-//   chmod ( $filename, 0777 );
   switch ($key) {
     case 'user_message' :
       $message ['to'] = $params ['to'];
@@ -177,7 +169,7 @@ function astrooda_common($form, &$form_state) {
   // '#type' => 'hidden',
   // '#value' => $session_id
   // );
-  // $form ['#action'] = '/dispatch-data/test';
+
   $form ['#method'] = 'POST';
 
   $astrooda_settings = variable_get ( 'astrooda_settings' );
@@ -201,7 +193,6 @@ function astrooda_common($form, &$form_state) {
               'form-control'
           )
       ),
-      // 'data-validate' => 'false'
       '#prefix' => '<div class="row"><div class="col-md-12"><div class="input-group form-item">'
   );
 
@@ -223,8 +214,6 @@ function astrooda_common($form, &$form_state) {
               'message' => '...'
           )
       ),
-      // 'message' => t ( 'Resolving name using ').'<a href="http://cds.u-strasbg.fr/cgi-bin/Sesame" target="_blank">Sesame</a>'.t(' respectively NED, Simbad and VizieR...' )
-
       '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
       '#suffix' => '</span></div></div></div>'
   );

@@ -77,7 +77,7 @@
         <div class="summary"></div>
         <div class="more-less-details">More details &gt;</div>
         <div class="details"></div>
-        <i class="fa fa-spinner fa-spin" style="font-size: 24px"></i>
+        <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->
         <div class="progress progress-striped active"
           style="margin-bottom: 0;">
           <div class="progress-bar" style="width: 100%"></div>
@@ -86,19 +86,20 @@
       <div class="modal-footer">
         <div class="notice-progress-container">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-          <div class="notice-progress-message">You can close this
-            window and resubmit the same request at a later time to
-            check its status or retrieve results</div>
+          <div class="notice-progress-message">You can close this window
+            and resubmit the same request at a later time to check its
+            status or retrieve results</div>
             <?php  if ($logged_in) :?>
-              <div class="notice-progress-message-email">This can be equally
-                achieved by clicking on the link received by email
-                <br/>You will receive a notification at job completion
-              </div>
+              <div class="notice-progress-message-email">
+            This can be equally achieved by clicking on the link
+            received by email <br />You will receive a notification at
+            job completion
+          </div>
             <?php endif;?>
         </div>
         <div class="buttons-container">
           <a data-toggle="tooltip" title=""
-             data-original-title="Report a bug or write us a feedback"
+            data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
             href="modal_forms/nojs/webform/392"><span
             class="oda-icon-label">Write a feedback</span><span
@@ -156,44 +157,39 @@
         <!--span>Session ID : <?=$session_id?>, count= <?=$session_count?></span-->
         <?php endif; ?>
         <div class="main-toolbar btn-group pull-right" role="group">
-          <a data-toggle="tooltip" title=""
-            data-original-title="Contact us"
+          <a title="Contact us"
             class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
-            href="modal_forms/nojs/webform/383"><span
-            class="oda-icon-label">Contact us</span><span
+            href="modal_forms/nojs/webform/383">
+            <span
+            class="oda-icon-label">Contact us</span>
+            <span
             class="glyphicon glyphicon-envelope"> </span>
             </a>
-          <a
-            data-toggle="tooltip" title="" data-original-title="Sign in"
+            <a
+            title="Sign in"
             class="btn btn-primary user-log login-link"
             href="user/login"><span class="oda-icon-label">Sign in</span><span
-            class="glyphicon glyphicon-log-in"> </span>
-          </a>
-          <a
-            data-toggle="tooltip" title=""
-            data-original-title="Sign out"
+            class="glyphicon glyphicon-log-in"> </span> </a>
+            <a
+            title="Sign out"
             class="btn btn-primary user-log logout-link"
             href="user/logout"><span class="oda-icon-label">Sign out</span><span
-            class="glyphicon glyphicon-log-out"></span>
-          </a>
+            class="glyphicon glyphicon-log-out"></span> </a>
           <?php  if ($logged_in) :?>
           <a data-toggle="tooltip" title=""
             data-original-title="Show API token, copy it or request it by email"
             class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
             href="modal_forms/nojs/webform/384"><span
             class="oda-icon-label">API token</span><span
-            class="glyphicon glyphicon-star"> </span>
-            </a>
+            class="glyphicon glyphicon-star"> </span> </a>
           <div class="hidden">
-            <button
-              type="button"
-              class="btn copy-api-token">Copy API token to clipboard
-              <span class="glyphicon glyphicon-copy"></span>
+            <button type="button" class="btn copy-api-token">
+              Copy API token to clipboard <span
+                class="glyphicon glyphicon-copy"></span>
             </button>
-            <button
-              type="button"
-              class="btn email-api-token">Receive API token by e-mail
-              <span class="glyphicon glyphicon-envelope"></span>
+            <button type="button" class="btn email-api-token">
+              Receive API token by e-mail <span
+                class="glyphicon glyphicon-envelope"></span>
             </button>
           </div>
           <?php endif;?>
@@ -203,8 +199,8 @@
             href="modal_forms/nojs/webform/384"><span class="oda-icon-label">API token</span><span class="glyphicon glyphicon-star">
           </span>
           </a-->
-          <a data-toggle="tooltip" title="" data-original-title="Help"
-            class="btn btn-primary open-in-modal" href="<?=$help_page?>"><span
+          <a id="help-home" title="<?=variable_get('site_name')?> Help"
+            class="btn btn-primary open-in-modal help-home" href="<?=$help_page?>"><span
             class="oda-icon-label">Help</span><span
             class="glyphicon glyphicon-info-sign"> </span> </a>
         </div>
@@ -236,17 +232,17 @@
                     <div class="panel-heading">
                       <div class="instrument-params-panel-title">Instrument
                         query parameters :</div>
-                      <div class="collapsible pull-right"><span class="glyphicon glyphicon-chevron-up"> </span></div>
-                      <div
-                        class="intrument-toolbar btn-group pull-right"
-                        role="group">
+                      <span class="panel-toolbox pull-right">
+                        <span class="collapsible"><span class="glyphicon glyphicon-chevron-up"> </span></span>
+                      </span>
+                      <span class="intrument-toolbar btn-group pull-right" role="group">
                         <a data-toggle="tooltip" title=""
                           data-original-title="Help"
                           class="btn btn-primary open-in-modal"
                           href="<?=$instrument['help_page']?>"><span
                           class="glyphicon glyphicon-info-sign"> </span>
                         </a>
-                      </div>
+                      </span>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
                     <?php  if ($instrument['acknowledgement']) :?>

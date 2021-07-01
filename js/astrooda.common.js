@@ -391,6 +391,7 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.legend').show();
           }
           // Opening dialog
+          console.log('show modal please');
           $dialog.modal({ keyboard: true });
           $dialog.find('.close-panel').on("click", function() {
 
@@ -476,23 +477,6 @@ function get_waitingDialog($modal_dialog) {
     });
   }
 
-  $.fn.set_collapsible = function() {
-    // $('#'+panel_id + ' .panel-heading span.clickable').on('click',
-    // function(e){
-    $(this).find('.panel-heading span.collapsible').on('click', function(e) {
-      var $this = $(this);
-      if (!$this.hasClass('panel-collapsed')) {
-        $this.closest('.panel').find('.panel-body').slideUp();
-        $this.addClass('panel-collapsed');
-        $this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-      }
-      else {
-        $this.closest('.panel').find('.panel-body').slideDown();
-        $this.removeClass('panel-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-      }
-    });
-  }
-
   $.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
     var panel_id = product_type + '-wrapper-' + i;
     var panel_body_id = product_type + '-' + i;
@@ -512,7 +496,6 @@ function get_waitingDialog($modal_dialog) {
     }
 
     $('#' + panel_id).set_panel_draggable();
-    $('#' + panel_id).set_collapsible();
     return ({ 'panel_id': panel_id, 'panel_body_id': panel_body_id });
   }
 
@@ -553,10 +536,8 @@ function get_waitingDialog($modal_dialog) {
 
   $(document).ready(commonReady);
 
-  function validate_date(value, validator, thefield) {
+  function validate_date(value, validator) {
     max_mjd_date = get_today_mjd();
-    // var time_format_type = $('select[name="T_format"]',
-    // 'form#astrooda-common').val();
     var time_format_type = validator.getFieldElements('T_format').val();
 
     if (time_format_type == 'isot' && !valid_iso_date(value)) {
@@ -575,6 +556,19 @@ function get_waitingDialog($modal_dialog) {
   }
 
   function commonReady() {
+    $('body').on('click', '.panel-heading .collapsible', function() {
+      console.log('collapse clicked !')
+      var $this = $(this);
+      if (!$this.hasClass('panel-collapsed')) {
+        $this.closest('.panel').find('.panel-body').slideUp();
+        $this.addClass('panel-collapsed');
+        $this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+      }
+      else {
+        $this.closest('.panel').find('.panel-body').slideDown();
+        $this.removeClass('panel-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+      }
+    });
 
     //    setTimeout(function() {
     //      //$("span.oda-icon-label").hide("slide", { direction: "right" }, 1000);
@@ -669,7 +663,6 @@ function get_waitingDialog($modal_dialog) {
       });
     });
 
-    $('#block-views-oda-events-block-1').set_collapsible();
     waitingDialog = get_waitingDialog();
 
     function openPageInModal(href) {

@@ -187,7 +187,7 @@ function panel_title(srcname, param) {
 
           if (data.products.hasOwnProperty('image')) {
             if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-              product_panel_body = display_lc_table(job_id, data.query_status, data.products);
+              product_panel_body = display_lc_table(job_id, data.products);
             } else {
               if (data.products.image.hasOwnProperty('spectral_fit_image')) {
                 product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
@@ -212,8 +212,8 @@ function panel_title(srcname, param) {
         // console.log('Exec time : ' + (new
         // Date().getTime() -
         // startAJAXTime));
-        $(".write-feedback-button").hide();
-        $('#ldialog button.write-feedback-button').removeClass('hidden');
+        //        $(".write-feedback-button").hide();
+        //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
       }).error(function(jqXHR, textStatus, errorThrown) {
         console.log('textStatus : ' + textStatus + '|');
@@ -382,40 +382,9 @@ function panel_title(srcname, param) {
 
   function commonReady() {
     $('#ldialog').on('hidden.bs.modal', function() {
-      $('#ldialog button.write-feedback-button').addClass('hidden');
+      $('#ldialog button.write-feedback-button').hide();
       $(".notice-progress-container").hide();
     })
-
-    //    $('#lfeedback button#edit-submit').prependTo($('#lfeedback .modal-footer'));
-    //    $('button.write-feedback-button').on('click', function() {
-    //      $('#lfeedback').modal({
-    //        show: true
-    //      });
-    //    });
-    //
-    //    $('#lfeedback').on('hidden.bs.modal', function() {
-    //      $('#feedback-messages', $(this)).html('');
-    //      $('input,select,textarea', '#lfeedback').prop('disabled', false);
-    //    });
-    //
-    //    $('#lfeedback').on('shown.bs.modal', function() {
-    //      $('#astrooda-bug-report-form').removeClass('hidden');
-    //      $('.modal-footer button.cancel-button', $(this)).text('Close').show();
-    //      $('.modal-footer button#edit-submit', $(this)).show();
-    //    });
-    //
-    //    $('#ltoken button#edit-submit--2').prependTo($('#ltoken .modal-footer'));
-    //
-    //    $('#ltoken').on('hidden.bs.modal', function() {
-    //      $('#token-messages', $(this)).html('');
-    //      $('input,textarea', '#ltoken').prop('disabled', false);
-    //    });
-    //
-    //    $('#ltoken').on('shown.bs.modal', function() {
-    //      $('#astrooda-ask-token-form').removeClass('hidden');
-    //      $('.modal-footer button.cancel-button', $(this)).text('Close').show();
-    //      $('.modal-footer button#edit-submit--2', $(this)).show();
-    //    });
 
     $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
       var current_row = $(this).parents('tr');
@@ -529,8 +498,7 @@ function panel_title(srcname, param) {
         spectrum_parent_panel_id.removeData('spectrum_panel_id');
       }
 
-      // update the lightcurve only if it is in the parameters
-      // panel
+      // update the lightcurve only if it is in the parameters panel
       if (panel.data('lightcurve_parent_panel_id')) {
         lightcurve_parent_panel_id = $(panel.data('lightcurve_parent_panel_id'));
         lightcurve_parent_panel_id.removeData('lightcurve_panel_id');
@@ -570,7 +538,6 @@ function panel_title(srcname, param) {
 
       } else {
         // Show catalog
-
         var catalog = clone(catalog_parent_panel.data('catalog'));
         catalog_offset.top -= parent_catalog_offset.top;
         catalog_offset.left -= parent_catalog_offset.left;
@@ -683,44 +650,52 @@ function panel_title(srcname, param) {
     $('.form-item-files-user-catalog-file').after(toolbar);
     // --------------- Catalog Toolbar end
 
+    // Warn the user that if he/she selects objects
+    // only those objects will be copied to the used catalog
+    $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function(e) {
+      e.preventDefault();
+      var catalog_panel = $(this).closest('.panel');
+      var dataTable = catalog_panel.data('dataTable');
+      if (dataTable.rows({ selected: true }).count() == 0) {
+        $('.use-catalog', catalog_panel).text('Use catalog').removeClass('highlight');
+      }
+      else {
+        $('.use-catalog', catalog_panel).text('Use catalog with selected objects only').addClass('underline');
+      }
+    });
+
     $("body").on('click', '.result-panel .use-catalog', function(e) {
       e.preventDefault();
       var catalog_panel = $(this).parents('.result-panel');
       var catalog_parent_panel = $(catalog_panel.data('catalog_parent_panel_id'));
       var catalog = clone(catalog_parent_panel.data('catalog'));
       var dataTable = catalog_panel.data('dataTable');
-      // delete none-selected sources from the catalog in the copy
-      if (dataTable.rows({
-        selected: true
-      }).count() > 0) {
-        dataTable.rows({
-          selected: false
-        }).remove();
-
+      if (dataTable.rows({ selected: true }).count() > 0) {
+        dataTable.rows({ selected: false }).remove();
       }
       catalog.data = dataTable.data().toArray();
       $(".instrument-panel.active .instrument-params-panel").data({
         catalog: catalog,
         dataTable: dataTable
       });
-      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').show();
+      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').css('display', 'inline-block');
 
       var event = $.Event('click');
-      var showCatalog = $('.instrument-panel.active .instrument-params-panel .show-catalog');
+      var showCatalog = $('.instrument-panel.active .instrument-params-panel .inline-user-catalog');
       var catalog_position = showCatalog.position();
       var new_catalog_position = {
         left: catalog_position.left + showCatalog.width() / 2,
         top: catalog_position.top + showCatalog.height() * 2
       }
-
       var catalog_offset = showCatalog.offset();
       event.pageX = catalog_offset.left + showCatalog.width() / 2;
       event.pageY = catalog_offset.top + showCatalog.height() / 2;
       catalog_panel.animate(new_catalog_position, "slow", function() {
         $('.close-panel', catalog_panel).click();
-        showCatalog.trigger(event);
+        $('button.show-catalog', showCatalog).trigger(event);
       });
     });
+
     // delete catalog when attached to panel
     $(".instrument-panel .instrument-params-panel .inline-user-catalog").on('click', ".remove-catalog", function() {
       $(this).parent().hide();
@@ -917,8 +892,8 @@ function panel_title(srcname, param) {
 
       waitingDialog.show('Processing ...', '', {
         progressType: 'success',
-        showProgressBar: false,
-        showSpinner: true
+        showProgressBar: true,
+        showSpinner: false
       });
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
@@ -945,43 +920,57 @@ function panel_title(srcname, param) {
       AJAX_call();
     });
 
+//    $('body').on('click', '#ldialog .book-toc button', function() {
+//      console.log('outline clicked!');
+//      var bh = $('#ldialog .modal-body').height();
+//      var mh =$('#ldialog .modal-body .book-toc .dropdown-menu').height();
+//      console.log('body height:'+bh+', menu height:'+mh);
+//      $('#ldialog .modal-body').scrollTop(bh+mh-5);
+//    });
+
     $('body').on('click', '.open-in-modal', function(e) {
       e.preventDefault();
 
-      open_in_modal_base_path = $(this).attr('href');
+      // var current_modal = $(this).closest('.modal');
+      var home_link = '';
+      if (!$(this).hasClass('help-home')) {
+        home_link_elt = $("<span>")
+          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href')})).append(' > ');
+        home_link = home_link_elt[0].outerHTML;
+      }
+
+      var open_in_modal_base_path = $(this).attr('href');
       let path_items = open_in_modal_base_path.split("/");
       path_items.pop(); // remove the last
       open_in_modal_base_path = path_items.join("/") + "/";
 
-      var current_modal = $(this).closest('.modal');
-      home_url= 'help/astrooda';
-      home_link = '';
-      var previous_title_text = $('.modal-title', current_modal).text();
-      if (previous_title_text.length && $(this).attr('href') != home_url) {
-        home_link_elt = $("<a>", { text: 'Astrooda Help', class: 'open-in-modal', href: home_url });
-        home_link = home_link_elt[0].outerHTML + ' > ';
-      }
       $.get($(this).attr('href'), function(data) {
         var html = $.parseHTML(data);
-        var help_text = $(".region-content .block-system", html);
+        var help_text = $(".region-content", html);
         var title = $(".page-header", html).text();
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
         help_text.find('#table-of-contents-links').addClass('rounded');
 
-        $("a[href]", help_text).each(function() {
+        $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function() {
           if (!(this.hostname && this.hostname !== location.hostname) && !$(this).attr('href').startsWith("#")) {
-            $(this).addClass('open-in-modal').attr('href', open_in_modal_base_path + $(this).attr('href'));
+            $(this).addClass('open-in-modal');
+            if ($(this).attr('href').indexOf(open_in_modal_base_path) < 0)
+              $(this).attr('href', open_in_modal_base_path + $(this).attr('href'));
           }
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
-        waitingDialog.show(home_link + title + ' Help', help_text, {
+        waitingDialog.show(home_link + title, help_text, {
           dialogSize: 'lg',
           buttonText: 'Close',
           showCloseInHeader: true,
         });
+        $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%"  });
         $('#ldialog .modal-body').scrollTop(0);
+        $(window).scrollTop(0);
+        //        window.scroll(0, 0);
+        //        $('html, body').animate({scrollTop:0},500);
       });
       return false;
     });
@@ -1140,7 +1129,7 @@ function panel_title(srcname, param) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-catalog', datetime);
 
     var catalog_panel = $('#' + panel_ids.panel_id);
-    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="astro-ana"></table></div>');
+    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>');
 
     $(afterDiv).data({
       catalog_panel_id: '#' + panel_ids.panel_id
@@ -1155,16 +1144,16 @@ function panel_title(srcname, param) {
     }
 
     var editor = new $.fn.dataTable.Editor({
-      table: '#' + panel_ids.panel_id + ' .catalog-wrapper .astro-ana',
+      table: '#' + panel_ids.panel_id + ' .catalog-wrapper .mmoda',
       fields: catalog.fields,
     });
 
-    var catalog_container = $(".catalog-wrapper .astro-ana", '#' + panel_ids.panel_id);
+    var catalog_container = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id);
 
     var dataTable = create_catalog_datatable(editor, catalog, catalog_container)
 
     // Activate inline edit on click of a table cell
-    catalog_container.on('click', 'tbody td:not(:first-child)', function(e) {
+    catalog_container.on('click', 'tbody td:not(:first-child)', function() {
       editor.inline(this);
     });
 
@@ -1176,7 +1165,7 @@ function panel_title(srcname, param) {
       if (action !== 'remove') {
         var ra = this.field('ra');
         var dec = this.field('dec');
-        var src_names = this.field('src_names');
+        //var src_names = this.field('src_names');
         var ldataTable = $(this.s.table).DataTable();
         // var lfilter = (action === 'edit')? data.data;
         var confirmation = ($('.DTE button.save-row').data('confirmation'));
@@ -1190,25 +1179,16 @@ function panel_title(srcname, param) {
 
               var d = this.data();
               var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
-              // var distance_same =
-              // d.ERR_RAD * 2;
+              // var distance_same = d.ERR_RAD * 2;
               var distance_same = 0.00001;
               if (distance <= distance_same) {
-                // Highlight the row
-                // in the table
+                // Highlight the row in the table
                 $(this.node()).addClass('alert alert-danger');
                 $(this).show();
 
-                // Change the editor
-                // button to "Save
-                // anyway"
+                // Change the editor button to "Save anyway"
                 $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
-                // Fix a bug where
-                // the opacity of
-                // the error
-                // message element
-                // is set to 0:
-                // not displayed
+                // Fix a bug where the opacity of the error message element is set to 0: not displayed
                 $('.DTE .DTE_Form_Error').css({
                   'opacity': ''
                 });
@@ -1216,7 +1196,7 @@ function panel_title(srcname, param) {
                 editor.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
                   + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
                 setTimeout(function() {
-                  var row = $(".catalog-wrapper .astro-ana", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
+                  var row = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
 
                   $(row).removeClass('alert alert-danger')
                 }, 5000);
@@ -1382,7 +1362,7 @@ function panel_title(srcname, param) {
     });
   }
 
-  function display_lc_table(job_id, query_status, data) {
+  function display_lc_table(job_id, data) {
     datetime = get_current_date_time();
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
@@ -2158,7 +2138,7 @@ function panel_title(srcname, param) {
     var panel_ids = $(".instrument-params-panel",
       ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src: '/cdci/astrooda/dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
+      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
       id: 'js9iframe',
       width: '650',
       height: '700',
