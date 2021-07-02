@@ -41,7 +41,7 @@ function astrooda_isgri($form, &$form_state)
     '#title' => t("OSA Version"),
     '#options' => array(
       'OSA10.2' => 'OSA10.2',
-      'OSA11.0' => 'OSA11.0'
+      'OSA11.1' => 'OSA11.1'
     ),
 
     '#parent_classes' => array(
@@ -59,7 +59,7 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">'
   );
 
-  $form['osa_version']['#default_value'] = $form['osa_version']['#options']['OSA11.0'];
+  $form['osa_version']['#default_value'] = $form['osa_version']['#options']['OSA10.2'];
 
   $form['radius'] = array(
     '#type' => 'textfield',
