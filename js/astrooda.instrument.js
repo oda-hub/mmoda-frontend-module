@@ -91,7 +91,9 @@ function panel_title(srcname, param) {
     //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
 
-    var requestTimer = null;
+    // must be global variable
+    requestTimer = null;
+    
     //var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
       url: current_ajax_call_params.action,
@@ -235,15 +237,16 @@ function panel_title(srcname, param) {
       });
 
     $('#ldialog .close-button').on('click', function() {
-      if (requestTimer) {
+      if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
       }
       $('#ldialog .header-message .job-id').html('');
+      $('#ldialog .header-message .session-id').html('');
       $('#ldialog .summary').html('');
       $('#ldialog .details').html('');
       $('#ldialog .modal-body .more-less-details').hide();
 
-      jqxhr.abort();
+      //if (Object.keys(jqxhr).length !== 0) jqxhr.abort();
     });
     // jqxhr
 

@@ -56,7 +56,7 @@
         <h4 class="modal-title"></h4>
         <div class="header-message">
           <div>
-            Session : <span class="session-id"></span> | Job Id : <span
+            <span class="session-id"></span><span
               class="job-id"></span>
           </div>
         </div>

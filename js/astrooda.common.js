@@ -339,21 +339,23 @@ function get_waitingDialog($modal_dialog) {
             buttonText: 'Close'
             // This callback runs after the dialog was hidden
           }, options);
-
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
             .addClass('modal-' + settings.dialogSize);
 
-          if (!settings.showCloseInHeader) {
+          if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
-          }
+          else $dialog.find('.modal-header .close').show();
+
 
           if (!settings.showProgressBar) {
-            $dialog.find('.progress').addClass('hidden');
+            //            $dialog.find('.progress').addClass('hidden');
+            $dialog.find('.progress').hide();
           }
           else {
-            $dialog.find('.progress').removeClass('hidden');
+            //            $dialog.find('.progress').removeClass('hidden');
+            $dialog.find('.progress').show();
             $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
             if (settings.progressType) {
               $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
@@ -444,10 +446,10 @@ function get_waitingDialog($modal_dialog) {
           $('#astrooda_bug_report_form_container', $dialog).removeClass('hidden');
         },
         setHeaderMessagesSessionId: function(session_id) {
-          $dialog.find('.header-message .session-id').html(session_id);
+          $dialog.find('.header-message .session-id').html('Session Id:'+session_id);
         },
         setHeaderMessageJobId: function(job_id) {
-          $dialog.find('.header-message .job-id').html(job_id);
+          $dialog.find('.header-message .job-id').html('| Job Id:'+job_id);
         },
         showHeaderMessage: function() {
           $dialog.find('.header-message').show();
@@ -556,7 +558,6 @@ function get_waitingDialog($modal_dialog) {
 
   function commonReady() {
     $('body').on('click', '.panel-heading .collapsible', function() {
-      console.log('collapse clicked !')
       var $this = $(this);
       if (!$this.hasClass('panel-collapsed')) {
         $this.closest('.panel').find('.panel-body').slideUp();
