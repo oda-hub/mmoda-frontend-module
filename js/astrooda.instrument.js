@@ -795,6 +795,15 @@ function panel_title(srcname, param) {
     // validator.disableSubmitButtons(true);
     // }
 
+    $('[name^=osa_version]', '.instrument-panel-isgri').on('change', function() {
+      let selected_osa_version = $('[name^=osa_version]', '.instrument-panel-isgri')[0].value;
+      // E1's default value for ISGRI differs depending on the osa_version
+      if(selected_osa_version == 'OSA11.1')
+        $('[name^=E1_keV]', '.instrument-panel-isgri')[0].value = 28
+      else if(selected_osa_version == 'OSA10.2')
+        $('[name^=E1_keV]', '.instrument-panel-isgri')[0].value = 20
+    });
+
     $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function() {
       var form = $(this).parents('form');
       form.data('bootstrapValidator').updateStatus('time_bin', 'NOT_VALIDATED').validateField('time_bin');
