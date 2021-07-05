@@ -47,7 +47,7 @@ function astrooda_isgri_install()
     'E1_keV' => 25.0,
     'E2_keV' => 40.0,
     'query_type' => 'Real',
-    'detection_threshold' => 5.0,
+    'detection_threshold' => 7.0,
     'product_type' => 'isgri_image',
     'time_bin' => 1000,
     'time_bin_format' => 'sec',
