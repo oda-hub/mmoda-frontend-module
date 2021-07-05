@@ -237,7 +237,6 @@ function astrooda_isgri($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
     '#description' => t("The minimum of the energy band."),
-    '#default_value' => $instrument_defaults['E1_keV'],
     '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
@@ -256,6 +255,8 @@ function astrooda_isgri($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#prefix' => '<div class="row">'
   );
+
+  $form['E1_keV']['#default_value'] = 28;
 
   $form['E2_keV'] = array(
     '#type' => 'textfield',
