@@ -282,6 +282,8 @@ function astrooda_isgri($form, &$form_state)
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
+  $form['E2_keV']['#default_value'] = 40;
+
   $form['query_type'] = array(
     '#type' => 'select',
     '#title' => t("Query Type"),

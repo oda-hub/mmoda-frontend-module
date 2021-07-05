@@ -275,7 +275,7 @@ function astrooda_jemx($form, &$form_state)
     '#prefix' => '<div class="row">'
   );
 
-  $form['osa_version']['#default_value'] = $instrument_defaults['E1_keV'];
+  $form['E1_keV']['#default_value'] = 3;
 
   $form['E2_keV'] = array(
     '#type' => 'textfield',
@@ -300,7 +300,7 @@ function astrooda_jemx($form, &$form_state)
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
-  $form['osa_version']['#default_value'] = $instrument_defaults['E1_keV'];
+  $form['E2_keV']['#default_value'] = 20;
 
   $form['query_type'] = array(
     '#type' => 'select',
