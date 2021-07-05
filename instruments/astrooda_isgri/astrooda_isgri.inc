@@ -309,7 +309,6 @@ function astrooda_isgri($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Detection Threshold"),
     '#description' => t("Output catalog significance threshold"),
-    '#default_value' => $instrument_defaults['detection_threshold'],
     '#parent_classes' => array(
       'form-group',
       'col-md-5'
@@ -325,6 +324,8 @@ function astrooda_isgri($form, &$form_state)
     ),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['detection_threshold']['#default_value'] = 7.0;
 
   $form['product_type'] = array(
     '#type' => 'radios',

@@ -37,7 +37,6 @@ function astrooda_jemx($form, &$form_state)
   $form['osa_version'] = array(
     '#type' => 'select',
     '#title' => t("OSA Version"),
-    '#default_value' => $instrument_defaults['osa_version'],
     '#options' => array(
       'OSA10.2' => 'OSA10.2',
       'OSA11.1' => 'OSA11.1'
@@ -329,7 +328,6 @@ function astrooda_jemx($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Detection Threshold"),
     '#description' => t("Output catalog significance threshold"),
-    '#default_value' => $instrument_defaults['detection_threshold'],
     '#parent_classes' => array(
       'form-group',
       'col-md-5'
@@ -345,6 +343,8 @@ function astrooda_jemx($form, &$form_state)
     ),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['detection_threshold']['#default_value'] = 7.0;
 
   $form['product_type'] = array(
     '#type' => 'radios',
