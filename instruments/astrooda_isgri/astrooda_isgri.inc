@@ -237,7 +237,6 @@ function astrooda_isgri($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
     '#description' => t("The minimum of the energy band."),
-    '#default_value' => $instrument_defaults['E1_keV'],
     '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
@@ -256,6 +255,8 @@ function astrooda_isgri($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#prefix' => '<div class="row">'
   );
+
+  $form['E1_keV']['#default_value'] = 20;
 
   $form['E2_keV'] = array(
     '#type' => 'textfield',
@@ -280,6 +281,8 @@ function astrooda_isgri($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['E2_keV']['#default_value'] = 40;
 
   $form['query_type'] = array(
     '#type' => 'select',
@@ -309,7 +312,6 @@ function astrooda_isgri($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Detection Threshold"),
     '#description' => t("Output catalog significance threshold"),
-    '#default_value' => $instrument_defaults['detection_threshold'],
     '#parent_classes' => array(
       'form-group',
       'col-md-5'
@@ -325,6 +327,8 @@ function astrooda_isgri($form, &$form_state)
     ),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['detection_threshold']['#default_value'] = 7.0;
 
   $form['product_type'] = array(
     '#type' => 'radios',
