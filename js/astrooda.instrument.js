@@ -233,7 +233,12 @@ function panel_title(srcname, param) {
         if (errorThrown == 'timeout') {
           message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ' + serverResponse.error_message;
+          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ';
+          if ( typeof serverResponse == 'string') {
+            message += serverResponse;
+          } else {
+            message += serverResponse.error_message;
+          }
         } else {
           message += 'Can not reach the data server, unknown error';
         }
