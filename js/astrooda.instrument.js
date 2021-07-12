@@ -223,10 +223,11 @@ function panel_title(srcname, param) {
         console.log('jqXHR');
         console.log(jqXHR);
         waitingDialog.hideSpinner();
-        if  ( typeof jqXHR.responseText == 'object' ) {
-          serverResponse = $.parseJSON(jqXHR.responseText);
-        } else {
-          serverResponse = jqXHR.responseText;
+        serverResponse = '';
+        try {
+          serverResponse = $.parseJSON( jqXHR.responseText );
+        } catch(e) {
+          serverResponse = jqXHR.responseText; 
         }
         console.log(serverResponse);
         var message = get_current_date_time() + ' ';
