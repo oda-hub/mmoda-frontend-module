@@ -37,7 +37,6 @@ function astrooda_jemx($form, &$form_state)
   $form['osa_version'] = array(
     '#type' => 'select',
     '#title' => t("OSA Version"),
-    '#default_value' => $instrument_defaults['osa_version'],
     '#options' => array(
       'OSA10.2' => 'OSA10.2',
       'OSA11.1' => 'OSA11.1'
@@ -257,7 +256,6 @@ function astrooda_jemx($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
     '#description' => t("The minimum of the energy band."),
-    '#default_value' => $instrument_defaults['E1_keV'],
     '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
@@ -277,11 +275,12 @@ function astrooda_jemx($form, &$form_state)
     '#prefix' => '<div class="row">'
   );
 
+  $form['E1_keV']['#default_value'] = 3;
+
   $form['E2_keV'] = array(
     '#type' => 'textfield',
     '#title' => t("Energy Max"),
     '#description' => t("The maximum of the energy band."),
-    '#default_value' => $instrument_defaults['E2_keV'],
     '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
@@ -300,6 +299,8 @@ function astrooda_jemx($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['E2_keV']['#default_value'] = 20;
 
   $form['query_type'] = array(
     '#type' => 'select',
@@ -329,7 +330,6 @@ function astrooda_jemx($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Detection Threshold"),
     '#description' => t("Output catalog significance threshold"),
-    '#default_value' => $instrument_defaults['detection_threshold'],
     '#parent_classes' => array(
       'form-group',
       'col-md-5'
@@ -345,6 +345,8 @@ function astrooda_jemx($form, &$form_state)
     ),
     '#suffix' => '</div><hr class="hr-default" />'
   );
+
+  $form['detection_threshold']['#default_value'] = 7.0;
 
   $form['product_type'] = array(
     '#type' => 'radios',

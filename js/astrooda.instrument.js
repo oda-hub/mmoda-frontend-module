@@ -131,6 +131,7 @@ function panel_title(srcname, param) {
         }
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
+          $('#ldialog').find('.progress').hide();
           waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
             + data.exit_status.error_message + '</td></tr></table>', 'danger');
           waitingDialog.setClose();
@@ -223,13 +224,24 @@ function panel_title(srcname, param) {
         console.log('jqXHR');
         console.log(jqXHR);
         waitingDialog.hideSpinner();
-        serverResponse = $.parseJSON(jqXHR.responseText);
+        $('#ldialog').find('.progress').hide();
+        serverResponse = '';
+        try {
+          serverResponse = $.parseJSON( jqXHR.responseText );
+        } catch(e) {
+          serverResponse = jqXHR.responseText; 
+        }
         console.log(serverResponse);
         var message = get_current_date_time() + ' ';
         if (errorThrown == 'timeout') {
           message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ' + serverResponse.error_message;
+          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ';
+          if ( typeof serverResponse == 'string') {
+            message += serverResponse;
+          } else {
+            message += serverResponse.error_message;
+          }
         } else {
           message += 'Can not reach the data server, unknown error';
         }
