@@ -251,7 +251,6 @@ function astrooda_main_block_content()
   // $astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   // variable_set ( 'astrooda_settings', $astrooda_settings );
 
-
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;
   $items['common_form'] = drupal_get_form('astrooda_common');
@@ -354,7 +353,6 @@ function astrooda_array_member($val, $myArray)
  */
 function astrooda_libraries_info()
 {
-
   $libraries['datatables'] = array(
     'name' => 'Table plug-in for jQuery',
     'vendor url' => 'https://datatables.net/',
@@ -387,7 +385,7 @@ function astrooda_libraries_info()
     'vendor url' => 'http://bootstrapvalidator.com',
     'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
     'version callback' => 'short_circuit_version',
-      'files' => array(
+    'files' => array(
       'js' => array(
         'js/bootstrapValidator.min.js'
       )
@@ -421,7 +419,7 @@ function astrooda_libraries_info()
         'highlight.min.js'
       ),
       'css' => array(
-        'default.min.css',
+        'default.min.css'
       )
     )
   );
@@ -438,7 +436,10 @@ function short_circuit_version()
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
-    case 'webform_client_form_383':
+    case 'jwt_link_admin':
+      $form['jwt_link_expiration']['#maxlength'] = 4;
+
+      break;
     case 'webform_client_form_384':
       $form['actions']['close'] = array(
         '#type' => 'submit',
@@ -449,7 +450,11 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
           'node_form_cancel'
         ),
         '#attributes' => array(
-          'class' => array('ctools-close-modal', 'btn', 'btn-primary')
+          'class' => array(
+            'ctools-close-modal',
+            'btn',
+            'btn-primary'
+          )
         )
       );
       $form['actions']['submit']['#attributes']['class'][] = 'btn';
