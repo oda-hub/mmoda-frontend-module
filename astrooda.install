@@ -102,11 +102,11 @@ function astrooda_install() {
   //$astrooda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   $astrooda_settings ['support_email'] = array('no-reply@unige.ch', 'cdci-oda-feedback@listes.unige.ch');
   $astrooda_settings ['common'] ['dispatcher_path'] = '/dispatcher-data';
-  $astrooda_settings ['common'] ['src_name'] = '4U 1700-377';
-  $astrooda_settings ['common'] ['RA'] = '257.815417';
-  $astrooda_settings ['common'] ['DEC'] = '-41.593417';
-  $astrooda_settings ['common'] ['T1'] = '2003-03-15T23:27:40.0';
-  $astrooda_settings ['common'] ['T2'] = '2003-03-16T00:03:15.0';
+  $astrooda_settings ['common'] ['src_name'] = '1E 1740.7-2942';
+  $astrooda_settings ['common'] ['RA'] = '265.97845833';
+  $astrooda_settings ['common'] ['DEC'] = '-29.74516667';
+  $astrooda_settings ['common'] ['T1'] = '2017-03-06T13:26:48.0';
+  $astrooda_settings ['common'] ['T2'] = '2017-03-06T15:32:27.0';
   $astrooda_settings ['common'] ['T_format'] = 'isot';
   variable_set ( 'astrooda_settings', $astrooda_settings );
   variable_set ( 'astrooda_debug', true );

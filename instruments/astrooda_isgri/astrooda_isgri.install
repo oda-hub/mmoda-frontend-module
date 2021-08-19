@@ -39,7 +39,7 @@ function astrooda_isgri_install()
     'enabled' => TRUE,
     'name' => $instrument_info['name'],
     'title' => $instrument_info['title'],
-    'osa_version' => 'OSA10.2',
+    'osa_version' => 'OSA11.1',
     'radius' => 15,
     'scw_list' => '005100410010.001,005100420010.001',
     'max_pointings' => 50,
