@@ -59,8 +59,6 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">'
   );
 
-  $form['osa_version']['#default_value'] = $form['osa_version']['#options']['OSA10.2'];
-
   $form['radius'] = array(
     '#type' => 'textfield',
     '#title' => t("Radius"),
