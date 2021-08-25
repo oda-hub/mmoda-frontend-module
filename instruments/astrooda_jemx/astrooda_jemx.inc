@@ -41,7 +41,7 @@ function astrooda_jemx($form, &$form_state)
       'OSA10.2' => 'OSA10.2',
       'OSA11.1' => 'OSA11.1'
     ),
-
+    '#default_value' => $instrument_defaults['osa_version'],
     '#parent_classes' => array(
       'form-group',
       'col-md-6'
