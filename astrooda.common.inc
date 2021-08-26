@@ -245,7 +245,7 @@ function astrooda_common($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t ( "RA" ),
       '#description' => t ( "The right ascension." ),
-      '#default_value' => '257.815417',
+      '#default_value' => $instrument_defaults ['RA'],
       '#required' => TRUE,
       '#size' => 10,
       '#parent_classes' => array (
