@@ -1006,10 +1006,11 @@ function panel_title(srcname, param) {
         'showButton': true
       });
       waitingDialog.showHeaderMessage();
+      $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
       waitingDialog.append('<table class="error-table"><tr>' + 
         '<td>' + get_current_date_time() + '</td>' + 
-        '<td>' + request_parameters.error_message + '</td>' +
+        '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
         '</tr></table>',
         'danger');
     }
