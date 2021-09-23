@@ -437,7 +437,8 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
     case 'user_register_form':
-      $form['account']['mail']['#description'] = t('Please use an institutional email address' . $form['account']['mail']['#description']);
+      $form['account']['mail']['#description'] = t('Please use an institutional email addrress to subscribe to the service. ' 
+              . $form['account']['mail']['#description']);
       
       // drupal_set_message(t('Content form after: ' . print_r($form)));
       break;
