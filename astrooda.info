@@ -1,12 +1,13 @@
 name = Astrooda
-description = Astro Data Analysis
+description = Multi-Messenger Online Data Analysis
 core = 7.x
-dependencies[] = block
-dependencies[] = libraries (2.x)
+dependencies[] = libraries:libraries (2.x)
+dependencies[] = drupal:block
+dependencies[] = drupal:book
+dependencies[] = jwt_link:jwt_link
 
 files[] = astrooda.admin.inc
 files[] = astrooda.common.inc
 files[] = astrooda.module
 
-;configure = admin/structure/block/manage/astrooda/astrooda/configure
 configure = admin/config/astrooda

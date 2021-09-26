@@ -1,5 +1,5 @@
 name = Astrooda ISGRI
-description = Astro Online Data Analysis module for ISGRI
+description = MMODA module for ISGRI
 core = 7.x
 dependencies[] = astrooda
 

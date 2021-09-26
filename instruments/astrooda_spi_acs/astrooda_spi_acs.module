@@ -5,15 +5,13 @@
  * Provides a block displaying prayer times for the visitor's location
  */
 function astrooda_spi_acs_enable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['spi_acs']['enabled'] = true;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_spi_acs_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
 }
 
 function astrooda_spi_acs_disable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['spi_acs']['enabled'] = false;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_spi_acs_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
 }
 
 function astrooda_spi_acs_init() {
@@ -59,7 +57,7 @@ function astrooda_spi_acs_permission() {
  */
 function astrooda_spi_acs_menu() {
   $items = array ();
-  
+
   $items ['admin/config/astrooda/spi_acs'] = array (
       'title' => 'Administer Astrooda SPI-ACS',
       'page callback' => 'drupal_get_form',
@@ -70,7 +68,7 @@ function astrooda_spi_acs_menu() {
       'file' => 'astrooda_spi_acs.admin.inc'
   );
   // 'weight' => -10,
-  
+
   return $items;
 }
 

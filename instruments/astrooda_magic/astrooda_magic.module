@@ -4,17 +4,17 @@
  * @file
  * Provides a block displaying prayer times for the visitor's location
  */
+
 function astrooda_magic_enable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['magic']['enabled'] = true;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_magic_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
 }
 
 function astrooda_magic_disable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['magic']['enabled'] = false;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_magic_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
 }
+
 
 function astrooda_magic_init() {
 }
@@ -59,7 +59,7 @@ function astrooda_magic_permission() {
  */
 function astrooda_magic_menu() {
   $items = array ();
-  
+
   $items ['admin/config/astrooda/magic'] = array (
       'title' => 'Administer Astrooda Magic',
       'page callback' => 'drupal_get_form',
@@ -70,7 +70,7 @@ function astrooda_magic_menu() {
       'file' => 'astrooda_magic.admin.inc'
   );
   // 'weight' => -10,
-  
+
   return $items;
 }
 

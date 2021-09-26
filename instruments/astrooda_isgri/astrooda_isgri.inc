@@ -10,6 +10,7 @@
 function astrooda_isgri($form, &$form_state)
 {
   $module_path = drupal_get_path('module', 'astrooda');
+  $instrument = 'isgri';
 
   $form = array();
 
@@ -20,8 +21,6 @@ function astrooda_isgri($form, &$form_state)
   $mform_id = __FUNCTION__ . '_';
 
   $form['#action'] = 'dispatch-data/run_analysis';
-  // $form['#action'] = '/test_post.php';
-  // $form['#method'] = 'GET';
   $form['#method'] = 'POST';
 
   $form['#attributes'] = array(
@@ -32,9 +31,11 @@ function astrooda_isgri($form, &$form_state)
     '#type' => 'hidden',
     '#value' => 'isgri'
   );
+  $module_name = basename(__FILE__, '.install');
+  list ($core_module_name) = explode('_', $module_name);
 
-  $astrooda_settings = variable_get('astrooda_settings');
-  $instrument_defaults = $astrooda_settings['instruments']['isgri'];
+  $core_module_settings = variable_get($core_module_name . '_settings');
+  $instrument_defaults = $core_module_settings['instruments'][$instrument];
 
   $form['osa_version'] = array(
     '#type' => 'select',
@@ -433,8 +434,8 @@ function astrooda_isgri($form, &$form_state)
       'name' => 'user_catalog_file'
     ),
     '#prefix' => '<hr class="hr-default" /><div class="row">',
-    //'#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
-    //'#suffix' => '<div class="inline-user-catalog hidden"><button class="btn btn-default show-catalog" href="#" >Inline catalog</button><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
+    // '#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
+    // '#suffix' => '<div class="inline-user-catalog hidden"><button class="btn btn-default show-catalog" href="#" >Inline catalog</button><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
     '#suffix' => '</div><hr class="hr-default" />',
     '#parent_classes' => array(
       'form-group',

@@ -7,15 +7,13 @@
 
 
 function astrooda_isgri_enable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['isgri']['enabled'] = true;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_isgri_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
 }
 
 function astrooda_isgri_disable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['isgri']['enabled'] = false;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_isgri_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
 }
 
 function astrooda_isgri_init() {
@@ -61,7 +59,7 @@ function astrooda_isgri_permission() {
  */
 function astrooda_isgri_menu() {
   $items = array ();
-  
+
   $items ['admin/config/astrooda/isgri'] = array (
       'title' => 'Administer Astrooda ISGRI',
       'page callback' => 'drupal_get_form',
@@ -72,7 +70,7 @@ function astrooda_isgri_menu() {
       'file' => 'astrooda_isgri.admin.inc'
   );
   // 'weight' => -10,
-  
+
   return $items;
 }
 
