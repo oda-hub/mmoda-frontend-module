@@ -998,32 +998,50 @@ function panel_title(srcname, param) {
 
   function make_request(request_parameters) {
 
-    // Set catalog in the corresponding instrument form
-    if (request_parameters.hasOwnProperty('selected_catalog')) {
-      var catalog = JSON.parse(request_parameters.selected_catalog);
-      var datetime = get_current_date_time();
-      // attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
-      // $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
-      attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
-      $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
+    // If there's just an error_message, visualize it
+    if (request_parameters.hasOwnProperty('error_message')) {
+      waitingDialog.show('Error message', '', {
+        progressType: 'success',
+        'showProgress': true,
+        'showButton': true
+      });
+      waitingDialog.showHeaderMessage();
+      $('.write-feedback-button').show();
+      waitingDialog.hideSpinner();
+      waitingDialog.append('<table class="error-table"><tr>' + 
+        '<td>' + get_current_date_time() + '</td>' + 
+        '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
+        '</tr></table>',
+        'danger');
     }
-
-    $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
-    $('input, textarea, select', 'form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
-      var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
-      var field_name = $(this).attr('name').replace(re, '');
-
-      if (request_parameters.hasOwnProperty(field_name)) {
-        if ($(this).attr('type') == 'radio') {
-          if ($(this).val() == request_parameters[field_name]) {
-            $(this).click();
-          }
-        } else {
-          $(this).val(request_parameters[field_name]);
-        }
+    else {
+      // Set catalog in the corresponding instrument form
+      if (request_parameters.hasOwnProperty('selected_catalog')) {
+        var catalog = JSON.parse(request_parameters.selected_catalog);
+        var datetime = get_current_date_time();
+        // attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
+        // $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
+        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
+        $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
       }
-    });
-    $('form.' + request_parameters.instrument + '-form').submit();
+  
+      $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
+      $('input, textarea, select', 'form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
+        var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
+        var field_name = $(this).attr('name').replace(re, '');
+  
+        if (request_parameters.hasOwnProperty(field_name)) {
+          if ($(this).attr('type') == 'radio') {
+            if ($(this).val() == request_parameters[field_name]) {
+              $(this).click();
+            }
+          } else {
+            $(this).val(request_parameters[field_name]);
+          }
+        }
+      });
+      $('form.' + request_parameters.instrument + '-form').submit();
+    }
 
   }
 
