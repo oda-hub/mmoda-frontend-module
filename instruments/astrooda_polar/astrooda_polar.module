@@ -4,16 +4,15 @@
  * @file
  * Provides a block displaying prayer times for the visitor's location
  */
+
 function astrooda_polar_enable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['polar']['enabled'] = true;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_polar_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
 }
 
 function astrooda_polar_disable() {
-  $astrooda_settings = variable_get('astrooda_settings');
-  $astrooda_settings['instruments']['polar']['enabled'] = false;
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $instrument = mmoda_polar_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
 }
 
 function astrooda_polar_init() {
@@ -59,7 +58,7 @@ function astrooda_polar_permission() {
  */
 function astrooda_polar_menu() {
   $items = array ();
-  
+
   $items ['admin/config/astrooda/polar'] = array (
       'title' => 'Administer Astrooda Polar',
       'page callback' => 'drupal_get_form',
@@ -70,7 +69,7 @@ function astrooda_polar_menu() {
       'file' => 'astrooda_polar.admin.inc'
   );
   // 'weight' => -10,
-  
+
   return $items;
 }
 

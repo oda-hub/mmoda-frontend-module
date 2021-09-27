@@ -1,13 +1,14 @@
 <?php
+$module_name = basename(__FILE__, '.install');
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
 
 /**
  * @file
  * Install, update and uninstall functions for the astrooda module.
  */
-include_once 'astrooda_spi_acs.help_page.inc';
 
-
-function astrooda_spi_acs_instrument_info() {
+function mmoda_spi_acs_instrument_info() {
   $info = array (
       'name' => 'spi_acs',
       'title' => 'INTEGRAL SPI-ACS',
@@ -31,10 +32,9 @@ function astrooda_spi_acs_requirements($phase) {
   return $requirements;
 }
 function astrooda_spi_acs_install() {
-  $instrument_info = astrooda_spi_acs_instrument_info();
+  $instrument_info = mmoda_spi_acs_instrument_info();
 
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
-  $astrooda_settings ['instruments'] [$instrument_info['name']] = array (
+  $module_settings = array (
       'enabled' => TRUE,
       'name' => $instrument_info['name'],
       'title' => $instrument_info['title'],
@@ -52,43 +52,17 @@ function astrooda_spi_acs_install() {
     </a>'
   );
 
-  // add help node
-  $node_array = spi_acs_help_page_node_export_features_default ();
-  $default_astrooda_base_url= '/cdci/astrooda';
-  $astrooda_base_url= variable_get ( 'astrooda_base_url', $default_astrooda_base_url);
-  $astrooda_base_url= !empty($astrooda_base_url) ? $astrooda_base_url : $default_astrooda_base_url;
-
-  $node_array_code_string = preg_replace('/src=\\\\"[\/|\w]*\/sites\/default\/files\//', 'src=\\"'.$astrooda_base_url.'/sites/default/files/', $node_array ['code_string']);
-  $import_output = node_export_import ( $node_array_code_string );
-
-  if ($import_output ['success']) {
-    //print "New help page nid :" . $import_output ['nids'] [0] . "\n";
-    $node = node_load ( $import_output ['nids'] [0] );
-    $node->status = 1;
-    $node->uid= 1;
-    node_save ( $node );
-    $astrooda_settings ['instruments'] [$instrument_info['name']] ['help_page_nid'] = $node->nid;
-  }
-
-  variable_set ( 'astrooda_settings', $astrooda_settings );
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
 }
 
 /**
  * Implements hook_uninstall().
  */
-function astrooda_spi_acs_uninstall() {
-  $instrument_info = astrooda_spi_acs_instrument_info();
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
-
-  if (array_key_exists('help_page_nid', $astrooda_settings ['instruments'] [$instrument_info['name']])) {
-    node_delete ( $astrooda_settings ['instruments'] [$instrument_info['name']]['help_page_nid'] );
-  }
-
-  $astrooda_settings = variable_get ( 'astrooda_settings' );
-  unset ( $astrooda_settings ['instruments'] [$instrument_info['name']] );
-
-  variable_set ( 'astrooda_settings', $astrooda_settings );
-
-  menu_rebuild ();
+function astrooda_spi_acs_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_spi_acs_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
 }
 
