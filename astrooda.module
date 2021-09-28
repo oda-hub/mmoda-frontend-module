@@ -5,15 +5,7 @@ require_once drupal_get_path('module', 'pathauto') . '/pathauto.inc';
 use Firebase\JWT\JWT;
 
 /**
-<<<<<<< HEAD
- * Maximum length of description text field.
- */
-define('DESCRIPTION_USE_CASE_MAX_LENGTH', 255);
-
-/**
-=======
  *
->>>>>>> master
  * @file
  * Provides a block
  */
@@ -488,7 +480,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
         
       // );
       module_load_include ('inc', 'astrooda', 'astrooda.user');
-      customize_registration_form(form);
+      customize_registration_form($form);
     case 'book_admin_edit':
       $form['#submit'][] = 'mmoda_resave_help_book_nodes_to_trigger_export';
       break;
