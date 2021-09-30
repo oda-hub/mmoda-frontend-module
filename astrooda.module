@@ -459,7 +459,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
     case 'user_register_form':
-      module_load_include ('inc', 'astrooda', 'astrooda.user');
+      module_load_include ('inc', 'astrooda', 'astrooda.users');
       customize_registration_form($form);
     case 'book_admin_edit':
       $form['#submit'][] = 'mmoda_resave_help_book_nodes_to_trigger_export';
