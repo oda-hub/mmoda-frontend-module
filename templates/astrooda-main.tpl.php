@@ -165,7 +165,6 @@
             <span
             class="glyphicon glyphicon-envelope"> </span>
             </a>
-            <!--div
             <a
             title="Sign in"
             class="btn btn-primary user-log login-link"
@@ -176,7 +175,6 @@
             class="btn btn-primary user-log logout-link"
             href="user/logout"><span class="oda-icon-label">Sign out</span><span
             class="glyphicon glyphicon-log-out"></span> </a>
-            -->
           <?php  if ($logged_in) :?>
           <a data-toggle="tooltip" title=""
             data-original-title="Show API token, copy it or request it by email"
