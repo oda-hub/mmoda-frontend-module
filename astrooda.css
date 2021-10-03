@@ -518,3 +518,8 @@ div.ctools-modal-content .modal-content {
 .modal-default .form-actions {
   text-align: right;
 }
+
+#modalContent .modal-content {
+    max-height: calc(100vh - 210px);
+    overflow-x: hidden;
+}
