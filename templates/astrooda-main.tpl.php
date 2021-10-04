@@ -157,6 +157,14 @@
         <?php endif; ?>
         <div class="pull-right">
         <div class="main-toolbar btn-group" role="group">
+          <?php  if ($logged_in) :?>
+           <a data-toggle="tooltip" title=""
+            data-original-title="Show API token, copy it or request it by email"
+            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-default"
+            href="modal_forms/nojs/webform/384"><span
+            class="oda-icon-label">API token</span><span
+            class="glyphicon glyphicon-star"> </span> </a>
+          <?php endif;?>
           <a title="Contact us"
             class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
             href="modal_forms/nojs/webform/383"> <span
@@ -168,38 +176,6 @@
             class="btn btn-primary open-in-modal help-home"
             href="<?=$help_page?>"><span class="oda-icon-label">Help</span><span
             class="glyphicon glyphicon-info-sign"> </span> </a>
-        </div>
-        <div class="main-toolbar btn-group" role="group">
-          <?php  if (!$logged_in) :?>
-          <a title="Sign in"
-            class="btn btn-default"
-            href="user/login"><span class="oda-icon-label">Sign in</span><span
-            class="glyphicon glyphicon-log-in"> </span> </a>
-
-          <a
-            title="Sign up" class="ctools-use-modal ctools-modal-modal-popup-large btn btn-default"
-            href="modal_forms/nojs/register"><span class="oda-icon-label">Sign up</span><span
-            class="glyphicon glyphicon-user"> </span> </a>
-          <?php  else :?>
-          <a data-toggle="tooltip" title=""
-            data-original-title="Show API token, copy it or request it by email"
-            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-default"
-            href="modal_forms/nojs/webform/384"><span
-            class="oda-icon-label">API token</span><span
-            class="glyphicon glyphicon-star"> </span> </a>
-          <a
-            title="My account"
-            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-default open-in-modal" href="modal_forms/nojs/user/<?=$GLOBALS['user']->uid?>/edit"><span
-            class="oda-icon-label">My account</span><span
-            class="glyphicon glyphicon-user"> </span> </a>
-         <a
-            title="Sign out"
-            class="btn btn-default"
-            href="user/logout"><span class="oda-icon-label">Sign out</span><span
-            class="glyphicon glyphicon-log-out"></span> </a>
-
-
-          <?php endif;?>
         </div>
         </div>
       </div>

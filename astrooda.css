@@ -523,3 +523,8 @@ div.ctools-modal-content .modal-content {
     max-height: calc(100vh - 210px);
     overflow-x: hidden;
 }
+
+.mmoda-user-menu {
+  padding: 1em;
+ float: right ;
+}
