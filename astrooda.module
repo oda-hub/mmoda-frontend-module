@@ -611,11 +611,12 @@ function astrooda_theme_registry_alter(&$theme_registry)
 function astrooda_mail_alter(&$message)
 {
   $language = $message['language'];
-  $account = array(
-    'user' => $message['params']['account']
-  );
+
   $target_message_id = 'user_register_pending_approval_admin';
   if ($message['id'] == $target_message_id) {
+    $account = array(
+      'user' => $message['params']['account']
+    );
     unset($message['body']);
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
     $module_settings = variable_get($core_module_name . '_settings', array());
@@ -626,7 +627,7 @@ function astrooda_mail_alter(&$message)
       $message['to'] = join(',', $user_managers_emails);
     }
     $user_managers_role = 'user manager';
-    // Change this text
+    // Change the text
     $text = t(file_get_contents(drupal_get_path('module', $core_module_name) . '/templates/' . $target_message_id . '.html'));
     $message['body'][] = token_replace($text, $account, array(
       'language' => $language,
