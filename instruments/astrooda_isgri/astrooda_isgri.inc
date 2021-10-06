@@ -42,7 +42,8 @@ function astrooda_isgri($form, &$form_state)
     '#title' => t("OSA Version"),
     '#options' => array(
       'OSA10.2' => 'OSA10.2',
-      'OSA11.1' => 'OSA11.1'
+      'OSA11.1' => 'OSA11.1',
+      'OSA11.2-Beta' => 'OSA11.2-Beta'
     ),
     '#default_value' => $instrument_defaults['osa_version'],
     '#parent_classes' => array(
