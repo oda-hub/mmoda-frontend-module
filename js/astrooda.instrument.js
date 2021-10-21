@@ -132,7 +132,8 @@ function panel_title(srcname, param) {
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
           $('#ldialog').find('.progress').hide();
-          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
+          reformatted_exit_status_message = data.exit_status.message.replace(/\n/g, "<br />");
+          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
             + data.exit_status.error_message + '</td></tr></table>', 'danger');
           waitingDialog.setClose();
           add_dispatcher_response_to_feedback_form(data);
