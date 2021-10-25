@@ -233,20 +233,34 @@ function panel_title(srcname, param) {
           serverResponse = jqXHR.responseText; 
         }
         console.log(serverResponse);
-        var message = get_current_date_time() + ' ';
+        var message = '<tr><td>' + get_current_date_time() + '</td>';
         if (errorThrown == 'timeout') {
-          message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+          message += '<td>Timeout (' + (ajax_request_timeout / 1000) + 's) !</td></tr>';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ';
+          message += '<td>' + textStatus.charAt(0).toUpperCase()+ textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
           if ( typeof serverResponse == 'string') {
-            message += serverResponse;
+            message += serverResponse + '</td>';
           } else {
-            message += serverResponse.error_message;
+            if ('exit_status' in serverResponse) {
+              if ('message' in serverResponse.exit_status)
+                message += serverResponse.exit_status.message;
+              message += '</td></tr>';
+              if ('error_message' in serverResponse.exit_status)
+                message += '<tr><td></td><td>' + serverResponse.exit_status.error_message + '</td></tr>';
+            }
+            else {
+              message += serverResponse.error_message + '</td></tr>';
+            }
+            
           }
         } else {
-          message += 'Can not reach the data server, unknown error';
+          message += '<td>Can not reach the data server, unknown error</td>';
         }
-        waitingDialog.append('<div>' + message + '</div>', 'danger');
+        // to be consistebnt with the way the error is visulized in case query_failed
+        reformatted_message = message.replace(/\n/g, "<br />");
+        waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
+
+        // waitingDialog.append('<div>' + message + '</div>', 'danger');
       });
 
     $('#ldialog .close-button').on('click', function() {
