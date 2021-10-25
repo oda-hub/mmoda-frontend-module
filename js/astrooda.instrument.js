@@ -65,8 +65,8 @@ function panel_title(srcname, param) {
   var request_draw_spectrum = false;
   var request_spectrum_form_element;
 
-  var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
-  // var ajax_request_timeout= 10 * 1000; // test timeout
+  // var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
+  var ajax_request_timeout= 10 * 1000; // test timeout
 
   var ignore_params_url = ['job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file', 'token'];
 
@@ -235,7 +235,13 @@ function panel_title(srcname, param) {
         console.log(serverResponse);
         var message = '<tr><td>' + get_current_date_time() + '</td>';
         if (errorThrown == 'timeout') {
-          message += '<td>Timeout (' + (ajax_request_timeout / 1000) + 's) !</td></tr>';
+          // not very helpful message
+          // message += '<td>Timeout (' + (ajax_request_timeout / 1000) + 's) !</td></tr>';
+          // more comprehensive message
+          message += '<td>Timeout error.</td></tr>';
+          message += '<tr><td></td><td>A timeout has occured, this was probably caused by an error on the server-side: ' +
+            'please try to resubmit your request.<br\>' +
+            'If the problem persists you can request support by leaving us a feedback.</td></tr>';
         } else if (jqXHR.status > 0) {
           message += '<td>' + textStatus.charAt(0).toUpperCase()+ textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
           if ( typeof serverResponse == 'string') {
@@ -251,7 +257,6 @@ function panel_title(srcname, param) {
             else {
               message += serverResponse.error_message + '</td></tr>';
             }
-            
           }
         } else {
           message += '<td>Can not reach the data server, unknown error</td>';
@@ -259,8 +264,6 @@ function panel_title(srcname, param) {
         // to be consistebnt with the way the error is visulized in case query_failed
         reformatted_message = message.replace(/\n/g, "<br />");
         waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
-
-        // waitingDialog.append('<div>' + message + '</div>', 'danger');
       });
 
     $('#ldialog .close-button').on('click', function() {
