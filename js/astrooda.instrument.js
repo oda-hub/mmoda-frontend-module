@@ -65,8 +65,8 @@ function panel_title(srcname, param) {
   var request_draw_spectrum = false;
   var request_spectrum_form_element;
 
-  // var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
-  var ajax_request_timeout= 10 * 1000; // test timeout
+  var ajax_request_timeout = 5 * 60 * 1000; // sets timeout to 5 minutes
+  // var ajax_request_timeout= 10 * 1000; // test timeout
 
   var ignore_params_url = ['job_id', 'session_id', 'use_resolver[local]', 'user_catalog_file', 'token'];
 
@@ -234,16 +234,15 @@ function panel_title(srcname, param) {
         }
         console.log(serverResponse);
         var message = '<tr><td>' + get_current_date_time() + '</td>';
-        if (errorThrown == 'timeout') {
-          // not very helpful message
-          // message += '<td>Timeout (' + (ajax_request_timeout / 1000) + 's) !</td></tr>';
+        if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
           // more comprehensive message
           message += '<td>Timeout error.</td></tr>';
-          message += '<tr><td></td><td>A timeout has occured, this was probably caused by an error on the server-side: ' +
-            'please try to resubmit your request.<br\>' +
+          message += '<tr><td></td><td>A timeout has occured, this was probably caused by a problem in accessing the server: ' +
+            'please try to resubmit your request. ' +
+            'You can also inspect <a href="http://status.odahub.io">http://status.odahub.io</a> to notice any recent issues.<br\>' +
             'If the problem persists you can request support by leaving us a feedback.</td></tr>';
         } else if (jqXHR.status > 0) {
-          message += '<td>' + textStatus.charAt(0).toUpperCase()+ textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
+          message += '<td>' + textStatus.charAt(0).toUpperCase() + textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
           if ( typeof serverResponse == 'string') {
             message += serverResponse + '</td>';
           } else {
@@ -1047,7 +1046,8 @@ function panel_title(srcname, param) {
       $('input, textarea, select', 'form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-  
+        
+        // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           if ($(this).attr('type') == 'radio') {
             if ($(this).val() == request_parameters[field_name]) {
