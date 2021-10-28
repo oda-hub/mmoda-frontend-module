@@ -3,3 +3,4 @@
 |403|See [dispatcher response schema]()|Message containing details on the missing permissions|Requests lacking permissions|
 |504|See [dispatcher response schema]()|Gateway Timeout|Extra information regarding the timeout occured and possible suggestions|
 |400|See [dispatcher response schema]()|Error on the dispatcher side|Extra information regarding the error should be included in the returned object|
+|503|See [dispatcher response schema]()|Service unreachable||
