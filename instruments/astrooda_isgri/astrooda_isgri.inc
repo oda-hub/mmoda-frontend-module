@@ -256,7 +256,7 @@ function astrooda_isgri($form, &$form_state)
     '#prefix' => '<div class="row">'
   );
 
-  $form['E1_keV']['#default_value'] = 25;
+  $form['E1_keV']['#default_value'] = 20;
 
   $form['E2_keV'] = array(
     '#type' => 'textfield',
