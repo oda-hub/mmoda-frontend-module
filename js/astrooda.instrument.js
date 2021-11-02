@@ -749,7 +749,7 @@ function panel_title(srcname, param) {
           validators: {
             callback: {
               callback: function(value, validator, $field) {
-                return (validate_scws(value, 50));
+                return (validate_scws(value, 500));
               }
             }
           }
