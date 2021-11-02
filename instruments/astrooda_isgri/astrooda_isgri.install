@@ -50,7 +50,7 @@ function astrooda_isgri_install()
     'scw_list' => '005100410010.001,005100420010.001',
     'max_pointings' => 50,
     'integral_data_rights' => 'public',
-    'E1_keV' => 25.0,
+    'E1_keV' => 20.0,
     'E2_keV' => 40.0,
     'query_type' => 'Real',
     'detection_threshold' => 7.0,
