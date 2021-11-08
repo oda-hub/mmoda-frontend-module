@@ -132,9 +132,13 @@ function panel_title(srcname, param) {
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
           $('#ldialog').find('.progress').hide();
-          reformatted_exit_status_message = data.exit_status.message.replace(/\n/g, "<br />");
+          reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />");
+          reformatted_exit_status_message = reformatted_exit_status_message.replace(/\n/g, "<br />");
+
+          reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />");
+          reformatted_error_message = reformatted_error_message.replace(/\n/g, "<br />");
           waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-            + data.exit_status.error_message + '</td></tr></table>', 'danger');
+            + reformatted_error_message + '</td></tr></table>', 'danger');
           waitingDialog.setClose();
           add_dispatcher_response_to_feedback_form(data);
         } else if (data.query_status != 'done') {
@@ -261,7 +265,8 @@ function panel_title(srcname, param) {
           message += '<td>Can not reach the data server, unknown error</td>';
         }
         // to be consistebnt with the way the error is visulized in case query_failed
-        reformatted_message = message.replace(/\n/g, "<br />");
+        reformatted_message = message.replace(/\\n/g, "<br />");
+        reformatted_message = reformatted_message.replace(/\n/g, "<br />");
         waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
       });
 
