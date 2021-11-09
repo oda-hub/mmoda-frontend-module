@@ -132,8 +132,13 @@ function panel_title(srcname, param) {
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
           $('#ldialog').find('.progress').hide();
-          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
-            + data.exit_status.error_message + '</td></tr></table>', 'danger');
+          reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />");
+          reformatted_exit_status_message = reformatted_exit_status_message.replace(/\n/g, "<br />");
+
+          reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />");
+          reformatted_error_message = reformatted_error_message.replace(/\n/g, "<br />");
+          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+            + reformatted_error_message + '</td></tr></table>', 'danger');
           waitingDialog.setClose();
           add_dispatcher_response_to_feedback_form(data);
         } else if (data.query_status != 'done') {
@@ -232,20 +237,37 @@ function panel_title(srcname, param) {
           serverResponse = jqXHR.responseText; 
         }
         console.log(serverResponse);
-        var message = get_current_date_time() + ' ';
-        if (errorThrown == 'timeout') {
-          message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+        var message = '<tr><td>' + get_current_date_time() + '</td>';
+        if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
+          // more comprehensive message
+          message += '<td>Timeout error.</td></tr>';
+          message += '<tr><td></td><td>A timeout has occured, this was probably caused by a problem in accessing the server: ' +
+            'please try to resubmit your request. ' +
+            'You can also inspect <a href="http://status.odahub.io">http://status.odahub.io</a> to notice any recent issues.<br\>' +
+            'If the problem persists you can request support by leaving us a feedback.</td></tr>';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ';
+          message += '<td>' + textStatus.charAt(0).toUpperCase() + textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
           if ( typeof serverResponse == 'string') {
-            message += serverResponse;
+            message += serverResponse + '</td>';
           } else {
-            message += serverResponse.error_message;
+            if ('exit_status' in serverResponse) {
+              if ('message' in serverResponse.exit_status)
+                message += serverResponse.exit_status.message;
+              message += '</td></tr>';
+              if ('error_message' in serverResponse.exit_status)
+                message += '<tr><td></td><td>' + serverResponse.exit_status.error_message + '</td></tr>';
+            }
+            else {
+              message += serverResponse.error_message + '</td></tr>';
+            }
           }
         } else {
-          message += 'Can not reach the data server, unknown error';
+          message += '<td>Can not reach the data server, unknown error</td>';
         }
-        waitingDialog.append('<div>' + message + '</div>', 'danger');
+        // to be consistebnt with the way the error is visulized in case query_failed
+        reformatted_message = message.replace(/\\n/g, "<br />");
+        reformatted_message = reformatted_message.replace(/\n/g, "<br />");
+        waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
       });
 
     $('#ldialog .close-button').on('click', function() {
@@ -1029,7 +1051,8 @@ function panel_title(srcname, param) {
       $('input, textarea, select', 'form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-  
+        
+        // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           if ($(this).attr('type') == 'radio') {
             if ($(this).val() == request_parameters[field_name]) {
