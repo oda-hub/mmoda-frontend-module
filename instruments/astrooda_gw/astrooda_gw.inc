@@ -87,11 +87,9 @@ function astrooda_gw($form, &$form_state)
     ),
     '#default_value' => $instrument_defaults['product_type'],
     '#options' => array(
-      'gw_image' => 'Image',
-      'gw_strain' => 'Strain',
+      'gw_skymap' => 'Skymap',
+      'gw_strain' => 'Strain time series',
       'gw_spectrogram' => 'Spectrogram',
-      // 'antares_lc' => 'Light curve',
-      // 'antares_table' => 'Table'
     ),
     '#parent_classes' => array(
       'form-group',
