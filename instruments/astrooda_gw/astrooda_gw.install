@@ -41,13 +41,17 @@ function astrooda_gw_install() {
       'title' => $instrument_info['title'],
       'detector' => 'H1',
       'query_type' => 'Real',
-      'product_type' => 'gw_strain',
+      'product_type' => 'gw_skymap_image',
       'whiten' => 'true',
       'qmin' => 4,
       'qmax' => 64,
       'fmin' => 30,
       'fmax' => 400,
       'weight' => 70,
+      'do_cone_search' => 'false',
+      'radius' => 10,
+      'level_threshold' => 10,
+      'contour_levels' => '50,90',
       'acknowledgement' => '
         If you use results or material from this instrument in our application, ODA, do not
         forget to quote us and GWOSC'

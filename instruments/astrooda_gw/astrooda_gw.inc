@@ -87,7 +87,7 @@ function astrooda_gw($form, &$form_state)
     ),
     '#default_value' => $instrument_defaults['product_type'],
     '#options' => array(
-      'gw_skymap' => 'Skymap',
+      'gw_skymap_image' => 'Skymap & catalogue',
       'gw_strain' => 'Strain time series',
       'gw_spectrogram' => 'Spectrogram',
     ),
@@ -100,6 +100,164 @@ function astrooda_gw($form, &$form_state)
     ),
     '#prefix' => '<div class="row">',
     '#suffix' => '</div><hr class="hr-default" />'
+  );
+
+  $form['do_cone_search'] = array(
+    '#type' => 'radios',
+    '#title' => t("Search mode"),
+    '#attributes' => array(
+      'name' => $mform_id . 'do_cone_search'
+    ),
+    '#options' => array(
+      'true' => 'Cone search',
+      'false' => 'All sky'
+    ),
+    '#default_value' => $instrument_defaults['do_cone_search'],
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#prefix' => '<div class="row">',
+    '#states' => array(
+      'visible' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        )
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          array(
+            'value' => 'gw_skymap_image'
+          )
+        )
+      )
+    ),
+  );
+
+  $form['contour_levels'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Contour levels"),
+    '#description' => t("Comma-separated list of levels"),
+    '#default_value' => $instrument_defaults['contour_levels'],
+    '#states' => array(
+      'visible' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+      )
+    ),
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'class' => array(
+        'form-control'
+      ),
+      'data-bv-notempty' => 'true',
+      'data-bv-regexp' => 'true',
+      'data-bv-regexp-regexp' => '^[0-9]{1,2}(,[0-9]{1,2})*$',
+    ),
+    '#suffix' => '</div>'
+  );
+
+  $form['level_threshold'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Level threshold"),
+    '#default_value' => $instrument_defaults['level_threshold'],
+    '#states' => array(
+      'visible' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+        'and',
+        ':input[name="' . $mform_id . 'do_cone_search"]' => array(
+          'value' => 'true'
+        ),
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+        'and',
+        ':input[name="' . $mform_id . 'do_cone_search"]' => array(
+          'value' => 'true'
+        ),
+      )
+    ),
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'class' => array(
+        'form-control'
+      ),
+      'data-bv-notempty' => 'true',
+      'data-bv-integer' => 'true',
+      'data-bv-between' => 'true',
+      'data-bv-between-min' => '0',
+      'data-bv-between-max' => '100',
+    ),
+    '#prefix' => '<div class="row">'
+  );
+
+  $form['radius'] = array(
+    '#type' => 'textfield',
+    '#title' => t("Radius"),
+    '#default_value' => $instrument_defaults['radius'],
+    '#states' => array(
+      'visible' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+        'and',
+        ':input[name="' . $mform_id . 'do_cone_search"]' => array(
+          'value' => 'true'
+        ),
+      ),
+      'enabled' => array(
+        ':input[name="' . $mform_id . 'product_type"]' => array(
+          'value' => 'gw_skymap_image'
+        ),
+        'and',
+        ':input[name="' . $mform_id . 'do_cone_search"]' => array(
+          'value' => 'true'
+        ),
+      )
+    ),
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-6'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'class' => array(
+        'form-control'
+      ),
+      'data-bv-notempty' => 'true',
+      'data-bv-numeric' => 'true',
+      'data-bv-between' => 'true',
+      'data-bv-between-min' => '0',
+      'data-bv-between-max' => '360',
+    ),
+    '#suffix' => '</div>'
   );
 
   $form['whiten'] = array(
