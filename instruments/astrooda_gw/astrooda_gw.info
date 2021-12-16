@@ -1,0 +1,8 @@
+name = Astrooda GW
+description = MMODA module for GW
+core = 7.x
+dependencies[] = astrooda
+
+files[] = astrooda.gw.inc
+
+configure = admin/config/astrooda/gw
