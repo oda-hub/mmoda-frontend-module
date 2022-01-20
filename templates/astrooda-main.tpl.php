@@ -160,7 +160,7 @@
           <?php  if ($logged_in) :?>
            <a data-toggle="tooltip" title=""
             data-original-title="Show API token, copy it or request it by email"
-            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-default"
+            class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary"
             href="modal_forms/nojs/webform/384"><span
             class="oda-icon-label">API token</span><span
             class="glyphicon glyphicon-star"> </span> </a>
