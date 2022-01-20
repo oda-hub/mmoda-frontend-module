@@ -64,7 +64,8 @@ function astrooda_isgri_install()
       href="https://arxiv.org/abs/2002.12895" target="_blank">A.
       Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
       S.Paltani<br> An online data analysis system of INTEGRAL telescope
-    </a>'
+    </a>',
+    'enable_use_catalog' => TRUE
   );
 
   $module_name = basename(__FILE__, '.install');

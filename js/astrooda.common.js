@@ -245,23 +245,20 @@ var waitingDialog;
     $('.modal-footer button#edit-submit--2', '#ltoken').hide();
   }
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-    // console.log('response.args');
-    // console.log(response.args);
     waitingDialog.hide();
-    html = '<div class="alert alert-dismissable">'
-      + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'
-      + response.args.message
-      + '</div>';
-    html = '<small class="" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
+    html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
       + response.args.message
       + '</small>';
-    elt = $('.form-item-src-name', '#astrooda-common').parent().after(html);
+    elt = $('.form-item-src-name', '#astrooda-name-resolve').parent().after(html);
     elt.find('.alert').hide();
     if (response.args.status == 0) {
+      $('.row', '#astrooda-name-resolve').removeClass('has-error');
       if (response.args.ra) {
+        validator.resetField('RA');
         $('.form-item-RA input.form-control').val(response.args.ra);
       }
       if (response.args.dec) {
+        validator.resetField('DEC');
         $('.form-item-DEC input.form-control').val(response.args.dec);
       }
       if (response.args.t1) {
@@ -277,14 +274,8 @@ var waitingDialog;
       elt.find('.alert').addClass('alert-success').show();
     }
     else {
-      $('.form-item-src-name', '#astrooda-common').removeClass('has-success');
-      $('.form-item-src-name', '#astrooda-common').addClass('has-error').children('.form-control-feedback').removeClass('glyphicon-ok').addClass('glyphicon-remove');
-      $('.form-item-src-name', '#astrooda-common').addClass('has-error');
-      elt.find('.alert').addClass('alert-danger').show();
-      elt.find('small').addClass('help-block');
-      $('.form-item-RA input.form-control').val('');
-      $('.form-item-DEC input.form-control').val('');
-      // console.log('Error: ' + response.args.message)
+      $('button#edit-resolve-src-name').prop('disabled', true);
+      $('.row', '#astrooda-name-resolve').removeClass('has-success').addClass('has-error');
     }
     $('form#astrooda-common').bootstrapValidator({ 'live': 'enabled' });
   }
@@ -446,10 +437,10 @@ function get_waitingDialog($modal_dialog) {
           $('#astrooda_bug_report_form_container', $dialog).removeClass('hidden');
         },
         setHeaderMessagesSessionId: function(session_id) {
-          $dialog.find('.header-message .session-id').html('Session Id:'+session_id);
+          $dialog.find('.header-message .session-id').html('Session Id:' + session_id);
         },
         setHeaderMessageJobId: function(job_id) {
-          $dialog.find('.header-message .job-id').html('| Job Id:'+job_id);
+          $dialog.find('.header-message .job-id').html('| Job Id:' + job_id);
         },
         showHeaderMessage: function() {
           $dialog.find('.header-message').show();
@@ -557,6 +548,19 @@ function get_waitingDialog($modal_dialog) {
   }
 
   function commonReady() {
+    // Ignore carriage return in common parameters
+    $('input', '#astrooda-common, #astrooda-name-resolve').keypress(function(event) {
+      var keycode = (event.keyCode ? event.keyCode : event.which);
+      if (keycode == '13') {
+        event.preventDefault();
+      }
+    });
+    $('#edit-src-name', '#astrooda-name-resolve').on('keyup', function(event) {
+      $('.row', '#astrooda-name-resolve').removeClass('has-success').removeClass('has-error');
+      $('small.help-block', '#astrooda-name-resolve').remove();
+      $('button#edit-resolve-src-name').prop('disabled', !$(this).val());
+    });
+
     $('body').on('click', '.panel-heading .collapsible', function() {
       var $this = $(this);
       if (!$this.hasClass('panel-collapsed')) {
@@ -711,24 +715,13 @@ function get_waitingDialog($modal_dialog) {
           'showButton': false
         });
         waitingDialog.hideHeaderMessage();
-        $('.form-item-src-name', '#astrooda-common').parent().parent().find('small').remove();
-        $('.form-item-RA input.form-control').val('');
-        $('.form-item-DEC input.form-control').val('');
+        $('.form-item-src-name', '#astrooda-name-resolve').parent().parent().find('small').remove();
+        //        $('.form-item-RA input.form-control').val('');
+        //        $('.form-item-DEC input.form-control').val('');
         $('input:not(:file)', '#astrooda-common').val(function(_, value) {
           return $.trim(value.replace(/\s+/g, " "));
         });
       }
-      //      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'send-feedback-button') {
-      //        $('.modal-footer button.cancel-button', '#lfeedback').hide();
-      //        $('input,select,textarea', '#lfeedback').prop('disabled', true);
-      //        $('#feedback-messages', '#lfeedback').html('');
-      //      }
-      //      else if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'ask-token-button') {
-      //        $('.modal-footer button.cancel-button', '#ltoken').hide();
-      //        $('#token-messages', '#ltoken').html('');
-      //        $('input,select,textarea', '#ltoken').prop('disabled', true);
-      //      }
-
     });
 
     // Disable main submit if error in common parameters
@@ -755,7 +748,7 @@ function get_waitingDialog($modal_dialog) {
     // This is important in Firefox when the page is refreshed
     // where indeed the old values are still in the form
 
-    var validator = $('form#astrooda-common').bootstrapValidator({
+    validator = $('form#astrooda-common').bootstrapValidator({
       // live :'disabled',
       fields: {
         'RA': {

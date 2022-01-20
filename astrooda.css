@@ -2,9 +2,10 @@
  * @file
  * Style sheet for the iPrayTimes block.
  */
-body {
+.block-astrooda {
   font-size : 12px !important;
 }
+
 
 label.control-label {
   display: block;;
@@ -229,35 +230,6 @@ span.panel-toolbox span {
   background-color: #f5f5f5;
 }
 
-/*
-.block-astrooda .ajax-progress .message,
-.block-astrooda .ajax-progress-throbber .message{
-  color: white;
-  font-size: 20px;
-  padding: 30px;
-}
-.block-astrooda .ajax-progress .throbber,
-.block-astrooda .ajax-progress-throbber .throbber {
-  float: none;
-  margin: 250px auto 0 auto;
-  width: 128px;
-  height: 128px;
-  background: url("images/loading2.gif") no-repeat center center;
-  background: url("images/ajax-loader.gif") no-repeat center center;
-}
-.block-astrooda .ajax-progress,
-.block-astrooda .ajax-progress-throbber {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 500;
-  vertical-align: middle;
-  text-align: center;
-}
-*/
 .astrooda-popover-content {
   display: none;
 }
@@ -454,10 +426,6 @@ ol.reference-list > li:before {
     left: -1.4em;
 }
 
-.pppd-heading-table tr td:nth-child(2) {
-  padding-left: 1em;
-}
-
 .header-info {
   width: auto;
   margin: 0.5em;
@@ -515,6 +483,10 @@ div.ctools-modal-content .modal-content {
   max-width: 60%;
 }
 
+.has-error .help-block {
+  color: #a94442 !important;
+}
+
 .modal-default .form-actions {
   text-align: right;
 }
@@ -524,7 +496,9 @@ div.ctools-modal-content .modal-content {
     overflow-x: hidden;
 }
 
-.mmoda-user-menu {
-  padding: 1em;
- float: right ;
+.node-mmoda-help-page .colorbox-insert-image img {
+  padding:2px;
+  border:1px solid gray;
+  border-radius: 0.25rem !important;
+  background-color: lightgray;
 }

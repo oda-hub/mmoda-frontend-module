@@ -181,6 +181,7 @@
       </div>
       <div id="formwrapper">
         <div class="common-params">
+           <?=render($name_resolve_form)?>
            <?=render($common_form)?>
           </div>
         <div class="instruments-panel panel with-nav-tabs panel-primary">
@@ -211,12 +212,16 @@
                           class="glyphicon glyphicon-chevron-up"> </span></span>
                       </span> <span
                         class="intrument-toolbar btn-group pull-right"
-                        role="group"> <a data-toggle="tooltip" title=""
+                        role="group">
+                        <?php  if (!empty($instrument['help_page'])) :?>
+                        <a data-toggle="tooltip" title=""
                         data-original-title="Help"
-                        class="btn btn-primary open-in-modal"
+                        class="btn btn-primary btn-help open-in-modal"
                         href="<?=$instrument['help_page']?>"><span
                           class="glyphicon glyphicon-info-sign"> </span>
-                      </a>
+                       </a>
+                       <?php endif; ?>
+
                       </span>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>

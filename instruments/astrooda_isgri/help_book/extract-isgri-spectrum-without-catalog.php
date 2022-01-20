@@ -1,6 +1,6 @@
 array(
   (object) array(
-      'vid' => '2157',
+      'vid' => '2319',
       'uid' => '1',
       'title' => 'Extract an ISGRI spectrum without a catalog',
       'log' => 'nan',
@@ -8,17 +8,17 @@ array(
       'comment' => '1',
       'promote' => '0',
       'sticky' => '0',
-      'vuuid' => '33ca941e-12a3-4791-8bf0-67d77019d26c',
-      'nid' => '1486',
+      'vuuid' => '1160c99d-7c37-4a05-954f-38d03c56041a',
+      'nid' => '1567',
       'type' => 'mmoda_help_page',
       'language' => 'und',
-      'created' => '1632500993',
-      'changed' => '1632500993',
+      'created' => '1642079660',
+      'changed' => '1642431278',
       'tnid' => '0',
       'translate' => '0',
       'uuid' => 'a27c0da3-e215-4c84-94d4-fee05ecdf4ed',
-      'revision_timestamp' => '1632500993',
-      'revision_uid' => '0',
+      'revision_timestamp' => '1642431278',
+      'revision_uid' => '8',
       'body' => array(
         'und' => array(
           array(
@@ -38,6 +38,7 @@ array(
           ),
         ),
       ),
+      'field_test' => array(),
       'rdf_mapping' => array(
         'rdftype' => array(
           'sioc:Item',
@@ -93,20 +94,20 @@ array(
           'callback' => 'date_iso8601',
         ),
       ),
+      'path' => array(
+        'pid' => '4006',
+        'source' => 'node/1567',
+        'alias' => 'help/mmoda/extract-isgri-spectrum-without-catalog',
+        'language' => 'und',
+      ),
       'cid' => '0',
-      'last_comment_timestamp' => '1632500993',
+      'last_comment_timestamp' => '1642079660',
       'last_comment_name' => NULL,
       'last_comment_uid' => '0',
       'comment_count' => '0',
       'name' => 'sitamin',
       'picture' => '0',
       'data' => 'a:8:{s:7:"overlay";i:1;s:16:"ckeditor_default";s:1:"t";s:20:"ckeditor_show_toggle";s:1:"t";s:14:"ckeditor_width";s:4:"100%";s:13:"ckeditor_lang";s:2:"en";s:18:"ckeditor_auto_lang";s:1:"t";s:7:"contact";i:0;s:17:"mimemail_textonly";i:0;}',
-      'path' => array(
-        'pid' => '3486',
-        'source' => 'node/1486',
-        'alias' => 'help/mmoda/extract-isgri-spectrum-without-catalog',
-        'language' => 'und',
-      ),
       'menu' => NULL,
       'node_export_drupal_version' => '7',
       'node_export_book' => array(

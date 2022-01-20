@@ -256,6 +256,7 @@ function astrooda_main_block_content()
 
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;
+  $items['name_resolve_form'] = drupal_get_form('astrooda_name_resolve');
   $items['common_form'] = drupal_get_form('astrooda_common');
   $items['astrooda_debug'] = $astrooda_settings['astrooda_debug'];
   $items['auth_cookie'] = '_oauth2_proxy';
@@ -279,7 +280,10 @@ function astrooda_main_block_content()
   ksort($instruments);
   $weight_sorted_instruments = array_values($instruments);
   $first_instrument = true;
+  $astrooda_js_settings = array();
+
   foreach ($weight_sorted_instruments as $instrument_name) {
+    $astrooda_js_settings[$instrument_name] = array();
     $instrument = $astrooda_settings['instruments'][$instrument_name];
     if ($instrument['enabled']) {
       $items['instruments'][$instrument['name']] = array(
@@ -295,7 +299,13 @@ function astrooda_main_block_content()
         $first_instrument = false;
       }
     }
+
+    $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+    $astrooda_js_settings[$instrument_name]['enable_use_catalog'] = isset($astrooda_settings['instruments'][$instrument_name]['enable_use_catalog']) ? $astrooda_settings['instruments'][$instrument_name]['enable_use_catalog'] : true;
   }
+  drupal_add_js(array(
+    $core_module_name => $astrooda_js_settings
+  ), 'setting');
 
   return theme('astrooda_main_block_content', $items);
 }
@@ -510,7 +520,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
  *          - 'language': A string of the language code for the alias (e.g. 'en').
  *          This can be altered by reference.
  */
-function astrooda_pathauto_pattern_alter(&$pattern, array &$context)
+function astroodanotneededfornow_pathauto_pattern_alter(&$pattern, array &$context)
 {
   // if ($context['module'] == 'node' && ($context['op'] == 'insert' or $context['op'] == 'update') && ($context['type'] == 'mmoda_help_page')) {
   // $pattern = preg_replace('/content/', 'help', $pattern);
@@ -552,7 +562,6 @@ function astrooda_node_update($node)
 
 function mmoda_export_help_page_after_insert_or_update($node, $insert = FALSE)
 {
-  // return;
   if ($node->type != 'mmoda_help_page' or empty($node->nid))
     return;
   $export_format = 'php';
@@ -631,6 +640,45 @@ function astrooda_mail_alter(&$message)
       'sanitize' => FALSE,
       'clear' => TRUE
     ));
+  }
+}
+
+/**
+ * Perform an action after a successful authorization.
+ *
+ * @param array $tokens
+ *          ID token and access token that we received as a result of the OpenID
+ *          Connect flow.
+ * @param object $account
+ *          The user account that has just been logged in.
+ * @param array $userinfo
+ *          The user claims returned by the OpenID Connect provider.
+ * @param string $client_name
+ *          The machine name of the OpenID Connect client plugin.
+ * @param bool $is_new
+ *          Whether the account has just been created via OpenID Connect.
+ */
+function astrooda_openid_connect_post_authorize(array $tokens, $account, array $userinfo, $client_name, $is_new)
+{
+  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
+  watchdog('MMODA', $is_new ? 'New user :' . print_r($account, true) : 'Old user');
+  if ($is_new) {
+    $params['account'] = $account;
+    drupal_mail('user', 'register_pending_approval_admin', variable_get('site_mail', ini_get('sendmail_from')), language_default(), $params);
+  }
+  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
+}
+
+/**
+ * Implements hook_preprocess_status_messages()
+ */
+function astrooda_preprocess_status_messages(&$variables)
+{
+  $matches = array();
+  $openid_connect_email_taken_meessage_pattern = '/^The e-mail address <em class="placeholder">(.+)<\/em> is already taken\.$/';
+  if (isset($_SESSION['messages']['error'][0]) and preg_match($openid_connect_email_taken_meessage_pattern, $_SESSION['messages']['error'][0], $matches)) {
+    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] . '</em> is already taken by an existing local account which is not connected to Github.';
+    $_SESSION['messages']['error'][1] = 'Login with this account and edit it to connect it to GitHub (<a class="open-in-modal" href="help/mmoda/connect-my-mmoda-account-github">How to ?</a>)';
   }
 }
 
