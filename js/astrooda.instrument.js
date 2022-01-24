@@ -1,8 +1,5 @@
 function validate_timebin(value, validator, $thefield) {
-  // console.log('validating time bin');
-
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
-
   if ($thefield.data('astroodaTimeBinMin')) {
     var time_bin_min_seconds = $thefield.data('astroodaTimeBinMin');
     var time_bin_format_message = time_bin_min_seconds + ' seconds';
@@ -93,7 +90,7 @@ function panel_title(srcname, param) {
 
     // must be global variable
     requestTimer = null;
-    
+
     //var startAJAXTime = new Date().getTime();
     var jqxhr = $.ajax({
       url: current_ajax_call_params.action,
@@ -132,8 +129,13 @@ function panel_title(srcname, param) {
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
           waitingDialog.hideSpinner();
           $('#ldialog').find('.progress').hide();
-          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + data.exit_status.message + '</td></tr><tr><td></td><td>'
-            + data.exit_status.error_message + '</td></tr></table>', 'danger');
+          reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />");
+          reformatted_exit_status_message = reformatted_exit_status_message.replace(/\n/g, "<br />");
+
+          reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />");
+          reformatted_error_message = reformatted_error_message.replace(/\n/g, "<br />");
+          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+            + reformatted_error_message + '</td></tr></table>', 'danger');
           waitingDialog.setClose();
           add_dispatcher_response_to_feedback_form(data);
         } else if (data.query_status != 'done') {
@@ -227,25 +229,42 @@ function panel_title(srcname, param) {
         $('#ldialog').find('.progress').hide();
         serverResponse = '';
         try {
-          serverResponse = $.parseJSON( jqXHR.responseText );
-        } catch(e) {
-          serverResponse = jqXHR.responseText; 
+          serverResponse = $.parseJSON(jqXHR.responseText);
+        } catch (e) {
+          serverResponse = jqXHR.responseText;
         }
         console.log(serverResponse);
-        var message = get_current_date_time() + ' ';
-        if (errorThrown == 'timeout') {
-          message += ' Timeout (' + (ajax_request_timeout / 1000) + 's) !';
+        var message = '<tr><td>' + get_current_date_time() + '</td>';
+        if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
+          // more comprehensive message
+          message += '<td>Timeout error.</td></tr>';
+          message += '<tr><td></td><td>A timeout has occured, this was probably caused by a problem in accessing the server: ' +
+            'please try to resubmit your request. ' +
+            'You can also inspect <a href="http://status.odahub.io">http://status.odahub.io</a> to notice any recent issues.<br\>' +
+            'If the problem persists you can request support by leaving us a feedback.</td></tr>';
         } else if (jqXHR.status > 0) {
-          message += textStatus + ' ' + jqXHR.status + ', ' + errorThrown + ', ';
-          if ( typeof serverResponse == 'string') {
-            message += serverResponse;
+          message += '<td>' + textStatus.charAt(0).toUpperCase() + textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
+          if (typeof serverResponse == 'string') {
+            message += serverResponse + '</td>';
           } else {
-            message += serverResponse.error_message;
+            if ('exit_status' in serverResponse) {
+              if ('message' in serverResponse.exit_status)
+                message += serverResponse.exit_status.message;
+              message += '</td></tr>';
+              if ('error_message' in serverResponse.exit_status)
+                message += '<tr><td></td><td>' + serverResponse.exit_status.error_message + '</td></tr>';
+            }
+            else {
+              message += serverResponse.error_message + '</td></tr>';
+            }
           }
         } else {
-          message += 'Can not reach the data server, unknown error';
+          message += '<td>Can not reach the data server, unknown error</td>';
         }
-        waitingDialog.append('<div>' + message + '</div>', 'danger');
+        // to be consistebnt with the way the error is visulized in case query_failed
+        reformatted_message = message.replace(/\\n/g, "<br />");
+        reformatted_message = reformatted_message.replace(/\n/g, "<br />");
+        waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
       });
 
     $('#ldialog .close-button').on('click', function() {
@@ -844,13 +863,18 @@ function panel_title(srcname, param) {
 
         // Disable form elements added by Drupal
         $('[name^=form_]', this).prop('disabled', true);
-        $('[name^=form_]', 'form#astrooda-common').prop('disabled', true);
+        $('[name^=form_]', '.common-params').prop('disabled', true);
         // $('[name=catalog_selected_objects]',
         // this).prop('disabled',
         // true);
 
+        // Collect object name 
+        var allFormData = $("form#astrooda-name-resolve").serializeArray().map(function(item, index) {
+          return (item);
+        });
+
         // Collect common parameters
-        var allFormData = $("form#astrooda-common").serializeArray().map(function(item, index) {
+        var commonFormData = $("form#astrooda-common").serializeArray().map(function(item, index) {
           if (item.name == 'T1' || item.name == 'T2') {
             item.value = item.value.replace(' ', 'T')
           }
@@ -865,13 +889,13 @@ function panel_title(srcname, param) {
           return (item);
         });
 
-        allFormData = allFormData.concat(instrumentFormData);
+        allFormData = allFormData.concat(commonFormData).concat(instrumentFormData);
         formData = new FormData();
         for (var lindex = 0; lindex < allFormData.length; lindex++)
           formData.append(allFormData[lindex].name, allFormData[lindex].value);
         // Enable form elements added by Drupal
         $('[name^=form_]', this).prop('disabled', false);
-        $('[name^=form_]', 'form#astrooda-common').prop('disabled', false);
+        $('[name^=form_]', '.common-params').prop('disabled', false);
         // $('[name=catalog_selected_objects]',this).prop('disabled',
         // false);
 
@@ -935,13 +959,13 @@ function panel_title(srcname, param) {
       AJAX_call();
     });
 
-//    $('body').on('click', '#ldialog .book-toc button', function() {
-//      console.log('outline clicked!');
-//      var bh = $('#ldialog .modal-body').height();
-//      var mh =$('#ldialog .modal-body .book-toc .dropdown-menu').height();
-//      console.log('body height:'+bh+', menu height:'+mh);
-//      $('#ldialog .modal-body').scrollTop(bh+mh-5);
-//    });
+    //    $('body').on('click', '#ldialog .book-toc button', function() {
+    //      console.log('outline clicked!');
+    //      var bh = $('#ldialog .modal-body').height();
+    //      var mh =$('#ldialog .modal-body .book-toc .dropdown-menu').height();
+    //      console.log('body height:'+bh+', menu height:'+mh);
+    //      $('#ldialog .modal-body').scrollTop(bh+mh-5);
+    //    });
 
     $('body').on('click', '.open-in-modal', function(e) {
       e.preventDefault();
@@ -950,7 +974,7 @@ function panel_title(srcname, param) {
       var home_link = '';
       if (!$(this).hasClass('help-home')) {
         home_link_elt = $("<span>")
-          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href')})).append(' > ');
+          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
         home_link = home_link_elt[0].outerHTML;
       }
 
@@ -981,7 +1005,7 @@ function panel_title(srcname, param) {
           buttonText: 'Close',
           showCloseInHeader: true,
         });
-        $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%"  });
+        $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%" });
         $('#ldialog .modal-body').scrollTop(0);
         $(window).scrollTop(0);
         //        window.scroll(0, 0);
@@ -1008,15 +1032,15 @@ function panel_title(srcname, param) {
       waitingDialog.showHeaderMessage();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
-      waitingDialog.append('<table class="error-table"><tr>' + 
-        '<td>' + get_current_date_time() + '</td>' + 
+      waitingDialog.append('<table class="error-table"><tr>' +
+        '<td>' + get_current_date_time() + '</td>' +
         '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
         '</tr></table>',
         'danger');
     }
     else {
       // Set catalog in the corresponding instrument form
-      if (request_parameters.hasOwnProperty('selected_catalog')) {
+      if (request_parameters.hasOwnProperty('selected_catalog') && request_parameters.selected_catalog) {
         var catalog = JSON.parse(request_parameters.selected_catalog);
         var datetime = get_current_date_time();
         // attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
@@ -1024,12 +1048,13 @@ function panel_title(srcname, param) {
         attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
         $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
       }
-  
+
       $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
-      $('input, textarea, select', 'form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
+      $('input, textarea, select', 'form#astrooda-name-resolve, form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-  
+
+        // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           if ($(this).attr('type') == 'radio') {
             if ($(this).val() == request_parameters[field_name]) {
@@ -1045,22 +1070,65 @@ function panel_title(srcname, param) {
 
   }
 
-  function create_catalog_datatable(editor, catalog, catalog_container) {
-    return (catalog_container.DataTable({
-      data: catalog.data,
-      columns: catalog.column_names,
-      // dom : 'Brtflip',
-      dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
-      buttons: [
-        'selectAll',
-        'selectNone',
-        {
-          text: 'New',
+  function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
+    var buttons = [
+      'selectAll',
+      'selectNone',
+      {
+        text: 'New',
+        className: 'btn-primary',
+        extend: "create",
+        formTitle: '<h3>Add new object</h3>',
+        editor: editor,
+        formButtons: [{
+          text: 'Add',
+          className: 'btn-primary save-row',
+          action: function() {
+            this.submit();
+          }
+        }, {
+          text: 'Cancel',
           className: 'btn-primary',
-          extend: "create",
-          formTitle: '<h3>Add new object</h3>',
-          editor: editor,
-          formButtons: [{
+          action: function() {
+            this.close();
+          }
+        }]
+      },
+      {
+        text: 'Edit',
+        className: 'btn-primary',
+        extend: "editSingle",
+        formTitle: '<h3>Edit object</h3>',
+        editor: editor,
+        formButtons: [{
+          label: 'Save',
+          className: 'btn-primary save-row',
+          action: function() {
+            this.submit();
+          }
+        }, {
+          label: 'Cancel',
+          className: 'btn-primary',
+          action: function() {
+            this.close();
+          }
+        }]
+      },
+      {
+        extend: "remove",
+        className: 'btn-primary',
+        formTitle: '<h3>Delete source(s)</h3>',
+        editor: editor,
+        formMessage: function(e, dt) {
+          var rows = dt.rows(e.modifier()).data().pluck('src_names');
+          return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
+        }
+      },
+      {
+        text: 'Add query object',
+        className: 'btn-primary',
+        action: function(e, dt, button, config) {
+          editor.title('<h3>Add query object</h3>').buttons([{
             text: 'Add',
             className: 'btn-primary save-row',
             action: function() {
@@ -1072,94 +1140,69 @@ function panel_title(srcname, param) {
             action: function() {
               this.close();
             }
-          }]
-        },
-        {
-          text: 'Edit',
-          className: 'btn-primary',
-          extend: "editSingle",
-          formTitle: '<h3>Edit object</h3>',
-          editor: editor,
-          formButtons: [{
-            label: 'Save',
-            className: 'btn-primary save-row',
-            action: function() {
-              this.submit();
-            }
-          }, {
-            label: 'Cancel',
-            className: 'btn-primary',
-            action: function() {
-              this.close();
-            }
-          }]
-        },
-        {
-          extend: "remove",
-          className: 'btn-primary',
-          formTitle: '<h3>Delete source(s)</h3>',
-          editor: editor,
-          formMessage: function(e, dt) {
-            var rows = dt.rows(e.modifier()).data().pluck('src_names');
-            return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
+          }]).create().set('src_names', $('input[name=src_name]', '.common-params').val()).set('ra', $('input[name=RA]', '.common-params').val()).set('dec',
+            $('input[name=DEC]', '.common-params').val());
+          // Make Editor draggable (movable)
+          // $('.DTE_Action_Create').draggable({
+          // handle : '.DTE_Header, .DTE_Footer',
+          // stack : '.ldraggable',
+          // containment : "parent"
+          // });
+        }
+      }];
+    var button_save_as_text = [
+      {
+        text: 'Save as TXT',
+        className: 'btn-primary',
+        action: function(e, dt, button, config) {
+          var data = dt.buttons.exportData();
+          data.header[0] = "meta_ID";
+          var file_content = '';
+          for (var i = 0; i < data.header.length; i++) {
+            data.header[i] = data.header[i].replace(' ', '_');
           }
-        },
-        {
-          text: 'Save as TXT',
-          className: 'btn-primary',
-          action: function(e, dt, button, config) {
-            var data = dt.buttons.exportData();
-            data.header[0] = "meta_ID";
-            var file_content = '';
-            for (var i = 0; i < data.header.length; i++) {
-              data.header[i] = data.header[i].replace(' ', '_');
-            }
-            file_content = data.header.join(' ') + "\n";
-            for (var i = 0; i < data.body.length; i++) {
-              data.body[i][0] = i;
-              file_content += data.body[i].join(' ') + "\n";
-            }
-            $.fn.dataTable.fileSave(new Blob([file_content]), 'catalog.txt');
+          file_content = data.header.join(' ') + "\n";
+          for (var i = 0; i < data.body.length; i++) {
+            data.body[i][0] = i;
+            file_content += data.body[i].join(' ') + "\n";
           }
-        },
-        {
-          text: 'Add query object',
-          className: 'btn-primary',
-          action: function(e, dt, button, config) {
-            editor.title('<h3>Add query object</h3>').buttons([{
-              text: 'Add',
-              className: 'btn-primary save-row',
-              action: function() {
-                this.submit();
-              }
-            }, {
-              text: 'Cancel',
-              className: 'btn-primary',
-              action: function() {
-                this.close();
-              }
-            }]).create().set('src_names', $('input[name=src_name]', 'form#astrooda-common').val()).set('ra', $('input[name=RA]', 'form#astrooda-common').val()).set('dec',
-              $('input[name=DEC]', 'form#astrooda-common').val());
-            // Make Editor draggable (movable)
-            // $('.DTE_Action_Create').draggable({
-            // handle : '.DTE_Header, .DTE_Footer',
-            // stack : '.ldraggable',
-            // containment : "parent"
-            // });
-          }
-        }],
-      select: {
+          $.fn.dataTable.fileSave(new Blob([file_content]), 'catalog.txt');
+        }
+      }];
+    if (enable_use_catalog) {
+      buttons = buttons.concat(button_save_as_text);
+      select_row = {
         style: 'os',
         selector: 'td:first-child'
-      },
+      };
+    }
+    else {
+      buttons = button_save_as_text;
+      select_row = false;
+    }
+
+    var catalog_datatable = catalog_container.DataTable({
+      data: catalog.data,
+      columns: catalog.column_names,
+      // dom : 'Brtflip',
+      dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
+      buttons: buttons,
+      select: select_row,
       order: [[1, 'asc']],
-    }))
+    });
+    if (!enable_use_catalog)
+      // Disable row selection by removing the css class select-checkbox from the first column
+      catalog_datatable.column( 0 ).nodes().toJQuery().removeClass('select-checkbox');
+    return (catalog_datatable);
   }
 
   function display_catalog(catalog, afterDiv, offset, showUseCatalog) {
     var datetime = catalog.datetime;
 
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-catalog', datetime);
+    source_name = $('input[name=src_name]', '.common-params').val();
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Image catalog');
+
 
     var catalog_panel = $('#' + panel_ids.panel_id);
     $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>');
@@ -1171,7 +1214,9 @@ function panel_title(srcname, param) {
       catalog_parent_panel_id: afterDiv
     });
 
-    if (showUseCatalog) {
+    var instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    var enable_use_catalog = Drupal.settings.astrooda[instrument].enable_use_catalog;
+    if (enable_use_catalog && showUseCatalog) {
       $('.panel-footer', '#' + panel_ids.panel_id).append(
         '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
@@ -1183,10 +1228,15 @@ function panel_title(srcname, param) {
 
     var catalog_container = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id);
 
-    var dataTable = create_catalog_datatable(editor, catalog, catalog_container)
+    var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
+
+    catalog_panel.data({
+      dataTable: dataTable,
+      currentRowId: catalog.data.length
+    });
 
     // Activate inline edit on click of a table cell
-    catalog_container.on('click', 'tbody td:not(:first-child)', function() {
+    if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
       editor.inline(this);
     });
 
@@ -1276,14 +1326,6 @@ function panel_title(srcname, param) {
         }
       });
     }
-
-    catalog_panel.data({
-      dataTable: dataTable,
-      currentRowId: catalog.data.length
-    });
-    source_name = $('input[name=src_name]', 'form#astrooda-common').val();
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Image catalog');
-
     catalog_panel.highlight_result_panel(offset);
 
   }
@@ -1312,7 +1354,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       api_code_product_panel_id: afterDiv
     });
-    source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+    source_name = $('input[name=src_name]', '.common-params').val();
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - API code');
     $('#' + panel_ids.panel_id).addClass('astrooda-api-code');
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
@@ -1329,7 +1371,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       log_product_panel_id: afterDiv
     });
-    source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+    source_name = $('input[name=src_name]', '.common-params').val();
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Log');
     $('#' + panel_ids.panel_id).addClass('astrooda-log');
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
@@ -1356,7 +1398,7 @@ function panel_title(srcname, param) {
       query_parameters_product_panel_id: afterDiv
     });
 
-    source_name = $('input[name=src_name]', 'form#astrooda-common').val();
+    source_name = $('input[name=src_name]', '.common-params').val();
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' -  Query parameters');
     $('#' + panel_ids.panel_id).addClass('astrooda-query_parameters');
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
