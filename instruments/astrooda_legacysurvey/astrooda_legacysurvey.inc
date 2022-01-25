@@ -65,7 +65,7 @@ function astrooda_legacysurvey($form, &$form_state)
       'control-label'
     ),
     '#attributes' => array(
-      'name' => $mform_id . 'detector',
+      'name' => $mform_id . 'data_release',
       'class' => array(
         'form-control'
       ),
