@@ -492,8 +492,6 @@ function get_waitingDialog($modal_dialog) {
   }
 
   $.fn.highlight_result_panel = function(offset) {
-    //console.log('offset us ');
-    //console.log(offset);
     max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).zIndex()); }).get());
     $(this).css('z-index', max_zindexes + 1);
     var thisObject = $(this);
@@ -512,7 +510,6 @@ function get_waitingDialog($modal_dialog) {
       $(this).css('left', position_left);
 
       var y = instrument_panel.position().top - 100;
-      // console.log('y: '+y);
 
       $('body').animate({ 'scrollTop': y + 'px' }, 500, function() {
         // Animation complete.

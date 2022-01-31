@@ -464,6 +464,10 @@ function mmoda_resave_help_book_nodes_to_trigger_export(&$form, &$form_state)
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
+    case 'openid_connect_login_form':
+      $form['openid_connect_client_github_login']['#value'] ='Sign in with GitHub';
+      $form['openid_connect_client_github_login']['#attributes']['class'][] = 'btn-default';
+      break;
     case 'user_register_form':
       module_load_include('inc', 'astrooda', 'astrooda.users');
       customize_registration_form($form);
@@ -491,14 +495,6 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
           )
         )
       );
-      $form['actions']['submit']['#attributes']['class'][] = 'btn';
-      $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
-      // $filename = 'sites/default/files/form.php';
-      // $f = fopen($filename, 'w');
-      // fwrite($f, "form:\n");
-      // fwrite($f, print_r($form, true));
-      // fclose($f);
-      // chmod($filename, 0777);
       break;
   }
 }
