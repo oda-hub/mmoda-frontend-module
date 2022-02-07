@@ -465,7 +465,7 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
     case 'openid_connect_login_form':
-      $form['openid_connect_client_github_login']['#value'] ='Sign in with GitHub';
+      $form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
       $form['openid_connect_client_github_login']['#attributes']['class'][] = 'btn-default';
       break;
     case 'user_register_form':

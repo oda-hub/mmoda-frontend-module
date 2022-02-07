@@ -698,7 +698,7 @@ function get_waitingDialog($modal_dialog) {
       }
     });
 
-    $('.oda-banner .views-more-link, .oda-banner .views-slideshow-pager-field-item a, .oda-banner .views-field-title a, a.open-link-modal').on('click', function(e) {
+    $('.mmoda-banner .views-more-link, .mmoda-banner .views-slideshow-pager-field-item a, .mmoda-banner .views-field-title a, a.open-link-modal').on('click', function(e) {
       e.preventDefault();
       openPageInModal($(this).attr('href'));
     });

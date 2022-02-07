@@ -1043,31 +1043,50 @@ function panel_title(srcname, param) {
       if (request_parameters.hasOwnProperty('selected_catalog') && request_parameters.selected_catalog) {
         var catalog = JSON.parse(request_parameters.selected_catalog);
         var datetime = get_current_date_time();
-        // attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel.active .instrument-params-panel"));
-        // $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').removeClass('hidden');
         attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
         $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
       }
 
       $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
+      make_request_error = false;
+      var make_request_error_messages = [];
       $('input, textarea, select', 'form#astrooda-name-resolve, form#astrooda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('astrooda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
-          if ($(this).attr('type') == 'radio') {
+          if ($(this).attr('type') == 'file') {
+            make_request_error = true;
+            make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
+          } else if ($(this).attr('type') == 'radio') {
             if ($(this).val() == request_parameters[field_name]) {
               $(this).click();
             }
           } else {
-            $(this).val(request_parameters[field_name]);
+            try {
+              $(this).val(request_parameters[field_name]);
+            }
+            catch (err) {
+              make_request_error_messages.push('Failed initializing the parameter ' + field_name + ' in the request form');
+              make_request_error = true;
+              $('form.' + request_parameters.instrument + '-form').data('bootstrapValidator').updateStatus(field_name, 'NOT_VALIDATED').validateField(field_name);
+            }
           }
         }
       });
-      $('form.' + request_parameters.instrument + '-form').submit();
+      if (!make_request_error) {
+        $('form.' + request_parameters.instrument + '-form').submit();
+      }
+      else {
+        waitingDialog.show('Processing request parameters ...', '', {
+          showProgressBar: false,
+          showSpinner: false
+        });
+        waitingDialog.append('Error initializing form request: <ul><li>'+make_request_error_messages.join('</li><li>')+'</li></ul>',
+          'danger');
+        $('.write-feedback-button').show();
+      }
     }
-
   }
 
   function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
@@ -1192,7 +1211,7 @@ function panel_title(srcname, param) {
     });
     if (!enable_use_catalog)
       // Disable row selection by removing the css class select-checkbox from the first column
-      catalog_datatable.column( 0 ).nodes().toJQuery().removeClass('select-checkbox');
+      catalog_datatable.column(0).nodes().toJQuery().removeClass('select-checkbox');
     return (catalog_datatable);
   }
 
