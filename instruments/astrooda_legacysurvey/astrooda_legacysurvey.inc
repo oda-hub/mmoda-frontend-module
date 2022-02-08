@@ -65,7 +65,7 @@ function astrooda_legacysurvey($form, &$form_state)
       'control-label'
     ),
     '#attributes' => array(
-      'name' => $mform_id . 'detector',
+      'name' => $mform_id . 'data_release',
       'class' => array(
         'form-control'
       ),
@@ -94,7 +94,7 @@ function astrooda_legacysurvey($form, &$form_state)
     '#default_value' => $instrument_defaults['product_type'],
     '#options' => array(
       'legacy_survey_image' => 'Image',
-      'legacy_survey_spectrum' => 'Spectrum',
+      'legacy_survey_photometry' => 'Photometry',
     ),
     '#parent_classes' => array(
       'form-group',
@@ -133,13 +133,13 @@ function astrooda_legacysurvey($form, &$form_state)
     '#states' => array(
       'visible' => array(
         ':input[name="' . $mform_id . 'product_type"]' => array(
-          'value' => 'legacy_survey_spectrum'
+          'value' => 'legacy_survey_photometry'
         )
       ),
       'enabled' => array(
         ':input[name="' . $mform_id . 'product_type"]' => array(
           array(
-            'value' => 'legacy_survey_spectrum'
+            'value' => 'legacy_survey_photometry'
           )
         )
       )
