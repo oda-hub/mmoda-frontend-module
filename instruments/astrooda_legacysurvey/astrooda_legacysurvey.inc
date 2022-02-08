@@ -30,27 +30,8 @@ function astrooda_legacysurvey($form, &$form_state)
   $instrument_defaults = $astrooda_settings['instruments']['legacysurvey'];
 
   $form['query_type'] = array(
-    '#type' => 'select',
-    '#title' => t("Query Type"),
-    '#description' => t("Select query type"),
-    '#default_value' => $instrument_defaults['query_type'],
-    '#options' => array(
-      'Real' => 'Real',
-      'Dummy' => 'Dummy'
-    ),
-    '#parent_classes' => array(
-      'form-group',
-      'col-md-6'
-    ),
-    '#label_classes' => array(
-      'control-label'
-    ),
-    '#attributes' => array(
-      'class' => array(
-        'form-control'
-      )
-    ),
-    '#prefix' => '<div class="row">',
+    '#type' => 'hidden',
+    '#value' => $instrument_defaults['query_type'],
   );
 
   $form['data_release'] = array(
@@ -81,6 +62,7 @@ function astrooda_legacysurvey($form, &$form_state)
       8 => 'DR8',
       9 => 'DR9'
     ),
+    '#prefix' => '<div class="row">',
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
