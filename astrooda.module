@@ -302,6 +302,7 @@ function astrooda_main_block_content()
 
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
     $astrooda_js_settings[$instrument_name]['enable_use_catalog'] = isset($astrooda_settings['instruments'][$instrument_name]['enable_use_catalog']) ? $astrooda_settings['instruments'][$instrument_name]['enable_use_catalog'] : true;
+    $astrooda_js_settings[$instrument_name]['js9_ext_id'] = isset($astrooda_settings['instruments'][$instrument_name]['js9_ext_id']) ? $astrooda_settings['instruments'][$instrument_name]['js9_ext_id'] : 4;
   }
   drupal_add_js(array(
     $core_module_name => $astrooda_js_settings

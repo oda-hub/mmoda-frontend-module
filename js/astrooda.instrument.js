@@ -2229,10 +2229,11 @@ function panel_title(srcname, param) {
   }
 
   function display_image_js9(image_file_path, data) {
+    var js9_ext_id = Drupal.settings.astrooda[instrument].js9_ext_id;
     var panel_ids = $(".instrument-params-panel",
       ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
+      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=' + js9_ext_id,
       id: 'js9iframe',
       width: '650',
       height: '700',
