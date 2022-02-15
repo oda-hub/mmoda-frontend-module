@@ -629,16 +629,56 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.result-panel .renku-publish', function(e) {
       e.preventDefault();
+      renku_publish_formData = new FormData();
+      url_params = {};
       let job_id = $(".renku-publish").data('job_id');
       if (job_id) {
-        url_params = {
-          'job_id': job_id
-        }
+        renku_publish_formData.append('job_id', job_id);
+        url_params['job_id'] = job_id;
+      }
+      if ($.cookie('Drupal.visitor.token')) {
+        renku_publish_formData.append('token', $.cookie('Drupal.visitor.token'));
+        url_params['token'] = $.cookie('Drupal.visitor.token');
       }
 
+      $.param(url_params)
+
       // publish the code over the renku repository
-      let url_dispatcher_renku_publish_endpoint = get_renku_publish_url(url_params)
-      console.log("publishing to: " + url_dispatcher_renku_publish_endpoint);
+      let url_dispatcher_renku_publish_url = get_renku_publish_url()
+
+      var renku_publish_jqxhr = $.ajax({
+        url: url_dispatcher_renku_publish_url + '?' + $.param(url_params),
+        data: renku_publish_formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        timeout: ajax_request_timeout,
+        type: 'POST'
+      }).done(
+        function(renku_publish_data, renku_publish_textStatus, renku_publish_jqXHR) {
+          last_dataserver_response = renku_publish_data;
+          console.log(data);
+        }
+      ).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+        serverResponse = '';
+        try {
+          serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
+        } catch (e) {
+          serverResponse = renku_publish_jqXHR.responseText;
+        }
+        console.log(serverResponse);
+        // append the results from the renku publishing, to be improved
+        let div_result = $('<div>').addClass('result-renku-publish');
+        let link_result = $('<a>').attr({ href: serverResponse, role: 'button' }).text(serverResponse);
+        div_result.append(link_result);
+        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].prepend(div_result[0])
+
+      }).error(
+        function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+          console.log(renku_publish_textStatus);
+        }
+      );
+
     });
 
     $("body").on('click', '.panel .copy-api-code', function(e) {
@@ -1394,6 +1434,8 @@ function panel_title(srcname, param) {
     hljs.highlightAll();
 
   }
+
+
 
   function display_log(log, afterDiv, datetime, offset) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-log', datetime);
@@ -2243,13 +2285,8 @@ function panel_title(srcname, param) {
     return (url);
   }
 
-  function get_renku_publish_url(parameters) {
-    if (!parameters) {
-      parameters = {};
-    }
-    if ($.cookie('Drupal.visitor.token'))
-      parameters['token'] = $.cookie('Drupal.visitor.token');
-    url = 'dispatch-data/push-renku-branch?' + $.param(parameters);
+  function get_renku_publish_url() {
+    url = 'dispatch-data/push-renku-branch';
     return (url);
   }
 
