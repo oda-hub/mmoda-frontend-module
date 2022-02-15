@@ -205,8 +205,8 @@ function panel_title(srcname, param) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
+          
           $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
-
           waitingDialog.setClose();
         }
         // data.exit_status.comment = 'Hoho';
@@ -625,6 +625,20 @@ function panel_title(srcname, param) {
 
         display_api_code(api_code_parent_panel.data('api_code'), '#' + api_code_parent_panel.attr('id'), datetime, api_code_offset);
       }
+    });
+
+    $("body").on('click', '.result-panel .renku-publish', function(e) {
+      e.preventDefault();
+      let job_id = $(".renku-publish").data('job_id');
+      if (job_id) {
+        url_params = {
+          'job_id': job_id
+        }
+      }
+
+      // publish the code over the renku repository
+      let url_dispatcher_renku_publish_endpoint = get_renku_publish_url(url_params)
+      console.log("publishing to: " + url_dispatcher_renku_publish_endpoint);
     });
 
     $("body").on('click', '.panel .copy-api-code', function(e) {
@@ -2080,6 +2094,18 @@ function panel_title(srcname, param) {
     return '';
   }
 
+  function get_renku_publish_button(dbutton, job_id) {
+    button = dbutton.clone().addClass('renku-publish').text('Publish on Renku ');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+    glyphicon.attr({ title: "Publish the API code over the Renku repository" });
+    if  (job_id) {
+      button.data('job_id', job_id);
+    }
+
+    button.append(glyphicon);
+    return button;
+  }
+
   function panel_body_append_header_footer(panel_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
       $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
@@ -2089,7 +2115,7 @@ function panel_title(srcname, param) {
       $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
   }
 
-  function display_image(data, job_id, instrument) {
+  function display_image(data, job_id, instrument, ) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
@@ -2172,6 +2198,9 @@ function panel_title(srcname, param) {
     // otherwise show a form to request it
     toolbar.append(get_token_button());
 
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
+
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2206,12 +2235,24 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
   }
+  
   function get_download_url(parameters) {
     if ($.cookie('Drupal.visitor.token'))
       parameters['token'] = $.cookie('Drupal.visitor.token');
     url = 'dispatch-data/download_products?' + $.param(parameters);
     return (url);
   }
+
+  function get_renku_publish_url(parameters) {
+    if (!parameters) {
+      parameters = {};
+    }
+    if ($.cookie('Drupal.visitor.token'))
+      parameters['token'] = $.cookie('Drupal.visitor.token');
+    url = 'dispatch-data/push-renku-branch?' + $.param(parameters);
+    return (url);
+  }
+
   function activate_modal($element) {
     $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function() {
       var $this = $(this);
