@@ -641,6 +641,9 @@ function panel_title(srcname, param) {
       let div_spinner = get_div_spinner();
       $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(div_spinner);
 
+      // disable publish-on-renku button
+      e.target.disabled = true;
+
       var renku_publish_jqxhr = $.ajax({
         url: url_dispatcher_renku_publish_url,
         processData: false,
@@ -671,6 +674,9 @@ function panel_title(srcname, param) {
 
         // hide/remove the spinner
         $('.renku-progress').remove();
+        // re-enable publish-on-renku button, or disable it forever?
+        e.target.disabled = false;
+
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
         $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel);
 
