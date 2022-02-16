@@ -657,10 +657,13 @@ function panel_title(srcname, param) {
           serverResponse = serverResponse.error_message;
           publish_response_title = 'Error while publishing to the Renku repository: '
           publish_result_type = 'publish_error';
+          let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+          $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel)
+        } else {
+          // success -> redirect to the link returned from the call
+          window.open(serverResponse, "_blank");
         }
 
-        let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel)
 
       })
       .error(
@@ -1429,15 +1432,18 @@ function panel_title(srcname, param) {
     let div_result = $('<div>').addClass('result-renku-publish');
     let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
     div_result.append(div_result_title);
+
     // apply custom css max-width, to be improved
-    if (publish_result_type == 'success') {
-      let link_result = $('<a>')
-      .addClass('result-renku-publish-link')
-      .attr({ href: publish_result, role: 'button' })
-      .css("max-width", '650px')
-      .text(publish_result);
-      div_result.append(link_result);
-    } else if (publish_result_type == 'publish_error') {
+    
+    // if (publish_result_type == 'success') {
+    //   let link_result = $('<a>')
+    //   .addClass('result-renku-publish-link')
+    //   .attr({ href: publish_result, role: 'button' })
+    //   .css("max-width", '650px')
+    //   .text(publish_result);
+    //   div_result.append(link_result);
+    // } else 
+    if (publish_result_type == 'publish_error') {
       let result_error_message = $('<div>')
       .addClass('result-renku-publish-link')
       .css("max-width", '475px')
