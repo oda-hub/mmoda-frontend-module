@@ -637,6 +637,10 @@ function panel_title(srcname, param) {
       // publish the code over the renku repository
       let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
+      // show spinner
+      let div_spinner = get_div_spinner();
+      $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(div_spinner);
+
       var renku_publish_jqxhr = $.ajax({
         url: url_dispatcher_renku_publish_url,
         processData: false,
@@ -653,7 +657,6 @@ function panel_title(srcname, param) {
         }
         publish_response_title = 'Renku publish result: ';
         publish_result_type = 'success';
-        // if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message')) {
         if (renku_publish_textStatus == 'error') {
           if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
             serverResponse = serverResponse.error_message;
@@ -665,9 +668,11 @@ function panel_title(srcname, param) {
           // success -> redirect to the link returned from the call
           window.open(serverResponse, "_blank");
         }
-        
+
+        // hide/remove the spinner
+        $('.renku-progress').remove();
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel)
+        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel);
 
       })
       .error(

@@ -507,7 +507,7 @@ div.ctools-modal-content .modal-content {
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 5px;
-  margin-top: 5px;
+  margin-top: 10px;
   
   display: flex;
 
@@ -554,4 +554,8 @@ div.ctools-modal-content .modal-content {
 .result-renku-publish-title {
   font-weight: bold;
   padding: 2px;
+}
+
+.renku-progress {
+  margin-top: 10px;
 }
