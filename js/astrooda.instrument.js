@@ -644,6 +644,9 @@ function panel_title(srcname, param) {
       // disable publish-on-renku button
       e.target.disabled = true;
 
+      // remove any previous results
+      $('.result-renku-publish').remove();
+
       var renku_publish_jqxhr = $.ajax({
         url: url_dispatcher_renku_publish_url,
         processData: false,
