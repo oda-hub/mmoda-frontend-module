@@ -632,24 +632,13 @@ function panel_title(srcname, param) {
       renku_publish_formData = new FormData();
       url_params = {};
       let job_id = $(".renku-publish").data('job_id');
-      if (job_id) {
-        renku_publish_formData.append('job_id', job_id);
-        url_params['job_id'] = job_id;
-      }
-      if ($.cookie('Drupal.visitor.token')) {
-        renku_publish_formData.append('token', $.cookie('Drupal.visitor.token'));
-        url_params['token'] = $.cookie('Drupal.visitor.token');
-      }
-
-      $.param(url_params)
+      let token = $.cookie('Drupal.visitor.token');
 
       // publish the code over the renku repository
-      let url_dispatcher_renku_publish_url = get_renku_publish_url()
+      let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
       var renku_publish_jqxhr = $.ajax({
-        url: url_dispatcher_renku_publish_url + '?' + $.param(url_params),
-        data: renku_publish_formData,
-        dataType: 'json',
+        url: url_dispatcher_renku_publish_url,
         processData: false,
         contentType: false,
         timeout: ajax_request_timeout,
@@ -2311,8 +2300,14 @@ function panel_title(srcname, param) {
     return (url);
   }
 
-  function get_renku_publish_url() {
-    url = 'dispatch-data/push-renku-branch';
+  function get_renku_publish_url(token, job_id) {
+    parameters = {};
+    
+    if (token)
+      parameters['token'] = token;
+    if (job_id)
+      parameters['job_id'] = job_id;
+    url = 'dispatch-data/push-renku-branch?' + $.param(parameters);
     return (url);
   }
 
