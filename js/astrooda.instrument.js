@@ -1577,6 +1577,9 @@ function panel_title(srcname, param) {
     button.append(glyphicon);
     toolbar.append(button);
 
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
+
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
     toolbar.append(get_token_button());
@@ -1712,6 +1715,9 @@ function panel_title(srcname, param) {
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
     toolbar.append(get_token_button());
+
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1927,6 +1933,9 @@ function panel_title(srcname, param) {
     glyphicon.attr({ title: "Copy the API code to the clipboard" });
     button.append(glyphicon);
     toolbar.append(button);
+
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
