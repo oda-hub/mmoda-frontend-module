@@ -653,8 +653,12 @@ function panel_title(srcname, param) {
         }
         publish_response_title = 'Renku publish result: ';
         publish_result_type = 'success';
-        if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message')) {
-          serverResponse = serverResponse.error_message;
+        // if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message')) {
+        if (renku_publish_textStatus == 'error') {
+          if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
+            serverResponse = serverResponse.error_message;
+          else
+            serverResponse = serverResponse;
           publish_response_title = 'Error while publishing to the Renku repository: '
           publish_result_type = 'publish_error';
           let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
