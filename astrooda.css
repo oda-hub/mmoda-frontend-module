@@ -546,6 +546,9 @@ div.ctools-modal-content .modal-content {
   border-width: 5px;
   border-style: solid;
   white-space: pre-line;
+
+  font: inherit;
+  font-size: 12px !important;
 }
 
 .result-renku-publish-title {

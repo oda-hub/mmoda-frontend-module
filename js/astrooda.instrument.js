@@ -1453,8 +1453,10 @@ function panel_title(srcname, param) {
       .addClass('result-renku-publish-link')
       .css("max-width", '475px')
       .text(publish_result);
+      // define a tooltip
       let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').text(publish_result);
       result_error_message.append(result_error_message_tooltip);
+
       div_result.append(result_error_message);
     }
     
