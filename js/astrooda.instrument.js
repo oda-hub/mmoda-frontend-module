@@ -1440,11 +1440,19 @@ function panel_title(srcname, param) {
     let div_result = $('<div>').addClass('result-renku-publish');
     let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
     div_result.append(div_result_title);
+    // apply custom css max-width, to be improved
     if (publish_result_type == 'success') {
-      let link_result = $('<a>').addClass('result-renku-publish-link').attr({ href: publish_result, role: 'button' }).text(publish_result);
+      let link_result = $('<a>')
+      .addClass('result-renku-publish-link')
+      .attr({ href: publish_result, role: 'button' })
+      .css("max-width", '650px')
+      .text(publish_result);
       div_result.append(link_result);
     } else if (publish_result_type == 'publish_error') {
-      let result_error_message = $('<div>').addClass('result-renku-publish-link').text(publish_result);
+      let result_error_message = $('<div>')
+      .addClass('result-renku-publish-link')
+      .css("max-width", '475px')
+      .text(publish_result);
       let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').text(publish_result);
       result_error_message.append(result_error_message_tooltip);
       div_result.append(result_error_message);

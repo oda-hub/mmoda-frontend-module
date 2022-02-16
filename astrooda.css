@@ -506,14 +506,22 @@ div.ctools-modal-content .modal-content {
 .result-renku-publish {
   padding-top: 5px;
   padding-bottom: 5px;
+  padding-left: 5px;
+  margin-top: 5px;
+  
   display: flex;
+
+  border: 1px solid;
+  border-radius: 4px;
+  border-color: #cccccc;
+
+  background-color: #F5F5F5;
 }
 
 .result-renku-publish-link {
   text-overflow: ellipsis;
   padding: 2px;
   overflow: hidden;
-  max-width: 450px;
   white-space: nowrap;
 }
 
