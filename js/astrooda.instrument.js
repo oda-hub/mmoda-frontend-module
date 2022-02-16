@@ -654,26 +654,27 @@ function panel_title(srcname, param) {
         contentType: false,
         timeout: ajax_request_timeout,
         type: 'POST'
-      }).done(
-        function(renku_publish_data, renku_publish_textStatus, renku_publish_jqXHR) {
-          last_dataserver_response = renku_publish_data;
-          console.log(data);
-        }
-      ).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+      })
+      .complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
         serverResponse = '';
         try {
           serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
         } catch (e) {
           serverResponse = renku_publish_jqXHR.responseText;
         }
-        console.log(serverResponse);
-        // append the results from the renku publishing, to be improved
-        let div_result = $('<div>').addClass('result-renku-publish');
-        let link_result = $('<a>').attr({ href: serverResponse, role: 'button' }).text(serverResponse);
-        div_result.append(link_result);
-        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].prepend(div_result[0])
+        publish_response_title = 'Renku publish result: ';
+        publish_result_type = 'success';
+        if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message')) {
+          serverResponse = serverResponse.error_message;
+          publish_response_title = 'Error while publishing to the Renku repository: '
+          publish_result_type = 'publish_error';
+        }
 
-      }).error(
+        let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel)
+
+      })
+      .error(
         function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
           console.log(renku_publish_textStatus);
         }
@@ -1435,7 +1436,22 @@ function panel_title(srcname, param) {
 
   }
 
-
+  function display_renku_publish_result(publish_result_type='success', publish_result, result_title) {
+    let div_result = $('<div>').addClass('result-renku-publish');
+    let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
+    div_result.append(div_result_title);
+    if (publish_result_type == 'success') {
+      let link_result = $('<a>').addClass('result-renku-publish-link').attr({ href: publish_result, role: 'button' }).text(publish_result);
+      div_result.append(link_result);
+    } else if (publish_result_type == 'publish_error') {
+      let result_error_message = $('<div>').addClass('result-renku-publish-link').text(publish_result);
+      let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').text(publish_result);
+      result_error_message.append(result_error_message_tooltip);
+      div_result.append(result_error_message);
+    }
+    
+    return div_result[0];
+  }
 
   function display_log(log, afterDiv, datetime, offset) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-log', datetime);
