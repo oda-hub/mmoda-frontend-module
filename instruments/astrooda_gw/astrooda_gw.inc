@@ -30,27 +30,8 @@ function astrooda_gw($form, &$form_state)
   $instrument_defaults = $astrooda_settings['instruments']['gw'];
 
   $form['query_type'] = array(
-    '#type' => 'select',
-    '#title' => t("Query Type"),
-    '#description' => t("Select query type"),
-    '#default_value' => $instrument_defaults['query_type'],
-    '#options' => array(
-      'Real' => 'Real',
-      'Dummy' => 'Dummy'
-    ),
-    '#parent_classes' => array(
-      'form-group',
-      'col-md-6'
-    ),
-    '#label_classes' => array(
-      'control-label'
-    ),
-    '#attributes' => array(
-      'class' => array(
-        'form-control'
-      )
-    ),
-    '#prefix' => '<div class="row">',
+    '#type' => 'hidden',
+    '#value' => $instrument_defaults['query_type'],
   );
 
   $form['detector'] = array(
@@ -75,6 +56,7 @@ function astrooda_gw($form, &$form_state)
       'L1' => 'L1',
       'V1' => 'V1'
     ),
+    '#prefix' => '<div class="row">',
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
