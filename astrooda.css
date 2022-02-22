@@ -502,3 +502,60 @@ div.ctools-modal-content .modal-content {
   border-radius: 0.25rem !important;
   background-color: lightgray;
 }
+
+.result-renku-publish {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  margin-top: 10px;
+  
+  display: flex;
+
+  border: 1px solid;
+  border-radius: 4px;
+  border-color: #cccccc;
+
+  background-color: #F5F5F5;
+}
+
+.result-renku-publish-link {
+  text-overflow: ellipsis;
+  padding: 2px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.result-renku-publish-link:hover .result-renku-publish-link-tooltip {
+  visibility: visible;
+}
+
+.result-renku-publish-link-tooltip {
+  visibility: hidden;
+  width: 350px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+
+  border-color: transparent transparent black transparent;
+  border-width: 5px;
+  border-style: solid;
+  white-space: pre-line;
+
+  font: inherit;
+  font-size: 12px !important;
+}
+
+.result-renku-publish-title {
+  font-weight: bold;
+  padding: 2px;
+}
+
+.renku-progress {
+  margin-top: 10px;
+}

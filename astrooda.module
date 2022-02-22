@@ -231,10 +231,10 @@ function astrooda_main_block_content()
     drupal_set_message(t('Error : can not load highlightjs library.'), 'error');
     return;
   }
-  if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
-    // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
-    // return;
-  }
+  // if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
+  //   // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+  //   // return;
+  // }
   // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
   // 'type' => 'inline',
   // 'scope' => 'header',
@@ -246,6 +246,9 @@ function astrooda_main_block_content()
 
   drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.common.js');
   drupal_add_js(drupal_get_path('module', 'astrooda') . '/js/astrooda.instrument.js');
+
+  drupal_add_js('https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js', 'external');
+  drupal_add_js('https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js', 'external');
 
   $items = array();
 
@@ -302,6 +305,7 @@ function astrooda_main_block_content()
 
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
     $astrooda_js_settings[$instrument_name]['enable_use_catalog'] = isset($astrooda_settings['instruments'][$instrument_name]['enable_use_catalog']) ? $astrooda_settings['instruments'][$instrument_name]['enable_use_catalog'] : true;
+    $astrooda_js_settings[$instrument_name]['js9_ext_id'] = isset($astrooda_settings['instruments'][$instrument_name]['js9_ext_id']) ? $astrooda_settings['instruments'][$instrument_name]['js9_ext_id'] : 4;
   }
   drupal_add_js(array(
     $core_module_name => $astrooda_js_settings
@@ -400,22 +404,22 @@ function astrooda_libraries_info()
     )
   );
 
-  $libraries['bokeh'] = array(
-    'name' => 'Bokeh',
-    'vendor url' => 'https://bokeh.pydata.org',
-    'download url' => 'https://bokeh.pydata.org',
-    'version callback' => 'short_circuit_version',
-    'files' => array(
-      'js' => array(
-        'bokeh.min.js',
-        'bokeh-widgets.min.js'
-      ),
-      'css' => array(
-        'bokeh.min.css',
-        'bokeh-widgets.min.css'
-      )
-    )
-  );
+  // $libraries['bokeh'] = array(
+  //   'name' => 'Bokeh',
+  //   'vendor url' => 'https://bokeh.pydata.org',
+  //   'download url' => 'https://bokeh.pydata.org',
+  //   'version callback' => 'short_circuit_version',
+  //   'files' => array(
+  //     'js' => array(
+  //       'bokeh.min.js',
+  //       'bokeh-widgets.min.js'
+  //     ),
+  //     'css' => array(
+  //       'bokeh.min.css',
+  //       'bokeh-widgets.min.css'
+  //     )
+  //   )
+  // );
 
   $libraries['highlight'] = array(
     'name' => 'highlight.js',
@@ -464,6 +468,10 @@ function mmoda_resave_help_book_nodes_to_trigger_export(&$form, &$form_state)
 function astrooda_form_alter(&$form, &$form_state, $form_id)
 {
   switch ($form_id) {
+    case 'openid_connect_login_form':
+      $form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
+      $form['openid_connect_client_github_login']['#attributes']['class'][] = 'btn-default';
+      break;
     case 'user_register_form':
       module_load_include('inc', 'astrooda', 'astrooda.users');
       customize_registration_form($form);
@@ -491,14 +499,6 @@ function astrooda_form_alter(&$form, &$form_state, $form_id)
           )
         )
       );
-      $form['actions']['submit']['#attributes']['class'][] = 'btn';
-      $form['actions']['submit']['#attributes']['class'][] = 'btn-primary';
-      // $filename = 'sites/default/files/form.php';
-      // $f = fopen($filename, 'w');
-      // fwrite($f, "form:\n");
-      // fwrite($f, print_r($form, true));
-      // fclose($f);
-      // chmod($filename, 0777);
       break;
   }
 }

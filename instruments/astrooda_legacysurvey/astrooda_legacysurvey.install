@@ -47,7 +47,9 @@ function astrooda_legacysurvey_install() {
       'image_band' => 'g',
       'image_size' => 3.,
       'pixel_size' => 1,
-      'acknowledgement' => 'acknowledgement placeholder'
+      'acknowledgement' => 'acknowledgement placeholder',
+      'enable_use_catalog' => FALSE,
+      'js9_ext_id' => 0      
   );
 
   $module_name = basename(__FILE__, '.install');
