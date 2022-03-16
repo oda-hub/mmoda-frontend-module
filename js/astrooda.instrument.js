@@ -205,8 +205,8 @@ function panel_title(srcname, param) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
+          
           $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
-
           waitingDialog.setClose();
         }
         // data.exit_status.comment = 'Hoho';
@@ -625,6 +625,71 @@ function panel_title(srcname, param) {
 
         display_api_code(api_code_parent_panel.data('api_code'), '#' + api_code_parent_panel.attr('id'), datetime, api_code_offset);
       }
+    });
+
+    $("body").on('click', '.result-panel .renku-publish', function(e) {
+      e.preventDefault();
+      renku_publish_formData = new FormData();
+      url_params = {};
+      let job_id = $(".renku-publish").data('job_id');
+      let token = $.cookie('Drupal.visitor.token');
+
+      // publish the code over the renku repository
+      let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
+
+      // show spinner
+      let div_spinner = get_div_spinner();
+      $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(div_spinner);
+
+      // disable publish-on-renku button
+      e.target.disabled = true;
+
+      // remove any previous results
+      $('.result-renku-publish').remove();
+
+      var renku_publish_jqxhr = $.ajax({
+        url: url_dispatcher_renku_publish_url,
+        processData: false,
+        contentType: false,
+        timeout: ajax_request_timeout,
+        type: 'POST'
+      })
+      .complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+        serverResponse = '';
+        try {
+          serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
+        } catch (e) {
+          serverResponse = renku_publish_jqXHR.responseText;
+        }
+        publish_response_title = 'Renku publish result: ';
+        publish_result_type = 'success';
+        if (renku_publish_textStatus == 'error') {
+          if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
+            serverResponse = serverResponse.error_message;
+          else
+            serverResponse = serverResponse;
+          publish_response_title = 'Error while publishing to the Renku repository: '
+          publish_result_type = 'publish_error';
+        } else {
+          // success -> redirect to the link returned from the call
+          window.open(serverResponse, "_blank");
+        }
+
+        // hide/remove the spinner
+        $('.renku-progress').remove();
+        // re-enable publish-on-renku button, or disable it forever?
+        e.target.disabled = false;
+
+        let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel);
+
+      })
+      .error(
+        function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+          console.log(renku_publish_textStatus);
+        }
+      );
+
     });
 
     $("body").on('click', '.panel .copy-api-code', function(e) {
@@ -1385,6 +1450,34 @@ function panel_title(srcname, param) {
 
   }
 
+  function display_renku_publish_result(publish_result_type='success', publish_result, result_title) {
+    let div_result = $('<div>').addClass('result-renku-publish');
+    let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
+    div_result.append(div_result_title);
+
+    // apply custom css max-width, to be improved
+    
+    if (publish_result_type == 'success') {
+      let link_result = $('<div>')
+      .addClass('result-renku-publish-link')
+      .css("max-width", '650px')
+      .text("Result successfully posted in Renku!");
+      div_result.append(link_result);
+    } else if (publish_result_type == 'publish_error') {
+      let result_error_message = $('<div>')
+      .addClass('result-renku-publish-link')
+      .css("max-width", '475px')
+      .text(publish_result);
+      // define a tooltip
+      let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').text(publish_result);
+      result_error_message.append(result_error_message_tooltip);
+
+      div_result.append(result_error_message);
+    }
+    
+    return div_result[0];
+  }
+
   function display_log(log, afterDiv, datetime, offset) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-log', datetime);
     $('#' + panel_ids.panel_body_id).append('<div class="log-wrapper">' + log + '</div>');
@@ -1496,6 +1589,9 @@ function panel_title(srcname, param) {
     glyphicon.attr({ title: "Copy the API code to the clipboard" });
     button.append(glyphicon);
     toolbar.append(button);
+
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
@@ -1632,6 +1728,9 @@ function panel_title(srcname, param) {
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
     toolbar.append(get_token_button());
+
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -1847,6 +1946,9 @@ function panel_title(srcname, param) {
     glyphicon.attr({ title: "Copy the API code to the clipboard" });
     button.append(glyphicon);
     toolbar.append(button);
+
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
@@ -2084,6 +2186,18 @@ function panel_title(srcname, param) {
     return '';
   }
 
+  function get_renku_publish_button(dbutton, job_id) {
+    button = dbutton.clone().addClass('renku-publish').text('Publish on Renku ');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+    glyphicon.attr({ title: "Publish the API code over the Renku repository" });
+    if  (job_id) {
+      button.data('job_id', job_id);
+    }
+
+    button.append(glyphicon);
+    return button;
+  }
+
   function panel_body_append_header_footer(panel_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
       $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
@@ -2093,7 +2207,7 @@ function panel_title(srcname, param) {
       $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
   }
 
-  function display_image(data, job_id, instrument) {
+  function display_image(data, job_id, instrument, ) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
@@ -2176,6 +2290,9 @@ function panel_title(srcname, param) {
     // otherwise show a form to request it
     toolbar.append(get_token_button());
 
+    // Add button "Publish on Renku", code goes here it's it has to appear for all cases
+    toolbar.append(get_renku_publish_button(dbutton, job_id));
+
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2210,12 +2327,25 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
   }
+  
   function get_download_url(parameters) {
     if ($.cookie('Drupal.visitor.token'))
       parameters['token'] = $.cookie('Drupal.visitor.token');
     url = 'dispatch-data/download_products?' + $.param(parameters);
     return (url);
   }
+
+  function get_renku_publish_url(token, job_id) {
+    parameters = {};
+    
+    if (token)
+      parameters['token'] = token;
+    if (job_id)
+      parameters['job_id'] = job_id;
+    url = 'dispatch-data/push-renku-branch?' + $.param(parameters);
+    return (url);
+  }
+
   function activate_modal($element) {
     $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function() {
       var $this = $(this);

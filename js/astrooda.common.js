@@ -281,6 +281,25 @@ var waitingDialog;
   }
 })(jQuery, Drupal);
 
+
+function get_div_spinner() {
+  /*
+  <div class="renku-progress progress progress-striped active"
+          style="margin-bottom: 0;">
+          <div class="progress-bar" style="width: 100%"></div>
+      </div>
+  */
+ var spinner_div = (function($) {
+    let inner_div = $('<div>').addClass('progress-bar').css("width", '100%');
+    let outer_div = $('<div>').addClass('renku-progress progress progress-striped active').css("width", '100%');
+    outer_div.append(inner_div);
+
+    return outer_div;
+  })(jQuery);
+  return (spinner_div[0]);
+}
+
+
 /**
  * Module for displaying "Waiting for..." dialog using Bootstrap
  * 
