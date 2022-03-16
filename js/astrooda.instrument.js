@@ -1082,7 +1082,7 @@ function panel_title(srcname, param) {
           showProgressBar: false,
           showSpinner: false
         });
-        waitingDialog.append('Error initializing form request: <ul><li>'+make_request_error_messages.join('</li><li>')+'</li></ul>',
+        waitingDialog.append('The entered url is not valid : <ul><li>'+make_request_error_messages.join('</li><li>')+'</li></ul>',
           'danger');
         $('.write-feedback-button').show();
       }
@@ -1224,7 +1224,11 @@ function panel_title(srcname, param) {
 
 
     var catalog_panel = $('#' + panel_ids.panel_id);
-    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>');
+    var catalog_help_text ='<div class="help-text">To select multiple rows :<ol>'+
+    '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>'+
+    '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
+    
+    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>'+catalog_help_text);
 
     $(afterDiv).data({
       catalog_panel_id: '#' + panel_ids.panel_id
