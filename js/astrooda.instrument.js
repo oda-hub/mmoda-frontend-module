@@ -639,7 +639,7 @@ function panel_title(srcname, param) {
 
       // show spinner
       let div_spinner = get_div_spinner();
-      $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(div_spinner);
+      $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(div_spinner);
 
       // disable publish-on-renku button
       e.target.disabled = true;
@@ -681,7 +681,7 @@ function panel_title(srcname, param) {
         e.target.disabled = false;
 
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        $('.result-panel.ui-draggable > .panel-body div:eq(1)')[0].after(publish_result_panel);
+        $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
 
       })
       .error(
@@ -833,7 +833,7 @@ function panel_title(srcname, param) {
           validators: {
             callback: {
               callback: function(value, validator, $field) {
-                return (validate_scws(value, 50));
+                return (validate_scws(value, 500));
               }
             }
           }
@@ -2187,9 +2187,9 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
-    button = dbutton.clone().addClass('renku-publish').text('Publish on Renku ');
+    button = dbutton.clone().addClass('renku-publish').text('Explore result on Renku');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Publish the API code over the Renku repository" });
+    glyphicon.attr({ title: "Open Renku session with the API code" });
     if  (job_id) {
       button.data('job_id', job_id);
     }
@@ -2363,10 +2363,11 @@ function panel_title(srcname, param) {
   }
 
   function display_image_js9(image_file_path, data) {
+    var js9_ext_id = Drupal.settings.astrooda[instrument].js9_ext_id;
     var panel_ids = $(".instrument-params-panel",
       ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
     $('#' + panel_ids.panel_body_id).append($('<iframe>', {
-      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=4',
+      src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=' + js9_ext_id,
       id: 'js9iframe',
       width: '650',
       height: '700',

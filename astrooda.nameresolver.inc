@@ -1,7 +1,9 @@
 <?php
 function resolve_object_name($source_name, $which_name_resolvers) {
   // $local_name_resolver_url = "http://cdcihn/tnr/api/v1.0/timespan/byname/";
-  $local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";
+  // $local_name_resolver_url = "http://cdcihn.isdc.unige.ch/tnr-1.2/api/v1.1/byname/";
+  $local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";
+  // $local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";
   // $local_name_resolver_url = "http://wwwcdcihn/tnr/api/v1.0/timespan/byname/";
   $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
   // sleep ( 2 );
