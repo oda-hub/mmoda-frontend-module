@@ -69,7 +69,7 @@ function astrooda_gw($form, &$form_state)
     ),
     '#default_value' => $instrument_defaults['product_type'],
     '#options' => array(
-      'gw_skymap_image' => 'Skymap & catalogue',
+      'gw_skymap_image' => 'Skymap & Catalog',
       'gw_strain' => 'Strain time series',
       'gw_spectrogram' => 'Spectrogram',
     ),
