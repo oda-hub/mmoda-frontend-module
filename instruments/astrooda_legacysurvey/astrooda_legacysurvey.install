@@ -48,8 +48,9 @@ function astrooda_legacysurvey_install() {
       'image_size' => 3.,
       'pixel_size' => 1,
       'acknowledgement' => 'If this result is used for publicaiton, 
-          please cite https://doi.org/10.5281/zenodo.6376844 
-          and include an acknowledgement of the Legacy Survey: https://www.legacysurvey.org/acknowledgment/', 
+          please cite <a href="https://doi.org/10.5281/zenodo.6376844" target="_blank">https://doi.org/10.5281/zenodo.6376844</a> 
+          and include an acknowledgement of the Legacy Survey: 
+          <a href="https://www.legacysurvey.org/acknowledgment/" target="_blank">https://www.legacysurvey.org/acknowledgment/</a>', 
       'enable_use_catalog' => FALSE,
       'js9_ext_id' => 0      
   );

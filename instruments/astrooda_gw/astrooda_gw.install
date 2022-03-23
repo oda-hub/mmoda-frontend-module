@@ -54,8 +54,9 @@ function astrooda_gw_install()
     'level_threshold' => 10,
     'contour_levels' => '50,90',
     'acknowledgement' => 'If this result is used for publicaiton, 
-          please cite https://doi.org/10.5281/zenodo.6376844 
-          and include an acknowledgement of GWOSC: https://www.gw-openscience.org/acknowledgement/',
+          please cite <a href="https://doi.org/10.5281/zenodo.6376844" target="_blank">https://doi.org/10.5281/zenodo.6376844</a>
+          and include an acknowledgement of GWOSC: 
+          <a href="https://www.gw-openscience.org/acknowledgement/" target="_blank">https://www.gw-openscience.org/acknowledgement/</a>',
     'enable_use_catalog' => FALSE
   );
 
