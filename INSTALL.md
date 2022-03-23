@@ -6,13 +6,13 @@
 
 ## Description
 
-Astrooda is the frontend of the CDCI Online Data Analysis system.  
-AstroODA stands for Astro Online Data Analysis.
+MMODA is the frontend of the CDCI Online Data Analysis system.  
+MMODA stands for Mu^lti-Mission Online Data Analysis.
 
-Astrooda is developed as a set of Drupal modules (Drupal version 7).
+MMODA is developed as a set of Drupal modules (Drupal version 7).
 [Drupal](https://www.drupal.org/) is a Content Management System (CMS).
 
-Astrooda pre-requisites are :
+MMODA pre-requisites are :
 
 \- [Drupal 7 core](https://www.drupal.org/project/drupal),
 
@@ -51,9 +51,9 @@ the above three modules make the help pages installable(uninstallable)
 at install(uninstall) time
 
 \- [Libraries API](https://www.drupal.org/project/libraries) (required
-by astrooda): provides integration of external libraries (usually 3rd
+by mmoda): provides integration of external libraries (usually 3rd
 party libraries)  
-The list of 3rd party libraries used by astrooda is listed below
+The list of 3rd party libraries used by mmoda is listed below
 
 \- [jQuery Update](https://www.drupal.org/project/jquery_update) :
 upgrades the version of [jQuery](https://jquery.com/) in Drupal core to
@@ -68,7 +68,7 @@ builders.
 (optional module, for comfort only) : allows the filtering of the list
 of modules to be displayed in the administration module page.
 
-All those modules including Astrooda ones are sitting in the additional
+All those modules including MMODA ones are sitting in the additional
 Drupal modules directory:
 
     sites/all/modules
@@ -78,12 +78,12 @@ Drupal modules directory:
 Many [free themes](https://www.drupal.org/project/project_theme) are
 provided by Drupal community.  
 The Drupal theme [Bootstrap](https://www.drupal.org/project/bootstrap)
-has been selected for Astrooda as it provides an excellent look and feel
+has been selected for MMODA as it provides an excellent look and feel
 and the [Bootstrap toolkit](https://getbootstrap.com/) provides a full
-set of functionalities needed for Astrooda.  
+set of functionalities needed for MMODA.  
 Following good practice recommendations, instead of changing the
-Bootstrap theme for Astrooda needs, a sub-theme derived from it has been
-created: “Bootstrap Astrooda”.  
+Bootstrap theme for MMODA needs, a sub-theme derived from it has been
+created: “Bootstrap MMODA”.  
 Both themes are of course sitting in the additional Drupal themes
 folder:
 
@@ -93,9 +93,9 @@ Drupal community theme:
 
     sites/all/themes/bootstrap
 
-Astrooda dedicated theme:
+MMODA dedicated theme:
 
-    sites/all/themes/bootstrap_astrooda
+    sites/all/themes/bootstrap_mmoda
 
 ## External libraries
 
@@ -112,11 +112,11 @@ advanced features to any HTML table.
 interactive visualization library used to display, images, spectra and
 light curves
 
-## Astrooda modules
+## MMODA modules
 
-Astrooda is composed of a set of modules : a core module and one module
+MMODA is composed of a set of modules : a core module and one module
 per instrument.  
-Adding a new instrument in Astrooda would consist on adding a new
+Adding a new instrument in MMODA would consist on adding a new
 module. Any instrument can be enabled/disabled by enabling/disabling the
 corresponding module.  
 Each instrument has a weight which is used to sort instrument
@@ -124,58 +124,58 @@ tabulations.
 
 Current list of modules:
 
-  - astrooda : a core module providing all necessary functionalities to
+  - mmoda : a core module providing all necessary functionalities to
     query data products (images, spectra and light curves) and display
     them within interactive tools.
-  - astrooda\_isgri : [INTEGRAL
+  - mmoda\_isgri : [INTEGRAL
     ISGRI](https://www.isdc.unige.ch/integral) module 
-  - astrooda\_jemx : [INTEGRAL
+  - mmoda\_jemx : [INTEGRAL
     JEM-X](https://www.isdc.unige.ch/integral) module 
-  - astrooda\_polar : [Polar](https://www.astro.unige.ch/polar/) module 
-  - astrooda\_spi\_acs : [INTEGRAL SPI
+  - mmoda\_polar : [Polar](https://www.astro.unige.ch/polar/) module 
+  - mmoda\_spi\_acs : [INTEGRAL SPI
     ACS](https://www.isdc.unige.ch/integral) module 
-  - astrooda\_multiproduct (under development)
+  - mmoda\_multiproduct (under development)
 
 ## Installation
 
-While it is possible to install the module Astrooda and its sub-modules
+While it is possible to install the module MMODA and its sub-modules
 as any other Drupal modules given the required modules and the theme
 Bootstrap listed above, an already Drupal instance is available in the
 [Astro GitLab](https://gitlab.astro.unige.ch/cdci/frontend). Four
 components are available in GitLab:
 
-  - drupal7-for-astrooda : a Drupal instance including the required
+  - drupal7-for-mmoda : a Drupal instance including the required
     modules and the theme Bootstrap
-  - drupal7-db-for-astrooda : a dump of the MySQL database of the cited
-    Drupal instance drupal7-for-astrooda
-  - bootstrap\_astrooda : the Bootstrap sub-theme dedicated for Astrooda
-  - astrooda : the module astrooda and its submodules, one per
-    instrument, astrooda\_isgri, astrooda\_jemx, astrooda\_polar,
-    astrooda\_spi\_acs and astrooda\_multiproduct
+  - drupal7-db-for-mmoda : a dump of the MySQL database of the cited
+    Drupal instance drupal7-for-mmoda
+  - bootstrap\_mmoda : the Bootstrap sub-theme dedicated for MMODA
+  - mmoda : the module mmoda and its submodules, one per
+    instrument, mmoda\_isgri, mmoda\_jemx, mmoda\_polar,
+    mmoda\_spi\_acs and mmoda\_multiproduct
 
 ### Installation steps
 
-1.  Copy the content of the folder drupal7-for-astrooda in the web
+1.  Copy the content of the folder drupal7-for-mmoda in the web
     server document root.
-2.  Create a MySQL database called ‘astrooda’ and a database user
-    ‘astrooda’ with the password defined in the file:
+2.  Create a MySQL database called ‘mmoda’ and a database user
+    ‘mmoda’ with the password defined in the file:
         sites/default/settings.php
-3.  Grant all the database priviledges to the user ‘astrooda’
-4.  Copy the folder bootstrap\_astrooda in :
+3.  Grant all the database priviledges to the user ‘mmoda’
+4.  Copy the folder bootstrap\_mmoda in :
         sites/all/themes
       
     with the provided database, this theme is already set as the default
     theme. 
-5.  Copy the folder astrooda in :
+5.  Copy the folder mmoda in :
         sites/all/modules
 6.  Enable the core module :
-        drush en astrooda
+        drush en mmoda
 7.  Before installing the instrument modules, set the Drupal variable
-    astrooda\_base\_url to the base URL (or the web site prefixe) if the
+    mmoda\_base\_url to the base URL (or the web site prefixe) if the
     Drupal instance is not the document root of the web server. In other
     words, if Drupal is not installed in ‘/’ but in ‘/blabla’, the
-    Drupal variable astrooda\_base\_url must be set as follows:
-        drush vset astrooda_base_url '/blabla'
+    Drupal variable mmoda\_base\_url must be set as follows:
+        drush vset mmoda_base_url '/blabla'
       
     This is very important for the instrument help pages. The images
     appearing in the instrument help pages are stored in :
@@ -187,4 +187,4 @@ components are available in GitLab:
       
     Given this variable, those URLs will be properly set.
 8.  Enable the desired instrument modules, example :
-        drush en astrooda_isgri astrooda_jemx
+        drush en mmoda_isgri mmoda_jemx

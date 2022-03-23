@@ -1,8 +1,0 @@
-name = Astrooda LegacySurvey
-description = Astro Online Data Analysis module for LegacySurvey
-core = 7.x
-dependencies[] = astrooda
-
-files[] = astrooda.legacysurvey.inc
-
-configure = admin/config/astrooda/legacysurvey

@@ -1,0 +1,13 @@
+name = MMODA
+description = Multi-Messenger Online Data Analysis
+core = 7.x
+dependencies[] = libraries:libraries (2.x)
+dependencies[] = drupal:block
+dependencies[] = drupal:book
+dependencies[] = jwt_link:jwt_link
+
+files[] = mmoda.admin.inc
+files[] = mmoda.common.inc
+files[] = mmoda.module
+
+configure = admin/config/mmoda

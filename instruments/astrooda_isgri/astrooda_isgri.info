@@ -1,8 +1,0 @@
-name = Astrooda ISGRI
-description = MMODA module for ISGRI
-core = 7.x
-dependencies[] = astrooda
-
-files[] = astrooda.isgri.inc
-
-configure = admin/config/astrooda/isgri

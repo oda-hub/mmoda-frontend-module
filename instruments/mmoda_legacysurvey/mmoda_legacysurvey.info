@@ -1,0 +1,8 @@
+name = MMODA LegacySurvey
+description = Astro Online Data Analysis module for LegacySurvey
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda.legacysurvey.inc
+
+configure = admin/config/mmoda/legacysurvey

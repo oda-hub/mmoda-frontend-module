@@ -1,8 +1,0 @@
-name = Astrooda Magic
-description = Astro Online Data Analysis module for Magic
-core = 7.x
-dependencies[] = astrooda
-
-files[] = astrooda.magic.inc
-
-configure = admin/config/astrooda/magic

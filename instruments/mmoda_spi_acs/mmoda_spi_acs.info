@@ -1,0 +1,8 @@
+name = MMODA SPI-ACS
+description = Astro Online Data Analysis module for SPI-ACS
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda.spi_acs.inc
+
+configure = admin/config/mmoda/spi_acs
