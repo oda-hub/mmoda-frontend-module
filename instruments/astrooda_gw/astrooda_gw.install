@@ -53,9 +53,9 @@ function astrooda_gw_install()
     'radius' => 10,
     'level_threshold' => 10,
     'contour_levels' => '50,90',
-    'acknowledgement' => '
-        If you use results or material from this instrument in our application, ODA, do not
-        forget to quote us and GWOSC',
+    'acknowledgement' => 'If this result is used for publicaiton, 
+          please cite https://doi.org/10.5281/zenodo.6376844 
+          and include an acknowledgement of GWOSC: https://www.gw-openscience.org/acknowledgement/',
     'enable_use_catalog' => FALSE
   );
 
