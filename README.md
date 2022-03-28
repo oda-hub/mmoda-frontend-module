@@ -1,7 +1,7 @@
 SUMMARY
 -------
 
-The astrooda module provides a theme-able Drupal block which provides astro data online analysis.
+The mmoda module provides a theme-able Drupal block which provides astro data online analysis.
 No instrument is available in this module.
 
 REQUIREMENTS
@@ -22,4 +22,4 @@ INSTALLATION
 CONFIGURATION
 --
 
-Navigate to admin/settings/astrooda to change the following settings.
+Navigate to admin/settings/mmoda to change the following settings.

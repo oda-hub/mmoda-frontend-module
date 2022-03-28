@@ -8,7 +8,7 @@
 /**
  * Implements hook_node_info().
  */
-function astrooda_node_info() {
+function mmoda_node_info() {
   $items = array(
     'mmoda_help_page' => array(
       'name' => t('MMODA help page'),

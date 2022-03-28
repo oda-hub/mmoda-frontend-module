@@ -1,0 +1,806 @@
+<?php
+include_once 'mmoda.lib.inc';
+require_once drupal_get_path('module', 'jwt_link') . '/JWT/Authentication/JWT.php';
+require_once drupal_get_path('module', 'pathauto') . '/pathauto.inc';
+use Firebase\JWT\JWT;
+
+/**
+ *
+ * @file
+ * Provides a block
+ */
+function mmoda_init()
+{
+  drupal_add_library('system', 'ui.draggable');
+  drupal_add_library('system', 'ui.resizable');
+  // drupal_add_library('system', 'effects.bounce');
+  // drupal_add_library('system', 'effects.transfer');
+  // drupal_add_library('system', 'effects.shake');
+  drupal_add_library('system', 'effects.highlight');
+
+  module_load_include('inc', 'mmoda', 'mmoda.common');
+
+  $mmoda_settings = variable_get('mmoda_settings');
+  if (! isset($mmoda_settings['instruments']))
+    return;
+  foreach ($mmoda_settings['instruments'] as $name => $instrument) {
+    if ($instrument['enabled']) {
+      module_load_include('inc', 'mmoda_' . $name, 'mmoda_' . $name);
+    }
+  }
+  global $user;
+  drupal_add_js(array(
+    'user_uid' => $user->uid
+  ), 'setting');
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function mmoda_user_login(&$edit, $account)
+{
+  if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
+    // $mmoda_roles = preg_grep('/mmoda/i', $account->roles);
+    $mmoda_roles = $account->roles;
+    watchdog('ODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
+
+    if (count($mmoda_roles)) {
+      $jwt = jwt_link_url();
+      $alg = variable_get('jwt_link_alg', 'HS256');
+      $key = variable_get('jwt_link_key', '');
+      $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
+        $alg
+      ));
+      watchdog('ODA', 'Login - Adding token Cookie: ' . print_r($jwt_decoded_token, TRUE));
+      user_cookie_save([
+        'token' => $jwt['jwt_encoded_token']
+      ]);
+      // drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
+    }
+  }
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function mmoda_user_logout($account)
+{
+  // $mmoda_roles = preg_grep('/mmoda/i', $account->roles);
+  $mmoda_roles = $account->roles;
+
+  if (count($mmoda_roles)) {
+    watchdog('ODA', 'Logout - removing the cookie token');
+    user_cookie_delete('token');
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function mmoda_help($path, $arg)
+{
+  $output = '';
+  switch ($path) {
+    case 'admin/help#mmoda':
+      $output = '<p>';
+      $output .= t("Online data analysis system.");
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function mmoda_block_info()
+{
+  $blocks = array();
+  $blocks['mmoda_main'] = array(
+    'info' => t("MMODA"),
+    'status' => TRUE,
+    'region' => 'content',
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => '<front>',
+    'cache' => DRUPAL_NO_CACHE
+  );
+  return $blocks;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+function mmoda_permission()
+{
+  return array(
+    'administer mmoda' => array(
+      'description' => t('Administer Data Analysis'),
+      'title' => t('Administer Data Analysis'),
+      'restrict access' => TRUE
+    ),
+    'access mmoda' => array(
+      'description' => t('Access Data Analysis'),
+      'title' => t('Access Data Analysis'),
+      'restrict access' => TRUE
+    )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function mmoda_menu()
+{
+  $items = array();
+
+  $items['admin/config/mmoda'] = array(
+    'title' => 'Administer Data Analysis',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'mmoda_admin_settings'
+    ),
+    'description' => 'Edit data analysis settings.',
+    'file' => 'mmoda.admin.inc'
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function mmoda_block_view($delta)
+{
+  $block = array();
+  switch ($delta) {
+    case 'mmoda_main':
+      $block = array(
+        // 'subject' => t ( "Astro Online Data Analysis" ),
+        'subject' => '<none>',
+        'content' => mmoda_main_block_content()
+      );
+  }
+  return $block;
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function user_feedback_form_content($form)
+{
+  $theme_args['bug_report_form'] = drupal_get_form($form);
+  // $filename = 'formus.php';
+  // $f = fopen($filename, 'w');
+  // fwrite($f, "form:" . $form . "\n");
+  // fwrite($f, print_r($items['bug_report_form'], true));
+  // fclose($f);
+  // chmod($filename, 0777);
+
+  $theme_args['#theme'] = 'send-bug-report';
+
+  return drupal_render($theme_args);
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function mmoda_main_block_content()
+{
+  $session_id = session_id();
+
+  if (! isset($_SESSION['count'])) {
+    $_SESSION['count'] = 0;
+  } else {
+    $_SESSION['count'] ++;
+  }
+  $session_count = $_SESSION['count'];
+
+  if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! isset($_SESSION['url_parameters'])) {
+    parse_str(parse_url($_SERVER["HTTP_REFERER"], PHP_URL_QUERY), $params);
+  } else {
+    $params = drupal_get_query_parameters();
+  }
+  if ($params) {
+    $_SESSION['url_parameters'] = $params;
+  } else if (array_key_exists('url_parameters', $_SESSION)) {
+    drupal_add_js(array(
+      'url_parameters' => $_SESSION['url_parameters']
+    ), array(
+      'type' => 'setting',
+      'scope' => JS_DEFAULT
+    ));
+
+    unset($_SESSION['url_parameters']);
+  }
+
+  $libname = 'bootstrap-form-validator';
+
+  if (! ($library = libraries_load($libname)) || empty($library['loaded'])) {
+    $libraries_OK = False;
+    drupal_set_message(t('Error : can not load bootstrap form validator library.'), 'error');
+    return;
+  }
+
+  if (! ($library_datatables = libraries_load('datatables')) || empty($library_datatables['loaded'])) {
+    drupal_set_message(t('Error : can not load DataTables library.'), 'error');
+    return;
+  }
+  if (! ($library_highlightjs = libraries_load('highlight')) || empty($library_datatables['loaded'])) {
+    drupal_set_message(t('Error : can not load highlightjs library.'), 'error');
+    return;
+  }
+  if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
+  // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+  // return;
+  }
+  // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
+  // 'type' => 'inline',
+  // 'scope' => 'header',
+  // 'group' => JS_LIBRARY,
+  // 'weight' => - 1
+  // ) );
+
+  drupal_add_css(drupal_get_path('module', 'mmoda') . '/mmoda.css');
+
+  drupal_add_js(drupal_get_path('module', 'mmoda') . '/js/mmoda.common.js');
+  drupal_add_js(drupal_get_path('module', 'mmoda') . '/js/mmoda.instrument.js');
+
+  drupal_add_js('https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js', 'external');
+  drupal_add_js('https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js', 'external');
+
+  $items = array();
+
+  $mmoda_settings = variable_get('mmoda_settings');
+  // unset($mmoda_settings['mmoda_support_email']);
+  // $mmoda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
+  // variable_set ( 'mmoda_settings', $mmoda_settings );
+
+  $items['session_id'] = $session_id;
+  $items['session_count'] = $session_count;
+  $items['name_resolve_form'] = drupal_get_form('mmoda_name_resolve');
+  $items['common_form'] = drupal_get_form('mmoda_common');
+  $items['mmoda_debug'] = $mmoda_settings['mmoda_debug'];
+  $items['auth_cookie'] = '_oauth2_proxy';
+
+  if (empty($mmoda_settings['instruments'])) {
+    return theme('mmoda_main_block_content', $items);
+  }
+
+  // error_log ( "---------------------------------------------" );
+  $items['api_token_tip'] = 'Request API token';
+  $items['api_token_request_or_copy'] = 'ctools-use-modal';
+  if (user_is_logged_in()) {
+    $items['api_token_tip'] = 'Copy API token to clipboard';
+    $items['api_token_request_or_copy'] = 'copy-token-clipboard';
+  }
+  $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
+
+  foreach ($mmoda_settings['instruments'] as $name => $instrument) {
+    $instruments[$instrument['weight']] = $name;
+  }
+
+  ksort($instruments);
+  $weight_sorted_instruments = array_values($instruments);
+  $first_instrument = true;
+  $mmoda_js_settings = array();
+
+  foreach ($weight_sorted_instruments as $instrument_name) {
+    $mmoda_js_settings[$instrument_name] = array();
+    $instrument = $mmoda_settings['instruments'][$instrument_name];
+
+    if ($instrument['enabled']) {
+      $items['instruments'][$instrument['name']] = array(
+        'name' => $instrument['name'],
+        'title' => $instrument['title'],
+        'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] : '',
+        'help_page' => (isset($instrument['help_page_nids']) and (! empty($instrument['help_page_nids']))) ? drupal_get_path_alias('node/' . $instrument['help_page_nids'][0]) : '',
+        'form' => drupal_get_form('mmoda_' . $instrument['name']),
+        'active' => ''
+      );
+      if ($first_instrument) {
+        $items['instruments'][$instrument['name']]['active'] = 'active';
+        $first_instrument = false;
+      }
+    }
+
+    $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+    $mmoda_js_settings[$instrument_name]['enable_use_catalog'] = isset($mmoda_settings['instruments'][$instrument_name]['enable_use_catalog']) ? $mmoda_settings['instruments'][$instrument_name]['enable_use_catalog'] : true;
+    $mmoda_js_settings[$instrument_name]['js9_ext_id'] = isset($mmoda_settings['instruments'][$instrument_name]['js9_ext_id']) ? $mmoda_settings['instruments'][$instrument_name]['js9_ext_id'] : 4;
+  }
+  drupal_add_js(array(
+    $core_module_name => $mmoda_js_settings
+  ), 'setting');
+
+  return theme('mmoda_main_block_content', $items);
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
+function mmoda_get_settings()
+{
+  $js = array();
+
+  return ($js);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_theme($existing, $type, $theme, $path)
+{
+  // Custom template for that overrides the default block.tpl.php.
+  $theme_items['mmoda_main_block_content'] = array(
+    'template' => 'mmoda-main',
+    'path' => drupal_get_path('module', 'mmoda') . '/templates',
+    'variables' => array(
+      'items' => NULL
+    )
+  );
+  $theme_items['send-bug-report'] = array(
+    'template' => 'user-feedback',
+    'path' => drupal_get_path('module', 'mmoda') . '/templates',
+    'variables' => array(
+      'items' => NULL
+    )
+  );
+
+  return $theme_items;
+}
+
+function mmoda_array_member($val, $myArray)
+{
+  foreach ($myArray as $av) {
+    if ($av == $val) {
+      return (true);
+    }
+  }
+  return (false);
+}
+
+/**
+ * Implements hook_libraries_info().
+ *
+ * For defining external libraries.
+ */
+function mmoda_libraries_info()
+{
+  $libraries['datatables'] = array(
+    'name' => 'Table plug-in for jQuery',
+    'vendor url' => 'https://datatables.net/',
+    'download url' => 'https://datatables.net/download/index',
+    // 'version arguments' => array (
+    // 'file' => 'datatables.js', // Could be any file with version info
+    // 'pattern' => '/version +(\d+\.\d+\.\d+)$/'
+    // ),
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'datatables.min.js',
+        'Select/js/dataTables.select.min.js',
+        'Buttons/js/dataTables.buttons.min.js',
+        'Responsive/js/dataTables.responsive.min.js',
+        'Editor/js/dataTables.editor.min.js',
+        'Editor/js/editor.bootstrap.min.js'
+      ),
+      'css' => array(
+        'dataTables.bootstrap.min.css',
+        'Buttons/css/buttons.dataTables.min.css',
+        'Responsive/css/responsive.dataTables.min.css',
+        'Select/css/select.dataTables.min.css',
+        'Editor/css/editor.bootstrap.css'
+      )
+    )
+  );
+  $libraries['bootstrap-form-validator'] = array(
+    'name' => 'Bootstrap Form Validator library',
+    'vendor url' => 'http://bootstrapvalidator.com',
+    'download url' => 'https://github.com/nghuuphuoc/bootstrapvalidator',
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'js/bootstrapValidator.min.js'
+      )
+    )
+  );
+//   $libraries['bokeh'] = array(
+//     'name' => 'Bokeh',
+//     'vendor url' => 'https://bokeh.pydata.org',
+//     'download url' => 'https://bokeh.pydata.org',
+//     'version callback' => 'short_circuit_version',
+//     'files' => array(
+//       'js' => array(
+//         'bokeh.min.js',
+//         'bokeh-widgets.min.js'
+//       ),
+//       'css' => array(
+//         'bokeh.min.css',
+//         'bokeh-widgets.min.css'
+//       )
+//     )
+//   );
+
+  $libraries['highlight'] = array(
+    'name' => 'highlight.js',
+    'vendor url' => 'https://highlightjs.org/',
+    'download url' => 'https://highlightjs.org/download/',
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'highlight.min.js'
+      ),
+      'css' => array(
+        'default.min.css'
+      )
+    )
+  );
+
+  return $libraries;
+}
+
+// function mmoda_action_info()
+// {
+// return user_registration_notify_user_managers_features_actions_triggers_export_actions_default();
+// }
+
+// function mmoda_trigger_info()
+// {
+// return user_registration_notify_user_managers_features_actions_triggers_export_triggers_default();
+// }
+function short_circuit_version()
+{
+  // use some fancy magic to get the version number... or don't
+  return TRUE;
+}
+
+function mmoda_resave_help_book_nodes_to_trigger_export(&$form, &$form_state)
+{
+  foreach (element_children($form['table']) as $key) {
+    if ($form['table'][$key]['#item']) {
+      $values = $form_state['values']['table'][$key];
+      $node = node_load($values['nid']);
+      mmoda_export_help_page_after_insert_or_update($node);
+    }
+  }
+}
+
+function mmoda_form_alter(&$form, &$form_state, $form_id)
+{
+  switch ($form_id) {
+    case 'openid_connect_login_form':
+      $form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
+      $form['openid_connect_client_github_login']['#attributes']['class'][] = 'btn-default';
+      break;
+    case 'user_register_form':
+      module_load_include('inc', 'mmoda', 'mmoda.users');
+      customize_registration_form($form);
+    case 'book_admin_edit':
+      $form['#submit'][] = 'mmoda_resave_help_book_nodes_to_trigger_export';
+      break;
+    case 'jwt_link_admin':
+      $form['jwt_link_expiration']['#maxlength'] = 4;
+
+      break;
+    case 'webform_client_form_384':
+      $form['actions']['close'] = array(
+        '#type' => 'submit',
+        '#access' => TRUE,
+        '#value' => 'Close',
+        '#weight' => 60,
+        '#submit' => array(
+          'node_form_cancel'
+        ),
+        '#attributes' => array(
+          'class' => array(
+            'ctools-close-modal',
+            'btn',
+            'btn-primary'
+          )
+        )
+      );
+      break;
+    case 'mmoda_help_page_node_form':
+      break;
+  }
+}
+
+/**
+ * Alter the pattern to be used before an alias is generated by Pathauto.
+ *
+ * @param string $pattern
+ *          The alias pattern for Pathauto to pass to token_replace() to generate the
+ *          URL alias.
+ * @param array $context
+ *          An associative array of additional options, with the following elements:
+ *          - 'module': The module or entity type being aliased.
+ *          - 'op': A string with the operation being performed on the object being
+ *          aliased. Can be either 'insert', 'update', 'return', or 'bulkupdate'.
+ *          - 'source': A string of the source path for the alias (e.g. 'node/1').
+ *          - 'data': An array of keyed objects to pass to token_replace().
+ *          - 'type': The sub-type or bundle of the object being aliased.
+ *          - 'language': A string of the language code for the alias (e.g. 'en').
+ *          This can be altered by reference.
+ */
+function mmodanotneededfornow_pathauto_pattern_alter(&$pattern, array &$context)
+{
+  // if ($context['module'] == 'node' && ($context['op'] == 'insert' or $context['op'] == 'update') && ($context['type'] == 'mmoda_help_page')) {
+  // $pattern = preg_replace('/content/', 'help', $pattern);
+  // }
+}
+
+function mmoda_node_delete($node)
+{
+  if (variable_get('mmoda_uninstall_started', false) or $node->type != 'mmoda_help_page' or empty($node->nid))
+    return;
+
+  $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
+  $export_format = 'php';
+  $module_help_book_path = drupal_get_path('module', $mmoda_module) . '/help_book';
+
+  $help_filename = pathauto_clean_alias(pathauto_cleanstring($node->title));
+  $help_filename = $module_help_book_path . DIRECTORY_SEPARATOR . $help_filename . '.' . $export_format;
+  $help_file_exist = file_exists($help_filename);
+  if ($help_file_exist and unlink($help_filename)) {
+    drupal_set_message('[Module ' . $mmoda_module . '] Help file ' . $help_filename . ' deleted successfully');
+  } else if ($help_file_exist) {
+    drupal_set_message('[Module ' . $mmoda_module . '] Can not delete the corresponding help file ' . $help_filename);
+  }
+  $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+  $module_settings = variable_get($core_module_name . '_settings', array());
+  if ($mmoda_module == $core_module_name) {
+    $key = array_search($node->nid, $module_settings['help_page_nids'], true);
+    if (false !== $key) {
+      unset($module_settings['help_page_nids'][$key]);
+      variable_set($core_module_name . '_settings', $module_settings);
+    }
+  } else {
+    $instrument = $module_settings['module_instrument'][$mmoda_module];
+    $key = array_search($node->nid, $module_settings['instruments'][$instrument]['help_page_nids'], true);
+    if (false !== $key) {
+      unset($module_settings['instruments'][$instrument]['help_page_nids'][$key]);
+      variable_set($core_module_name . '_settings', $module_settings);
+    }
+  }
+}
+
+function mmoda_node_insert($node)
+{
+  mmoda_export_help_page_after_insert_or_update($node, TRUE);
+
+  if (variable_get('mmoda_install_started', false)) {
+    return;
+  }
+  $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+  $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
+  $module_settings = variable_get($core_module_name . '_settings', array());
+
+  if ($mmoda_module == $core_module_name) {
+    if (! isset($module_settings['help_page_nids'][$node->nid])) {
+      if (! isset($module_settings['help_page_nids']))
+        $module_settings['help_page_nids'] = array();
+      $module_settings['help_page_nids'][] = $node->nid;
+      variable_set($core_module_name . '_settings', $module_settings);
+    }
+  } else {
+    $instrument = $module_settings['module_instrument'][$mmoda_module];
+    if (! isset($module_settings['instruments'][$instrument]['help_page_nids'][$node->nid])) {
+      if (! isset($module_settings['instruments'][$instrument]['help_page_nids']))
+        $module_settings['instruments'][$instrument]['help_page_nids'] = array();
+      $module_settings['instruments'][$instrument]['help_page_nids'][] = $node->nid;
+      variable_set($core_module_name . '_settings', $module_settings);
+    }
+  }
+}
+
+function mmoda_node_update($node)
+{
+  mmoda_export_help_page_after_insert_or_update($node);
+  if (variable_get('mmoda_install_started', false) or $node->type != 'mmoda_help_page' or empty($node->nid))
+    return;
+  $export_format = 'php';
+  $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+  $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
+
+  $module_settings = variable_get($core_module_name . '_settings', array());
+  $help_page_moved = false;
+  if (_mmoda_core($mmoda_module)) {
+    $key = array_search($node->nid, $module_settings['help_page_nids'], true);
+    if (false === $key) {
+      $module_settings['help_page_nids'][] = $node->nid;
+      foreach ($module_settings['instruments'] as $instrument => $instrument_settings) {
+        $key = array_search($node->nid, $module_settings['instruments'][$instrument]['help_page_nids'], true);
+        if (false === $key) {
+          break;
+        }
+      }
+      if (false !== $key) {
+        unset($module_settings['instruments'][$instrument]['help_page_nids'][$key]);
+        $source_module_name = array_search($instrument, $module_settings['module_instrument'], true);
+        $source_module_help_book_path = drupal_get_path('module', $source_module_name) . '/help_book';
+        $destination_module_help_book_path = drupal_get_path('module', $mmoda_module) . '/help_book';
+        $filename = pathauto_clean_alias(pathauto_cleanstring($node->title));
+        $destination_filename = $destination_module_help_book_path . DIRECTORY_SEPARATOR . $filename . '.' . $export_format;
+        $source_filename = $source_module_help_book_path . DIRECTORY_SEPARATOR . $filename . '.' . $export_format;
+      }
+      $help_page_moved = true;
+    }
+  } else {
+    $instrument = $module_settings['module_instrument'][$mmoda_module];
+    $key = array_search($node->nid, $module_settings['instruments'][$instrument]['help_page_nids'], true);
+    if (false === $key) {
+      $module_settings['instruments'][$instrument]['help_page_nids'][] = $node->nid;
+      $key = array_search($node->nid, $module_settings['help_page_nids'], true);
+      if (false !== $key) {
+        unset($module_settings['help_page_nids'][$key]);
+        $source_module_help_book_path = drupal_get_path('module', $core_module_name) . '/help_book';
+      } else {
+        foreach ($module_settings['instruments'] as $instrument => $instrument_settings) {
+          $key = array_search($node->nid, $module_settings['instruments'][$instrument]['help_page_nids'], true);
+          if (false !== $key) {
+            break;
+          }
+        }
+        unset($module_settings['instruments'][$instrument]['help_page_nids'][$key]);
+        $source_module_name = array_search($instrument, $module_settings['module_instrument'], true);
+        $source_module_help_book_path = drupal_get_path('module', $source_module_name) . '/help_book';
+      }
+      $destination_module_help_book_path = drupal_get_path('module', $mmoda_module) . '/help_book';
+      $filename = pathauto_clean_alias(pathauto_cleanstring($node->title));
+      $destination_filename = $destination_module_help_book_path . DIRECTORY_SEPARATOR . $filename . '.' . $export_format;
+      $source_filename = $source_module_help_book_path . DIRECTORY_SEPARATOR . $filename . '.' . $export_format;
+      $help_page_moved = true;
+    }
+  }
+  if ($help_page_moved) {
+    variable_set($core_module_name . '_settings', $module_settings);
+    if (rename($source_filename, $destination_filename)) {
+      drupal_set_message('[Module ' . $mmoda_module . '] Help file ' . $source_filename . ' moved successfully to ' . $destination_filename);
+    } else {
+      drupal_set_message('[Module ' . $mmoda_module . '] Can not move the corresponding help file ' . $source_filename . ' to ' . $destination_filename);
+    }
+  }
+}
+
+function mmoda_export_help_page_after_insert_or_update($node, $insert = FALSE)
+{
+  if ($node->type != 'mmoda_help_page' or empty($node->nid))
+    return;
+  $export_format = 'php';
+  $nid = $node->nid;
+
+  $node_export_obj = node_export(intval($nid), $export_format, 't', TRUE);
+  $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
+  if (variable_get('mmoda_install_started', false)) {
+    return;
+  }
+  $module_help_book_path = drupal_get_path('module', $mmoda_module) . '/help_book';
+
+  if (file_exists($module_help_book_path)) {
+    if (! is_writable($module_help_book_path)) {
+      drupal_set_message(t("The module help page directory is not writable\n" . "Your changes have been saved in the database only and not in the file system\n" . "Therefore, they are not persistent with the module"), 'warning');
+      return;
+    }
+  } elseif (! mkdir($module_help_book_path, 0775)) {
+    drupal_set_message(t("Can not create the module help page directory: $module_help_book_path\n" . "Your changes have been saved in the database only and not in the file system\n" . "Therefore, they are not persistent with the module"), 'warning');
+    return;
+  }
+
+  $filename = pathauto_clean_alias(pathauto_cleanstring($node->title));
+  $filename = $module_help_book_path . DIRECTORY_SEPARATOR . $filename . '.' . $export_format;
+  $set_file_group_writable = ! file_exists($filename);
+  $f = fopen($filename, 'w');
+  if (! $f) {
+    throw new Exception("Can not export the help page file $filename");
+  }
+  fwrite($f, $node_export_obj['output']);
+  fclose($f);
+
+  drupal_set_message('[Module ' . $mmoda_module . '] Help page "' . $node->title . '" exported successfully ' . $filename);
+  if ($set_file_group_writable)
+    chmod($filename, 0664);
+  if (! $insert and property_exists($node, 'original')) {
+    $old_filename = pathauto_clean_alias(pathauto_cleanstring($node->original->title));
+    $old_filename = $module_help_book_path . DIRECTORY_SEPARATOR . $old_filename . '.' . $export_format;
+    if ($filename !== $old_filename and file_exists($old_filename) and unlink($old_filename)) {
+      drupal_set_message('[Module ' . $mmoda_module . '] Deleting old file ' . $old_filename);
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function mmoda_theme_registry_alter(&$theme_registry)
+{
+  // Override the default field-collection-item.tpl.php with our own.
+  if (isset($theme_registry['colorbox_insert_image'])) {
+    $module_path = drupal_get_path('module', 'mmoda');
+    $theme_registry['colorbox_insert_image']['theme path'] = $module_path;
+    $theme_registry['colorbox_insert_image']['template'] = $module_path . '/templates/colorbox-insert-image';
+  }
+}
+
+function mmoda_mail_alter(&$message)
+{
+  $language = $message['language'];
+
+  $target_message_id = 'user_register_pending_approval_admin';
+  if ($message['id'] == $target_message_id) {
+    $account = array(
+      'user' => $message['params']['account']
+    );
+    unset($message['body']);
+    $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
+    $module_settings = variable_get($core_module_name . '_settings', array());
+    if (array_key_exists('user_managers_role_id', $module_settings) and is_numeric($module_settings['user_managers_role_id'])) {
+      $user_managers = mmoda_get_users_with_role((int) $module_settings['user_managers_role_id']);
+      $user_managers_emails = array_column($user_managers, 'mail');
+      // Change email recipient to the list of user managers emails
+      $message['to'] = join(',', $user_managers_emails);
+    }
+    $user_managers_role = 'user manager';
+    // Change the text
+    $text = t(file_get_contents(drupal_get_path('module', $core_module_name) . '/templates/' . $target_message_id . '.html'));
+    $message['body'][] = token_replace($text, $account, array(
+      'language' => $language,
+      'callback' => 'user_mail_tokens',
+      'sanitize' => FALSE,
+      'clear' => TRUE
+    ));
+  }
+}
+
+/**
+ * Perform an action after a successful authorization.
+ *
+ * @param array $tokens
+ *          ID token and access token that we received as a result of the OpenID
+ *          Connect flow.
+ * @param object $account
+ *          The user account that has just been logged in.
+ * @param array $userinfo
+ *          The user claims returned by the OpenID Connect provider.
+ * @param string $client_name
+ *          The machine name of the OpenID Connect client plugin.
+ * @param bool $is_new
+ *          Whether the account has just been created via OpenID Connect.
+ */
+function mmoda_openid_connect_post_authorize(array $tokens, $account, array $userinfo, $client_name, $is_new)
+{
+  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
+  watchdog('MMODA', $is_new ? 'New user :' . print_r($account, true) : 'Old user');
+  if ($is_new) {
+    $params['account'] = $account;
+    drupal_mail('user', 'register_pending_approval_admin', variable_get('site_mail', ini_get('sendmail_from')), language_default(), $params);
+  }
+  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
+}
+
+/**
+ * Implements hook_preprocess_status_messages()
+ */
+function mmoda_preprocess_status_messages(&$variables)
+{
+  $matches = array();
+  $openid_connect_email_taken_meessage_pattern = '/^The e-mail address <em class="placeholder">(.+)<\/em> is already taken\.$/';
+  if (isset($_SESSION['messages']['error'][0]) and preg_match($openid_connect_email_taken_meessage_pattern, $_SESSION['messages']['error'][0], $matches)) {
+    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] . '</em> is already taken by an existing local account which is not connected to Github.';
+    $_SESSION['messages']['error'][1] = 'Login with this account and edit it to connect it to GitHub (<a class="open-in-modal" href="help/mmoda/connect-my-mmoda-account-github">How to ?</a>)';
+  }
+}
+
+/**
+ * Checks to see if current node is part of a book.
+ * Returns book array if it is part of a book, FALSE is not.
+ */
+function mmoda_is_book_node()
+{
+  if ((arg(0) == 'node') && (is_numeric(arg(1)))) {
+    $node = menu_get_object();
+    if (isset($node->book)) {
+      return $node->book;
+    }
+  }
+  return FALSE;
+}

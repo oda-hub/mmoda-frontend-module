@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+$module_name = basename(__FILE__, '.install');
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
+
+function mmoda_gw_instrument_info()
+{
+  $info = array(
+    'name' => 'gw',
+    'title' => 'GW'
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_gw_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {}
+
+  if ($phase == 'runtime') {}
+
+  return $requirements;
+}
+
+function mmoda_gw_install()
+{
+  $instrument_info = mmoda_gw_instrument_info();
+
+  $module_settings = array(
+    'enabled' => TRUE,
+    'name' => $instrument_info['name'],
+    'title' => $instrument_info['title'],
+    'detector' => 'H1',
+    'query_type' => 'Real',
+    'product_type' => 'gw_skymap_image',
+    'whiten' => 'true',
+    'qmin' => 4,
+    'qmax' => 64,
+    'fmin' => 30,
+    'fmax' => 400,
+    'weight' => 70,
+    'do_cone_search' => 'false',
+    'radius' => 10,
+    'level_threshold' => 10,
+    'contour_levels' => '50,90',
+    'acknowledgement' => 'If this result is used for publicaiton, 
+          please cite <a href="https://doi.org/10.5281/zenodo.6376844" target="_blank">https://doi.org/10.5281/zenodo.6376844</a>
+          and include an acknowledgement of GWOSC: 
+          <a href="https://www.gw-openscience.org/acknowledgement/" target="_blank">https://www.gw-openscience.org/acknowledgement/</a>',
+    'enable_use_catalog' => FALSE
+  );
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_gw_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_gw_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}
+

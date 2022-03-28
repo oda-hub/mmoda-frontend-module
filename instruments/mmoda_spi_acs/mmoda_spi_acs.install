@@ -1,0 +1,68 @@
+<?php
+$module_name = basename(__FILE__, '.install');
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+
+function mmoda_spi_acs_instrument_info() {
+  $info = array (
+      'name' => 'spi_acs',
+      'title' => 'INTEGRAL SPI-ACS',
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_spi_acs_requirements($phase) {
+  $requirements = array ();
+  $conflicts = array ();
+  if ('install' == $phase) {
+  }
+
+  if ($phase == 'runtime') {
+  }
+
+  return $requirements;
+}
+function mmoda_spi_acs_install() {
+  $instrument_info = mmoda_spi_acs_instrument_info();
+
+  $module_settings = array (
+      'enabled' => TRUE,
+      'name' => $instrument_info['name'],
+      'title' => $instrument_info['title'],
+      'query_type' => 'Real',
+      'product_type' => 'spi_acs_lc',
+      'time_bin' => '2',
+      'time_bin_format' => 'sec',
+    'weight' => 30,
+    'acknowledgement' => '
+    If you use results or material from this instrument in our application, ODA, do not
+    forget to quote our paper:<br> <a
+      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
+      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
+      S.Paltani<br> An online data analysis system of INTEGRAL telescope
+    </a>'
+  );
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_spi_acs_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_spi_acs_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}
+

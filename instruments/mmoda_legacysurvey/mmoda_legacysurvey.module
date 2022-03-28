@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+function mmoda_legacysurvey_enable() {
+  $instrument = mmoda_legacysurvey_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
+}
+
+function mmoda_legacysurvey_disable() {
+  $instrument = mmoda_legacysurvey_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
+}
+
+function mmoda_legacysurvey_init() {
+}
+
+/**
+ * Implements hook_help().
+ */
+function mmoda_legacysurvey_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#mmoda_legacysurvey' :
+      $output = '<p>';
+      $output .= t ( "MMODA LegacySurvey." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+
+function mmoda_legacysurvey_permission() {
+  return array (
+      'administer mmoda legacysurvey' => array (
+          'description' => t ( 'Administer MMODA LegacySurvey' ),
+          'title' => t ( 'Administer MMODA LegacySurvey' ),
+          'restrict access' => TRUE
+      ),
+      'access mmoda legacysurvey' => array (
+          'description' => t ( 'Access MMODA LegacySurvey' ),
+          'title' => t ( 'Access MMODA LegacySurvey' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function mmoda_legacysurvey_menu() {
+  $items = array ();
+  
+  $items ['admin/config/mmoda/legacysurvey'] = array (
+      'title' => 'Administer MMODA LegacySurvey',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'mmoda_legacysurvey_admin_settings'
+      ),
+      'description' => 'Edit MMODA LegacySurvey settings.',
+      'file' => 'mmoda_legacysurvey.admin.inc'
+  );
+  // 'weight' => -10,
+  
+  return $items;
+}
+

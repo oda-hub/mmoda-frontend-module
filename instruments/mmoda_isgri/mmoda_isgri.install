@@ -1,0 +1,84 @@
+<?php
+
+$module_name = basename(__FILE__, '.install');
+list($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name).'/'.$core_module_name.'.lib.inc';
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+
+function mmoda_isgri_instrument_info()
+{
+  $info = array(
+    'name' => 'isgri',
+    'title' => 'INTEGRAL ISGRI'
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_isgri_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {}
+
+  if ($phase == 'runtime') {}
+
+  return $requirements;
+}
+
+/**
+ * Implements hook_install().
+ */
+
+function mmoda_isgri_install()
+{
+  $instrument_info = mmoda_isgri_instrument_info();
+
+  $module_settings = array(
+    'enabled' => TRUE,
+    'name' => $instrument_info['name'],
+    'title' => $instrument_info['title'],
+    'osa_version' => 'OSA11.1',
+    'radius' => 15,
+    'scw_list' => '005100410010.001,005100420010.001',
+    'max_pointings' => 50,
+    'integral_data_rights' => 'public',
+    'E1_keV' => 20.0,
+    'E2_keV' => 40.0,
+    'query_type' => 'Real',
+    'detection_threshold' => 7.0,
+    'product_type' => 'isgri_image',
+    'time_bin' => 1000,
+    'time_bin_format' => 'sec',
+    'weight' => 10,
+    'acknowledgement' => '
+    If you use results or material from this instrument in our application, ODA, do not
+    forget to quote our paper:<br> <a
+      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
+      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
+      S.Paltani<br> An online data analysis system of INTEGRAL telescope
+    </a>',
+    'enable_use_catalog' => TRUE
+  );
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_isgri_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument= mmoda_isgri_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}

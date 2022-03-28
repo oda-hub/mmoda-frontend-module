@@ -1,0 +1,8 @@
+name = MMODA Multi Product
+description = Astro Online Data Analysis module for Multi Product
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda.multiproduct.inc
+
+configure = admin/config/mmoda/multiproduct

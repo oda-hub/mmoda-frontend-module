@@ -1,8 +1,0 @@
-name = Astrooda JEM-X
-description = Astro Online Data Analysis module for JEM-X
-core = 7.x
-dependencies[] = astrooda
-
-files[] = astrooda.jemx.inc
-
-configure = admin/config/astrooda/jemx
