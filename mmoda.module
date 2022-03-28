@@ -230,10 +230,10 @@ function mmoda_main_block_content()
     drupal_set_message(t('Error : can not load highlightjs library.'), 'error');
     return;
   }
-  // if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
-  // // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
-  // // return;
-  // }
+  if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
+  // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+  // return;
+  }
   // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
   // 'type' => 'inline',
   // 'scope' => 'header',
@@ -404,23 +404,22 @@ function mmoda_libraries_info()
       )
     )
   );
-
-  // $libraries['bokeh'] = array(
-  // 'name' => 'Bokeh',
-  // 'vendor url' => 'https://bokeh.pydata.org',
-  // 'download url' => 'https://bokeh.pydata.org',
-  // 'version callback' => 'short_circuit_version',
-  // 'files' => array(
-  // 'js' => array(
-  // 'bokeh.min.js',
-  // 'bokeh-widgets.min.js'
-  // ),
-  // 'css' => array(
-  // 'bokeh.min.css',
-  // 'bokeh-widgets.min.css'
-  // )
-  // )
-  // );
+//   $libraries['bokeh'] = array(
+//     'name' => 'Bokeh',
+//     'vendor url' => 'https://bokeh.pydata.org',
+//     'download url' => 'https://bokeh.pydata.org',
+//     'version callback' => 'short_circuit_version',
+//     'files' => array(
+//       'js' => array(
+//         'bokeh.min.js',
+//         'bokeh-widgets.min.js'
+//       ),
+//       'css' => array(
+//         'bokeh.min.css',
+//         'bokeh-widgets.min.css'
+//       )
+//     )
+//   );
 
   $libraries['highlight'] = array(
     'name' => 'highlight.js',
@@ -556,6 +555,7 @@ function mmoda_node_delete($node)
       variable_set($core_module_name . '_settings', $module_settings);
     }
   } else {
+    $instrument = $module_settings['module_instrument'][$mmoda_module];
     $key = array_search($node->nid, $module_settings['instruments'][$instrument]['help_page_nids'], true);
     if (false !== $key) {
       unset($module_settings['instruments'][$instrument]['help_page_nids'][$key]);

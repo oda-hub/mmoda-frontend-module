@@ -32,8 +32,7 @@ function _mmoda_uninstall_finished()
  */
 function _mmoda_core($module_name)
 {
-  $core_module_name = basename(__FILE__, '.lib.inc');
-  error_log('In _mmoda_core, core_module_name:'.$core_module_name);
+  #$core_module_name = basename(__FILE__, '.lib.inc');
   list ($core_module_name) = explode('_', $module_name);
   return ($core_module_name == $module_name);
 }
