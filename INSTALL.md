@@ -7,7 +7,7 @@
 ## Description
 
 MMODA is the frontend of the CDCI Online Data Analysis system.  
-MMODA stands for Mu^lti-Mission Online Data Analysis.
+MMODA stands for Multi-Messenger Online Data Analysis.
 
 MMODA is developed as a set of Drupal modules (Drupal version 7).
 [Drupal](https://www.drupal.org/) is a Content Management System (CMS).
