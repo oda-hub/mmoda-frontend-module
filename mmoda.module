@@ -231,8 +231,8 @@ function mmoda_main_block_content()
     return;
   }
   if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
-  // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
-  // return;
+    // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
+    // return;
   }
   // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
   // 'type' => 'inline',
@@ -404,22 +404,22 @@ function mmoda_libraries_info()
       )
     )
   );
-//   $libraries['bokeh'] = array(
-//     'name' => 'Bokeh',
-//     'vendor url' => 'https://bokeh.pydata.org',
-//     'download url' => 'https://bokeh.pydata.org',
-//     'version callback' => 'short_circuit_version',
-//     'files' => array(
-//       'js' => array(
-//         'bokeh.min.js',
-//         'bokeh-widgets.min.js'
-//       ),
-//       'css' => array(
-//         'bokeh.min.css',
-//         'bokeh-widgets.min.css'
-//       )
-//     )
-//   );
+  // $libraries['bokeh'] = array(
+  // 'name' => 'Bokeh',
+  // 'vendor url' => 'https://bokeh.pydata.org',
+  // 'download url' => 'https://bokeh.pydata.org',
+  // 'version callback' => 'short_circuit_version',
+  // 'files' => array(
+  // 'js' => array(
+  // 'bokeh.min.js',
+  // 'bokeh-widgets.min.js'
+  // ),
+  // 'css' => array(
+  // 'bokeh.min.css',
+  // 'bokeh-widgets.min.css'
+  // )
+  // )
+  // );
 
   $libraries['highlight'] = array(
     'name' => 'highlight.js',
@@ -566,11 +566,10 @@ function mmoda_node_delete($node)
 
 function mmoda_node_insert($node)
 {
-  mmoda_export_help_page_after_insert_or_update($node, TRUE);
-
-  if (variable_get('mmoda_install_started', false)) {
+  if (variable_get('mmoda_install_started', false) or $node->type != 'mmoda_help_page' or empty($node->nid))
     return;
-  }
+    mmoda_export_help_page_after_insert_or_update($node, TRUE);
+
   $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
   $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
   $module_settings = variable_get($core_module_name . '_settings', array());
@@ -595,9 +594,9 @@ function mmoda_node_insert($node)
 
 function mmoda_node_update($node)
 {
-  mmoda_export_help_page_after_insert_or_update($node);
   if (variable_get('mmoda_install_started', false) or $node->type != 'mmoda_help_page' or empty($node->nid))
     return;
+  mmoda_export_help_page_after_insert_or_update($node);
   $export_format = 'php';
   $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
   $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
