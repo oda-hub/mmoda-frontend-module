@@ -75,7 +75,7 @@ function mmoda_legacysurvey($form, &$form_state)
     ),
     '#default_value' => $instrument_defaults['product_type'],
     '#options' => array(
-      'legacy_survey_image' => 'Image',
+      'legacy_survey_image' => 'Image & Catalog',
       'legacy_survey_photometry' => 'Photometry',
     ),
     '#parent_classes' => array(
