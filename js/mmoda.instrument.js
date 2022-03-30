@@ -205,7 +205,7 @@ function panel_title(srcname, param) {
           } else if (data.products.hasOwnProperty('spectrum_name')) {
             product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
           }
-          
+
           $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
           waitingDialog.setClose();
         }
@@ -653,8 +653,7 @@ function panel_title(srcname, param) {
         contentType: false,
         timeout: ajax_request_timeout,
         type: 'POST'
-      })
-      .complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+      }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
         serverResponse = '';
         try {
           serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
@@ -684,11 +683,11 @@ function panel_title(srcname, param) {
         $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
 
       })
-      .error(
-        function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
-          console.log(renku_publish_textStatus);
-        }
-      );
+        .error(
+          function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+            console.log(renku_publish_textStatus);
+          }
+        );
 
     });
 
@@ -1060,9 +1059,9 @@ function panel_title(srcname, param) {
         $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function() {
           if (!(this.hostname && this.hostname !== location.hostname) && !$(this).attr('href').startsWith("#")) {
             $(this).addClass('open-in-modal');
-            if ($(this).attr('href').indexOf(open_in_modal_base_path) < 0){
-              $(this).attr('href', open_in_modal_base_path + '/'+ $(this).attr('href'));
-              }
+            if ($(this).attr('href').indexOf(open_in_modal_base_path) < 0) {
+              $(this).attr('href', open_in_modal_base_path + '/' + $(this).attr('href'));
+            }
           }
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
@@ -1148,8 +1147,12 @@ function panel_title(srcname, param) {
           showProgressBar: false,
           showSpinner: false
         });
-        waitingDialog.append('The entered url is not valid : <ul><li>'+make_request_error_messages.join('</li><li>')+'</li></ul>',
-          'danger');
+        error_message = '<p>Unfortunately, the URL you used to access this page contains parameter combination which could not be interpreted.</p>'
+          + 'Errors : <ul><li>' + make_request_error_messages.join('</li><li>') + '</li></ul>'
+          + '<p>You probably need another URL. </p>'
+          + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
+
+        waitingDialog.append(error_message, 'danger');
         $('.write-feedback-button').show();
       }
     }
@@ -1290,11 +1293,11 @@ function panel_title(srcname, param) {
 
 
     var catalog_panel = $('#' + panel_ids.panel_id);
-    var catalog_help_text ='<div class="help-text">To select multiple rows :<ol>'+
-    '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>'+
-    '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
-    
-    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>'+catalog_help_text);
+    var catalog_help_text = '<div class="help-text">To select multiple rows :<ol>' +
+      '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>' +
+      '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
+
+    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>' + catalog_help_text);
 
     $(afterDiv).data({
       catalog_panel_id: '#' + panel_ids.panel_id
@@ -1451,31 +1454,31 @@ function panel_title(srcname, param) {
 
   }
 
-  function display_renku_publish_result(publish_result_type='success', publish_result, result_title) {
+  function display_renku_publish_result(publish_result_type = 'success', publish_result, result_title) {
     let div_result = $('<div>').addClass('result-renku-publish');
     let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
     div_result.append(div_result_title);
 
     // apply custom css max-width, to be improved
-    
+
     if (publish_result_type == 'success') {
       let link_result = $('<div>')
-      .addClass('result-renku-publish-link')
-      .css("max-width", '650px')
-      .text("Result successfully posted in Renku!");
+        .addClass('result-renku-publish-link')
+        .css("max-width", '650px')
+        .text("Result successfully posted in Renku!");
       div_result.append(link_result);
     } else if (publish_result_type == 'publish_error') {
       let result_error_message = $('<div>')
-      .addClass('result-renku-publish-link')
-      .css("max-width", '475px')
-      .text(publish_result);
+        .addClass('result-renku-publish-link')
+        .css("max-width", '475px')
+        .text(publish_result);
       // define a tooltip
       let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').text(publish_result);
       result_error_message.append(result_error_message_tooltip);
 
       div_result.append(result_error_message);
     }
-    
+
     return div_result[0];
   }
 
@@ -2191,7 +2194,7 @@ function panel_title(srcname, param) {
     button = dbutton.clone().addClass('renku-publish').text('Explore result on Renku');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Open Renku session with the API code" });
-    if  (job_id) {
+    if (job_id) {
       button.data('job_id', job_id);
     }
 
@@ -2208,7 +2211,7 @@ function panel_title(srcname, param) {
       $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
   }
 
-  function display_image(data, job_id, instrument, ) {
+  function display_image(data, job_id, instrument,) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
@@ -2328,7 +2331,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
   }
-  
+
   function get_download_url(parameters) {
     if ($.cookie('Drupal.visitor.token'))
       parameters['token'] = $.cookie('Drupal.visitor.token');
@@ -2338,7 +2341,7 @@ function panel_title(srcname, param) {
 
   function get_renku_publish_url(token, job_id) {
     parameters = {};
-    
+
     if (token)
       parameters['token'] = token;
     if (job_id)
