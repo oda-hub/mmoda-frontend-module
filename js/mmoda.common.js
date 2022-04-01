@@ -1,4 +1,5 @@
 var instrument_panel_margin = 150;
+var common_form_validator;
 
 Date.prototype.getJulian = function() {
   return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
@@ -254,11 +255,11 @@ var waitingDialog;
     if (response.args.status == 0) {
       $('.row', '#mmoda-name-resolve').removeClass('has-error');
       if (response.args.ra) {
-        validator.resetField('RA');
+        common_form_validator.resetField('RA');
         $('.form-item-RA input.form-control').val(response.args.ra);
       }
       if (response.args.dec) {
-        validator.resetField('DEC');
+        common_form_validator.resetField('DEC');
         $('.form-item-DEC input.form-control').val(response.args.dec);
       }
       if (response.args.t1) {
@@ -764,7 +765,7 @@ function get_waitingDialog($modal_dialog) {
     // This is important in Firefox when the page is refreshed
     // where indeed the old values are still in the form
 
-    validator = $('form#mmoda-common').bootstrapValidator({
+    common_form_validator = $('form#mmoda-common').bootstrapValidator({
       // live :'disabled',
       fields: {
         'RA': {
@@ -817,9 +818,9 @@ function get_waitingDialog($modal_dialog) {
       },
     }).data('bootstrapValidator'); // .validate();
 
-    // if (! validator.isValid()) {
+    // if (! common_form_validator.isValid()) {
     // console.log('disabling submit');
-    // validator.disableSubmitButtons(true);
+    // common_form_validator.disableSubmitButtons(true);
     // }
   }
 
@@ -867,6 +868,4 @@ function round_catalog_values(catalog) {
     catalog.cat_column_list[8][j] = catalog.cat_column_list[8][j].toFixed(4);
   }
 }
-
-
 

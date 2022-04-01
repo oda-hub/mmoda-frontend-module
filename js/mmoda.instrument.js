@@ -1,3 +1,5 @@
+var current_instrument_form_validator;
+
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
   if ($thefield.data('mmodaTimeBinMin')) {
@@ -824,7 +826,7 @@ function panel_title(srcname, param) {
     // Create validator and validate a frist time :
     // This is important in Firefox when the page is refreshed
     // where indeed the old values are still in the form
-    var validator = $('.instrument-panel form').bootstrapValidator({
+    current_instrument_form_validator = $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
       fields: {
         'scw_list': {
@@ -888,10 +890,6 @@ function panel_title(srcname, param) {
         validating: 'glyphicon glyphicon-refresh'
       }
     }).data('bootstrapValidator');// .validate();
-
-    // if (!validator.isValid()) {
-    // validator.disableSubmitButtons(true);
-    // }
 
     $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function() {
       var form = $(this).parents('form');
@@ -1115,9 +1113,11 @@ function panel_title(srcname, param) {
       $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
       make_request_error = false;
       var make_request_error_messages = [];
+      var all_form_inputs = [];
       $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
+        all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           if ($(this).attr('type') == 'file') {
@@ -1139,19 +1139,47 @@ function panel_title(srcname, param) {
           }
         }
       });
+      all_form_inputs = all_form_inputs.filter(function(itm, i, a) {
+        return i == a.indexOf(itm);
+      });
+      var ignore_params_url = ['query_status'];
+      for (parameter in request_parameters) {
+        if (all_form_inputs.indexOf(parameter) == -1 && ignore_params_url.indexOf(parameter) == -1) {
+          make_request_error_messages.push('Unknown parameter in the url:' + parameter);
+          make_request_error = true;
+        }
+      }
+
       if (!make_request_error) {
-        $('form.' + request_parameters.instrument + '-form').submit();
+        //current_instrument_form_validator.disableSubmitButtons(true);
+        common_form_validator.validate();
+        both_forms_valid = common_form_validator.isValid();
+        if (both_forms_valid) {
+          current_instrument_form_validator.validate();
+          both_forms_valid = both_forms_valid && current_instrument_form_validator.isValid();
+        }
+        if (!both_forms_valid) {
+          make_request_error = true;
+          current_instrument_form_validator.disableSubmitButtons(true);
+          error_message = '<p>Unfortunately, the URL you used to access this page contains parameters with invalid values.</p>'
+            + '<p>You can correct the errors within the form or you probably need another URL. </p>'
+            + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
+        }
+        else {
+          $('form.' + request_parameters.instrument + '-form').submit();
+        }
       }
       else {
-        waitingDialog.show('Processing request parameters ...', '', {
-          showProgressBar: false,
-          showSpinner: false
-        });
         error_message = '<p>Unfortunately, the URL you used to access this page contains parameter combination which could not be interpreted.</p>'
           + 'Errors : <ul><li>' + make_request_error_messages.join('</li><li>') + '</li></ul>'
           + '<p>You probably need another URL. </p>'
           + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
-
+      }
+      if (make_request_error) {
+        waitingDialog.show('Processing request parameters ...', '', {
+          showProgressBar: false,
+          showSpinner: false
+        });
         waitingDialog.append(error_message, 'danger');
         $('.write-feedback-button').show();
       }
