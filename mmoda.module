@@ -42,7 +42,7 @@ function mmoda_user_login(&$edit, $account)
   if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
     // $mmoda_roles = preg_grep('/mmoda/i', $account->roles);
     $mmoda_roles = $account->roles;
-    watchdog('ODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
+    watchdog('MMODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
 
     if (count($mmoda_roles)) {
       $jwt = jwt_link_url();
@@ -69,7 +69,7 @@ function mmoda_user_logout($account)
   $mmoda_roles = $account->roles;
 
   if (count($mmoda_roles)) {
-    watchdog('ODA', 'Logout - removing the cookie token');
+    watchdog('MMODA', 'Logout - removing the cookie token');
     user_cookie_delete('token');
   }
 }
@@ -196,7 +196,8 @@ function mmoda_main_block_content()
   }
   $session_count = $_SESSION['count'];
 
-  if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! isset($_SESSION['url_parameters'])) {
+  if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"])
+    and ! (isset($_SERVER['QUERY_STRING']) and strlen($_SERVER["QUERY_STRING"]))  and ! isset($_SESSION['url_parameters'])) {
     parse_str(parse_url($_SERVER["HTTP_REFERER"], PHP_URL_QUERY), $params);
   } else {
     $params = drupal_get_query_parameters();
@@ -210,7 +211,6 @@ function mmoda_main_block_content()
       'type' => 'setting',
       'scope' => JS_DEFAULT
     ));
-
     unset($_SESSION['url_parameters']);
   }
 
@@ -568,7 +568,7 @@ function mmoda_node_insert($node)
 {
   if (variable_get('mmoda_install_started', false) or $node->type != 'mmoda_help_page' or empty($node->nid))
     return;
-    mmoda_export_help_page_after_insert_or_update($node, TRUE);
+  mmoda_export_help_page_after_insert_or_update($node, TRUE);
 
   $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
   $mmoda_module = field_get_items('node', $node, 'field_mmoda_module')[0]['value'];
