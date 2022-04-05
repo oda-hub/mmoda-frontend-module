@@ -3,15 +3,15 @@
  * Style sheet for the iPrayTimes block.
  */
 .block-mmoda {
-  font-size : 12px !important;
+  font-size: 12px !important;
 }
-
 
 label.control-label {
   display: block;;
 }
 
-.form-item-E1-keV .form-control, .form-item-E2-keV .form-control, .form-item-radius .form-control {
+.form-item-E1-keV .form-control, .form-item-E2-keV .form-control,
+  .form-item-radius .form-control {
   display: inline-block !important;
 }
 
@@ -97,7 +97,6 @@ table.message-table tr td {
 }
 
 /***************** End vertically center modal   ***/
-
 #formwrapper {
   width: 100%;
 }
@@ -247,8 +246,9 @@ span.panel-toolbox span {
 }
 
 #modalBackdrop {
-  z-index: 1900 !important;  
+  z-index: 1900 !important;
 }
+
 .query_parameters-wrapper table td, .status-table td {
   padding: .2em .4em;
   line-height: 16px;
@@ -328,6 +328,7 @@ input.user_scw_list_file {
   max-width: 30%;
   z-index: 3000 !important;
 }
+
 .table-striped>tbody>tr:nth-child(2n+1)>td, .table-striped>tbody>tr:nth-child(2n+1)>th
   {
   background-color: inherit;
@@ -388,16 +389,17 @@ input[type=number] {
 }
 
 #paper-quote {
-  display : none;
+  display: none;
 }
 
 .paper-quote {
-  margin-top : 1em;
+  margin-top: 1em;
 }
 
 .help-button {
   float: right;
 }
+
 .instrument-params-panel-title {
   display: inline-block;
 }
@@ -407,23 +409,23 @@ input[type=number] {
 }
 
 .alert-dismissable, .alert-dismissible {
-    padding-right: 35px !important;
+  padding-right: 35px !important;
 }
 
 .pppd-heading-table {
-  margin: auto; 
+  margin: auto;
 }
 
-ol.reference-list > li {
-    list-style: none;
-    position: relative;
+ol.reference-list>li {
+  list-style: none;
+  position: relative;
 }
 
-ol.reference-list > li:before {
-    counter-increment: list;
-    content: "["counter(list, decimal) "] ";
-    position: absolute;
-    left: -1.4em;
+ol.reference-list>li:before {
+  counter-increment: list;
+  content: "[" counter(list, decimal) "] ";
+  position: absolute;
+  left: -1.4em;
 }
 
 .header-info {
@@ -443,24 +445,23 @@ div.ctools-modal-content .modal-content {
   margin: 2.5em;
   box-shadow: none;
   border: none;
-  }
+}
 
 .oda-icon-label {
   padding-right: 0.5em;
   /*display: inline-block;*/
-}  
-  /*
+}
+/*
 .main-toolbar .logout-link {
   display: none;
 }
 */
-
-.wrap { 
-   white-space: pre-wrap;      /* CSS3 */   
-   white-space: -moz-pre-wrap; /* Firefox */    
-   white-space: -pre-wrap;     /* Opera <7 */   
-   white-space: -o-pre-wrap;   /* Opera 7 */    
-   word-wrap: break-word;      /* IE */
+.wrap {
+  white-space: pre-wrap; /* CSS3 */
+  white-space: -moz-pre-wrap; /* Firefox */
+  white-space: -pre-wrap; /* Opera <7 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* IE */
 }
 
 .write-feedback-button {
@@ -492,13 +493,13 @@ div.ctools-modal-content .modal-content {
 }
 
 #modalContent .modal-content {
-    max-height: calc(100vh - 210px);
-    overflow-x: hidden;
+  max-height: calc(100vh - 210px);
+  overflow-x: hidden;
 }
 
 .node-mmoda-help-page .colorbox-insert-image img {
-  padding:2px;
-  border:1px solid gray;
+  padding: 2px;
+  border: 1px solid gray;
   border-radius: 0.25rem !important;
   background-color: lightgray;
 }
@@ -508,13 +509,10 @@ div.ctools-modal-content .modal-content {
   padding-bottom: 5px;
   padding-left: 5px;
   margin-top: 10px;
-  
   display: flex;
-
   border: 1px solid;
   border-radius: 4px;
   border-color: #cccccc;
-
   background-color: #F5F5F5;
 }
 
@@ -537,16 +535,13 @@ div.ctools-modal-content .modal-content {
   text-align: center;
   border-radius: 6px;
   padding: 5px;
-
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
-
   border-color: transparent transparent black transparent;
   border-width: 5px;
   border-style: solid;
   white-space: pre-line;
-
   font: inherit;
   font-size: 12px !important;
 }
@@ -566,3 +561,9 @@ article.node-mmoda-help-page .field-name-body {
   min-height: 250px;
 }
 
+button.renku-publish {
+  background: url(images/ranku-logo-01.png) no-repeat;
+  background-size: 20px 20px;
+  background-position: 5px center;
+  padding-left: 28px;
+}

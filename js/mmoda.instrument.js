@@ -2219,7 +2219,7 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
-    button = dbutton.clone().addClass('renku-publish').text('Explore result on Renku');
+    button = dbutton.clone().addClass('renku-publish').text('Explore result on Renku ');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Open Renku session with the API code" });
     if (job_id) {
@@ -2227,6 +2227,9 @@ function panel_title(srcname, param) {
     }
 
     button.append(glyphicon);
+    //renku_logo = $('<img>').attr('src', 'images/renku-logo.svg').addClass("renku-logo-tab");
+    //button.prepend(renku_logo);
+
     return button;
   }
 
