@@ -1084,7 +1084,6 @@ function panel_title(srcname, param) {
   }
 
   function make_request(request_parameters) {
-
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
       waitingDialog.show('Error message', '', {
@@ -1151,12 +1150,18 @@ function panel_title(srcname, param) {
       }
 
       if (!make_request_error) {
-        //current_instrument_form_validator.disableSubmitButtons(true);
-        common_form_validator.validate();
-        both_forms_valid = common_form_validator.isValid();
+        both_forms_valid = true;
+        $('input, textarea, select', 'form#mmoda-common').each(function() {
+          common_form_validator.validateField($(this).attr('name'));
+          if (!common_form_validator.isValidField($(this).attr('name')))
+            both_forms_valid = false;
+        });
         if (both_forms_valid) {
-          current_instrument_form_validator.validate();
-          both_forms_valid = both_forms_valid && current_instrument_form_validator.isValid();
+          $('input, textarea, select', 'form.' + request_parameters.instrument + '-form').each(function() {
+            current_instrument_form_validator.validateField($(this).attr('name'));
+            if (!current_instrument_form_validator.isValidField($(this).attr('name')))
+              both_forms_valid = false;
+          });
         }
         if (!both_forms_valid) {
           make_request_error = true;
@@ -2219,7 +2224,7 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
-    button = dbutton.clone().addClass('renku-publish').text('Explore result on Renku ');
+    button = dbutton.clone().addClass('renku-publish').text('View on Renku ');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Open Renku session with the API code" });
     if (job_id) {
