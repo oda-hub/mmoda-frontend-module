@@ -641,7 +641,8 @@ function panel_title(srcname, param) {
 
       // show spinner
       let div_spinner = get_div_spinner();
-      $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(div_spinner);
+      // $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(div_spinner);
+      $(this)[0].parentElement.after(div_spinner);
 
       // disable publish-on-renku button
       e.target.disabled = true;
@@ -653,6 +654,7 @@ function panel_title(srcname, param) {
         url: url_dispatcher_renku_publish_url,
         processData: false,
         contentType: false,
+        context: this,
         timeout: ajax_request_timeout,
         type: 'POST'
       }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
@@ -682,7 +684,8 @@ function panel_title(srcname, param) {
         e.target.disabled = false;
 
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
+        // $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
+        $(this)[0].parentElement.after(publish_result_panel);
 
       })
         .error(
