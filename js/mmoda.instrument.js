@@ -2224,14 +2224,18 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
-    button = dbutton.clone().addClass('renku-publish').text('View on Renku ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Open Renku session with the API code" });
+    if ($('.renku-publish').length == 0) {
+      button = dbutton.clone().addClass('renku-publish').text('View on Renku ');
+      glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+      glyphicon.attr({ title: "Open Renku session with the API code" });
+      button.append(glyphicon);
+    } else {
+      button = $('.renku-publish');
+    }
     if (job_id) {
       button.data('job_id', job_id);
     }
 
-    button.append(glyphicon);
     //renku_logo = $('<img>').attr('src', 'images/renku-logo.svg').addClass("renku-logo-tab");
     //button.prepend(renku_logo);
 
