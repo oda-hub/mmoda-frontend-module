@@ -639,16 +639,17 @@ function panel_title(srcname, param) {
       // publish the code over the renku repository
       let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
-      // show spinner
-      let div_spinner = get_div_spinner();
-      // $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(div_spinner);
-      $(this)[0].parentElement.after(div_spinner);
-
+      // remove any previous results
+      if($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
+        $(this)[0].parentElement.nextSibling.remove();
+      // $('.result-renku-publish').remove();
+      
       // disable publish-on-renku button
       e.target.disabled = true;
-
-      // remove any previous results
-      $('.result-renku-publish').remove();
+      
+      // show spinner
+      let div_spinner = get_div_spinner();
+      $(this)[0].parentElement.after(div_spinner);
 
       var renku_publish_jqxhr = $.ajax({
         url: url_dispatcher_renku_publish_url,
@@ -691,6 +692,7 @@ function panel_title(srcname, param) {
         .error(
           function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
             console.log(renku_publish_textStatus);
+            e.target.disabled = false;
           }
         );
 
