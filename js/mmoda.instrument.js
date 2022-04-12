@@ -642,7 +642,6 @@ function panel_title(srcname, param) {
       // remove any previous results
       if($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
         $(this)[0].parentElement.nextSibling.remove();
-      // $('.result-renku-publish').remove();
       
       // disable publish-on-renku button
       e.target.disabled = true;
@@ -685,7 +684,6 @@ function panel_title(srcname, param) {
         e.target.disabled = false;
 
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        // $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
         $(this)[0].parentElement.after(publish_result_panel);
 
       })
