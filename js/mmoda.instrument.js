@@ -633,26 +633,28 @@ function panel_title(srcname, param) {
       e.preventDefault();
       renku_publish_formData = new FormData();
       url_params = {};
-      let job_id = $(".renku-publish").data('job_id');
+      let job_id = $(this).data('job_id');
       let token = $.cookie('Drupal.visitor.token');
 
       // publish the code over the renku repository
       let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
-      // show spinner
-      let div_spinner = get_div_spinner();
-      $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(div_spinner);
-
+      // remove any previous results
+      if($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
+        $(this)[0].parentElement.nextSibling.remove();
+      
       // disable publish-on-renku button
       e.target.disabled = true;
-
-      // remove any previous results
-      $('.result-renku-publish').remove();
+      
+      // show spinner
+      let div_spinner = get_div_spinner();
+      $(this)[0].parentElement.after(div_spinner);
 
       var renku_publish_jqxhr = $.ajax({
         url: url_dispatcher_renku_publish_url,
         processData: false,
         contentType: false,
+        context: this,
         timeout: ajax_request_timeout,
         type: 'POST'
       }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
@@ -682,12 +684,13 @@ function panel_title(srcname, param) {
         e.target.disabled = false;
 
         let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-        $('.result-panel.ui-draggable > .panel-body div:eq(0)')[0].after(publish_result_panel);
+        $(this)[0].parentElement.after(publish_result_panel);
 
       })
         .error(
           function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
             console.log(renku_publish_textStatus);
+            e.target.disabled = false;
           }
         );
 
@@ -2224,14 +2227,15 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
+  
     button = dbutton.clone().addClass('renku-publish').text('View on Renku ');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Open Renku session with the API code" });
+    button.append(glyphicon);
+    
     if (job_id) {
       button.data('job_id', job_id);
     }
-
-    button.append(glyphicon);
     //renku_logo = $('<img>').attr('src', 'images/renku-logo.svg').addClass("renku-logo-tab");
     //button.prepend(renku_logo);
 
