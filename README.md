@@ -24,7 +24,7 @@ CONFIGURATION
 
 Navigate to admin/settings/mmoda to change the following settings.
 
-## MODIFY help Pages
+## Create or Modify help Pages
 
 Two video tutorials have been finally prepared and available on youtube :
 
