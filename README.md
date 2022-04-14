@@ -23,3 +23,10 @@ CONFIGURATION
 --
 
 Navigate to admin/settings/mmoda to change the following settings.
+
+## Create or Modify help Pages
+
+Two video tutorials have been finally prepared and available on youtube :
+
+* [Presentation of the MMODA help book ](https://youtu.be/TZnnLsYz3Os)
+* [How to add/edit an MMODA help page](https://youtu.be/WYAP7uT38gI)
