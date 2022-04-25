@@ -1512,7 +1512,7 @@ function panel_title(srcname, param) {
 
       // highlight missing roles
       publish_result_interpreted = publish_result.replace(
-        /-(.*)/,
+        /-(.*)/g,
         function(m) {return '- <b>' + m.substr(1) + '</b>'}
       );
 
