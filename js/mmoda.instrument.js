@@ -1509,7 +1509,14 @@ function panel_title(srcname, param) {
         .css("max-width", '475px')
         .text(publish_result);
       // define a tooltip
-      let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result);
+
+      // highlight missing roles
+      publish_result_interpreted = publish_result.replace(
+        /-(.*)/,
+        function(m) {return '- <b>' + m.substr(1) + '</b>'}
+      );
+
+      let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
       result_error_message.append(result_error_message_tooltip);
 
       div_result.append(result_error_message);
