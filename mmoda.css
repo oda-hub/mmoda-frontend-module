@@ -530,21 +530,20 @@ div.ctools-modal-content .modal-content {
 
 .result-renku-publish-link-tooltip {
   visibility: hidden;
-  width: 350px;
-  background-color: black;
+  max-width: 450px;
+  background: rgba(51, 51, 51, 0.95);
   color: #fff;
-  text-align: center;
+  text-align: justify;
   border-radius: 6px;
   padding: 5px;
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
-  border-color: transparent transparent black transparent;
+  border-color: #333 #333 #333 #333;
   border-width: 5px;
   border-style: solid;
   white-space: pre-line;
   font: inherit;
-  font-size: 12px !important;
 }
 
 .result-renku-publish-title {
