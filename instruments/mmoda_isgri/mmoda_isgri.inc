@@ -236,6 +236,7 @@ function mmoda_isgri($form, &$form_state)
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
     '#description' => t("The minimum of the energy band."),
+    '#default_value' => $instrument_defaults['E1_keV'],
     '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
@@ -254,8 +255,6 @@ function mmoda_isgri($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#prefix' => '<div class="row">'
   );
-
-  $form['E1_keV']['#default_value'] = 20;
 
   $form['E2_keV'] = array(
     '#type' => 'textfield',
@@ -280,8 +279,6 @@ function mmoda_isgri($form, &$form_state)
     '#field_suffix' => t('keV'),
     '#suffix' => '</div><hr class="hr-default" />'
   );
-
-  $form['E2_keV']['#default_value'] = 40;
 
   $form['query_type'] = array(
     '#type' => 'select',
