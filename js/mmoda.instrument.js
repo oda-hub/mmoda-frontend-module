@@ -1145,9 +1145,9 @@ function panel_title(srcname, param) {
         return i == a.indexOf(itm);
       });
       // based on the black-listed parameters within the dispatcher, there used for the generation of the job_id, to be kept synchronized
-      var ignore_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run'];
+      let accepted_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run', 'selected_catalog'];
       for (parameter in request_parameters) {
-        if (all_form_inputs.indexOf(parameter) == -1 && ignore_params_url.indexOf(parameter) == -1) {
+        if (all_form_inputs.indexOf(parameter) == -1 && accepted_params_url.indexOf(parameter) == -1) {
           make_request_error_messages.push('Unknown parameter in the url:' + parameter);
           make_request_error = true;
         }
