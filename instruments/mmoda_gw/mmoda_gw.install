@@ -12,7 +12,7 @@ function mmoda_gw_instrument_info()
 {
   $info = array(
     'name' => 'gw',
-    'title' => 'Gravitational waves<br>Ligo/VIRGO'
+    'title' => 'GW'
   );
 
   return $info;

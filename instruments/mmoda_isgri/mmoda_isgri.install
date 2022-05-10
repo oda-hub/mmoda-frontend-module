@@ -13,7 +13,7 @@ function mmoda_isgri_instrument_info()
 {
   $info = array(
     'name' => 'isgri',
-    'title' => 'Hard X-rays<br>INTEGRAL ISGRI'
+    'title' => 'INTEGRAL ISGRI'
   );
 
   return $info;

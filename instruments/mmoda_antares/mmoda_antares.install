@@ -12,7 +12,7 @@ include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_n
 function mmoda_antares_instrument_info() {
   $info = array (
       'name' => 'antares',
-      'title' => 'Neutrino<br>Antares',
+      'title' => 'Antares',
   );
 
   return $info;
