@@ -11,7 +11,7 @@ include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_n
 function mmoda_spi_acs_instrument_info() {
   $info = array (
       'name' => 'spi_acs',
-      'title' => 'INTEGRAL SPI-ACS',
+      'title' => 'Gamma-rays<br>INTEGRAL SPI-ACS',
   );
 
   return $info;

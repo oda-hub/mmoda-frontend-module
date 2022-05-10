@@ -12,7 +12,7 @@ function mmoda_jemx_instrument_info()
 {
   $info = array(
     'name' => 'jemx',
-    'title' => 'INTEGRAL JEM-X'
+    'title' => 'X-rays<br>INTEGRAL JEM-X'
   );
 
   return $info;
