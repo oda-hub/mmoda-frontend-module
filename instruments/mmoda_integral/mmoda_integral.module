@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+
+
+function mmoda_integral_enable() {
+  $instrument = mmoda_integral_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
+}
+
+function mmoda_integral_disable() {
+  $instrument = mmoda_integral_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
+}
+
+function mmoda_integral_init() {
+}
+
+/**
+ * Implements hook_help().
+ */
+function mmoda_integral_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#mmoda_integral' :
+      $output = '<p>';
+      $output .= t ( "MMODA INTEGRAL." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+
+function mmoda_integral_permission() {
+  return array (
+      'administer mmoda integral' => array (
+          'description' => t ( 'Administer MMODA INTEGRAL' ),
+          'title' => t ( 'Administer MMODA INTEGRAL' ),
+          'restrict access' => TRUE
+      ),
+      'access mmoda integral' => array (
+          'description' => t ( 'Access MMODA INTEGRAL' ),
+          'title' => t ( 'Access MMODA INTEGRAL' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function mmoda_integral_menu() {
+  $items = array ();
+
+  $items ['admin/config/mmoda/integral'] = array (
+      'title' => 'Administer MMODA INTEGRAL',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'mmoda_integral_admin_settings'
+      ),
+      'description' => 'Edit MMODA INTEGRAL settings.',
+      'file' => 'mmoda_integral.admin.inc'
+  );
+  // 'weight' => -10,
+
+  return $items;
+}
+
