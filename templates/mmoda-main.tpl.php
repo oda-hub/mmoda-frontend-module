@@ -192,7 +192,8 @@
              <?php  foreach ($instruments as $name => $instrument ) :?>
                  <li id="<?=$name?>-tab"
                   class="<?=$instrument['active']?>"><a
-                  href="#<?=$name?>" data-toggle="tab"><?=$instrument['title']?></a></li>
+                  href="#<?=$name?>" data-toggle="tab"><div class="tab-messenger"><?=$instrument['messenger']?></div>
+                  <div class="tab-title"><?=$instrument['title']?></div></a></li>
              <?php endforeach; ?>
               </ul>
               <div class="tab-content">

@@ -4,14 +4,16 @@ list ($core_module_name) = explode('_', $module_name);
 include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
 
 /**
+ *
  * @file
  * Install, update and uninstall functions for the mmoda module.
  */
-
-function mmoda_spi_acs_instrument_info() {
-  $info = array (
-      'name' => 'spi_acs',
-      'title' => 'INTEGRAL SPI-ACS',
+function mmoda_spi_acs_instrument_info()
+{
+  $info = array(
+    'name' => 'spi_acs',
+    'messenger' => 'Gamma-rays',
+    'title' => 'INTEGRAL SPI-ACS'
   );
 
   return $info;
@@ -20,28 +22,26 @@ function mmoda_spi_acs_instrument_info() {
 /**
  * Implements hook_requirements().
  */
-function mmoda_spi_acs_requirements($phase) {
-  $requirements = array ();
-  $conflicts = array ();
-  if ('install' == $phase) {
-  }
+function mmoda_spi_acs_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {}
 
-  if ($phase == 'runtime') {
-  }
+  if ($phase == 'runtime') {}
 
   return $requirements;
 }
-function mmoda_spi_acs_install() {
-  $instrument_info = mmoda_spi_acs_instrument_info();
 
-  $module_settings = array (
-      'enabled' => TRUE,
-      'name' => $instrument_info['name'],
-      'title' => $instrument_info['title'],
-      'query_type' => 'Real',
-      'product_type' => 'spi_acs_lc',
-      'time_bin' => '2',
-      'time_bin_format' => 'sec',
+function mmoda_spi_acs_install()
+{
+  $instrument_info= mmoda_spi_acs_instrument_info();
+  $module_settings = array(
+    'enabled' => TRUE,
+    'query_type' => 'Real',
+    'product_type' => 'spi_acs_lc',
+    'time_bin' => '2',
+    'time_bin_format' => 'sec',
     'weight' => 30,
     'acknowledgement' => '
     If you use results or material from this instrument in our application, ODA, do not
@@ -51,6 +51,7 @@ function mmoda_spi_acs_install() {
       S.Paltani<br> An online data analysis system of INTEGRAL telescope
     </a>'
   );
+  $module_settings= array_merge($instrument_info, $module_settings);
 
   $module_name = basename(__FILE__, '.install');
   _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);

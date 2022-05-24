@@ -567,3 +567,7 @@ button.renku-publish {
   background-position: 5px center;
   padding-left: 28px;
 }
+
+.tab-title {
+  font-weight: bold;
+}

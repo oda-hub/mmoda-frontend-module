@@ -12,7 +12,8 @@ function mmoda_gw_instrument_info()
 {
   $info = array(
     'name' => 'gw',
-    'title' => 'GW'
+    'messenger' => 'Gravitational waves',
+    'title' => 'Ligo/VIRGO'
   );
 
   return $info;
@@ -38,8 +39,6 @@ function mmoda_gw_install()
 
   $module_settings = array(
     'enabled' => TRUE,
-    'name' => $instrument_info['name'],
-    'title' => $instrument_info['title'],
     'detector' => 'H1',
     'query_type' => 'Real',
     'product_type' => 'gw_skymap_image',
@@ -53,12 +52,13 @@ function mmoda_gw_install()
     'radius' => 10,
     'level_threshold' => 10,
     'contour_levels' => '50,90',
-    'acknowledgement' => 'If this result is used for publicaiton, 
+    'acknowledgement' => 'If this result is used for publicaiton,
           please cite <a href="https://doi.org/10.5281/zenodo.6376844" target="_blank">https://doi.org/10.5281/zenodo.6376844</a>
-          and include an acknowledgement of GWOSC: 
+          and include an acknowledgement of GWOSC:
           <a href="https://www.gw-openscience.org/acknowledgement/" target="_blank">https://www.gw-openscience.org/acknowledgement/</a>',
     'enable_use_catalog' => FALSE
   );
+  $module_settings= array_merge($instrument_info, $module_settings);
 
   $module_name = basename(__FILE__, '.install');
   _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);

@@ -13,6 +13,7 @@ function mmoda_isgri_instrument_info()
 {
   $info = array(
     'name' => 'isgri',
+    'messenger' => 'Hard X-rays',
     'title' => 'INTEGRAL ISGRI'
   );
 
@@ -43,8 +44,6 @@ function mmoda_isgri_install()
 
   $module_settings = array(
     'enabled' => TRUE,
-    'name' => $instrument_info['name'],
-    'title' => $instrument_info['title'],
     'osa_version' => 'OSA11.2',
     'radius' => 15,
     'scw_list' => '005100410010.001,005100420010.001',
@@ -67,6 +66,7 @@ function mmoda_isgri_install()
     </a>',
     'enable_use_catalog' => TRUE
   );
+  $module_settings= array_merge($instrument_info, $module_settings);
 
   $module_name = basename(__FILE__, '.install');
   _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);

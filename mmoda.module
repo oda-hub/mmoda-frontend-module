@@ -292,6 +292,7 @@ function mmoda_main_block_content()
     if ($instrument['enabled'] and (!isset($instrument['virtual']) or !$instrument['virtual'])) {
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
+        'messenger' => $instrument['messenger'],
         'title' => $instrument['title'],
         'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] : '',
         'help_page' => (isset($instrument['help_page_nids']) and (! empty($instrument['help_page_nids']))) ? drupal_get_path_alias('node/' . $instrument['help_page_nids'][0]) : '',
