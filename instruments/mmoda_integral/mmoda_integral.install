@@ -44,10 +44,9 @@ function mmoda_integral_install()
   $module_settings = array(
     'virtual' => TRUE,
     'enabled' => TRUE,
-    'name' => $instrument_info['name'],
-    'title' => $instrument_info['title'],
     'weight' => 10,
   );
+  $module_settings= array_merge($instrument_info, $module_settings);
 
   $module_name = basename(__FILE__, '.install');
   _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
