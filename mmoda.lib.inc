@@ -32,7 +32,7 @@ function _mmoda_uninstall_finished()
  */
 function _mmoda_core($module_name)
 {
-  #$core_module_name = basename(__FILE__, '.lib.inc');
+  # $core_module_name = basename(__FILE__, '.lib.inc');
   list ($core_module_name) = explode('_', $module_name);
   return ($core_module_name == $module_name);
 }
@@ -51,12 +51,12 @@ function _mmoda_common_install($module_name, $instrument, $module_settings)
   $field_mmoda_module = field_info_field('field_mmoda_module');
   if (_mmoda_core($module_name)) {
     $core_module_settings = $module_settings;
-    $core_module_settings['module_name']=$core_module_name;
+    $core_module_settings['module_name'] = $core_module_name;
     $field_mmoda_module['settings']['allowed_values'][$module_name] = strtoupper($module_name);
   } else {
     $core_module_settings = variable_get($core_module_name . '_settings');
     $core_module_settings['instruments'][$instrument] = $module_settings;
-    $core_module_settings['module_instrument'][$module_name]=$instrument;
+    $core_module_settings['module_instrument'][$module_name] = $instrument;
     $field_mmoda_module['settings']['allowed_values'][$module_name] = $module_settings['title'];
   }
   field_update_field($field_mmoda_module);
@@ -101,6 +101,71 @@ function _mmoda_common_uninstall($module_name, $instrument = '')
 /**
  * .
  */
+function _mmoda_build_tree(array $elements, $parentId = 0)
+{
+  $branch = array();
+
+  foreach ($elements as $element) {
+    if ($element['parent_id'] == $parentId) {
+      $children = _mmoda_build_tree($elements, $element['id']);
+      if ($children) {
+        $element['children'] = $children;
+      }
+      $branch[] = $element;
+    }
+  }
+  return $branch;
+}
+
+/**
+ * .
+ */
+function _mmoda_get_node_root_uuids(array $elements)
+{
+  $all_ids = array();
+  foreach ($elements as $element) {
+    $all_ids[] = $element['id'];
+  }
+  $root_ids = array();
+  foreach ($elements as $element) {
+    if (! in_array($element['parent_id'], $all_ids)) {
+      $root_ids[] = $element;
+    }
+  }
+  return $root_ids;
+}
+
+/**
+ * .
+ */
+function _mmoda_import_nodes_tree(array $nodes_tree, &$help_page_nids)
+{
+  foreach ($nodes_tree as $node_tree) {
+    $help_file =$node_tree['file_name'];
+    $node_export = file_get_contents($help_file);
+    if (! empty($node_export)) {
+      $import_output = node_export_import($node_export);
+      // error_log(print_r($import_output, true));
+      if ($import_output['success']) {
+        $node = node_load($import_output['nids'][0]);
+        $node->uid = 1;
+        $node->status = 1;
+        node_save($node);
+        $help_page_nids[] = $import_output['nids'][0];
+        drupal_set_message("Help file $help_file imported successfully");
+      }
+      if (isset($node_tree['children'])) {
+        _mmoda_import_nodes_tree($node_tree['children'], $help_page_nids);
+      }
+    } else {
+      throw new Exception("Can not load xml help page file $help_file !");
+    }
+  }
+}
+
+/**
+ * .
+ */
 function _mmoda_help_pages_import($core_module_name, $module_name, $instrument = '')
 {
   $module_path = drupal_get_path('module', $module_name);
@@ -114,6 +179,7 @@ function _mmoda_help_pages_import($core_module_name, $module_name, $instrument =
   $not_book_root_files = array();
 
   $dh = @opendir($help_pages_dir);
+  $pages_hierarchy = array();
   if (FALSE !== $dh)
     while (($help_file = readdir($dh)) !== FALSE) {
       if (! preg_match('/\.php$/', $help_file)) {
@@ -130,36 +196,23 @@ function _mmoda_help_pages_import($core_module_name, $module_name, $instrument =
         $book_parent_files[] = $help_file;
       else
         $not_book_root_files[] = $help_file;
+
+      array_push($pages_hierarchy, array(
+        'id' => $node->uuid,
+        'parent_id' => $node->node_export_book['#parent_uuid'],
+        'file_name' => $help_file
+      ));
     }
   else {
     throw new Exception("The help pages directory is not readable.\nCan not import help pages !");
   }
   closedir($dh);
-  $book_files = array_merge($book_root_files, $book_parent_files, $not_book_root_files);
-  if (empty($book_files))
-    return;
-
+  $root_ids = _mmoda_get_node_root_uuids($pages_hierarchy);
   $help_page_nids = array();
-  foreach ($book_files as $help_file) {
-    $node_export = file_get_contents($help_file);
-
-    // mark the content of the input file
-    // $node_export = preg_replace("/'(log)' => '\s*'?,/", "'$1' => 'nan',", $node_export);
-
-    if (! empty($node_export)) {
-      $import_output = node_export_import($node_export);
-      // error_log(print_r($import_output, true));
-      if ($import_output['success']) {
-        $node = node_load($import_output['nids'][0]);
-        $node->uid = 1;
-        $node->status = 1;
-        node_save($node);
-        $help_page_nids[] = $import_output['nids'][0];
-        drupal_set_message("Help file $help_file imported successfully");
-      }
-    } else {
-      throw new Exception("Can not load xml help page file $help_file !");
-    }
+  foreach ($root_ids as $element) {
+    $nodes_tree = _mmoda_build_tree($pages_hierarchy, $element['id']);
+    _mmoda_import_nodes_tree(array($element), $help_page_nids);
+    _mmoda_import_nodes_tree($nodes_tree, $help_page_nids);
   }
 
   $module_settings = variable_get($core_module_name . '_settings', array());

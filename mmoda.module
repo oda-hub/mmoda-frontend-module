@@ -277,7 +277,7 @@ function mmoda_main_block_content()
   $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
 
   foreach ($mmoda_settings['instruments'] as $name => $instrument) {
-    $instruments[$instrument['weight']] = $name;
+    if (isset($instrument['weight'])) $instruments[$instrument['weight']] = $name;
   }
 
   ksort($instruments);
@@ -289,7 +289,7 @@ function mmoda_main_block_content()
     $mmoda_js_settings[$instrument_name] = array();
     $instrument = $mmoda_settings['instruments'][$instrument_name];
 
-    if ($instrument['enabled']) {
+    if ($instrument['enabled'] and (!isset($instrument['virtual']) or !$instrument['virtual'])) {
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
         'title' => $instrument['title'],
