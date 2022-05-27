@@ -12,8 +12,8 @@ function mmoda_multiinstr_instrument_info()
 {
   $info = array(
     'name' => 'multiinstr',
-    'messenger' => 'Multi-messenger',
-    'title' => 'Combine'
+    'messenger' => '',
+    'title' => 'Multi-messenger'
   );
 
   return $info;
@@ -40,7 +40,7 @@ function mmoda_multiinstr_install()
     'enabled' => TRUE,
     'query_type' => 'Real',
     'product_type' => 'multiinstr_lc',
-    'weight' => 10,
+    'weight' => 100,
     'acknowledgement' => 'Acknowledgement placeholder'
   );
   $module_settings= array_merge($instrument_info, $module_settings);

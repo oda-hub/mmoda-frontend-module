@@ -39,12 +39,12 @@ function mmoda_multiinstr($form, &$form_state) {
           'multimessenger' => '',
       ),
       '#attributes' => array(
-          'style' => 'display: none;'
+          'style' => 'display: none;',
       )
   );
 
   $form ['ids_csv'] = array (
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => t ( "Product ids" ),
       '#default_value' => '',
       '#parent_classes' => array (
@@ -55,6 +55,7 @@ function mmoda_multiinstr($form, &$form_state) {
           'class' => array (
               'form-control'
           ),
+          'readonly' => 'readonly',
       ),
     '#prefix' => '<div class="row">',
     '#suffix' => '</div>'
