@@ -32,6 +32,17 @@ function mmoda_multiinstr($form, &$form_state) {
       '#value' => $instrument_defaults['query_type'],
   );
 
+  $form ['product_type'] = array (
+      '#type' => 'radios',
+      '#default_value' => 'multimessenger',
+      '#options' => array(
+          'multimessenger' => '',
+      ),
+      '#attributes' => array(
+          'style' => 'display: none;'
+      )
+  );
+
   $form ['ids_csv'] = array (
       '#type' => 'textfield',
       '#title' => t ( "Product ids" ),
