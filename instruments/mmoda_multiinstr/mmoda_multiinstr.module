@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Provides a block displaying prayer times for the visitor's location
+ */
+function mmoda_multiinstr_enable() {
+  $instrument = mmoda_multiinstr_instrument_info()['name'];
+  _mmodaa_instrument_enable($instrument);
+}
+
+function mmoda_multiinstr_disable() {
+  $instrument = mmoda_multiinstr_instrument_info()['name'];
+  _mmodaa_instrument_disable($instrument);
+}
+
+function mmoda_multiinstr_init() {
+}
+
+/**
+ * Implements hook_help().
+ */
+function mmoda_multiinstr_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#mmoda_multiinstr' :
+      $output = '<p>';
+      $output .= t ( "MMODA Multiinstr." );
+      $output .= '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+
+function mmoda_multiinstr_permission() {
+  return array (
+      'administer mmoda multiinstr' => array (
+          'description' => t ( 'Administer MMODA Multiinstr' ),
+          'title' => t ( 'Administer MMODA Multiinstr' ),
+          'restrict access' => TRUE
+      ),
+      'access mmoda multiinstr' => array (
+          'description' => t ( 'Access MMODA Multiinstr' ),
+          'title' => t ( 'Access MMODA Multiinstr' ),
+          'restrict access' => TRUE
+      )
+  );
+}
+
+/**
+ * Menu callback.
+ * Prints a listing of active nodes on the site.
+ */
+function mmoda_multiinstr_menu() {
+  $items = array ();
+
+  $items ['admin/config/mmoda/multiinstr'] = array (
+      'title' => 'Administer MMODA Multiinstr',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array (
+          'mmoda_multiinstr_admin_settings'
+      ),
+      'description' => 'Edit MMODA Multiinstr settings.',
+      'file' => 'mmoda_multiinstr.admin.inc'
+  );
+  // 'weight' => -10,
+
+  return $items;
+}
+
