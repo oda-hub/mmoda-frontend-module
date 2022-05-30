@@ -1,5 +1,5 @@
 var current_instrument_form_validator;
-
+var bk_id_counter = 1;
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
   if ($thefield.data('mmodaTimeBinMin')) {
@@ -202,6 +202,7 @@ function panel_title(srcname, param) {
                 product_panel_body = display_image_table(data.products, job_id, instrument);
               } else {
                 product_panel_body = display_image(data.products, job_id, instrument);
+                //product_panel_body = display_image(data.products, job_id, instrument);
               }
             }
           } else if (data.products.hasOwnProperty('spectrum_name')) {
@@ -640,12 +641,12 @@ function panel_title(srcname, param) {
       let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
       // remove any previous results
-      if($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
+      if ($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
         $(this)[0].parentElement.nextSibling.remove();
-      
+
       // disable publish-on-renku button
       e.target.disabled = true;
-      
+
       // show spinner
       let div_spinner = get_div_spinner();
       $(this)[0].parentElement.after(div_spinner);
@@ -722,6 +723,38 @@ function panel_title(srcname, param) {
 
         display_query_parameters(query_parameters, '#' + query_parameters_parent_panel.attr('id'), datetime, query_parameters_offset);
       }
+    });
+
+    $("body").on('click', '.result-panel .copy-dashboard', function(e) {
+      e.preventDefault();
+
+      var result_panel = $(this).closest('.result-panel');
+      bk_id = $('.bk-root', result_panel).attr('id');
+      bk_elt = $('[id^=' + bk_id + '].bk-root', "#dashboard");
+      if (bk_elt.length) {
+        var result_panel = bk_elt.closest('.result-panel');
+        $('#dashboard-tab a').click();
+        result_panel.highlight_result_panel();
+        $('.fa-chevron-down', result_panel).click();
+        return;
+      }
+      var result_panel = result_panel.clone();
+      $('.product-toolbar', result_panel).remove();
+      $(result_panel).set_panel_draggable();
+      bk_new_id = bk_id + '-MM' + bk_id_counter;
+      bk_id_counter += 1;
+      $('.bk-root', result_panel).attr('id', bk_new_id).text('');
+      bk_div = $('.bk-root', result_panel).prop('outerHTML');
+      $('.bk-root', result_panel).remove();
+      bk_script = $('script', result_panel).prop('outerHTML');
+      $('script', result_panel).remove();
+      bk_script = bk_script.replace(bk_id, bk_new_id);
+
+      $('.panel-body', result_panel).prepend(bk_script + bk_div);
+      $('#dashboard').append(result_panel);
+      $('#dashboard-tab a').click();
+      result_panel.highlight_result_panel();
+
     });
 
     $("body").on('click', '.result-panel .share-query', function(e) {
@@ -1514,7 +1547,7 @@ function panel_title(srcname, param) {
       // highlight missing roles
       publish_result_interpreted = publish_result.replace(
         /-(.*)/g,
-        function(m) {return '- <b>' + m.substr(1) + '</b>'}
+        function(m) { return '- <b>' + m.substr(1) + '</b>' }
       );
 
       let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
@@ -1891,7 +1924,7 @@ function panel_title(srcname, param) {
     }
 
     // -------------- Toolbar start 
-    var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
+    var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
 
@@ -1911,6 +1944,13 @@ function panel_title(srcname, param) {
     glyphicon.attr({ title: "Light curve in FITS format" });
     link.append(glyphicon);
     toolbar.append(link);
+
+    // Add button "Copy to dashboard" : copy the panel to dashbord
+    button = dbutton.clone().addClass('copy-dashboard').text('');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
+    glyphicon.attr({ title: "Copy the product to the dashboard" });
+    button.append(glyphicon);
+    toolbar.append(button);
 
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -2135,11 +2175,29 @@ function panel_title(srcname, param) {
       spectrum_parent_panel_id: current_row
     });
 
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
-    $('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
-
     panel_body_append_header_footer(panel_ids, data);
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + metadata.source_name);
+
+    // --------------- Toolbar start
+    var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    dbutton.data("datetime", datetime);
+
+    // Add button "Copy to dashboard" : copy the panel to dashbord
+    button = dbutton.clone().addClass('copy-dashboard').text('');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
+    glyphicon.attr({ title: "Copy the product to the dashboard" });
+    button.append(glyphicon);
+    toolbar.append(button);
+
+    // Install toolbar 
+    $('#' + panel_ids.panel_body_id).append(toolbar);
+    // Activate modal for API token form
+    activate_modal('#' + panel_ids.panel_body_id);
+    // --------------- Toolbar end
+
+    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    $('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
 
     var x = $('#' + panel_ids.panel_id).offset().top - 100;
     jQuery('body').animate({
@@ -2235,12 +2293,12 @@ function panel_title(srcname, param) {
   }
 
   function get_renku_publish_button(dbutton, job_id) {
-  
+
     button = dbutton.clone().addClass('renku-publish').text('View on Renku ');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Open Renku session with the API code" });
     button.append(glyphicon);
-    
+
     if (job_id) {
       button.data('job_id', job_id);
     }
@@ -2259,7 +2317,7 @@ function panel_title(srcname, param) {
       $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
   }
 
-  function display_image(data, job_id, instrument,) {
+  function display_image(data, job_id, instrument) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
 
@@ -2276,7 +2334,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     // --------------- Toolbar start
-    var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
+    var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
 
@@ -2345,6 +2403,13 @@ function panel_title(srcname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "Copy to dashboard" : copy the panel to dashbord
+    button = dbutton.clone().addClass('copy-dashboard').text('');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
+    glyphicon.attr({ title: "Copy the product to the dashboard" });
+    button.append(glyphicon);
+    toolbar.append(button);
+
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2371,7 +2436,19 @@ function panel_title(srcname, param) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-    $('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
+
+    bk_div = data.image.image.div;
+    bk_script = data.image.image.script;
+    //
+    //    bk_id_matches = bk_div.match(/id="([^"]+)"/);
+    //    bk_id = bk_id_matches[1];
+    //    bk_new_id = bk_id + '-MM' + bk_id_counter;
+    //    bk_div = bk_div.replace(bk_id, bk_new_id);
+    //    bk_id_counter += 1;
+    //    bk_script = bk_script.replace(bk_id, bk_new_id);
+
+    $('#' + panel_ids.panel_body_id).append(bk_script + bk_div);
+
 
     panel_body_append_header_footer(panel_ids, data);
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data.analysis_parameters));

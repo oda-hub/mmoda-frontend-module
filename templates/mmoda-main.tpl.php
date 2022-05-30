@@ -192,7 +192,12 @@
              <?php  foreach ($instruments as $name => $instrument ) :?>
                  <li id="<?=$name?>-tab"
                   class="<?=$instrument['active']?>"><a
-                  href="#<?=$name?>" data-toggle="tab"><div class="tab-messenger"><?=$instrument['messenger']?></div>
+                  href="#<?=$name?>" data-toggle="tab">
+                  <?php
+                     $messenger ='&nbsp;';
+                     if (isset($instrument['messenger'])) $messenger = $instrument['messenger']
+                    ?>
+                  <div class="tab-messenger"><?=$messenger?></div>
                   <div class="tab-title"><?=$instrument['title']?></div></a></li>
              <?php endforeach; ?>
               </ul>
@@ -201,6 +206,7 @@
               <div
                   class="instrument-panel instrument-panel-<?=$name?> tab-pane fade in <?=$instrument['active']?>"
                   id="<?=$name?>">
+                  <?php  if (isset($instrument['form'])) :?>
                   <div id="<?=$name?>-toolbox"
                     class="instrument-toolbox"></div>
                   <div id="<?=$name?>-params"
@@ -239,6 +245,7 @@
                       <?php endif; ?>
                     </div>
                   </div>
+                  <?php endif; ?>
 
                 </div>
              <?php endforeach; ?>
