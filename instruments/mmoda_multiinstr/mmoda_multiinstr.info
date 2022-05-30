@@ -1,0 +1,9 @@
+name = MMODA Multi Instrument
+description = Astro Online Data Analysis module for multi-instrument
+core = 7.x
+dependencies[] = mmoda_spi_acs
+dependencies[] = mmoda_gw
+
+files[] = mmoda.multiinstr.inc
+
+configure = admin/config/mmoda/mutliinstr

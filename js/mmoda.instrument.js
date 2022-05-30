@@ -769,6 +769,21 @@ function panel_title(srcname, param) {
       e.preventDefault();
       copyToClipboard($.cookie('Drupal.visitor.token'));
     });
+
+    $("body").on('click', '.to-mm', function(e) {
+      e.preventDefault();
+      let my_id = 'scratch_sid_' + $(this).data('session_id') + '_jid_' + $(this).data('job_id');
+      let edit_ids_csv_field = $('#edit-ids-csv')
+      let cur_val = edit_ids_csv_field.val();
+      if (cur_val.trim().length == 0) {
+        edit_ids_csv_field.val(my_id).trigger('change');
+        return
+      }
+      if (!cur_val.includes(my_id)) {
+        edit_ids_csv_field.val(cur_val.trim() + ',' + my_id).trigger('change');
+      }
+    });
+
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
@@ -1674,6 +1689,13 @@ function panel_title(srcname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "to Multi Messenger" for specific products
+    var mm_ready_types = ['spi_acs_lc']
+    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    if (mm_ready_types.includes(product_type)) { 
+      toolbar.append(get_add_to_mm_button(dbutton, data.session_id, job_id))
+    }
+
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
     toolbar.append(get_token_button());
@@ -2308,6 +2330,23 @@ function panel_title(srcname, param) {
     return button;
   }
 
+  function get_add_to_mm_button(dbutton, session_id, job_id) {
+    button = dbutton.clone().addClass('to-mm').text('Add to MM');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+    glyphicon.attr({ title: "Add product to Multi-Messenger panel" });
+    button.append(glyphicon);
+    
+    if (job_id) {
+      button.data('job_id', job_id);
+    }
+
+    if (session_id) {
+      button.data('session_id', session_id);
+    }
+    
+    return button;
+  }
+
   function panel_body_append_header_footer(panel_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
       $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
@@ -2403,6 +2442,12 @@ function panel_title(srcname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "to Multi Messenger" for specific products
+    var mm_ready_types = ['gw_spectrogram']
+    if (mm_ready_types.includes(product_type)) { 
+      toolbar.append(get_add_to_mm_button(dbutton, data.session_id, job_id))
+    }
+    
     // Add button "Copy to dashboard" : copy the panel to dashbord
     button = dbutton.clone().addClass('copy-dashboard').text('');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
