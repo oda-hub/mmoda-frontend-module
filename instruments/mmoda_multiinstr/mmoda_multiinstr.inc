@@ -43,9 +43,9 @@ function mmoda_multiinstr($form, &$form_state) {
       )
   );
 
-  $form ['ids_csv'] = array (
+  $form ['anal_par_csv'] = array (
       '#type' => 'textarea',
-      '#title' => t ( "Product ids" ),
+      '#title' => t ( "Analysis parameters" ),
       '#default_value' => '',
       '#parent_classes' => array (
           'form-group',

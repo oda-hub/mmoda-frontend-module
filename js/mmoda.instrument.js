@@ -772,15 +772,15 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.to-mm', function(e) {
       e.preventDefault();
-      let my_id = 'scratch_sid_' + $(this).data('session_id') + '_jid_' + $(this).data('job_id');
-      let edit_ids_csv_field = $('#edit-ids-csv')
-      let cur_val = edit_ids_csv_field.val();
+      let my_anal_par_str = JSON.stringify($(this).data('analysis_parameters'));
+      let edit_anal_par_csv_field = $('#edit-anal-par-csv')
+      let cur_val = edit_anal_par_csv_field.val();
       if (cur_val.trim().length == 0) {
-        edit_ids_csv_field.val(my_id).trigger('change');
+        edit_anal_par_csv_field.val(my_anal_par_str).trigger('change');
         return
       }
-      if (!cur_val.includes(my_id)) {
-        edit_ids_csv_field.val(cur_val.trim() + ',' + my_id).trigger('change');
+      if (!cur_val.includes(my_anal_par_str)) {
+        edit_anal_par_csv_field.val(cur_val.trim() + ';' + my_anal_par_str).trigger('change');
       }
     });
 
@@ -1693,7 +1693,7 @@ function panel_title(srcname, param) {
     var mm_ready_types = ['spi_acs_lc']
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
     if (mm_ready_types.includes(product_type)) { 
-      toolbar.append(get_add_to_mm_button(dbutton, data.session_id, job_id))
+      toolbar.append(get_add_to_mm_button(dbutton, data))
     }
 
     // Add button "API token" : copy API token to clipboard if connected
@@ -2330,20 +2330,16 @@ function panel_title(srcname, param) {
     return button;
   }
 
-  function get_add_to_mm_button(dbutton, session_id, job_id) {
+  function get_add_to_mm_button(dbutton, form_data) {
     button = dbutton.clone().addClass('to-mm').text('Add to MM');
     glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Add product to Multi-Messenger panel" });
     button.append(glyphicon);
     
-    if (job_id) {
-      button.data('job_id', job_id);
+    if (form_data) {
+      button.data('analysis_parameters', form_data.analysis_parameters);
     }
 
-    if (session_id) {
-      button.data('session_id', session_id);
-    }
-    
     return button;
   }
 
@@ -2445,7 +2441,7 @@ function panel_title(srcname, param) {
     // Add button "to Multi Messenger" for specific products
     var mm_ready_types = ['gw_spectrogram']
     if (mm_ready_types.includes(product_type)) { 
-      toolbar.append(get_add_to_mm_button(dbutton, data.session_id, job_id))
+      toolbar.append(get_add_to_mm_button(dbutton, data))
     }
     
     // Add button "Copy to dashboard" : copy the panel to dashbord
