@@ -304,11 +304,7 @@ function mmoda_main_block_content()
         $first_instrument = false;
       }
     }
-    $items['instruments']['dashboard'] = array(
-      'name' => 'dashboard',
-      'title' => 'Dashboard',
-      'active' => ''
-    );
+
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
     $mmoda_js_settings[$instrument_name]['enable_use_catalog'] = isset($mmoda_settings['instruments'][$instrument_name]['enable_use_catalog']) ? $mmoda_settings['instruments'][$instrument_name]['enable_use_catalog'] : true;
     $mmoda_js_settings[$instrument_name]['js9_ext_id'] = isset($mmoda_settings['instruments'][$instrument_name]['js9_ext_id']) ? $mmoda_settings['instruments'][$instrument_name]['js9_ext_id'] : 4;

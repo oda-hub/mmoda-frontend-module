@@ -1,5 +1,5 @@
 var current_instrument_form_validator;
-var bk_id_counter = 1;
+
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
   if ($thefield.data('mmodaTimeBinMin')) {
@@ -202,7 +202,6 @@ function panel_title(srcname, param) {
                 product_panel_body = display_image_table(data.products, job_id, instrument);
               } else {
                 product_panel_body = display_image(data.products, job_id, instrument);
-                //product_panel_body = display_image(data.products, job_id, instrument);
               }
             }
           } else if (data.products.hasOwnProperty('spectrum_name')) {
@@ -723,38 +722,6 @@ function panel_title(srcname, param) {
 
         display_query_parameters(query_parameters, '#' + query_parameters_parent_panel.attr('id'), datetime, query_parameters_offset);
       }
-    });
-
-    $("body").on('click', '.result-panel .copy-dashboard', function(e) {
-      e.preventDefault();
-
-      var result_panel = $(this).closest('.result-panel');
-      bk_id = $('.bk-root', result_panel).attr('id');
-      bk_elt = $('[id^=' + bk_id + '].bk-root', "#dashboard");
-      if (bk_elt.length) {
-        var result_panel = bk_elt.closest('.result-panel');
-        $('#dashboard-tab a').click();
-        result_panel.highlight_result_panel();
-        $('.fa-chevron-down', result_panel).click();
-        return;
-      }
-      var result_panel = result_panel.clone();
-      $('.product-toolbar', result_panel).remove();
-      $(result_panel).set_panel_draggable();
-      bk_new_id = bk_id + '-MM' + bk_id_counter;
-      bk_id_counter += 1;
-      $('.bk-root', result_panel).attr('id', bk_new_id).text('');
-      bk_div = $('.bk-root', result_panel).prop('outerHTML');
-      $('.bk-root', result_panel).remove();
-      bk_script = $('script', result_panel).prop('outerHTML');
-      $('script', result_panel).remove();
-      bk_script = bk_script.replace(bk_id, bk_new_id);
-
-      $('.panel-body', result_panel).prepend(bk_script + bk_div);
-      $('#dashboard').append(result_panel);
-      $('#dashboard-tab a').click();
-      result_panel.highlight_result_panel();
-
     });
 
     $("body").on('click', '.result-panel .share-query', function(e) {
@@ -1945,13 +1912,6 @@ function panel_title(srcname, param) {
     link.append(glyphicon);
     toolbar.append(link);
 
-    // Add button "Copy to dashboard" : copy the panel to dashbord
-    button = dbutton.clone().addClass('copy-dashboard').text('');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
-    glyphicon.attr({ title: "Copy the product to the dashboard" });
-    button.append(glyphicon);
-    toolbar.append(button);
-
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2175,29 +2135,11 @@ function panel_title(srcname, param) {
       spectrum_parent_panel_id: current_row
     });
 
-    panel_body_append_header_footer(panel_ids, data);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + metadata.source_name);
-
-    // --------------- Toolbar start
-    var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
-    dbutton.data("datetime", datetime);
-
-    // Add button "Copy to dashboard" : copy the panel to dashbord
-    button = dbutton.clone().addClass('copy-dashboard').text('');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
-    glyphicon.attr({ title: "Copy the product to the dashboard" });
-    button.append(glyphicon);
-    toolbar.append(button);
-
-    // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
-    // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
-    // --------------- Toolbar end
-
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
     $('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
+
+    panel_body_append_header_footer(panel_ids, data);
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + metadata.source_name);
 
     var x = $('#' + panel_ids.panel_id).offset().top - 100;
     jQuery('body').animate({
@@ -2403,13 +2345,6 @@ function panel_title(srcname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
-    // Add button "Copy to dashboard" : copy the panel to dashbord
-    button = dbutton.clone().addClass('copy-dashboard').text('');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-copy");
-    glyphicon.attr({ title: "Copy the product to the dashboard" });
-    button.append(glyphicon);
-    toolbar.append(button);
-
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2436,19 +2371,7 @@ function panel_title(srcname, param) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-
-    bk_div = data.image.image.div;
-    bk_script = data.image.image.script;
-    //
-    //    bk_id_matches = bk_div.match(/id="([^"]+)"/);
-    //    bk_id = bk_id_matches[1];
-    //    bk_new_id = bk_id + '-MM' + bk_id_counter;
-    //    bk_div = bk_div.replace(bk_id, bk_new_id);
-    //    bk_id_counter += 1;
-    //    bk_script = bk_script.replace(bk_id, bk_new_id);
-
-    $('#' + panel_ids.panel_body_id).append(bk_script + bk_div);
-
+    $('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
 
     panel_body_append_header_footer(panel_ids, data);
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data.analysis_parameters));

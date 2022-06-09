@@ -568,13 +568,6 @@ button.renku-publish {
   padding-left: 28px;
 }
 
-#dashboard-tab {
-  float: right;
-}
-
-.instrument-panel {
-  min-height: 600px;
-}
 .tab-title {
   font-weight: bold;
 }
