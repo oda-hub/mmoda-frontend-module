@@ -772,15 +772,18 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.to-mm', function(e) {
       e.preventDefault();
-      let my_anal_par_str = JSON.stringify($(this).data('analysis_parameters'));
-      let edit_anal_par_csv_field = $('#edit-anal-par-csv')
-      let cur_val = edit_anal_par_csv_field.val();
-      if (cur_val.trim().length == 0) {
-        edit_anal_par_csv_field.val(my_anal_par_str).trigger('change');
+      let my_anal_par_dict = $(this).data('analysis_parameters');
+      let edit_anal_par_field = $('#edit-anal-par-json');
+      let cur_val = edit_anal_par_field.val();
+      if ( cur_val.trim() == '' ) { cur_val = '[]' };
+      cur_val = JSON.parse(cur_val);
+
+      if (cur_val.length == 0) {
+        edit_anal_par_field.val(JSON.stringify([my_anal_par_dict])).trigger('change');
         return
       }
-      if (!cur_val.includes(my_anal_par_str)) {
-        edit_anal_par_csv_field.val(cur_val.trim() + ';' + my_anal_par_str).trigger('change');
+      if (!cur_val.some(ele => JSON.stringify(ele) === JSON.stringify(my_anal_par_dict))) {
+        edit_anal_par_field.val(JSON.stringify(cur_val.concat(my_anal_par_dict))).trigger('change');
       }
     });
 

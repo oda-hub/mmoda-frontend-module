@@ -34,16 +34,16 @@ function mmoda_multiinstr($form, &$form_state) {
 
   $form ['product_type'] = array (
       '#type' => 'radios',
-      '#default_value' => 'multimessenger',
+      '#default_value' => 'combine',
       '#options' => array(
-          'multimessenger' => '',
+          'combine' => '',
       ),
       '#attributes' => array(
           'style' => 'display: none;',
       )
   );
 
-  $form ['anal_par_csv'] = array (
+  $form ['anal_par_json'] = array (
       '#type' => 'textarea',
       '#title' => t ( "Analysis parameters" ),
       '#default_value' => '',
