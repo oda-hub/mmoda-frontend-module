@@ -3,6 +3,6 @@ description = Astro Online Data Analysis module for Antares
 core = 7.x
 dependencies[] = mmoda
 
-files[] = mmoda.antares.inc
+files[] = mmoda_antares.inc
 
 configure = admin/config/mmoda/antares

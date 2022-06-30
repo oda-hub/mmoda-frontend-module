@@ -3,6 +3,6 @@ description = Astro Online Data Analysis module for Magic
 core = 7.x
 dependencies[] = mmoda
 
-files[] = mmoda.magic.inc
+files[] = mmoda_magic.inc
 
 configure = admin/config/mmoda/magic

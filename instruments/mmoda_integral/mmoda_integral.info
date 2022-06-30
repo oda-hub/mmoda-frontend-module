@@ -3,6 +3,4 @@ description = MMODA module for INTEGRAL
 core = 7.x
 dependencies[] = mmoda
 
-;files[] = mmoda.integral.inc
-
 configure = admin/config/mmoda/integral

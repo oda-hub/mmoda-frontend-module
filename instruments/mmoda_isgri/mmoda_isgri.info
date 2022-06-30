@@ -3,6 +3,6 @@ description = MMODA module for ISGRI
 core = 7.x
 dependencies[] = mmoda_integral
 
-files[] = mmoda.isgri.inc
+files[] = mmoda_isgri.inc
 
 configure = admin/config/mmoda/isgri
