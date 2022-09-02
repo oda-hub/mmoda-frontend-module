@@ -636,63 +636,72 @@ function panel_title(srcname, param) {
       let job_id = $(this).data('job_id');
       let token = $.cookie('Drupal.visitor.token');
 
-      // publish the code over the renku repository
-      let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
+      if (token === null || token === undefined) {
+        publish_response_title = 'Error while publishing to the Renku repository: ';
+        publish_result_type = 'publish_error';
+        no_user_loged_in_error_message = 'please login to MMODA first and then retry';
 
-      // remove any previous results
-      if ($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
-        $(this)[0].parentElement.nextSibling.remove();
-
-      // disable publish-on-renku button
-      e.target.disabled = true;
-
-      // show spinner
-      let div_spinner = get_div_spinner();
-      $(this)[0].parentElement.after(div_spinner);
-
-      var renku_publish_jqxhr = $.ajax({
-        url: url_dispatcher_renku_publish_url,
-        processData: false,
-        contentType: false,
-        context: this,
-        timeout: ajax_request_timeout,
-        type: 'POST'
-      }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
-        serverResponse = '';
-        try {
-          serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
-        } catch (e) {
-          serverResponse = renku_publish_jqXHR.responseText;
-        }
-        publish_response_title = 'Renku publish result: ';
-        publish_result_type = 'success';
-        if (renku_publish_textStatus == 'error') {
-          if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
-            serverResponse = serverResponse.error_message;
-          else
-            serverResponse = serverResponse;
-          publish_response_title = 'Error while publishing to the Renku repository: '
-          publish_result_type = 'publish_error';
-        } else {
-          // success -> redirect to the link returned from the call
-          window.open(serverResponse, "_blank");
-        }
-
-        // hide/remove the spinner
-        $('.renku-progress').remove();
-        // re-enable publish-on-renku button, or disable it forever?
-        e.target.disabled = false;
-
-        let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+        let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
         $(this)[0].parentElement.after(publish_result_panel);
-
-      })
-        .error(
-          function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
-            console.log(renku_publish_textStatus);
-            e.target.disabled = false;
+      } else {
+        // publish the code over the renku repository
+        let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
+  
+        // remove any previous results
+        if ($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
+          $(this)[0].parentElement.nextSibling.remove();
+  
+        // disable publish-on-renku button
+        e.target.disabled = true;
+  
+        // show spinner
+        let div_spinner = get_div_spinner();
+        $(this)[0].parentElement.after(div_spinner);
+  
+        var renku_publish_jqxhr = $.ajax({
+          url: url_dispatcher_renku_publish_url,
+          processData: false,
+          contentType: false,
+          context: this,
+          timeout: ajax_request_timeout,
+          type: 'POST'
+        }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+          serverResponse = '';
+          try {
+            serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
+          } catch (e) {
+            serverResponse = renku_publish_jqXHR.responseText;
           }
-        );
+          publish_response_title = 'Renku publish result: ';
+          publish_result_type = 'success';
+          if (renku_publish_textStatus == 'error') {
+            if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
+              serverResponse = serverResponse.error_message;
+            else
+              serverResponse = serverResponse;
+            publish_response_title = 'Error while publishing to the Renku repository: ';
+            publish_result_type = 'publish_error';
+          } else {
+            // success -> redirect to the link returned from the call
+            window.open(serverResponse, "_blank");
+          }
+  
+          // hide/remove the spinner
+          $('.renku-progress').remove();
+          // re-enable publish-on-renku button, or disable it forever?
+          e.target.disabled = false;
+  
+          let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+          $(this)[0].parentElement.after(publish_result_panel);
+  
+        }).error(
+            function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+              console.log(renku_publish_textStatus);
+              e.target.disabled = false;
+            }
+          );
+      }
+
 
     });
 
