@@ -266,16 +266,14 @@ function mmoda_gw($form, &$form_state)
     '#states' => array(
       'visible' => array(
         ':input[name="' . $mform_id . 'product_type"]' => array(
-          'value' => 'gw_spectrogram', 'or', 'value' => 'gw_strain' 
+          array('value' => 'gw_spectrogram'), 'or', array('value' => 'gw_strain') 
         )
       ),
       'enabled' => array(
         ':input[name="' . $mform_id . 'product_type"]' => array(
-          array(
-            'value' => 'gw_spectrogram', 'or', 'value' => 'gw_strain'
-          )
+          array('value' => 'gw_spectrogram'), 'or', array('value' => 'gw_strain')
+         )
         )
-      )
     ),
   );
 
