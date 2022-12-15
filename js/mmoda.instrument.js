@@ -680,7 +680,7 @@ function panel_title(srcname, param) {
             // else
             //   serverResponse = serverResponse;
             publish_response_title = 'Error while publishing to Renku:';
-            serverResponse = 'you can report clicking the "Write feedback" button. We will work to fix the problem.';
+            serverResponse = 'you can contact us by clicking the "Write feedback" button. We will work to address the issue.';
             publish_result_type = 'publish_error';
           } else {
             // success -> redirect to the link returned from the call
