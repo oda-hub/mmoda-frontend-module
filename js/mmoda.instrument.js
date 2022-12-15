@@ -675,12 +675,12 @@ function panel_title(srcname, param) {
           publish_response_title = 'Renku publish result: ';
           publish_result_type = 'success';
           if (renku_publish_textStatus == 'error') {
-            // if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
-            //   serverResponse = serverResponse.error_message;
-            // else
-            //   serverResponse = serverResponse;
-            publish_response_title = 'Error while publishing to Renku:';
-            serverResponse = 'you can contact us by clicking the "Write feedback" button. We will work to address the issue.';
+            if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
+              serverResponse = `\"${serverResponse.error_message}\" - we will work to address the issue.`;
+            else
+              serverResponse = "we will work to address the issue.";
+            publish_response_title = 'An internal error occured while publishing to Renku:';
+            
             publish_result_type = 'publish_error';
           } else {
             // success -> redirect to the link returned from the call
