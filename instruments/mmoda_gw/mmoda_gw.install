@@ -56,7 +56,8 @@ function mmoda_gw_install()
           please cite <a href="https://doi.org/10.5281/zenodo.6376844" target="_blank">https://doi.org/10.5281/zenodo.6376844</a>
           and include an acknowledgement of GWOSC:
           <a href="https://www.gw-openscience.org/acknowledgement/" target="_blank">https://www.gw-openscience.org/acknowledgement/</a>',
-    'enable_use_catalog' => FALSE
+    'enable_use_catalog' => FALSE,
+    'only_roles' => 'developer'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 
