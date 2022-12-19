@@ -676,10 +676,15 @@ function panel_title(srcname, param) {
           publish_result_type = 'success';
           if (renku_publish_textStatus == 'error') {
             if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
-              serverResponse = `\"${serverResponse.error_message}\" - we will work to address the issue.`;
+              serverResponse = `\"${serverResponse.error_message}\" - we will work to fix the issue.`;
             else
-              serverResponse = "we will work to address the issue.";
-            publish_response_title = 'An internal error occured while publishing to Renku:';
+              serverResponse = 'we will work to fix the issue.';
+
+            serverResponse += ' In the meantime you can check the status of <a target="_blank" href="https://renkulab.statuspage.io/">Renku</a> and' +
+            ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
+            // https://renkulab.statuspage.io/ and https://mmoda.statuspage.io/ 
+            
+            publish_response_title = 'Could not publish to Renku:';
             
             publish_result_type = 'publish_error';
           } else {
@@ -1517,8 +1522,8 @@ function panel_title(srcname, param) {
     } else if (publish_result_type == 'publish_error') {
       result_error_message = $('<div>')
         .addClass('result-renku-publish-link')
-        .css("max-width", '475px')
-        .text(publish_result);
+        .css("max-width", '600px')
+        .html(publish_result);
       // define a tooltip
       if (result_error_message != null) {
         // highlight missing roles
