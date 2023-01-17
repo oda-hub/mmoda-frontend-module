@@ -322,6 +322,7 @@ function mmoda_main_block_content()
 function _mmoda_user_has_roles($instrument_roles)
 {
   global $user;
+  if (empty($instrument_roles)) return (true);
   $user_roles = $user->roles;
   $instrument_roles_ar = preg_split('/ *, */', $instrument_roles);
   foreach ($user_roles as $user_role)
