@@ -335,6 +335,7 @@ function _mmoda_cmp_instruments_weights($i1, $i2)
 function _mmoda_user_has_roles($instrument_roles)
 {
   global $user;
+  if (empty($instrument_roles)) return (true);
   $user_roles = $user->roles;
   $instrument_roles_ar = preg_split('/\s*,+\s*/', $instrument_roles);
   foreach ($user_roles as $user_role)
