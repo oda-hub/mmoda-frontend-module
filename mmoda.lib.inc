@@ -76,7 +76,6 @@ function _mmoda_common_uninstall($module_name, $instrument = '')
 {
   list ($core_module_name) = explode('_', $module_name);
   _mmoda_uninstall_started();
-
   $core_module_settings = variable_get($core_module_name . '_settings');
 
   // Delete module help page nodes
@@ -86,7 +85,7 @@ function _mmoda_common_uninstall($module_name, $instrument = '')
   if (_mmoda_core($module_name)) {
     variable_del($module_name . '_settings');
   } else {
-    unset($core_module_settings['instruments'][$module_name]);
+    unset($core_module_settings['instruments'][$instrument]);
     variable_set($core_module_name . '_settings', $core_module_settings);
   }
   $field_mmoda_module = field_info_field('field_mmoda_module');

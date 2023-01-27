@@ -275,21 +275,23 @@ function mmoda_main_block_content()
   }
   $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
 
-  foreach ($mmoda_settings['instruments'] as $name => $instrument) {
-    if (isset($instrument['weight']))
-      $instruments[$instrument['weight']] = $name;
-  }
+//   $filename = '/tmp/instrums.php';
+//   $f = fopen($filename, 'w');
+//   fwrite($f, "Instrums before usort\n" . print_r($mmoda_settings['instruments'], TRUE));
+  usort($mmoda_settings['instruments'], '_mmoda_cmp_instruments_weights');
 
-  ksort($instruments);
-  $weight_sorted_instruments = array_values($instruments);
   $first_instrument = true;
   $mmoda_js_settings = array();
 
-  foreach ($weight_sorted_instruments as $instrument_name) {
-    $mmoda_js_settings[$instrument_name] = array();
-    $instrument = $mmoda_settings['instruments'][$instrument_name];
+//   fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
+//   fclose($f);
 
-    if ($instrument['enabled'] and (! isset($instrument['virtual']) or ! $instrument['virtual']) and (! isset($instrument['only_roles']) or _mmoda_user_has_roles($instrument['only_roles']))) {
+  foreach ($mmoda_settings['instruments'] as $instrument_name => $instrument) {
+    $mmoda_js_settings[$instrument_name] = array();
+    // $instrument = $mmoda_settings['instruments'][$instrument_name];
+
+    if ($instrument['enabled'] and (! isset($instrument['virtual']) or ! $instrument['virtual']) and
+      (! isset($instrument['allowed_roles']) or empty($instrument['allowed_roles']) or _mmoda_user_has_roles($instrument['allowed_roles']))) {
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
         'messenger' => $instrument['messenger'],
@@ -319,14 +321,24 @@ function mmoda_main_block_content()
 /**
  * Generates the actual content of the iPrayTimes block.
  */
+function _mmoda_cmp_instruments_weights($i1, $i2)
+{
+  $max_weight = PHP_INT_MAX - 0.1 * PHP_INT_MAX;
+  $w1 = (array_key_exists('weight', $i1) and is_int($i1['weight'])) ? $i1['weight'] : $max_weight;
+  $w2 = (array_key_exists('weight', $i2) and is_int($i2['weight'])) ? $i2['weight'] : $max_weight;
+  return $w1 - $w2;
+}
+
+/**
+ * Generates the actual content of the iPrayTimes block.
+ */
 function _mmoda_user_has_roles($instrument_roles)
 {
   global $user;
   $user_roles = $user->roles;
-  $instrument_roles_ar = preg_split('/ *, */', $instrument_roles);
+  $instrument_roles_ar = preg_split('/\s*,+\s*/', $instrument_roles);
   foreach ($user_roles as $user_role)
     foreach ($instrument_roles_ar as $instrument_role) {
-      error_log('user_role:'.$user_role.'instrument_role:'.$instrument_role);
       if ($user_role == $instrument_role)
         return (true);
     }
@@ -747,10 +759,10 @@ function mmoda_mail_alter(&$message)
     $account = array(
       'user' => $message['params']['account']
     );
-    $filename = 'account-mtm.php';
-    $f = fopen($filename, 'w');
-    fwrite($f, print_r($message['params'], true));
-    fclose($f);
+//     $filename = 'account-mtm.php';
+//     $f = fopen($filename, 'w');
+//     fwrite($f, print_r($message['params'], true));
+//     fclose($f);
 
     unset($message['body']);
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
