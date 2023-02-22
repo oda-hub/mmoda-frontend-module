@@ -2,7 +2,9 @@ var instrument_panel_margin = 150;
 var common_form_validator;
 
 Date.prototype.getJulian = function() {
-  return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
+  //  return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
+  // the same with the fracional part
+  return (this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5;
 }
 
 // Sleep time in seconds
@@ -290,7 +292,7 @@ function get_div_spinner() {
           <div class="progress-bar" style="width: 100%"></div>
       </div>
   */
- var spinner_div = (function($) {
+  var spinner_div = (function($) {
     let inner_div = $('<div>').addClass('progress-bar').css("width", '100%');
     let outer_div = $('<div>').addClass('renku-progress progress progress-striped active').css("width", '100%');
     outer_div.append(inner_div);
