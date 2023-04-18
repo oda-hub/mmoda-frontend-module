@@ -20,7 +20,6 @@ function mmoda_isgri($form, &$form_state)
 
   $mform_id = __FUNCTION__ . '_';
 
-  $form['#action'] = 'dispatch-data/run_analysis';
   $form['#method'] = 'POST';
 
   $form['#attributes'] = array(
@@ -36,6 +35,8 @@ function mmoda_isgri($form, &$form_state)
 
   $core_module_settings = variable_get($core_module_name . '_settings');
   $instrument_defaults = $core_module_settings['instruments'][$instrument];
+
+  $form['#action'] = $instrument_defaults['data_server_local_url'];
 
   $form['osa_version'] = array(
     '#type' => 'select',

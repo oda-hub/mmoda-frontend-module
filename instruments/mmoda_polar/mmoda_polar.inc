@@ -15,7 +15,6 @@ function mmoda_polar($form, &$form_state) {
   //turn off form caching
   $mform_id= __FUNCTION__.'_';
 
-  $form ['#action'] = 'dispatch-data/run_analysis';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'polar-form');
 
@@ -26,6 +25,8 @@ function mmoda_polar($form, &$form_state) {
 
   $mmoda_settings = variable_get('mmoda_settings');
   $instrument_defaults= $mmoda_settings['instruments']['polar'];
+
+  $form['#action'] = $instrument_defaults['data_server_local_url'];
 
   $form ['E1_keV'] = array (
       '#type' => 'textfield',

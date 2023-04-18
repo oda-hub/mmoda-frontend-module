@@ -15,7 +15,6 @@ function mmoda_gw($form, &$form_state)
   // turn off form caching
   $mform_id = __FUNCTION__ . '_';
 
-  $form['#action'] = 'dispatch-data/run_analysis';
   $form['#method'] = 'POST';
   $form['#attributes'] = array(
     'class' => 'gw-form'
@@ -28,6 +27,8 @@ function mmoda_gw($form, &$form_state)
 
   $mmoda_settings = variable_get('mmoda_settings');
   $instrument_defaults = $mmoda_settings['instruments']['gw'];
+
+  $form['#action'] = $instrument_defaults['data_server_local_url'];
 
   $form['query_type'] = array(
     '#type' => 'hidden',
@@ -266,7 +267,7 @@ function mmoda_gw($form, &$form_state)
     '#states' => array(
       'visible' => array(
         ':input[name="' . $mform_id . 'product_type"]' => array(
-          array('value' => 'gw_spectrogram'), 'or', array('value' => 'gw_strain') 
+          array('value' => 'gw_spectrogram'), 'or', array('value' => 'gw_strain')
         )
       ),
       'enabled' => array(

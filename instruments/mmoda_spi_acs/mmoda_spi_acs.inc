@@ -15,7 +15,6 @@ function mmoda_spi_acs($form, &$form_state) {
   //turn off form caching
   $mform_id= __FUNCTION__.'_';
 
-  $form ['#action'] = 'dispatch-data/run_analysis';
   $form ['#method'] = 'POST';
   $form['#attributes'] = array('class' => 'spi_acs-form');
 
@@ -26,6 +25,9 @@ function mmoda_spi_acs($form, &$form_state) {
 
   $mmoda_settings = variable_get('mmoda_settings');
   $instrument_defaults= $mmoda_settings['instruments']['spi_acs'];
+
+  $form['#action'] = $instrument_defaults['data_server_local_url'];
+
   $form['#attached']['js'] = array(
     drupal_get_path('module', 'mmoda_spi_acs') . '/mmoda_spi_acs.js',
   );

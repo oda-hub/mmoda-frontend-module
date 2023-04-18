@@ -51,7 +51,8 @@ function mmoda_legacysurvey_install()
           and include an acknowledgement of the Legacy Survey:
           <a href="https://www.legacysurvey.org/acknowledgment/" target="_blank">https://www.legacysurvey.org/acknowledgment/</a>',
     'enable_use_catalog' => FALSE,
-    'js9_ext_id' => 0
+    'js9_ext_id' => 0,
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings = array_merge($instrument_info, $module_settings);
 

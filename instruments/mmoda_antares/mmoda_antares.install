@@ -46,7 +46,8 @@ function mmoda_antares_install()
     'acknowledgement' => '
         If you use results or material from this instrument in our application, ODA, do not
         forget to quote the paper:<br><a href="https://pos.sissa.it/358/920/pdf" target=_blank>J.Aublin et al. (for the ANTARES Collaboration),
-        <br>"Searches for point-like sources of cosmic neutrinos with 11 years of ANTARES data", PoS(ICRC2019)920</a>'
+        <br>"Searches for point-like sources of cosmic neutrinos with 11 years of ANTARES data", PoS(ICRC2019)920</a>',
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 

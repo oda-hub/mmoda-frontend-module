@@ -57,7 +57,8 @@ function mmoda_gw_install()
           and include an acknowledgement of GWOSC:
           <a href="https://www.gw-openscience.org/acknowledgement/" target="_blank">https://www.gw-openscience.org/acknowledgement/</a>',
     'enable_use_catalog' => FALSE,
-    'allowed_roles' => ''
+    'allowed_roles' => '',
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 

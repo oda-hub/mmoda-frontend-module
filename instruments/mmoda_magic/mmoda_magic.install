@@ -46,7 +46,8 @@ function mmoda_magic_install()
     'product_type' => 'magic_table',
     'time_bin' => '2',
     'time_bin_format' => 'sec',
-    'weight' => 100
+    'weight' => 100,
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings = array_merge($instrument_info, $module_settings);
 

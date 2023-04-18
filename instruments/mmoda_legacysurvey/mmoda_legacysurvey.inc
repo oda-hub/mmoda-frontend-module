@@ -15,7 +15,6 @@ function mmoda_legacysurvey($form, &$form_state)
   // turn off form caching
   $mform_id = __FUNCTION__ . '_';
 
-  $form['#action'] = 'dispatch-data/run_analysis';
   $form['#method'] = 'POST';
   $form['#attributes'] = array(
     'class' => 'legacysurvey-form'
@@ -28,6 +27,8 @@ function mmoda_legacysurvey($form, &$form_state)
 
   $mmoda_settings = variable_get('mmoda_settings');
   $instrument_defaults = $mmoda_settings['instruments']['legacysurvey'];
+
+  $form['#action'] = $instrument_defaults['data_server_local_url'];
 
   $form['query_type'] = array(
     '#type' => 'hidden',

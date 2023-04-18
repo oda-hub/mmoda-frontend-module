@@ -49,7 +49,8 @@ function mmoda_spi_acs_install()
       href="https://arxiv.org/abs/2002.12895" target="_blank">A.
       Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
       S.Paltani<br> An online data analysis system of INTEGRAL telescope
-    </a>'
+    </a>',
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 

@@ -275,16 +275,15 @@ function mmoda_main_block_content()
   }
   $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
 
-//   $filename = '/tmp/instrums.php';
+//   $filename = 'instrums.php';
 //   $f = fopen($filename, 'w');
 //   fwrite($f, "Instrums before usort\n" . print_r($mmoda_settings['instruments'], TRUE));
-  usort($mmoda_settings['instruments'], '_mmoda_cmp_instruments_weights');
+  uasort($mmoda_settings['instruments'], '_mmoda_cmp_instruments_weights');
+//   fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
+//   fclose($f);
 
   $first_instrument = true;
   $mmoda_js_settings = array();
-
-//   fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
-//   fclose($f);
 
   foreach ($mmoda_settings['instruments'] as $instrument_name => $instrument) {
     $mmoda_js_settings[$instrument_name] = array();

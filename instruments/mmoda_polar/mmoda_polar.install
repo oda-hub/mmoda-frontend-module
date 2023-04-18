@@ -44,7 +44,8 @@ function mmoda_polar_install()
     'product_type' => 'polar_lc',
     'time_bin' => '2',
     'time_bin_format' => 'sec',
-    'weight' => 40
+    'weight' => 40,
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 

@@ -64,7 +64,8 @@ function mmoda_isgri_install()
       Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
       S.Paltani<br> An online data analysis system of INTEGRAL telescope
     </a>',
-    'enable_use_catalog' => TRUE
+    'enable_use_catalog' => TRUE,
+    'data_server_local_url' => 'dispatch-data/run_analysis'
   );
   $module_settings= array_merge($instrument_info, $module_settings);
 
