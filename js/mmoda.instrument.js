@@ -637,7 +637,7 @@ function panel_title(srcname, param) {
       let token = $.cookie('Drupal.visitor.token');
 
       if (token === null || token === undefined) {
-        publish_response_title = 'Error while publishing to the Renku repository: ';
+        publish_response_title = 'Error while publishing to Renku: ';
         publish_result_type = 'publish_error';
         no_user_loged_in_error_message = 'please login to MMODA first and then retry';
 
@@ -676,10 +676,16 @@ function panel_title(srcname, param) {
           publish_result_type = 'success';
           if (renku_publish_textStatus == 'error') {
             if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
-              serverResponse = serverResponse.error_message;
+              serverResponse = `\"${serverResponse.error_message}\" - we will work to fix the issue.`;
             else
-              serverResponse = serverResponse;
-            publish_response_title = 'Error while publishing to the Renku repository: ';
+              serverResponse = 'we will work to fix the issue.';
+
+            serverResponse += ' In the meantime you can check the status of <a target="_blank" href="https://renkulab.statuspage.io/">Renku</a> and' +
+            ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
+            // https://renkulab.statuspage.io/ and https://mmoda.statuspage.io/ 
+            
+            publish_response_title = 'Could not publish to Renku:';
+            
             publish_result_type = 'publish_error';
           } else {
             // success -> redirect to the link returned from the call
@@ -1504,7 +1510,7 @@ function panel_title(srcname, param) {
     let div_result = $('<div>').addClass('result-renku-publish');
     let div_result_title = $('<div>').addClass('result-renku-publish-title').text(result_title);
     div_result.append(div_result_title);
-
+    let result_error_message = null;
     // apply custom css max-width, to be improved
 
     if (publish_result_type == 'success') {
@@ -1514,20 +1520,21 @@ function panel_title(srcname, param) {
         .text("Result successfully posted in Renku!");
       div_result.append(link_result);
     } else if (publish_result_type == 'publish_error') {
-      let result_error_message = $('<div>')
+      result_error_message = $('<div>')
         .addClass('result-renku-publish-link')
-        .css("max-width", '475px')
-        .text(publish_result);
+        .css("max-width", '600px')
+        .html(publish_result);
       // define a tooltip
-
-      // highlight missing roles
-      publish_result_interpreted = publish_result.replace(
-        /-(.*)/g,
-        function(m) { return '- <b>' + m.substr(1) + '</b>' }
-      );
-
-      let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
-      result_error_message.append(result_error_message_tooltip);
+      if (result_error_message != null) {
+        // highlight missing roles
+        publish_result_interpreted = publish_result.replace(
+          /-(.*)/g,
+          function(m) { return '- <b>' + m.substr(1) + '</b>' }
+        );
+  
+        let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
+        result_error_message.append(result_error_message_tooltip);
+      }
 
       div_result.append(result_error_message);
     }
