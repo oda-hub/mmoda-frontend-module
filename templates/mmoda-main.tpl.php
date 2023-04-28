@@ -124,7 +124,7 @@
   <div class="panel-body"></div>
   <div class="panel-footer"></div>
 </div>
-<?php  ?>
+
 <div>
   <?=render($title_prefix)?>
 <?php if (isset($subject)): ?>
@@ -256,4 +256,5 @@
       </div>
     </div>
   <?php endif;?>
+</div>
 </div>
