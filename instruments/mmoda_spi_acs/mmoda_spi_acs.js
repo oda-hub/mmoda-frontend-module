@@ -11,7 +11,6 @@
 									callback : {
 										callback : function(value, validator,
 												$field) {
-											console.log('Inside validator time bin');
 											return (validate_timebin(value,
 													validator, $field));
 										}

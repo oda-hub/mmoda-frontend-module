@@ -195,9 +195,12 @@ function mmoda_main_block_content()
     $_SESSION['count'] ++;
   }
   $session_count = $_SESSION['count'];
+//   parse_str($request->getQueryString() ?? '', $request_query);
+//   $request_query = $request->query->all();
+
 
   if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! (isset($_SERVER['QUERY_STRING']) and strlen($_SERVER["QUERY_STRING"])) and ! isset($_SESSION['url_parameters'])) {
-    parse_str(parse_url($_SERVER["HTTP_REFERER"], PHP_URL_QUERY), $params);
+    parse_str(parse_url($_SERVER["HTTP_REFERER"] ?? '', PHP_URL_QUERY) ?? '', $params);
   } else {
     $params = drupal_get_query_parameters();
   }
@@ -297,9 +300,12 @@ function mmoda_main_block_content()
         'title' => $instrument['title'],
         'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] : '',
         'help_page' => (isset($instrument['help_page_nids']) and (! empty($instrument['help_page_nids']))) ? drupal_get_path_alias('node/' . $instrument['help_page_nids'][0]) : '',
-        'form' => drupal_get_form('mmoda_' . $instrument['name']),
         'active' => ''
       );
+      if (! isset($instrument['no_form']) or !$instrument['no_form']) {
+        $items['instruments'][$instrument['name']]['form'] = drupal_get_form('mmoda_' . $instrument['name']);
+      }
+
       if ($first_instrument) {
         $items['instruments'][$instrument['name']]['active'] = 'active';
         $first_instrument = false;

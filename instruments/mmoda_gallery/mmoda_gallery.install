@@ -1,0 +1,61 @@
+<?php
+$module_name = basename(__FILE__, '.install');
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
+
+/**
+ *
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+function mmoda_gallery_instrument_info()
+{
+  $info = array(
+    'name' => 'gallery',
+    'messenger' => 'Precalculated Products',
+    'title' => 'MMODA Gallery'
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_gallery_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {}
+
+  if ($phase == 'runtime') {}
+
+  return $requirements;
+}
+
+function mmoda_gallery_install()
+{
+  $instrument_info=mmoda_gallery_instrument_info();
+  $module_settings = array(
+    'enabled' => TRUE,
+    'product_type' => 'gallery_all',
+    'weight' => 90000,
+    'data_server_local_url' => 'gallery_query',
+    'no_form' =>FALSE,
+  );
+  $module_settings= array_merge($instrument_info, $module_settings);
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_gallery_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_gallery_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}
+

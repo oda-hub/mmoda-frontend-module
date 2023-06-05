@@ -106,11 +106,11 @@ function panel_title(srcname, param) {
     }).done(
       function(data, textStatus, jqXHR) {
         last_dataserver_response = data;
-        // console.log('--- Query response ---');
-        // console.log(data);
+        console.log('--- Query response ---');
+        console.log(data);
         job_id = '';
         session_id = '';
-        if (data['job_monitor'].hasOwnProperty('job_id')) {
+        if (data.hasOwnProperty('job_monitor') && data.job_monitor.hasOwnProperty('job_id')) {
           job_id = data['job_monitor']['job_id'];
         }
         if (data.hasOwnProperty('session_id')) {
@@ -122,7 +122,7 @@ function panel_title(srcname, param) {
           waitingDialog.showHeaderMessage();
         }
         var query_failed = false;
-        if (data.query_status == 'failed' || (data.products.hasOwnProperty('image') && data.products.image == null)) {
+        if (data.query_status == 'failed' || (data.hasOwnProperty('products') && data.products.hasOwnProperty('image') && data.products.image == null)) {
           current_nb_attempts_after_failed++;
           query_failed = true;
         } else {
@@ -176,8 +176,11 @@ function panel_title(srcname, param) {
           add_dispatcher_response_to_feedback_form(data);
           var regex = /[\/]*$/;
           var url = window.location.href.replace(regex, '');
-          data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
-
+          if (data.hasOwnProperty('products')) {
+            data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
+            data.products['session_id_old'] = data.products.session_id;
+            data.products['session_id'] = data.session_id;
+          }
           waitingDialog.hideSpinner();
           instrument = $('input[name=instrument]', ".instrument-panel.active").val();
           waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
@@ -189,10 +192,12 @@ function panel_title(srcname, param) {
             }
             $('#ldialog').find('.progress').hide();
           }
-          data.products['session_id_old'] = data.products.session_id;
-          data.products['session_id'] = data.session_id;
 
-          if (data.products.hasOwnProperty('image')) {
+          if (data.hasOwnProperty('htmlResponse')) {
+            console.log(data.htmlResponse);
+            product_panel_body = display_in_iframe(data);
+          }
+          else if (data.products.hasOwnProperty('image')) {
             if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
               product_panel_body = display_lc_table(job_id, data.products);
             } else {
@@ -646,18 +651,18 @@ function panel_title(srcname, param) {
       } else {
         // publish the code over the renku repository
         let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
-  
+
         // remove any previous results
         if ($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
           $(this)[0].parentElement.nextSibling.remove();
-  
+
         // disable publish-on-renku button
         e.target.disabled = true;
-  
+
         // show spinner
         let div_spinner = get_div_spinner();
         $(this)[0].parentElement.after(div_spinner);
-  
+
         var renku_publish_jqxhr = $.ajax({
           url: url_dispatcher_renku_publish_url,
           processData: false,
@@ -681,31 +686,31 @@ function panel_title(srcname, param) {
               serverResponse = 'we will work to fix the issue.';
 
             serverResponse += ' In the meantime you can check the status of <a target="_blank" href="https://renkulab.statuspage.io/">Renku</a> and' +
-            ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
+              ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
             // https://renkulab.statuspage.io/ and https://mmoda.statuspage.io/ 
-            
+
             publish_response_title = 'Could not publish to Renku:';
-            
+
             publish_result_type = 'publish_error';
           } else {
             // success -> redirect to the link returned from the call
             window.open(serverResponse, "_blank");
           }
-  
+
           // hide/remove the spinner
           $('.renku-progress').remove();
           // re-enable publish-on-renku button, or disable it forever?
           e.target.disabled = false;
-  
+
           let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
           $(this)[0].parentElement.after(publish_result_panel);
-  
+
         }).error(
-            function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
-              console.log(renku_publish_textStatus);
-              e.target.disabled = false;
-            }
-          );
+          function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+            console.log(renku_publish_textStatus);
+            e.target.disabled = false;
+          }
+        );
       }
 
 
@@ -930,6 +935,11 @@ function panel_title(srcname, param) {
 
     $('.instrument-panel form').on('success.form.bv', function(e) {
       e.preventDefault();
+      //      if ($(e.target).is('.instrument-panel form.mmoda-iframe-result')) {
+      //        e.stopPropagation();
+      //        return;
+      //      }
+      console.log('This one is called general one');
 
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
@@ -1160,13 +1170,13 @@ function panel_title(srcname, param) {
         return i == a.indexOf(itm);
       });
       // based on the black-listed parameters within the dispatcher, there used for the generation of the job_id, to be kept synchronized
-//      let accepted_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run', 'selected_catalog'];
-//      for (parameter in request_parameters) {
-//        if (all_form_inputs.indexOf(parameter) == -1 && accepted_params_url.indexOf(parameter) == -1) {
-//          make_request_error_messages.push('Unknown parameter in the url:' + parameter);
-//          make_request_error = true;
-//        }
-//      }
+      //      let accepted_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run', 'selected_catalog'];
+      //      for (parameter in request_parameters) {
+      //        if (all_form_inputs.indexOf(parameter) == -1 && accepted_params_url.indexOf(parameter) == -1) {
+      //          make_request_error_messages.push('Unknown parameter in the url:' + parameter);
+      //          make_request_error = true;
+      //        }
+      //      }
 
       if (!make_request_error) {
         both_forms_valid = true;
@@ -1531,7 +1541,7 @@ function panel_title(srcname, param) {
           /-(.*)/g,
           function(m) { return '- <b>' + m.substr(1) + '</b>' }
         );
-  
+
         let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
         result_error_message.append(result_error_message_tooltip);
       }
@@ -2391,6 +2401,19 @@ function panel_title(srcname, param) {
 
     panel_body_append_header_footer(panel_ids, data);
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data.analysis_parameters));
+
+    $('#' + panel_ids.panel_id).highlight_result_panel();
+    return ($('#' + panel_ids.panel_body_id));
+  }
+
+  function display_in_iframe(data) {
+    datetime = get_current_date_time();
+    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'iframe', datetime);
+
+
+
+    $('#' + panel_ids.panel_body_id).append(data.htmlResponse);
+
 
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
