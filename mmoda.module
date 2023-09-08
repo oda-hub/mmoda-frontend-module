@@ -34,6 +34,20 @@ function mmoda_init()
   ), 'setting');
 }
 
+function mmodahide_preprocess_html(&$variables)
+{
+  $headers = drupal_get_http_header();
+  $content_security_policy= 'frame-ancestors self cdcidev.mtmco.net github.com';
+  //$content_security_policy= 'frame-ancestors self https://cdcidev.mtmco.net';
+
+  if(isset($headers['content-security-policy'])) {
+    $content_security_policy= $headers['content-security-policy'] . "; ".$content_security_policy;
+  }
+  //drupal_add_http_header("content-security-policy", $content_security_policy, FALSE);
+
+  //_mmoda_write_log_file('site_headers.php', print_r($headers, TRUE));
+}
+
 /**
  * Implements hook_user_login().
  */
@@ -72,6 +86,7 @@ function mmoda_user_logout($account)
     watchdog('MMODA', 'Logout - removing the cookie token');
     user_cookie_delete('token');
   }
+  unset($_SESSION['mmoda_signed']);
 }
 
 /**
@@ -195,9 +210,14 @@ function mmoda_main_block_content()
     $_SESSION['count'] ++;
   }
   $session_count = $_SESSION['count'];
-//   parse_str($request->getQueryString() ?? '', $request_query);
-//   $request_query = $request->query->all();
+  if (isset($_SESSION['mmoda_signed'])) {
+    drupal_add_js(array(
+      'mmoda_signed' => $_SESSION['mmoda_signed']
+    ), 'setting');
+  }
 
+  // parse_str($request->getQueryString() ?? '', $request_query);
+  // $request_query = $request->query->all();
 
   if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! (isset($_SERVER['QUERY_STRING']) and strlen($_SERVER["QUERY_STRING"])) and ! isset($_SESSION['url_parameters'])) {
     parse_str(parse_url($_SERVER["HTTP_REFERER"] ?? '', PHP_URL_QUERY) ?? '', $params);
@@ -278,22 +298,20 @@ function mmoda_main_block_content()
   }
   $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
 
-//   $filename = 'instrums.php';
-//   $f = fopen($filename, 'w');
-//   fwrite($f, "Instrums before usort\n" . print_r($mmoda_settings['instruments'], TRUE));
+  // $filename = 'instrums.php';
+  // $f = fopen($filename, 'w');
+  // fwrite($f, "Instrums before usort\n" . print_r($mmoda_settings['instruments'], TRUE));
   uasort($mmoda_settings['instruments'], '_mmoda_cmp_instruments_weights');
-//   fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
-//   fclose($f);
+  // fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
+  // fclose($f);
 
   $first_instrument = true;
   $mmoda_js_settings = array();
 
   foreach ($mmoda_settings['instruments'] as $instrument_name => $instrument) {
     $mmoda_js_settings[$instrument_name] = array();
-    // $instrument = $mmoda_settings['instruments'][$instrument_name];
 
-    if ($instrument['enabled'] and (! isset($instrument['virtual']) or ! $instrument['virtual']) and
-      (! isset($instrument['allowed_roles']) or empty($instrument['allowed_roles']) or _mmoda_user_has_roles($instrument['allowed_roles']))) {
+    if ($instrument['enabled'] and (! isset($instrument['virtual']) or ! $instrument['virtual']) and (! isset($instrument['allowed_roles']) or empty($instrument['allowed_roles']) or _mmoda_user_has_roles($instrument['allowed_roles']))) {
       $items['instruments'][$instrument['name']] = array(
         'name' => $instrument['name'],
         'messenger' => $instrument['messenger'],
@@ -302,7 +320,7 @@ function mmoda_main_block_content()
         'help_page' => (isset($instrument['help_page_nids']) and (! empty($instrument['help_page_nids']))) ? drupal_get_path_alias('node/' . $instrument['help_page_nids'][0]) : '',
         'active' => ''
       );
-      if (! isset($instrument['no_form']) or !$instrument['no_form']) {
+      if (! isset($instrument['no_form']) or ! $instrument['no_form']) {
         $items['instruments'][$instrument['name']]['form'] = drupal_get_form('mmoda_' . $instrument['name']);
       }
 
@@ -340,7 +358,8 @@ function _mmoda_cmp_instruments_weights($i1, $i2)
 function _mmoda_user_has_roles($instrument_roles)
 {
   global $user;
-  if (empty($instrument_roles)) return (true);
+  if (empty($instrument_roles))
+    return (true);
   $user_roles = $user->roles;
   $instrument_roles_ar = preg_split('/\s*,+\s*/', $instrument_roles);
   foreach ($user_roles as $user_role)
@@ -765,10 +784,10 @@ function mmoda_mail_alter(&$message)
     $account = array(
       'user' => $message['params']['account']
     );
-//     $filename = 'account-mtm.php';
-//     $f = fopen($filename, 'w');
-//     fwrite($f, print_r($message['params'], true));
-//     fclose($f);
+    // $filename = 'account-mtm.php';
+    // $f = fopen($filename, 'w');
+    // fwrite($f, print_r($message['params'], true));
+    // fclose($f);
 
     unset($message['body']);
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
@@ -809,12 +828,15 @@ function mmoda_mail_alter(&$message)
 function mmoda_openid_connect_post_authorize(array $tokens, $account, array $userinfo, $client_name, $is_new)
 {
   // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
-  watchdog('MMODA', $is_new ? 'New user :' . print_r($account, true) : 'Old user');
+  watchdog('MMODA', $is_new ? 'New user :' . print_r($account, true) : 'Existing user');
   if ($is_new) {
     $params['account'] = $account;
     drupal_mail('user', 'register_pending_approval_admin', variable_get('site_mail', ini_get('sendmail_from')), language_default(), $params);
   }
-  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
+  $_SESSION['mmoda_signed'] = array(
+    'client' => $client_name
+  );
+  drupal_set_message('client name:' . $client_name . ' ' . ($is_new ? t('Welcome!') : t('Welcome back!')));
 }
 
 /**
@@ -871,4 +893,14 @@ function mmodahide_default_rules_configuration()
   $rules['yourmodule_append_qbo_customer_id_to_new_user'] = $rule;
 
   return $rules;
+}
+
+function _mmoda_write_log_file($filename, $content)
+{
+  $filename = '/tmp/' . $filename;
+  $f = fopen ( $filename, 'w' );
+  fwrite($f, $content);
+  fclose($f);
+
+  chmod($filename, 0777);
 }

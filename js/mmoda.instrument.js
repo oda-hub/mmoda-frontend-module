@@ -1,4 +1,5 @@
 var current_instrument_form_validator;
+var requestTimer;
 
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
@@ -94,7 +95,7 @@ function panel_title(srcname, param) {
     requestTimer = null;
 
     //var startAJAXTime = new Date().getTime();
-    var jqxhr = $.ajax({
+    var mmoda_jqXHR = $.ajax({
       url: current_ajax_call_params.action,
       data: current_ajax_call_params.currentFormData,
       // data: form_elements,
@@ -106,8 +107,6 @@ function panel_title(srcname, param) {
     }).done(
       function(data, textStatus, jqXHR) {
         last_dataserver_response = data;
-        console.log('--- Query response ---');
-        console.log(data);
         job_id = '';
         session_id = '';
         if (data.hasOwnProperty('job_monitor') && data.job_monitor.hasOwnProperty('job_id')) {
@@ -194,7 +193,6 @@ function panel_title(srcname, param) {
           }
 
           if (data.hasOwnProperty('htmlResponse')) {
-            console.log(data.htmlResponse);
             product_panel_body = display_in_iframe(data);
           }
           else if (data.products.hasOwnProperty('image')) {
@@ -228,10 +226,12 @@ function panel_title(srcname, param) {
         //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
       }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log('textStatus : ' + textStatus + '|');
-        console.log('errorThrown :' + errorThrown);
-        console.log('jqXHR');
-        console.log(jqXHR);
+        if (textStatus != 'abort') {
+          console.log('textStatus : ' + textStats);
+          console.log('errorThrown :' + errorThrown);
+          console.log('jqXHR');
+          console.log(jqXHR);
+        }
         waitingDialog.hideSpinner();
         $('#ldialog').find('.progress').hide();
         serverResponse = '';
@@ -240,7 +240,6 @@ function panel_title(srcname, param) {
         } catch (e) {
           serverResponse = jqXHR.responseText;
         }
-        console.log(serverResponse);
         var message = '<tr><td>' + get_current_date_time() + '</td>';
         if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
           // more comprehensive message
@@ -274,19 +273,10 @@ function panel_title(srcname, param) {
         waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
       });
 
-    $('#ldialog .close-button').on('click', function() {
-      if (requestTimer !== null) {
-        window.clearTimeout(requestTimer);
-      }
-      $('#ldialog .header-message .job-id').html('');
-      $('#ldialog .header-message .session-id').html('');
-      $('#ldialog .summary').html('');
-      $('#ldialog .details').html('');
-      $('#ldialog .modal-body .more-less-details').hide();
-
-      //if (Object.keys(jqxhr).length !== 0) jqxhr.abort();
-    });
     // jqxhr
+    var index = mmoda_ajax_jqxhr.push(mmoda_jqXHR);
+    $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);
+
 
   }
 
@@ -422,6 +412,27 @@ function panel_title(srcname, param) {
   }
 
   function commonReady() {
+
+    $('body').on('click', '#ldialog .close-button', function() {
+      if (requestTimer !== null) {
+        window.clearTimeout(requestTimer);
+      }
+      $('#ldialog .header-message .job-id').html('');
+      $('#ldialog .header-message .session-id').html('');
+      $('#ldialog .summary').html('');
+      $('#ldialog .details').html('');
+      $('#ldialog .modal-body .more-less-details').hide();
+
+      if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined')
+        mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
+      if ($(this).data("mmoda_gallery_close") == 1) 
+        $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+
+      $(this).removeData('mmoda_gallery_close');
+      $(this).removeData('mmoda_jqxhr_index');
+
+    });
+
     $('#ldialog').on('hidden.bs.modal', function() {
       $('#ldialog button.write-feedback-button').hide();
       $(".notice-progress-container").hide();
@@ -939,7 +950,6 @@ function panel_title(srcname, param) {
       //        e.stopPropagation();
       //        return;
       //      }
-      console.log('This one is called general one');
 
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');

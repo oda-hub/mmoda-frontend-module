@@ -136,7 +136,9 @@
       </span>
     </div>
   </div>
-  <div class="panel-body"></div>
+  <div class="panel-body">
+  <div class="progress progress-bar progress-bar-success" style="width: 100%;"></div>
+  </div>
 </div>
 
 <div>
@@ -274,3 +276,4 @@
   <?php endif;?>
 </div>
 </div>
+

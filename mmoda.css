@@ -589,3 +589,7 @@ button.renku-publish {
   width: 1700px;
   height: 1200px;
 }
+
+#mmoda-gallery-iframe {
+  border: none;
+}

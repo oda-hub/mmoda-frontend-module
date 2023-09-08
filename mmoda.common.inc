@@ -429,7 +429,6 @@ function explore_object_name_callback($form, &$form_state)
   module_load_include('inc', 'mmoda', 'mmoda.explore');
 
   $args = explore_gallery_object($form_state['input']['src_name']);
-  error_log('explore object : '.$form_state['input']['src_name']);
 
   $commands[] = array(
     'command' => 'set_object_gallery', // the name of your javascript callback
