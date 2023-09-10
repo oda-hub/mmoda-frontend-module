@@ -2419,12 +2419,7 @@ function panel_title(srcname, param) {
   function display_in_iframe(data) {
     datetime = get_current_date_time();
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'iframe', datetime);
-
-
-
     $('#' + panel_ids.panel_body_id).append(data.htmlResponse);
-
-
     $('#' + panel_ids.panel_id).highlight_result_panel();
     return ($('#' + panel_ids.panel_body_id));
   }

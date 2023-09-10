@@ -2,11 +2,7 @@
 
 function resolve_object_name($source_name, $which_name_resolvers)
 {
-  // $local_name_resolver_url = "http://cdcihn/tnr/api/v1.0/timespan/byname/";
-  // $local_name_resolver_url = "http://cdcihn.isdc.unige.ch/tnr-1.2/api/v1.1/byname/";
   $local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";
-  // $local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";
-  // $local_name_resolver_url = "http://wwwcdcihn/tnr/api/v1.0/timespan/byname/";
   $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
   // sleep ( 2 );
 
@@ -19,9 +15,6 @@ function resolve_object_name($source_name, $which_name_resolvers)
   $local_name_resolver_url .= rawurlencode($source_name);
   $local_resolution_ok = false;
   if ($response_json_string = @file_get_contents($local_name_resolver_url) and $response_json = json_decode($response_json_string)) {
-    // error_log ( "Local name resolver error: " . $local_name_resolver_url );
-    // error_log('Source :'.$source_name);
-    // error_log('Response :'.print_r($response_json, true));
     if ($response_json->success and $response_json->have_coordinates and $response_json->success_coordinates) {
       $data['ra'] = $response_json->ra;
       $data['dec'] = $response_json->dec;
@@ -68,19 +61,3 @@ function resolve_object_name($source_name, $which_name_resolvers)
 
   return $data;
 }
-
-/*
-function write_log_file($xml) {
-  $filename = '/tmp/sesame_response.xml';
-  $f = fopen ( $filename, 'w' );
-  fwrite ( $f, "URL:" . $name_resolver_url . "\n" );
-  fwrite ( $f, "Name:" . (string) $xml->Target->Resolver->attributes()->name[0]. "\n" );
-  fwrite ( $f, "INFO:" . (string) $xml->Target->INFO. "\n" );
-  fwrite ( $f, "XML:\n" );
-  fwrite ( $f, print_r ( $xml, TRUE ) );
-  fclose ( $f );
-
-  chmod ( $filename, 0777 );
-
-}
-*/
