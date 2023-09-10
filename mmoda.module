@@ -216,9 +216,6 @@ function mmoda_main_block_content()
     ), 'setting');
   }
 
-  // parse_str($request->getQueryString() ?? '', $request_query);
-  // $request_query = $request->query->all();
-
   if (isset($_SERVER["HTTP_REFERER"]) and strlen($_SERVER["HTTP_REFERER"]) and ! (isset($_SERVER['QUERY_STRING']) and strlen($_SERVER["QUERY_STRING"])) and ! isset($_SESSION['url_parameters'])) {
     parse_str(parse_url($_SERVER["HTTP_REFERER"] ?? '', PHP_URL_QUERY) ?? '', $params);
   } else {
@@ -298,12 +295,7 @@ function mmoda_main_block_content()
   }
   $items['help_page'] = drupal_get_path_alias('node/' . $mmoda_settings['help_page_nids'][0]);
 
-  // $filename = 'instrums.php';
-  // $f = fopen($filename, 'w');
-  // fwrite($f, "Instrums before usort\n" . print_r($mmoda_settings['instruments'], TRUE));
   uasort($mmoda_settings['instruments'], '_mmoda_cmp_instruments_weights');
-  // fwrite($f, "Instrums\n" . print_r($mmoda_settings['instruments'], TRUE));
-  // fclose($f);
 
   $first_instrument = true;
   $mmoda_js_settings = array();
@@ -784,10 +776,6 @@ function mmoda_mail_alter(&$message)
     $account = array(
       'user' => $message['params']['account']
     );
-    // $filename = 'account-mtm.php';
-    // $f = fopen($filename, 'w');
-    // fwrite($f, print_r($message['params'], true));
-    // fclose($f);
 
     unset($message['body']);
     $core_module_name = pathinfo(__FILE__, PATHINFO_FILENAME);
@@ -827,7 +815,6 @@ function mmoda_mail_alter(&$message)
  */
 function mmoda_openid_connect_post_authorize(array $tokens, $account, array $userinfo, $client_name, $is_new)
 {
-  // drupal_set_message($is_new ? t('Welcome!') : t('Welcome back!'));
   watchdog('MMODA', $is_new ? 'New user :' . print_r($account, true) : 'Existing user');
   if ($is_new) {
     $params['account'] = $account;
