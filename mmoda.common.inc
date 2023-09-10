@@ -205,9 +205,40 @@ function mmoda_name_resolve($form, &$form_state)
         'message' => '...'
       )
     ),
-    '#prefix' => '<span id="resolve-src-name" class="input-group-btn form-group align-bottom">',
+    '#states' => array(
+      'enabled' => array(
+        ':input[name="src_name"]' => ['filled' => TRUE]
+      )
+    ),
+    '#prefix' => '<span id="resolve-src-name" class="input-group-btn-hide form-group align-bottom">',
+  );
+
+  $form['explore_src_name'] = array(
+    '#type' => 'button',
+    '#button_type' => 'button',
+    '#name' => 'explore_name',
+    '#value' => t("Explore"),
+    '#attributes' => array(
+      'class' => array(
+        'btn-primary',
+        'form-item'
+      )
+    ),
+    '#ajax' => array(
+      'callback' => 'explore_object_name_callback',
+      'progress' => array(
+        'type' => 'throbber',
+        'message' => '...'
+      )
+    ),
+    '#states' => array(
+      'enabled' => array(
+        ':input[name="src_name"]' => ['filled' => TRUE]
+      )
+    ),
     '#suffix' => '</span></div></div></div>'
   );
+
   return ($form);
 }
 
@@ -383,9 +414,24 @@ function resolve_object_name_callback($form, &$form_state)
   $form['radec']['DEC']['#value'] = 80;
 
   $args = resolve_object_name($form_state['input']['src_name'], $form_state['input']['use_resolver']);
-
   $commands[] = array(
     'command' => 'set_ra_dec', // the name of your javascript callback
+    'args' => $args
+  );
+  return array(
+    '#type' => 'ajax',
+    '#commands' => $commands
+  );
+}
+
+function explore_object_name_callback($form, &$form_state)
+{
+  module_load_include('inc', 'mmoda', 'mmoda.explore');
+
+  $args = explore_gallery_object($form_state['input']['src_name']);
+
+  $commands[] = array(
+    'command' => 'set_object_gallery', // the name of your javascript callback
     'args' => $args
   );
   return array(

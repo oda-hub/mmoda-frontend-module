@@ -1,5 +1,6 @@
 var instrument_panel_margin = 150;
 var common_form_validator;
+var mmoda_ajax_jqxhr = [];
 
 Date.prototype.getJulian = function() {
   //  return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
@@ -222,6 +223,18 @@ function get_current_date_time() {
 var waitingDialog;
 
 (function($, Drupal) {
+  $(document).ready(function() {
+    if (Drupal.settings.hasOwnProperty('mmoda_signed')) {
+      var mmoda_signed = Drupal.settings.mmoda_signed;
+      // Sending message to iframe
+      var iframe = document.getElementById("mmoda-gallery-hidden-iframe");
+      //iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+      $(window).on("message", function(e) {
+        if (e.originalEvent.data.hasOwnProperty('mready'))
+          iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+      });
+    }
+  })
 
   Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
     $('input,select,textarea', '#lfeedback').prop('disabled', false);
@@ -282,16 +295,34 @@ var waitingDialog;
     }
     $('form#mmoda-common').bootstrapValidator({ 'live': 'enabled' });
   }
+  Drupal.ajax.prototype.commands.set_object_gallery = function(ajax, response, status) {
+    if (response.args.status != 0) {
+      messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
+      waitingDialog.setTitle('Response from MMODA Gallery');
+      waitingDialog.hideSpinner();
+      $('#ldialog').find('.progress').hide()
+      waitingDialog.replace(messages);
+      waitingDialog.showClose();
+      return;
+    }
+    $result_panel = $('#mmoda-gallery-panel-model').clone();
+    $result_panel.attr('id', 'mmoda-gallery-panel');
+    $('#common-params').after($result_panel);
+    $('#mmoda-gallery-panel .panel-heading .panel-title').text('MMODA Gallery - Object : ' + response.args.json_response['title']);
+    $('#mmoda-gallery-panel .panel-body').append(response.args.htmlResponse);
+    $('#mmoda-gallery-panel iframe#mmoda-gallery-iframe').load(function() {
+      if ((typeof $('#mmoda-gallery-panel').data("mmoda_gallery_close") !== 'undefined') && ($('#mmoda-gallery-panel').data("mmoda_gallery_close") == 1)) {
+        $('#mmoda-gallery-panel').remove();
+      }
+      else {
+        $('#mmoda-gallery-panel').slideDown(2000);
+      }
+      waitingDialog.hide();
+    })
+  }
 })(jQuery, Drupal);
 
-
 function get_div_spinner() {
-  /*
-  <div class="renku-progress progress progress-striped active"
-          style="margin-bottom: 0;">
-          <div class="progress-bar" style="width: 100%"></div>
-      </div>
-  */
   var spinner_div = (function($) {
     let inner_div = $('<div>').addClass('progress-bar').css("width", '100%');
     let outer_div = $('<div>').addClass('renku-progress progress progress-striped active').css("width", '100%');
@@ -454,6 +485,9 @@ function get_waitingDialog($modal_dialog) {
         setClose: function(title) {
           $dialog.find('.modal-footer button.submit-button').text('Close');
         },
+        showClose: function() {
+          $dialog.find('.modal-footer button.submit-button').show();
+        },
         showBugReportButton: function(title) {
           $dialog.find('.modal-footer button.bug-button').removeClass('hidden');
           $('#mmoda_bug_report_form_container', $dialog).removeClass('hidden');
@@ -483,6 +517,19 @@ function get_waitingDialog($modal_dialog) {
 }
 
 (function($) {
+  function autoHeight() {
+    window.addEventListener(
+      'message',
+      function(e) {
+        let message = e.data;
+        if (message.height) {
+          $("#mmoda-gallery-panel iframe").height(message.height + 30);
+        }
+      },
+      false
+    );
+  }
+
   $.fn.set_panel_draggable = function() {
     $(this).draggable({
       handle: '.panel-heading, .panel-footer',
@@ -567,6 +614,8 @@ function get_waitingDialog($modal_dialog) {
   }
 
   function commonReady() {
+
+    autoHeight();
     // Ignore carriage return in common parameters
     $('input', '#mmoda-common, #mmoda-name-resolve').keypress(function(event) {
       var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -577,7 +626,7 @@ function get_waitingDialog($modal_dialog) {
     $('#edit-src-name', '#mmoda-name-resolve').on('keyup', function(event) {
       $('.row', '#mmoda-name-resolve').removeClass('has-success').removeClass('has-error');
       $('small.help-block', '#mmoda-name-resolve').remove();
-      $('button#edit-resolve-src-name').prop('disabled', !$(this).val());
+      //$('button#edit-resolve-src-name').prop('disabled', !$(this).val());
     });
 
     $('body').on('click', '.panel-heading .collapsible', function() {
@@ -725,18 +774,29 @@ function get_waitingDialog($modal_dialog) {
       openPageInModal($(this).attr('href'));
     });
 
-    $(document).ajaxSend(function(event, jqxhr, settings) {
-      if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') && settings.extraData._triggering_element_name == 'resolve_name') {
-        var message = 'Resolving object name ...';
-        waitingDialog.show('', message, {
+    $(document).on('ajaxSend', function(event, jqxhr, settings) {
+      if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') &&
+        (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
+        var message = '';
+        if (settings.extraData._triggering_element_name == 'resolve_name') {
+          message = 'Resolving object name ...';
+        }
+        else if (settings.extraData._triggering_element_name == 'explore_name') {
+          $('#mmoda-gallery-panel').remove();
+          message = 'Requesting data from MMODA Gallery ...';
+        }
+        waitingDialog.show(message, '', {
           progressType: 'success',
-          'showProgress': true,
-          'showButton': false
+          showProgressBar: true,
+          showSpinner: false
         });
         waitingDialog.hideHeaderMessage();
+
+        var index = mmoda_ajax_jqxhr.push(jqxhr);
+        $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);
+        $('#ldialog .close-button').data("mmoda_gallery_close", 1);
+
         $('.form-item-src-name', '#mmoda-name-resolve').parent().parent().find('small').remove();
-        //        $('.form-item-RA input.form-control').val('');
-        //        $('.form-item-DEC input.form-control').val('');
         $('input:not(:file)', '#mmoda-common').val(function(_, value) {
           return $.trim(value.replace(/\s+/g, " "));
         });

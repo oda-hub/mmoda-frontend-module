@@ -55,7 +55,7 @@ function mmoda_requirements($phase)
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('!error you need to download the !D3, extract the archive and place the D3 directory in the %path directory on your server.', array(
           '!error' => $error_message,
-          '!D3' => l($t('D3 library'), $library['download url']),
+          '!D3' => l($t('D3 library'), $library['download url']?? ''),
           '%path' => 'sites/all/libraries'
         ))
       );
@@ -117,6 +117,10 @@ function mmoda_install()
     'no-reply@unige.ch',
     'cdci-oda-feedback@listes.unige.ch'
   );
+
+  $module_settings['common']['gallery_data_request'] = 'https://www.astro.unige.ch/mmoda/dispatch-data/get_astro_entity_info_by_source_name';
+  $module_settings['common']['gallery_base_url'] = 'http://www.astro.unige.ch';
+
   $module_settings['common']['dispatcher_path'] = '/dispatcher-data';
   $module_settings['common']['src_name'] = '1E 1740.7-2942';
   $module_settings['common']['RA'] = '265.97845833';
