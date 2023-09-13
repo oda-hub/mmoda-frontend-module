@@ -406,6 +406,14 @@ function mmoda_common_validate($form, &$form_state)
   form_clear_error();
 }
 
+// Define a menu callback that returns JSON data.
+function mmoda_get_token() {
+  $jwt = jwt_link_url();
+
+  $token_data = array('token' => $jwt['jwt_encoded_token']);
+  return ($token_data);
+}
+
 function resolve_object_name_callback($form, &$form_state)
 {
   module_load_include('inc', 'mmoda', 'mmoda.nameresolver');

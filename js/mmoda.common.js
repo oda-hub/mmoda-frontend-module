@@ -1,6 +1,7 @@
 var instrument_panel_margin = 150;
 var common_form_validator;
 var mmoda_ajax_jqxhr = [];
+var access_token = undefined;
 
 Date.prototype.getJulian = function() {
   //  return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);

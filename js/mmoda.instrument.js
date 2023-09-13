@@ -78,6 +78,28 @@ function panel_title(srcname, param) {
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
 
+  function AJAX_call_get_token(call) {
+    return $.ajax({
+      url: '/get_token',
+    });
+  }
+
+  function AJAX_submit_call() {
+    AJAX_call_get_token().done(
+      function(data, textStatus, jqXHR) {
+        if (data.token !== null && data.token !== undefined && data.token !== '')
+          access_token = data.token;
+        AJAX_call();
+    }).error(function(jqXHR, textStatus, errorThrown) {
+      console.log('Error in requesting the user token:');
+      console.log('textStatus : ' + textStatus);
+      console.log('errorThrown :' + errorThrown);
+      console.log('jqXHR');
+      console.log(jqXHR);
+      AJAX_call();
+    });
+  }
+
   function AJAX_call() {
     // Display the key / value pairs
     //    console.log('--- initialFormData');
@@ -225,6 +247,7 @@ function panel_title(srcname, param) {
         //        $(".write-feedback-button").hide();
         //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
+        access_token = undefined;
       }).error(function(jqXHR, textStatus, errorThrown) {
         if (textStatus != 'abort') {
           console.log('textStatus : ' + textStats);
@@ -1038,8 +1061,8 @@ function panel_title(srcname, param) {
       $('.write-feedback-button').show();
 
       current_ajax_call_params = {};
-      if ($.cookie('Drupal.visitor.token')) {
-        var access_token = $.cookie('Drupal.visitor.token');
+      // TODO to change with a check if user is logged in
+      if (access_token !== undefined) {
         formData.append('token', access_token);
       }
       current_ajax_call_params.initialFormData = formData;
@@ -1056,7 +1079,7 @@ function panel_title(srcname, param) {
       job_status_table = new Array();
       distinct_nodes = new Array();
 
-      AJAX_call();
+      AJAX_submit_call();
     });
 
     //    $('body').on('click', '#ldialog .book-toc button', function() {
