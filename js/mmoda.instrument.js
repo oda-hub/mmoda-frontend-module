@@ -87,8 +87,11 @@ function panel_title(srcname, param) {
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
-        if (data.token !== null && data.token !== undefined && data.token !== '')
+        if (data.token !== null && data.token !== undefined && data.token !== '') {
           access_token = data.token;
+          current_ajax_call_params.currentFormData.append('token', access_token);
+        }
+
         AJAX_call();
     }).error(function(jqXHR, textStatus, errorThrown) {
       console.log('Error in requesting the user token:');
@@ -791,9 +794,9 @@ function panel_title(srcname, param) {
       // copyToClipboard($.cookie('Drupal.visitor.token'));
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          if (data.token !== null && data.token !== undefined && data.token !== '')
-            access_token = data.token;
+          if (data.token !== null && data.token !== undefined && data.token !== ''){
             copyToClipboard(data.token);
+          }
       }).error(function(jqXHR, textStatus, errorThrown) {
         console.log('Error in requesting the user token:');
         console.log('textStatus : ' + textStatus);
@@ -1073,10 +1076,9 @@ function panel_title(srcname, param) {
       $('.write-feedback-button').show();
 
       current_ajax_call_params = {};
-      // TODO to change with a check if user is logged in
-      if (access_token !== undefined) {
-        formData.append('token', access_token);
-      }
+      // if (access_token !== undefined) {
+      //   formData.append('token', access_token);
+      // }
       current_ajax_call_params.initialFormData = formData;
       current_ajax_call_params.currentFormData = cloneFormData(formData);
       if (!current_ajax_call_params.currentFormData.has('query_status')) {

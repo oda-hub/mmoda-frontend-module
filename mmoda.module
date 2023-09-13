@@ -149,6 +149,11 @@ function mmoda_menu()
 {
   $items = array();
 
+  $items['get_token'] = array(
+    'page callback' => 'drupal_get_form',
+    'delivery callback' => 'mmoda_get_token'
+  );
+
   $items['admin/config/mmoda'] = array(
     'title' => 'Administer Data Analysis',
     'page callback' => 'drupal_get_form',

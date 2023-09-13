@@ -410,9 +410,9 @@ function mmoda_common_validate($form, &$form_state)
 function mmoda_get_token() {
   if (user_is_logged_in()) {
     $jwt = jwt_link_url();
-
     $token_data = array('token' => $jwt['jwt_encoded_token']);
-    return ($token_data);
+    return(drupal_json_output($token_data));
+    // return ($token_data);
   }
 }
 
