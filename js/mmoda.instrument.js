@@ -788,7 +788,19 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
-      copyToClipboard($.cookie('Drupal.visitor.token'));
+      // copyToClipboard($.cookie('Drupal.visitor.token'));
+      AJAX_call_get_token().done(
+        function(data, textStatus, jqXHR) {
+          if (data.token !== null && data.token !== undefined && data.token !== '')
+            access_token = data.token;
+            copyToClipboard(data.token);
+      }).error(function(jqXHR, textStatus, errorThrown) {
+        console.log('Error in requesting the user token:');
+        console.log('textStatus : ' + textStatus);
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+      });
     });
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
