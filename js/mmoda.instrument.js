@@ -80,7 +80,7 @@ function panel_title(srcname, param) {
 
   function AJAX_call_get_token(call) {
     return $.ajax({
-      url: '/get_token',
+      url: 'get_token',
     });
   }
 
