@@ -78,7 +78,7 @@ function panel_title(srcname, param) {
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
 
-  function AJAX_call_get_token(call) {
+  function AJAX_call_get_token() {
     return $.ajax({
       url: 'get_token',
     });
@@ -87,7 +87,7 @@ function panel_title(srcname, param) {
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
-        if (Object.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
+        if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
           access_token = data.token;
           current_ajax_call_params.currentFormData.append('token', access_token);
         }
@@ -676,79 +676,89 @@ function panel_title(srcname, param) {
       renku_publish_formData = new FormData();
       url_params = {};
       let job_id = $(this).data('job_id');
-      let token = $.cookie('Drupal.visitor.token');
+      let renku_publish_panel = $(this)[0];
+      // let token = $.cookie('Drupal.visitor.token');
 
-      if (token === null || token === undefined) {
-        publish_response_title = 'Error while publishing to Renku: ';
-        publish_result_type = 'publish_error';
-        no_user_loged_in_error_message = 'please login to MMODA first and then retry';
+      AJAX_call_get_token().done(
+        function(data, textStatus, jqXHR) {
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
+            let token = data.token;
+            let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
-        let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
-        $(this)[0].parentElement.after(publish_result_panel);
-      } else {
-        // publish the code over the renku repository
-        let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
+            // remove any previous results
+            if (renku_publish_panel.parentElement.nextSibling.className === 'result-renku-publish')
+            renku_publish_panel.parentElement.nextSibling.remove();
 
-        // remove any previous results
-        if ($(this)[0].parentElement.nextSibling.className === 'result-renku-publish')
-          $(this)[0].parentElement.nextSibling.remove();
+            // disable publish-on-renku button
+            e.target.disabled = true;
 
-        // disable publish-on-renku button
-        e.target.disabled = true;
+            // show spinner
+            let div_spinner = get_div_spinner();
+            renku_publish_panel.parentElement.after(div_spinner);
 
-        // show spinner
-        let div_spinner = get_div_spinner();
-        $(this)[0].parentElement.after(div_spinner);
+            var renku_publish_jqxhr = $.ajax({
+              url: url_dispatcher_renku_publish_url,
+              processData: false,
+              contentType: false,
+              context: this,
+              timeout: ajax_request_timeout,
+              type: 'POST'
+            }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+              serverResponse = '';
+              try {
+                serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
+              } catch (e) {
+                serverResponse = renku_publish_jqXHR.responseText;
+              }
+              publish_response_title = 'Renku publish result: ';
+              publish_result_type = 'success';
+              if (renku_publish_textStatus == 'error') {
+                if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
+                  serverResponse = `\"${serverResponse.error_message}\" - we will work to fix the issue.`;
+                else
+                  serverResponse = 'we will work to fix the issue.';
 
-        var renku_publish_jqxhr = $.ajax({
-          url: url_dispatcher_renku_publish_url,
-          processData: false,
-          contentType: false,
-          context: this,
-          timeout: ajax_request_timeout,
-          type: 'POST'
-        }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
-          serverResponse = '';
-          try {
-            serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
-          } catch (e) {
-            serverResponse = renku_publish_jqXHR.responseText;
-          }
-          publish_response_title = 'Renku publish result: ';
-          publish_result_type = 'success';
-          if (renku_publish_textStatus == 'error') {
-            if (typeof serverResponse === 'object' && serverResponse.hasOwnProperty('error_message'))
-              serverResponse = `\"${serverResponse.error_message}\" - we will work to fix the issue.`;
-            else
-              serverResponse = 'we will work to fix the issue.';
+                serverResponse += ' In the meantime you can check the status of <a target="_blank" href="https://renkulab.statuspage.io/">Renku</a> and' +
+                  ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
+                // https://renkulab.statuspage.io/ and https://mmoda.statuspage.io/ 
 
-            serverResponse += ' In the meantime you can check the status of <a target="_blank" href="https://renkulab.statuspage.io/">Renku</a> and' +
-              ' <a target="_blank" href="https://mmoda.statuspage.io/">Mmoda</a>.'
-            // https://renkulab.statuspage.io/ and https://mmoda.statuspage.io/ 
+                publish_response_title = 'Could not publish to Renku:';
 
-            publish_response_title = 'Could not publish to Renku:';
+                publish_result_type = 'publish_error';
+              } else {
+                // success -> redirect to the link returned from the call
+                window.open(serverResponse, "_blank");
+              }
 
-            publish_result_type = 'publish_error';
+              // hide/remove the spinner
+              $('.renku-progress').remove();
+              // re-enable publish-on-renku button, or disable it forever?
+              e.target.disabled = false;
+
+              let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+              renku_publish_panel.parentElement.after(publish_result_panel);
+
+            }).error(
+              function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+                console.log(renku_publish_textStatus);
+                e.target.disabled = false;
+              }
+            );
           } else {
-            // success -> redirect to the link returned from the call
-            window.open(serverResponse, "_blank");
+            publish_response_title = 'Error while publishing to Renku: ';
+            publish_result_type = 'publish_error';
+            no_user_loged_in_error_message = 'please login to MMODA first and then retry';
+    
+            let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
+            renku_publish_panel.parentElement.after(publish_result_panel);
           }
-
-          // hide/remove the spinner
-          $('.renku-progress').remove();
-          // re-enable publish-on-renku button, or disable it forever?
-          e.target.disabled = false;
-
-          let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-          $(this)[0].parentElement.after(publish_result_panel);
-
-        }).error(
-          function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
-            console.log(renku_publish_textStatus);
-            e.target.disabled = false;
-          }
-        );
-      }
+      }).error(function(jqXHR, textStatus, errorThrown) {
+        console.log('Error in requesting the user token:');
+        console.log('textStatus : ' + textStatus);
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+      });
 
 
     });
@@ -794,7 +804,7 @@ function panel_title(srcname, param) {
       // copyToClipboard($.cookie('Drupal.visitor.token'));
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          if (Object.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
             copyToClipboard(data.token);
           }
       }).error(function(jqXHR, textStatus, errorThrown) {
