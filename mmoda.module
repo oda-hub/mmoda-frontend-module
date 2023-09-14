@@ -54,7 +54,6 @@ function mmodahide_preprocess_html(&$variables)
 function mmoda_user_login(&$edit, $account)
 {
   if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
-    // $mmoda_roles = preg_grep('/mmoda/i', $account->roles);
     $mmoda_roles = $account->roles;
     watchdog('MMODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
 
@@ -882,12 +881,3 @@ function mmodahide_default_rules_configuration()
   return $rules;
 }
 
-function _mmoda_write_log_file($filename, $content)
-{
-  $filename = '/tmp/' . $filename;
-  $f = fopen ( $filename, 'w' );
-  fwrite($f, $content);
-  fclose($f);
-
-  chmod($filename, 0777);
-}

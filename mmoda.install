@@ -21,9 +21,11 @@ function mmoda_requirements($phase)
   $requirements = array();
   $conflicts = array();
   if ('install' == $phase and empty(variable_get($module_name . '_settings', array()))) {
+    $filename = 'mmoda_field_bases.php';
+    _mmoda_write_log_file($filename, print_r(mmoda_help_page_field_default_field_bases(), true));
     foreach (mmoda_help_page_field_default_field_bases() as $field_new) {
       $field_old = field_info_field($field_new['field_name']);
-      if ($field_new['field_name'] == $field_old['field_name']) {
+      if (! is_null($field_old) and $field_new['field_name'] == $field_old['field_name']) {
         $conflicts[] = $field_new['field_name'];
       }
     }
@@ -55,7 +57,7 @@ function mmoda_requirements($phase)
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('!error you need to download the !D3, extract the archive and place the D3 directory in the %path directory on your server.', array(
           '!error' => $error_message,
-          '!D3' => l($t('D3 library'), $library['download url']?? ''),
+          '!D3' => l($t('D3 library'), $library['download url'] ?? ''),
           '%path' => 'sites/all/libraries'
         ))
       );
@@ -98,9 +100,9 @@ function mmoda_del_custom_fields()
   foreach (mmoda_help_page_field_default_field_instances() as $instance) {
     field_delete_instance($instance);
   }
-  foreach (array_keys(mmoda_help_page_field_default_field_bases()) as $field) {
-    field_delete_field($field);
-  }
+//   foreach (array_keys(mmoda_help_page_field_default_field_bases()) as $field) {
+//      field_delete_field($field);
+//   }
 }
 
 /**
