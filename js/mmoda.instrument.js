@@ -87,7 +87,7 @@ function panel_title(srcname, param) {
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
-        if (data.token !== null && data.token !== undefined && data.token !== '') {
+        if (Object.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
           access_token = data.token;
           current_ajax_call_params.currentFormData.append('token', access_token);
         }
@@ -794,7 +794,7 @@ function panel_title(srcname, param) {
       // copyToClipboard($.cookie('Drupal.visitor.token'));
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          if (data.token !== null && data.token !== undefined && data.token !== ''){
+          if (Object.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
             copyToClipboard(data.token);
           }
       }).error(function(jqXHR, textStatus, errorThrown) {
