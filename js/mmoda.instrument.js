@@ -88,8 +88,7 @@ function panel_title(srcname, param) {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
         if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
-          access_token = data.token;
-          current_ajax_call_params.currentFormData.append('token', access_token);
+          current_ajax_call_params.currentFormData.append('token', data.token);
         }
 
         AJAX_call();
@@ -250,7 +249,7 @@ function panel_title(srcname, param) {
         //        $(".write-feedback-button").hide();
         //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-        access_token = undefined;
+        
       }).error(function(jqXHR, textStatus, errorThrown) {
         if (textStatus != 'abort') {
           console.log('textStatus : ' + textStats);
@@ -1086,9 +1085,6 @@ function panel_title(srcname, param) {
       $('.write-feedback-button').show();
 
       current_ajax_call_params = {};
-      // if (access_token !== undefined) {
-      //   formData.append('token', access_token);
-      // }
       current_ajax_call_params.initialFormData = formData;
       current_ajax_call_params.currentFormData = cloneFormData(formData);
       if (!current_ajax_call_params.currentFormData.has('query_status')) {
@@ -2472,9 +2468,11 @@ function panel_title(srcname, param) {
   }
 
   function get_download_url(parameters) {
-    if ($.cookie('Drupal.visitor.token'))
+    // if ($.cookie('Drupal.visitor.token'))
+    if (current_ajax_call_params.currentFormData.get('token') !== null)
       parameters['token'] = $.cookie('Drupal.visitor.token');
     url = 'dispatch-data/download_products?' + $.param(parameters);
+    
     return (url);
   }
 
