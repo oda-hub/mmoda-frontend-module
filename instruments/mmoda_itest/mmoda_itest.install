@@ -1,0 +1,65 @@
+<?php
+$module_name = basename(__FILE__, '.install');
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
+
+/**
+ *
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+function mmoda_itest_instrument_info()
+{
+  $info = array(
+    'name' => 'itest',
+    'messenger' => 'Gamma-rays',
+    'title' => 'Test'
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_itest_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {}
+
+  if ($phase == 'runtime') {}
+
+  return $requirements;
+}
+
+function mmoda_itest_install()
+{
+  $instrument_info=mmoda_itest_instrument_info();
+  $module_settings = array(
+    'enabled' => TRUE,
+    'E1_keV' => 20.0,
+    'E2_keV' => 100.0,
+    'query_type' => 'Real',
+    'product_type' => 'itest_lc',
+    'time_bin' => '2',
+    'time_bin_format' => 'sec',
+    'weight' => 40,
+    'data_server_local_url' => 'dispatch-data/run_analysis'
+  );
+  $module_settings= array_merge($instrument_info, $module_settings);
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_itest_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_itest_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}
+

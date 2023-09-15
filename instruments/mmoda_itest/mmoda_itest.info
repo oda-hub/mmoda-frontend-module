@@ -1,0 +1,8 @@
+name = MMODA Test
+description = A test module for MMODA
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda_itest.inc
+
+configure = admin/config/mmoda/itest

@@ -65,7 +65,6 @@ function _mmoda_common_install($module_name, $instrument, $module_settings)
 
   // add help nodes
   _mmoda_help_pages_import($core_module_name, $module_name, $instrument);
-
   _mmoda_install_finished();
 }
 
@@ -140,11 +139,10 @@ function _mmoda_get_node_root_uuids(array $elements)
 function _mmoda_import_nodes_tree(array $nodes_tree, &$help_page_nids)
 {
   foreach ($nodes_tree as $node_tree) {
-    $help_file =$node_tree['file_name'];
+    $help_file = $node_tree['file_name'];
     $node_export = file_get_contents($help_file);
     if (! empty($node_export)) {
       $import_output = node_export_import($node_export);
-      // error_log(print_r($import_output, true));
       if ($import_output['success']) {
         $node = node_load($import_output['nids'][0]);
         $node->uid = 1;
@@ -165,7 +163,7 @@ function _mmoda_import_nodes_tree(array $nodes_tree, &$help_page_nids)
 /**
  * .
  */
-function _mmoda_help_pages_import($core_module_name, $module_name, $instrument = '')
+function _mmoda_php_help_pages_import($core_module_name, $module_name, $instrument = '')
 {
   $module_path = drupal_get_path('module', $module_name);
   $help_pages_dir = $module_path . '/help_book';
@@ -181,26 +179,26 @@ function _mmoda_help_pages_import($core_module_name, $module_name, $instrument =
   $pages_hierarchy = array();
   if (FALSE !== $dh)
     while (($help_file = readdir($dh)) !== FALSE) {
-      if (! preg_match('/\.php$/', $help_file)) {
-        continue;
+      if (preg_match('/\.php$/', $help_file)) {
+        $help_file = $help_pages_dir . DIRECTORY_SEPARATOR . $help_file;
+        $code_string = file_get_contents($help_file);
+        $node = node_export_drupal_import($code_string)[0];
+        $node_export_book = $node->node_export_book;
+        if ($node_export_book['#is_root'])
+          $book_root_files[] = $help_file;
+        else if ($node_export_book['#book_uuid'] == $node_export_book['#parent_uuid'])
+          $book_parent_files[] = $help_file;
+        else
+          $not_book_root_files[] = $help_file;
+        $parent_uuid = '';
+        if (array_key_exists('#parent_uuid', $node->node_export_book))
+          $parent_uuid = $node->node_export_book['#parent_uuid'];
+        array_push($pages_hierarchy, array(
+          'id' => $node->uuid,
+          'parent_id' => $parent_uuid,
+          'file_name' => $help_file
+        ));
       }
-      $help_file = $help_pages_dir . DIRECTORY_SEPARATOR . $help_file;
-      $code_string = file_get_contents($help_file);
-      $node = node_export_drupal_import($code_string)[0];
-      $node_export_book = $node->node_export_book;
-      // error_log('Node export books:'.print_r($node_export_book, true));
-      if ($node_export_book['#is_root'])
-        $book_root_files[] = $help_file;
-      else if ($node_export_book['#book_uuid'] == $node_export_book['#parent_uuid'])
-        $book_parent_files[] = $help_file;
-      else
-        $not_book_root_files[] = $help_file;
-
-      array_push($pages_hierarchy, array(
-        'id' => $node->uuid,
-        'parent_id' => $node->node_export_book['#parent_uuid'],
-        'file_name' => $help_file
-      ));
     }
   else {
     throw new Exception("The help pages directory is not readable.\nCan not import help pages !");
@@ -210,7 +208,9 @@ function _mmoda_help_pages_import($core_module_name, $module_name, $instrument =
   $help_page_nids = array();
   foreach ($root_ids as $element) {
     $nodes_tree = _mmoda_build_tree($pages_hierarchy, $element['id']);
-    _mmoda_import_nodes_tree(array($element), $help_page_nids);
+    _mmoda_import_nodes_tree(array(
+      $element
+    ), $help_page_nids);
     _mmoda_import_nodes_tree($nodes_tree, $help_page_nids);
   }
 
@@ -222,6 +222,140 @@ function _mmoda_help_pages_import($core_module_name, $module_name, $instrument =
   $module_settings['modules'][$module_name]['just_installed'] = count($help_page_nids);
 
   variable_set($core_module_name . '_settings', $module_settings);
+}
+
+/**
+ * .
+ */
+function _mmoda_html_help_pages_import($core_module_name, $module_name, $instrument = '')
+{
+  $module_path = drupal_get_path('module', $module_name);
+  $help_pages_dir = $module_path . '/help_book';
+
+  if (! is_dir($help_pages_dir))
+    return;
+
+  $module_settings = variable_get($core_module_name . '_settings', array());
+
+  $help_page_title = $module_settings['instruments'][$instrument]['title'];
+
+  // get MMOD help pages book id
+  foreach (book_get_books() as $book)
+    if ($book['title'] == 'MMODA')
+      $mmoda_bid = $book['nid'];
+
+  $dh = @opendir($help_pages_dir);
+  $help_page_nids = array();
+  if (FALSE !== $dh)
+    while (($help_file = readdir($dh)) !== FALSE) {
+      if (preg_match('/\.html$/', $help_file)) {
+        $help_file = $help_pages_dir . DIRECTORY_SEPARATOR . $help_file;
+        $code_string = file_get_contents($help_file);
+
+        $node = new stdClass();
+        $node->language = LANGUAGE_NONE;
+        // title
+        $node->title = $help_page_title;
+        // field_mmoda_module
+        $node->field_mmoda_module[LANGUAGE_NONE][0]['value'] = $module_name;
+        // body
+        $node->type = "mmoda_help_page";
+        // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+        node_object_prepare($node);
+        // Or e.g. 'en' if locale is enabled.
+        $node->uid = 1;
+        // Status is 1 or 0; published or not.
+        $node->status = 1;
+        // Promote is 1 or 0; promoted to front page or not.
+        $node->promote = 0;
+        // Comment is 0, 1, 2; 0 = disabled, 1 = read only, or 2 = read/write.
+        $node->comment = 0;
+        $node->body[$node->language][0]['format'] = 'full_html';
+        $node->body[$node->language][0]['value'] = $code_string;
+        $node = node_submit($node); // Prepare node for saving
+        $node->book['bid'] = $mmoda_bid;
+        $node->book['plid'] = 0;
+        $node->book['weight'] = _mmoda_get_help_page_weight();
+        node_save($node);
+        array_push($help_page_nids, $node->nid);
+      }
+    }
+  else {
+    throw new Exception("The help pages directory is not readable.\nCan not import help pages !");
+  }
+  closedir($dh);
+
+  if (empty($instrument))
+    $module_settings['help_page_nids'] = $help_page_nids;
+  else
+    $module_settings['instruments'][$instrument]['help_page_nids'] = $help_page_nids;
+  $module_settings['modules'][$module_name]['just_installed'] = count($help_page_nids);
+
+  variable_set($core_module_name . '_settings', $module_settings);
+}
+
+/**
+ * .
+ */
+function _mmoda_get_help_page_weight()
+{
+  foreach (book_get_books() as $book)
+    if ($book['title'] == 'MMODA')
+      $mmoda_bid = $book['nid'];
+  $query = new EntityFieldQuery();
+  $result = $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'mmoda_help_page')
+    ->execute();
+  $nodes = node_load_multiple(array_keys($result['node']));
+
+  $node = node_load();
+  $max_weight = - 1000;
+  $books = array();
+  foreach ($nodes as $node) {
+    if ($node->book['bid'] == $mmoda_bid and $node->book['p3'] == 0)
+      array_push($books, $node->book);
+    if ($node->book['bid'] == $mmoda_bid and $node->book['p3'] == 0 and $mmoda_bid and $node->book['weight'] > $max_weight)
+      $max_weight = $node->book['weight'];
+  }
+  return $max_weight + 10;
+}
+
+/**
+ * .
+ */
+function _mmoda_help_pages_import($core_module_name, $module_name, $instrument = '')
+{
+  $module_path = drupal_get_path('module', $module_name);
+  $help_pages_dir = $module_path . '/help_book';
+
+  if (! is_dir($help_pages_dir))
+    return;
+
+  $book_root_files = array();
+  $book_parent_files = array();
+  $not_book_root_files = array();
+
+  $dh = @opendir($help_pages_dir);
+  $pages_hierarchy = array();
+  $nb_html_files = 0;
+  $nb_php_files = 0;
+  if (FALSE !== $dh)
+    while (($help_file = readdir($dh)) !== FALSE) {
+      if (preg_match('/\.php$/', $help_file))
+        $nb_php_files ++;
+      else if (preg_match('/\.html$/', $help_file))
+        $nb_html_files ++;
+    }
+  else {
+    throw new Exception("The help pages directory is not readable.\nCan not import help pages !");
+  }
+  closedir($dh);
+  if ($nb_php_files > 0 and $nb_html_files > 0)
+    return;
+  else if ($nb_php_files > 0)
+    _mmoda_php_help_pages_import($core_module_name, $module_name, $instrument);
+  else if ($nb_html_files > 0)
+    _mmoda_html_help_pages_import($core_module_name, $module_name, $instrument);
 }
 
 function _mmoda_help_pages_delete($core_module_name, $module_name, $instrument = '')
@@ -296,4 +430,14 @@ function mmoda_get_users_with_role($role, $active_user = TRUE)
   }
 
   return $users;
+}
+
+function _mmoda_write_log_file($filename, $content)
+{
+  $filename = '/tmp/' . $filename;
+  $f = fopen($filename, 'w');
+  fwrite($f, $content);
+  fclose($f);
+
+  chmod($filename, 0777);
 }
