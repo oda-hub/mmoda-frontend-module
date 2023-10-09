@@ -227,7 +227,7 @@ function panel_title(srcname, param) {
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
       }).error(function(jqXHR, textStatus, errorThrown) {
         if (textStatus != 'abort') {
-          console.log('textStatus : ' + textStats);
+          console.log('textStatus : ' + textStatus);
           console.log('errorThrown :' + errorThrown);
           console.log('jqXHR');
           console.log(jqXHR);
