@@ -12,8 +12,8 @@ function mmoda_euclid_instrument_info()
 {
   $info = array(
     'name' => 'euclid',
-    'messenger' => 'Hard X-rays',
-    'title' => 'INTEGRAL Euclid'
+    'messenger' => 'XXXXXXX',
+    'title' => 'Euclid'
   );
 
   return $info;
