@@ -62,7 +62,6 @@ function mmoda_euclid($form, &$form_state)
     '#suffix' => '</div><hr class="hr-default" />'
   );
 
-
   $form['E1_keV'] = array(
     '#type' => 'textfield',
     '#title' => t("Energy Min"),
@@ -262,8 +261,6 @@ function mmoda_euclid($form, &$form_state)
       'name' => 'user_catalog_file'
     ),
     '#prefix' => '<hr class="hr-default" /><div class="row">',
-    // '#suffix' => '<div class="inline-user-catalog hidden"><a class="show-catalog" href="#" >Inline catalog</a><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
-    // '#suffix' => '<div class="inline-user-catalog hidden"><button class="btn btn-default show-catalog" href="#" >Inline catalog</button><span class="fa fa-times remove-catalog"></span></div></div><hr class="hr-default" />',
     '#suffix' => '</div><hr class="hr-default" />',
     '#parent_classes' => array(
       'form-group',
@@ -273,8 +270,7 @@ function mmoda_euclid($form, &$form_state)
       'control-label'
     )
   );
-//   error_log(print_r($instrument_defaults['filters'], true));
-  $instruments_filters = array('none' => 'Select a filter');
+  $instruments_filters = array();
   foreach ($instrument_defaults['filters'] as $instrument => $filters) {
     if (! array_key_exists($instrument, $instruments_filters))
       $instruments_filters[$instrument] = array();
@@ -282,74 +278,45 @@ function mmoda_euclid($form, &$form_state)
       $instruments_filters[$instrument][$instrument . '|' . $filter] = $filter;
     }
   }
-//   error_log(print_r($instruments_filters, true));
-//   $filename = '/tmp/instruments_filters.php';
-//   $f = fopen($filename, 'w');
-//   fwrite($f, print_r($instruments_filters, true));
-//   fclose($f);
-
+  
   $form['filters'] = array(
     '#type' => 'container',
     '#title' => t('Filters'),
-//     '#collapsible' => TRUE, // Added
-//     '#collapsed' => FALSE, // Added
     '#attributes' => array(
       'class' => array(
-        'euclid-instruments-filters'
+        'euclid-instruments-filters multivalued-field'
       )
     ),
     '#suffix' => '<hr>'
-
   );
-  // To make these fields required
-  // $form['filters']['instrument[]'] = array(
-  // '#type' => 'select',
-  // '#title' => t('Instrument'),
-  // '#options' => array_keys($instrument_defaults['filters']),
-  // '#prefix' => '<div class="row">',
-  // '#parent_classes' => array(
-  // 'form-group',
-  // 'col-md-3'
-  // )
-  // );
-  $form['filters']['filter[]'] = array(
+
+  $form['filters']['filters[filter][]'] = array(
     '#type' => 'select',
-    '#title' => t(''),
-    // '#options' => $instrument_defaults['filters'],$instruments_filters
+    '#title' => t('Filter'),
+    '#required' => TRUE,
     '#options' => $instruments_filters,
     '#parent_classes' => array(
-      'form-group',
+      'col-md-4'
     ),
-    '#prefix' => '<label class="control-label" for="edit-integral-data-rights">Filters</label><table><thead><tr><th>Filter</th><th>Flux column name</th><th>Flux error column name</th><th></th></tr></thead><tbody>'
-     .'<tr><td>',
-    '#suffix' => '</td>'
+    '#prefix' => '<label class="control-label" for="edit-integral-data-rights">Filters</label>' . '<div class="row form-group multivalued-value">'
   );
-  $form['filters']['flux[]'] = array(
+  $form['filters']['filters[flux][]'] = array(
     '#type' => 'textfield',
-    '#title' => t(''),
+    '#title' => t('Flux column name'),
+    '#required' => TRUE,
     '#parent_classes' => array(
-      'form-group',
-    ),
-    '#prefix' => '<td>',
-    '#suffix' => '</td>'
+      'col-md-3 '
+    )
   );
-  $form['filters']['flux_error[]'] = array(
+  $form['filters']['filters[flux_error][]'] = array(
     '#type' => 'textfield',
-    '#title' => t(''),
+    '#title' => t('Flux error column name'),
+    '#required' => TRUE,
     '#parent_classes' => array(
-      'form-group',
+      'col-md-3'
     ),
-    '#prefix' => '<td>',
-    '#suffix' => '</td>',
+    '#suffix' => '</div>'
   );
-
-  $form['filters']['plus'] = array(
-    '#type' => 'markup',
-    '#markup' => '<button class="btn btn-secondary plus-element"><span class="glyphicon glyphicon-plus"></span></button>',
-    '#prefix' => '<td>',
-    '#suffix' => '</td></tr></tbody></table>'
-  );
-
 
   $form['submit'] = array(
     '#type' => 'submit',

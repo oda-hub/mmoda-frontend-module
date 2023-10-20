@@ -16,7 +16,7 @@ label.control-label {
 }
 
 .instrument-params-panel .form-control {
-  width: 80% !important;
+  width: 90% !important;
 }
 
 #formwrapper {
@@ -592,4 +592,18 @@ button.renku-publish {
 
 #mmoda-gallery-iframe {
   border: none;
+}
+/*
+.noDisplay {
+  display: none;
+}
+*/
+
+.multivalued-field button {
+  margin-top : 2px;
+}
+
+.multivalued-field .row {
+  margin-left: 0;
+  margin-right: 0;
 }
