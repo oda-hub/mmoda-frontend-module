@@ -48,6 +48,62 @@ function mmodahide_preprocess_html(&$variables)
   //_mmoda_write_log_file('site_headers.php', print_r($headers, TRUE));
 }
 
+// /**
+//  * Implements hook_tokens().
+//  */
+function mmoda_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  if ($type === 'jwt') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'jwt-link':
+          if (user_is_logged_in()) {
+            $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+            $jwt_url = jwt_link_url();
+            $jwt_encoded_url = l($link_text, $jwt_url['jwt_encoded_url'], array('attributes' => array('target' => '_blank')));
+          }
+          $replacements[$original] = $jwt_encoded_url;
+          break;
+
+        case 'jwt-token':
+          if (user_is_logged_in()) {
+            global $user;
+            $user = user_load($user->uid); 
+            $is_mxroomid_empty = empty($user->field_matrix_room_id);
+            $jwt = jwt_link_url();
+            $alg = variable_get('jwt_link_alg', 'HS256');
+            $key = variable_get('jwt_link_key', '');
+            $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
+              $alg
+            ));
+
+            if($is_mxroomid_empty)
+              unset($jwt_decoded_token -> mxroomid);
+
+            $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+            watchdog('MMODA', 'Original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
+
+          }
+          user_cookie_save([
+            'token' => $jwt_encoded_token_updated
+          ]);
+          $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
+          break;
+
+        default:
+      }
+    }
+  }
+  return $replacements;
+}
+
+function mmoda_tokens_alter(array &$replacements, array $context) {
+  if (array_key_exists('[jwt:jwt-token]_updated', $replacements)) {
+    $replacements['[jwt:jwt-token]'] = $replacements['[jwt:jwt-token]_updated'];
+    unset($replacements['[jwt:jwt-token]_updated']);
+  }
+}
+
 /**
  * Implements hook_user_login().
  */
