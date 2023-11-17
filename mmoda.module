@@ -55,8 +55,11 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
   $replacements = array();
   if ($type === 'jwt') {
     global $user;
-    $user = user_load($user->uid); 
-    $is_mxroomid_empty = empty($user->field_matrix_room_id);
+    $user = user_load($user->uid);
+    $is_mxroomid_empty = false;
+    if(property_exists($user, 'field_matrix_room_id'))
+      $is_mxroomid_empty = empty($user->field_matrix_room_id);
+    
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'jwt-link':
