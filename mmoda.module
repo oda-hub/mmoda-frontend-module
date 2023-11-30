@@ -48,6 +48,92 @@ function mmodahide_preprocess_html(&$variables)
   //_mmoda_write_log_file('site_headers.php', print_r($headers, TRUE));
 }
 
+// /**
+//  * Implements hook_tokens().
+//  */
+function mmoda_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  if ($type === 'jwt') {
+    global $user;
+    $user = user_load($user->uid);
+    $is_mxroomid_empty = false;
+    if(property_exists($user, 'field_matrix_room_id'))
+      $is_mxroomid_empty = empty($user->field_matrix_room_id);
+    
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'jwt-link':
+          if (user_is_logged_in()) {
+            
+            $jwt = jwt_link_url();
+            $alg = variable_get('jwt_link_alg', 'HS256');
+            $key = variable_get('jwt_link_key', '');
+            $jwt_encoded_token_updated = $jwt['jwt_encoded_token'];
+            $jwt_encoded_url_updated = $jwt['jwt_encoded_url'];
+            $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
+              $alg
+            ));
+            
+            if($is_mxroomid_empty) {
+              unset($jwt_decoded_token -> mxroomid);
+              $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+              $url_parsed = parse_url($jwt_encoded_url_updated);
+              parse_str($url_parsed['query'], $query_params);
+              $query_params['token'] = $jwt_encoded_token_updated;
+              $new_query_string = http_build_query($query_params);
+              $url_parsed['query'] = $new_query_string;
+              $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
+            }
+            
+            $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+            $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
+          }
+          $replacements[$original . '_updated'] = $jwt_encoded_url;
+          break;
+
+        case 'jwt-token':
+          if (user_is_logged_in()) {
+            $jwt = jwt_link_url();
+            $alg = variable_get('jwt_link_alg', 'HS256');
+            $key = variable_get('jwt_link_key', '');
+            $jwt_encoded_token_updated = $jwt['jwt_encoded_token'];
+            $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
+              $alg
+            ));
+            $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+
+            if($is_mxroomid_empty) {
+              unset($jwt_decoded_token -> mxroomid);
+              $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+            }
+
+            watchdog('MMODA', 'Original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
+
+          }
+          user_cookie_save([
+            'token' => $jwt_encoded_token_updated
+          ]);
+          $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
+          break;
+
+        default:
+      }
+    }
+  }
+  return $replacements;
+}
+
+function mmoda_tokens_alter(array &$replacements, array $context) {
+  if (array_key_exists('[jwt:jwt-token]_updated', $replacements)) {
+    $replacements['[jwt:jwt-token]'] = $replacements['[jwt:jwt-token]_updated'];
+    unset($replacements['[jwt:jwt-token]_updated']);
+  }
+  if (array_key_exists('[jwt:jwt-link]_updated', $replacements)) {
+    $replacements['[jwt:jwt-link]'] = $replacements['[jwt:jwt-link]_updated'];
+    unset($replacements['[jwt:jwt-link]_updated']);
+  }
+}
+
 /**
  * Implements hook_user_login().
  */
@@ -55,6 +141,7 @@ function mmoda_user_login(&$edit, $account)
 {
   if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
     $mmoda_roles = $account->roles;
+    $is_mxroomid_empty = empty($account->field_matrix_room_id);
     watchdog('MMODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
 
     if (count($mmoda_roles)) {
@@ -64,10 +151,14 @@ function mmoda_user_login(&$edit, $account)
       $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
         $alg
       ));
+      if($is_mxroomid_empty)
+        unset($jwt_decoded_token -> mxroomid);
+      $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
       watchdog('MMODA', 'Login - Adding token Cookie: ' . print_r($jwt_decoded_token, TRUE));
       user_cookie_save([
-        'token' => $jwt['jwt_encoded_token']
+        'token' => $jwt_encoded_token_updated
       ]);
+      watchdog('MMODA', 'After login original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
       // drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
     }
   }
