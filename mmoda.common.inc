@@ -406,6 +406,16 @@ function mmoda_common_validate($form, &$form_state)
   form_clear_error();
 }
 
+// Define a menu callback that returns JSON data.
+function mmoda_get_token() {
+  if (user_is_logged_in()) {
+    $jwt = jwt_link_url();
+    $token_data = array('token' => $jwt['jwt_encoded_token']);
+    return(drupal_json_output($token_data));
+    // return ($token_data);
+  }
+}
+
 function resolve_object_name_callback($form, &$form_state)
 {
   module_load_include('inc', 'mmoda', 'mmoda.nameresolver');
