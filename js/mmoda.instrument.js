@@ -58,7 +58,6 @@ function panel_title(srcname, param) {
 }
 
 (function($) {
-
   $(document).ready(commonReady);
   var desktop_panel_counter = 1;
 
@@ -411,7 +410,160 @@ function panel_title(srcname, param) {
     return (cssClass);
   }
 
+  function current_instrument_form_set_bootstrapValidator() {
+
+    var validator_fields = {
+      'scw_list': {
+        // enabled: false,
+        validators: {
+          callback: {
+            callback: function(value, validator, $field) {
+              return (validate_scws(value, 500));
+            }
+          }
+        }
+      }
+    };
+    validator_fields['time_bin'] = {
+      // enabled: false,
+      validators: {
+        callback: {
+          callback: function(value, validator, $field) {
+            return (validate_timebin(value, validator, $field));
+          }
+        }
+      }
+    };
+
+    validator_fields['E1_keV'] = {
+      // enabled: false,
+      validators: {
+        notEmpty: {
+          message: 'Please enter a value'
+        },
+        callback: {
+          callback: function(value, validator, $field) {
+            var E2_keV = validator.getFieldElements('E2_keV').val();
+            if (Number(value) >= Number(E2_keV)) {
+              return {
+                valid: false,
+                message: 'Energy min must be lower that energy max'
+              }
+            }
+            return true;
+          }
+        }
+      }
+    };
+    validator_fields['E2_keV'] = {
+      // enabled: false,
+      validators: {
+        notEmpty: {
+          message: 'Please enter a value'
+        },
+        callback: {
+          callback: function(value, validator, $field) {
+            var E1_keV = validator.getFieldElements('E1_keV').val();
+            if (Number(value) <= Number(E1_keV)) {
+              return {
+                valid: false,
+                message: 'Energy max must be higher that energy min'
+              }
+            }
+            return true;
+          }
+        }
+      }
+    };
+    validator_fields['filters[filter][]'] = {
+      // enabled: false,
+      validators: {
+        notEmpty: {
+          message: 'Please select filter'
+        }
+      }
+    };
+    validator_fields['filters[flux][]'] = {
+      // enabled: false,
+      validators: {
+        notEmpty: {
+          message: 'Please enter a value'
+        }
+      }
+    };
+
+    validator_fields['filters[flux_error][]'] = {
+      // enabled: false,
+      validators: {
+        notEmpty: {
+          message: 'Please enter a value'
+        }
+      }
+    };
+    $('.instrument-panel form').bootstrapValidator('destroy');
+
+    current_instrument_form_validator = $('.instrument-panel form').bootstrapValidator({
+      // live :'disabled',
+      fields: validator_fields,
+      feedbackIcons: {
+        valid: 'glyphicon glyphicon-ok',
+        invalid: 'glyphicon glyphicon-remove',
+        validating: 'glyphicon glyphicon-refresh'
+      }
+    }).data('bootstrapValidator');
+  }
+
+  function insert_new_multivalued_field(add_multivalued_button) {
+    var multivalued_field = $(add_multivalued_button).closest('.multivalued-field');
+    var current_row = $(add_multivalued_button).prev();
+    var newVAlue = current_row.clone();
+    $('input, select, textarea', newVAlue).val('');
+    current_row.after(newVAlue);
+    $('button', multivalued_field).prop('disabled', false);
+    $('input, select, textarea', newVAlue).each(function() {
+      current_instrument_form_validator.addField($(this));
+    });
+    newVAlue.show();
+  }
+
+  function delete_multivalued_field(delete_multivalued_button) {
+    multivalued_field = $(delete_multivalued_button).closest('.multivalued-field');
+    var current_row= $(delete_multivalued_button).parent();
+    current_row.remove();
+    var nb_rows = $('.multivalued-value', multivalued_field).length;
+    if (nb_rows == 1) $('button.delete-multivalued-element', multivalued_field).prop('disabled', true)
+  }
+
+
   function commonReady() {
+    $('.multivalued-field').removeClass('form-group');
+    
+    current_instrument_form_set_bootstrapValidator();
+    var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
+    var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
+    $('.multivalued-field').append(add_multivalued_elt_button);
+    $('.multivalued-field .multivalued-value').append(del_multivalued_elt_button);
+    $('button', '.multivalued-field .multivalued-value').prop('disabled', true);
+
+    $('.multivalued-field .multivalued-value').each(function() {
+      var multivalued_field = $(this).closest('.multivalued-field');
+      var labels = $(this).clone();
+      labels.find('input, select, textarea, button').remove();
+      labels.removeClass('multivalued-value');
+      $(this).find('label').remove();
+      multivalued_field.find('label:first').after(labels);
+    })
+
+    $('.multivalued-field').on('click', '.add-multivalued-element', function(e) {
+      // Prevent form submission
+      e.preventDefault();
+      insert_new_multivalued_field(this);
+    });
+    $('.multivalued-field').on('click', '.delete-multivalued-element', function(e) {
+      // Prevent form submission
+      e.preventDefault();
+      delete_multivalued_field(this);
+    });
 
     $('body').on('click', '#ldialog .close-button', function() {
       if (requestTimer !== null) {
@@ -425,8 +577,7 @@ function panel_title(srcname, param) {
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined')
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
-      if ($(this).data("mmoda_gallery_close") == 1) 
-        $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
 
       $(this).removeData('mmoda_gallery_close');
       $(this).removeData('mmoda_jqxhr_index');
@@ -860,70 +1011,6 @@ function panel_title(srcname, param) {
     // Create validator and validate a frist time :
     // This is important in Firefox when the page is refreshed
     // where indeed the old values are still in the form
-    current_instrument_form_validator = $('.instrument-panel form').bootstrapValidator({
-      // live :'disabled',
-      fields: {
-        'scw_list': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                return (validate_scws(value, 500));
-              }
-            }
-          }
-        },
-        'time_bin': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                return (validate_timebin(value, validator, $field));
-              }
-            }
-          }
-        },
-        'E1_keV': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var E2_keV = validator.getFieldElements('E2_keV').val();
-                if (Number(value) >= Number(E2_keV)) {
-                  return {
-                    valid: false,
-                    message: 'Energy min must be lower that energy max'
-                  }
-                }
-                return true;
-              }
-            }
-          }
-        },
-        'E2_keV': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var E1_keV = validator.getFieldElements('E1_keV').val();
-                if (Number(value) <= Number(E1_keV)) {
-                  return {
-                    valid: false,
-                    message: 'Energy max must be higher that energy min'
-                  }
-                }
-                return true;
-              }
-            }
-          }
-        },
-      },
-      feedbackIcons: {
-        valid: 'glyphicon glyphicon-ok',
-        invalid: 'glyphicon glyphicon-remove',
-        validating: 'glyphicon glyphicon-refresh'
-      }
-    }).data('bootstrapValidator');// .validate();
 
     $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function() {
       var form = $(this).parents('form');
@@ -1195,6 +1282,7 @@ function panel_title(srcname, param) {
           if (!common_form_validator.isValidField($(this).attr('name')))
             both_forms_valid = false;
         });
+
         if (both_forms_valid) {
           $('input, textarea, select', 'form.' + request_parameters.instrument + '-form').each(function() {
             current_instrument_form_validator.validateField($(this).attr('name'));

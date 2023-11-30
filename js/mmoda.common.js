@@ -696,7 +696,20 @@ function get_waitingDialog($modal_dialog) {
     }
 
     // A cross symbol after an input to clear it
-    $('.clear-left-input').on('click', function(e) {
+    $('body').on('click', 'button.plus-element', function(e) {
+      var row = $(this).closest('tr').clone(true);
+      $('input', row).val('');
+      $(this).closest('tr').after(row);
+      $(this).after($('<button>').addClass('btn btn-secondary remove-element').append($('<span>').addClass('glyphicon glyphicon-minus'))).remove();
+      e.preventDefault(); return true;
+    });
+    // A cross symbol after an input to clear it
+    $('body').on('click', 'button.remove-element', function(e) {
+      $(this).closest('tr').remove();
+      e.preventDefault(); return true;
+    });
+
+    $('.clear-left-input').on('click', function() {
       $(this).parent().prev('input').val('');
     });
 

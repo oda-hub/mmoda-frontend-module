@@ -362,16 +362,6 @@ function _mmoda_user_has_roles($instrument_roles)
 }
 
 /**
- * Generates the actual content of the iPrayTimes block.
- */
-function mmoda_get_settings()
-{
-  $js = array();
-
-  return ($js);
-}
-
-/**
  * Implements hook_theme().
  */
 function mmoda_theme($existing, $type, $theme, $path)
@@ -880,4 +870,5 @@ function mmodahide_default_rules_configuration()
 
   return $rules;
 }
+
 
