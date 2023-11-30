@@ -2,7 +2,8 @@
 
 function explore_gallery_object($source_name)
 {
-  //$preview_example_url = 'https://cdcidev.mtmco.net/mmoda/galleryd/node/5694/preview';
+  // $preview_example_url = 'http://cdciweb02.astro.unige.ch/mmoda/galleryd/node/5694/preview';
+  // $complete_example_url = 'http://cdciweb02.astro.unige.ch/mmoda/galleryd/node/5694';
 
   $mmoda_settings = variable_get('mmoda_settings');
   $gallery_data_request = $mmoda_settings['common']['gallery_data_request'] . '?src_name=' . drupal_encode_path($source_name);
@@ -16,6 +17,9 @@ function explore_gallery_object($source_name)
     );
   } else {
     $url = $json_response['url_preview'];
+    $url_complete = $json_response['url'];
+    // $url_complete = $complete_example_url;
+    // $url = $preview_example_url;
     $data = array(
       'exit_status' => array(
         'status' => 0
@@ -24,7 +28,8 @@ function explore_gallery_object($source_name)
       'query_status' => 'done',
       'params' => $query_params,
       'json_response' => $json_response,
-      'htmlResponse' => '<iframe id="mmoda-gallery-iframe" src="' . $url . '" title="MMODA Gallery"></iframe>'
+      'htmlResponse' => '<iframe id="mmoda-gallery-iframe" src="' . $url . '" title="MMODA Gallery"></iframe><br/>
+                        <p class="text-center current-message">Please visit the gallery to see the full list of products for this source <a href="' . $url_complete . '" target="_blank"> >> </a></p>'
     );
   }
 
