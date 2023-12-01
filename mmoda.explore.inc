@@ -2,8 +2,6 @@
 
 function explore_gallery_object($source_name)
 {
-  // $preview_example_url = 'http://cdciweb02.astro.unige.ch/mmoda/galleryd/node/5694/preview';
-  // $complete_example_url = 'http://cdciweb02.astro.unige.ch/mmoda/galleryd/node/5694';
 
   $mmoda_settings = variable_get('mmoda_settings');
   $gallery_data_request = $mmoda_settings['common']['gallery_data_request'] . '?src_name=' . drupal_encode_path($source_name);
@@ -17,9 +15,9 @@ function explore_gallery_object($source_name)
     );
   } else {
     $url = $json_response['url_preview'];
+    //$url = str_replace( 'www.astro.unige.ch', 'cdcidev.mtmco.net', $json_response['url_preview']);
     $url_complete = $json_response['url'];
-    // $url_complete = $complete_example_url;
-    // $url = $preview_example_url;
+
     $data = array(
       'exit_status' => array(
         'status' => 0
