@@ -136,25 +136,25 @@ function mmoda_tokens_alter(array &$replacements, array $context) {
  */
 function mmoda_user_login(&$edit, $account)
 {
-  if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
-    $mmoda_roles = $account->roles;
-    $is_mxroomid_empty = empty($account->field_matrix_room_id);
-    watchdog('MMODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
+  // if (! isset($_POST['form_id']) || $_POST['form_id'] != 'user_pass_reset') {
+  //   $mmoda_roles = $account->roles;
+  //   $is_mxroomid_empty = empty($account->field_matrix_room_id);
+  //   watchdog('MMODA', 'Login - User MMODA roles :' . implode(', ', $mmoda_roles));
 
-    if (count($mmoda_roles)) {
-      $jwt = jwt_link_url();
-      $alg = variable_get('jwt_link_alg', 'HS256');
-      $key = variable_get('jwt_link_key', '');
-      $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
-        $alg
-      ));
-      if($is_mxroomid_empty)
-        unset($jwt_decoded_token -> mxroomid);
-      $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
-      watchdog('MMODA', 'After login original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
-      // drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
-    }
-  }
+  //   if (count($mmoda_roles)) {
+  //     $jwt = jwt_link_url();
+  //     $alg = variable_get('jwt_link_alg', 'HS256');
+  //     $key = variable_get('jwt_link_key', '');
+  //     $jwt_decoded_token = JWT::decode($jwt['jwt_encoded_token'], $key, array(
+  //       $alg
+  //     ));
+  //     if($is_mxroomid_empty)
+  //       unset($jwt_decoded_token -> mxroomid);
+  //     $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+  //     watchdog('MMODA', 'After login original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
+  //     // drupal_add_http_header('Authorization', 'Bearer '.$jwt['jwt_encoded_token']);
+  //   }
+  // }
 }
 
 /**
