@@ -950,18 +950,21 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
-      AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
-          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
-            copyToClipboard(data.token);
-          }
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log('Error in requesting the user token:');
-        console.log('textStatus : ' + textStatus);
-        console.log('errorThrown :' + errorThrown);
-        console.log('jqXHR');
-        console.log(jqXHR);
-      });
+      token_text = $("#edit-submitted-copy-button p")[0].textContent;
+      if(token_text !== undefined)
+        copyToClipboard(token_text);
+      // AJAX_call_get_token().done(
+      //   function(data, textStatus, jqXHR) {
+      //     if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
+      //       copyToClipboard(data.token);
+      //     }
+      // }).error(function(jqXHR, textStatus, errorThrown) {
+      //   console.log('Error in requesting the user token:');
+      //   console.log('textStatus : ' + textStatus);
+      //   console.log('errorThrown :' + errorThrown);
+      //   console.log('jqXHR');
+      //   console.log(jqXHR);
+      // });
     });
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
