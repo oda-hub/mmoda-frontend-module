@@ -1104,12 +1104,15 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-
+        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
         var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
           item.name = item.name.replace(form_id + '_', '');
+          if(item.name == 'instrument') {
+            item.value = active_panel_instrument
+          }
           return (item);
         });
 
