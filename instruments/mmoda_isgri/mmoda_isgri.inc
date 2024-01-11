@@ -30,6 +30,12 @@ function mmoda_isgri($form, &$form_state)
     '#type' => 'hidden',
     '#value' => 'isgri'
   );
+
+  $form['support_return_progress'] = array(
+    '#type' => 'hidden',
+    '#value' => 'false'
+  );
+
   $module_name = basename(__FILE__, '.install');
   list ($core_module_name) = explode('_', $module_name);
 
