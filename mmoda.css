@@ -464,8 +464,13 @@ div.ctools-modal-content .modal-content {
   word-wrap: break-word; /* IE */
 }
 
-.write-feedback-button {
+.write-feedback-button 
+.return-progress-button {
   display: none;
+}
+
+.return-progress-button.disabled {
+  color:gray;
 }
 
 .modal-footer .buttons-container {
