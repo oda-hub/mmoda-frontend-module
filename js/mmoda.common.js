@@ -509,6 +509,14 @@ function get_waitingDialog($modal_dialog) {
         },
         hideLegend: function() {
           $dialog.find('.legend').hide();
+        },
+        enableReturnProgressButton: function() {
+          // $dialog.find('.return-progress-button').show();
+          $dialog.find('.return-progress-button').removeClass("disabled");
+        },
+        disableReturnProgressButton: function() {
+          // $dialog.find('.return-progress-button').hide();
+          $dialog.find('.return-progress-button').addClass("disabled");
         }
       };
 

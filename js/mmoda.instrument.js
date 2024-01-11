@@ -1108,10 +1108,14 @@ function panel_title(srcname, param) {
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
+        waitingDialog.disableReturnProgressButton();
         var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
           item.name = item.name.replace(form_id + '_', '');
           if(item.name == 'instrument') {
             item.value = active_panel_instrument
+          }
+          if(item.name == 'support_return_progress' && item.value == 'true') {
+            waitingDialog.enableReturnProgressButton();
           }
           return (item);
         });
@@ -1163,6 +1167,7 @@ function panel_title(srcname, param) {
       });
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
+      $('.return-progress-button').show();
 
       current_ajax_call_params = {};
       current_ajax_call_params.initialFormData = formData;
