@@ -103,6 +103,11 @@
             href="modal_forms/nojs/webform/392"><span
             class="oda-icon-label">Write a feedback</span><span
             class="glyphicon glyphicon-envelope"> </span> </a>
+          <a data-toggle="tooltip" title=""
+            data-original-title="Visualize progress"
+            class="return-progress-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
+            href="#"><span
+            class="oda-icon-label">Visualize progress</span></a>
           <button type="button"
             class="btn btn-primary form-button submit-button"
             data-dismiss="modal"></button>
