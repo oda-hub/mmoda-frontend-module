@@ -822,9 +822,33 @@ function panel_title(srcname, param) {
     });
 
     $(".return-progress-button").on('click', function(e) {
-      e.preventDefault();
       e.stopPropagation();
-      console.log(e);
+      
+      AJAX_call_get_token().done(
+        function(data, textStatus, jqXHR) {
+
+          current_ajax_call_params.currentFormData.append('return_progress', 'True');
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
+            current_ajax_call_params.currentFormData.append('token', data.token);
+          var return_progress_jqXHR = $.ajax({
+            url: current_ajax_call_params.action,
+            data: current_ajax_call_params.currentFormData,
+            // data: form_elements,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            timeout: ajax_request_timeout,
+            type: 'POST'
+          }).done(function(data, textStatus, jqXHR) {
+            console.log(data);
+          }).complete(function(jqXHR, textStatus) {
+            console.log(jqXHR.responseText);
+          }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText);
+          });
+
+        });
+
     });
 
     $("body").on('click', '.result-panel .renku-publish', function(e) {
