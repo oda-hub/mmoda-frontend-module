@@ -821,6 +821,12 @@ function panel_title(srcname, param) {
       }
     });
 
+    $(".return-progress-button").on('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log(e);
+    });
+
     $("body").on('click', '.result-panel .renku-publish', function(e) {
       e.preventDefault();
       renku_publish_formData = new FormData();
@@ -1109,13 +1115,16 @@ function panel_title(srcname, param) {
         // form id prefix from
         // the name
         waitingDialog.disableReturnProgressButton();
-        var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
+        var instrumentFormData = $($(this)[0]).serializeArray().filter(function(item) {
+          if(item.name == 'support_return_progress' && item.value == 'true') {
+            waitingDialog.enableReturnProgressButton();
+            return false;
+          }
+          return true;
+        }).map(function(item, index) {
           item.name = item.name.replace(form_id + '_', '');
           if(item.name == 'instrument') {
             item.value = active_panel_instrument
-          }
-          if(item.name == 'support_return_progress' && item.value == 'true') {
-            waitingDialog.enableReturnProgressButton();
           }
           return (item);
         });
