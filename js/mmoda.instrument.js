@@ -821,18 +821,30 @@ function panel_title(srcname, param) {
       }
     });
 
-    $(".return-progress-button").on('click', function(e) {
+    $(".return-progress-link").on('click', function(e) {
       e.stopPropagation();
       
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             current_ajax_call_params.currentFormData.append('token', data.token);
+
+          // test
+
+          test_ajax_call_params = {};
+          test_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.currentFormData);
+          test_ajax_call_params.currentFormData.set('instrument', 'empty-async-return-progress');
+          test_ajax_call_params.currentFormData.set('query_type', 'Real');
+          test_ajax_call_params.currentFormData.set('product_type', 'dummy_html');
+          test_ajax_call_params.action = "dispatch-data/run_analysis"
+          // test_ajax_call_params.form = this;
+
           var return_progress_jqXHR = $.ajax({
-            url: current_ajax_call_params.action,
-            data: current_ajax_call_params.currentFormData,
+            // url: current_ajax_call_params.action,
+            url: test_ajax_call_params.action,
+            // data: current_ajax_call_params.currentFormData,
+            data: test_ajax_call_params.currentFormData,
             // data: form_elements,
             dataType: 'json',
             processData: false,
@@ -841,6 +853,13 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
+
+            if (data.products.hasOwnProperty('progress_product_html_output')) {
+              let tab_progress_product_html = window.open('about:blank', '_blank');
+              tab_progress_product_html.document.write(data.products.progress_product_html_output);
+              tab_progress_product_html.document.close();
+            }
+
           }).complete(function(jqXHR, textStatus) {
             console.log(jqXHR.responseText);
           }).error(function(jqXHR, textStatus, errorThrown) {
@@ -1138,10 +1157,10 @@ function panel_title(srcname, param) {
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
-        waitingDialog.disableReturnProgressButton();
+        waitingDialog.disableReturnProgressLink();
         var instrumentFormData = $($(this)[0]).serializeArray().filter(function(item) {
           if(item.name == 'support_return_progress' && item.value == 'true') {
-            waitingDialog.enableReturnProgressButton();
+            waitingDialog.enableReturnProgressLink();
             return false;
           }
           return true;
@@ -1200,7 +1219,7 @@ function panel_title(srcname, param) {
       });
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
-      $('.return-progress-button').show();
+      $('.return-progress-link').show();
 
       current_ajax_call_params = {};
       current_ajax_call_params.initialFormData = formData;

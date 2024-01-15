@@ -65,6 +65,10 @@ label.control-label {
   width: 60%;
 }
 
+.modal-dialog .modal-header .modal-title {
+  display: inline-block;
+}
+
 .mmoda-log .modal-body, .mmoda-log .panel-body {
   max-height: 80vh;
   overflow-y: auto;
@@ -83,11 +87,13 @@ table.message-table tr td {
   padding-right: 1em;
 }
 
-.mmoda-log .details, .mmoda-log .more-less-details {
+.mmoda-log .details, .mmoda-log .more-less-details,
+.return-progress-link {
   display: none;
 }
 
-.mmoda-log .more-less-details {
+.mmoda-log .more-less-details, 
+.return-progress-link {
   color: #007d64;
   cursor: pointer;
 }
@@ -464,13 +470,18 @@ div.ctools-modal-content .modal-content {
   word-wrap: break-word; /* IE */
 }
 
-.write-feedback-button 
-.return-progress-button {
+.write-feedback-button, 
+.return-progress-link {
   display: none;
 }
 
-.return-progress-button.disabled {
+.return-progress-link {
+  float: right;
+}
+
+.return-progress-link.disabled {
   color:gray;
+  cursor: default;
 }
 
 .modal-footer .buttons-container {

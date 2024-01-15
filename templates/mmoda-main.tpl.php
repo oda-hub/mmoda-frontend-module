@@ -54,6 +54,7 @@
         <span class="close" data-dismiss="modal" aria-label="Close"
           aria-hidden="true">&times;</span>
         <h4 class="modal-title"></h4>
+        <div class="return-progress-link">View more &gt;</div>
         <div class="header-message">
           <div>
             <span class="session-id"></span><span class="job-id"></span>
@@ -97,17 +98,13 @@
             <?php endif;?>
         </div>
         <div class="buttons-container">
+          <!-- <div class="return-progress-button">View more &gt;</div> -->
           <a data-toggle="tooltip" title=""
             data-original-title="Report a bug or write us a feedback"
             class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
             href="modal_forms/nojs/webform/392"><span
             class="oda-icon-label">Write a feedback</span><span
             class="glyphicon glyphicon-envelope"> </span> </a>
-          <button type="button"
-            class="return-progress-button btn btn-primary collapse"
-            data-dismiss="modal"><span
-            class="oda-icon-label">Visualize progress</span><span 
-            class="glyphicon glyphicon-hourglass"> </span> </button>
           <button type="button"
             class="btn btn-primary form-button submit-button"
             data-dismiss="modal"></button>
