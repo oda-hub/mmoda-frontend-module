@@ -1,4 +1,5 @@
 var instrument_panel_margin = 150;
+var progress_panel_margin = 150;
 var common_form_validator;
 var mmoda_ajax_jqxhr = [];
 
@@ -597,6 +598,14 @@ function get_waitingDialog($modal_dialog) {
         }
       });
     }
+  }
+
+  $.fn.highlight_progress_panel = function(offset) {
+    max_zindexes = $('#ldialog-modal-dialog').zIndex();
+    $(this).css('z-index', max_zindexes + 1);
+    var thisObject = $(this);
+    thisObject.offset(offset);
+    thisObject.show('highlight', { color: '#adebad' }, 1000);
   }
 
   $(document).ready(commonReady);

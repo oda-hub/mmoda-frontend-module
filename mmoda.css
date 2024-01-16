@@ -74,6 +74,15 @@ label.control-label {
   overflow-y: auto;
 }
 
+.mmoda-html-progress .modal-body, .mmoda-html-progress .panel-body {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.mmoda-html-progress {
+  width: 75%;
+}
+
 .panel.mmoda-log table.status-table {
   /* Important ! to show the rotated headings of the status table */
   margin-right: 100px;

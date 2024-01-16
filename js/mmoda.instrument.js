@@ -855,9 +855,20 @@ function panel_title(srcname, param) {
             console.log(data);
 
             if (data.products.hasOwnProperty('progress_product_html_output')) {
-              let tab_progress_product_html = window.open('about:blank', '_blank');
-              tab_progress_product_html.document.write(data.products.progress_product_html_output);
-              tab_progress_product_html.document.close();
+              // // new tab opening
+              // let tab_progress_product_html = window.open('about:blank', '_blank');
+              // tab_progress_product_html.document.write(data.products.progress_product_html_output);
+              // tab_progress_product_html.document.close();
+              // display in a dedicated panel
+              var parent_panel = $('#ldialog-modal-dialog');
+              var container_parent_panel = parent_panel.parent();
+              var progress_html_offset = {};
+              progress_html_offset.top = e.pageY;
+              progress_html_offset.left = e.pageX;
+              progress_html_offset.top -= container_parent_panel.offset().top;
+              progress_html_offset.left = parent_panel.offset().left;
+              
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
           }).complete(function(jqXHR, textStatus) {
@@ -1756,7 +1767,22 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Log');
     $('#' + panel_ids.panel_id).addClass('mmoda-log');
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+  }
 
+  function display_progress_html_output(html_content, afterDiv, offset) {
+    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress');
+    $('#' + panel_ids.panel_body_id).append(html_content);
+    $(afterDiv).data({
+      progress_html_output_panel_id: '#' + panel_ids.panel_id
+    });
+    $('#' + panel_ids.panel_id).data({
+      progress_html_output_panel_id: afterDiv
+    });
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
+    $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
+    $(afterDiv).addClass('ldraggable ui-draggable');
+    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
+    $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
   }
 
   function display_query_parameters(query_parameters, afterDiv, datetime, offset) {

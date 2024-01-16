@@ -48,7 +48,7 @@
 <!-- Modal Dialog-->
 <div id="ldialog" class="modal fade mmoda-log" role="dialog"
   aria-hidden="true" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-lg">
+  <div id="ldialog-modal-dialog" class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <span class="close" data-dismiss="modal" aria-label="Close"
@@ -115,7 +115,7 @@
 </div>
 <!-- Result panel -->
 <div id="mmoda_panel_model"
-  class="result-panel panel panel-default ldraggable ">
+  class="result-panel panel panel-default ldraggable">
   <div class="panel-heading lang-panel-header-tools">
     <span class="panel-title"></span> <span
       class="panel-toolbox pull-right"> <span class="date"></span> <span
