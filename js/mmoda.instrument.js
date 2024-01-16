@@ -84,20 +84,21 @@ function panel_title(srcname, param) {
     //      current_ajax_call_params.initialFormData.entries()) {
     //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
+    //    var params = {};
     //    console.log('--- currentFormData');
-    //    for (var parameter of
-    //      current_ajax_call_params.currentFormData.entries()) {
-    //      console.log(parameter[0] + '=' + parameter[1]);
+    //    for (var parameter of current_ajax_call_params.currentFormData.entries()) {
+    //      params[parameter[0]] = parameter[1];
     //    }
+    //    console.log(params);
 
     // must be global variable
     requestTimer = null;
 
     //var startAJAXTime = new Date().getTime();
+
     var mmoda_jqXHR = $.ajax({
       url: current_ajax_call_params.action,
       data: current_ajax_call_params.currentFormData,
-      // data: form_elements,
       dataType: 'json',
       processData: false,
       contentType: false,
@@ -528,7 +529,7 @@ function panel_title(srcname, param) {
 
   function delete_multivalued_field(delete_multivalued_button) {
     multivalued_field = $(delete_multivalued_button).closest('.multivalued-field');
-    var current_row= $(delete_multivalued_button).parent();
+    var current_row = $(delete_multivalued_button).parent();
     current_row.remove();
     var nb_rows = $('.multivalued-value', multivalued_field).length;
     if (nb_rows == 1) $('button.delete-multivalued-element', multivalued_field).prop('disabled', true)
@@ -537,7 +538,7 @@ function panel_title(srcname, param) {
 
   function commonReady() {
     $('.multivalued-field').removeClass('form-group');
-    
+
     current_instrument_form_set_bootstrapValidator();
     var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
     var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
@@ -1056,22 +1057,30 @@ function panel_title(srcname, param) {
         // true);
 
         // Collect object name 
-        var allFormData = $("form#mmoda-name-resolve").serializeArray().map(function(item, index) {
+        var allFormData = $("form#mmoda-name-resolve").serializeArray().map(function(item) {
           return (item);
         });
 
         // Collect common parameters
-        var commonFormData = $("form#mmoda-common").serializeArray().map(function(item, index) {
+        var commonFormData = $("form#mmoda-common").serializeArray().map(function(item) {
           if (item.name == 'T1' || item.name == 'T2') {
             item.value = item.value.replace(' ', 'T')
           }
           return (item);
         });
 
+        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
+        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
+        var instrument_form_serializeArray = [];
+        $.each(instrument_form_serializeJSON, function(param, value) {
+          if (param == 'filters') instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+          else instrument_form_serializeArray.push({ 'name': param, 'value': value });
+        });
+
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
-        var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
+        var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
           return (item);
         });

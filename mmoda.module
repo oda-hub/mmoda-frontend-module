@@ -239,7 +239,10 @@ function mmoda_main_block_content()
     drupal_set_message(t('Error : can not load bootstrap form validator library.'), 'error');
     return;
   }
-
+  if (! ($library_jquery_serializejson = libraries_load('jquery.serializeJSON')) || empty($library_jquery_serializejson['loaded'])) {
+    drupal_set_message(t('Error : can not load jquery.serializeJSON library.'), 'error');
+    return;
+  }
   if (! ($library_datatables = libraries_load('datatables')) || empty($library_datatables['loaded'])) {
     drupal_set_message(t('Error : can not load DataTables library.'), 'error');
     return;
@@ -447,6 +450,18 @@ function mmoda_libraries_info()
     'files' => array(
       'js' => array(
         'js/bootstrapValidator.min.js'
+      )
+    )
+  );
+
+  $libraries['jquery.serializeJSON'] = array(
+    'name' => 'jquery.serializeJSON',
+    'vendor url' => 'http://bootstrapvalidator.com',
+    'download url' => 'https://github.com/marioizquierdo/jquery.serializeJSON',
+    'version callback' => 'short_circuit_version',
+    'files' => array(
+      'js' => array(
+        'jquery.serializejson.min.js'
       )
     )
   );
