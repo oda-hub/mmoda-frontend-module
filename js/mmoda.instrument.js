@@ -1106,7 +1106,6 @@ function panel_title(srcname, param) {
           return (item);
         });
         let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-<<<<<<< HEAD
         var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
@@ -1115,8 +1114,6 @@ function panel_title(srcname, param) {
           else instrument_form_serializeArray.push({ 'name': param, 'value': value });
         });
 
-=======
->>>>>>> 886c4e99edd12ba16b2a2ecd4a9008cdfdcbb4f1
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
