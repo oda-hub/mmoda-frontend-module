@@ -192,7 +192,7 @@ function panel_title(srcname, param) {
             current_ajax_call_params.currentFormData.append('job_id', job_id);
             current_ajax_call_params.currentFormData.append('session_id', session_id);
           }
-          requestTimer = setTimeout(AJAX_call, 5000);
+          requestTimer = setTimeout(AJAX_submit_call, 5000);
         } else {
           $(".notice-progress-container").hide();
           add_dispatcher_response_to_feedback_form(data);
