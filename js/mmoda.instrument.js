@@ -821,8 +821,8 @@ function panel_title(srcname, param) {
       }
     });
 
-    $(".return-progress-link").on('click', function(e) {
-      e.stopPropagation();
+    $("body").on('click', '.return-progress-link.enabled', function(e) {
+      // e.stopPropagation();
       
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {

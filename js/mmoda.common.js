@@ -512,11 +512,11 @@ function get_waitingDialog($modal_dialog) {
           $dialog.find('.legend').hide();
         },
         enableReturnProgressLink: function() {
-          $dialog.find('.return-progress-link').removeClass("disabled");
+          $dialog.find('.return-progress-link').addClass("enabled");
         },
         disableReturnProgressLink: function() {
           // $dialog.find('.return-progress-button').hide();
-          $dialog.find('.return-progress-link').addClass("disabled");
+          $dialog.find('.return-progress-link').removeClass("enabled");
         }
       };
 
