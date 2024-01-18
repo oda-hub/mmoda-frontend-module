@@ -1170,8 +1170,9 @@ function panel_title(srcname, param) {
         // the name
         waitingDialog.disableReturnProgressLink();
         var instrumentFormData = $($(this)[0]).serializeArray().filter(function(item) {
-          if(item.name == 'support_return_progress' && item.value == 'true') {
-            waitingDialog.enableReturnProgressLink();
+          if(item.name == 'support_return_progress') {
+            if (item.value == 'true')
+              waitingDialog.enableReturnProgressLink();
             return false;
           }
           return true;
