@@ -185,13 +185,16 @@ function panel_title(srcname, param) {
               trigger: 'hover'
             });
           }
-
+          let access_token = current_ajax_call_params.currentFormData.get('token');
           current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
           current_ajax_call_params.currentFormData.append('query_status', data.query_status);
           if (!current_ajax_call_params.currentFormData.has('job_id')) {
             current_ajax_call_params.currentFormData.append('job_id', job_id);
             current_ajax_call_params.currentFormData.append('session_id', session_id);
           }
+
+          if (access_token != undefined)
+            current_ajax_call_params.currentFormData.set('token', access_token);
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
           $(".notice-progress-container").hide();
@@ -823,7 +826,8 @@ function panel_title(srcname, param) {
 
     $("body").on('click', '.return-progress-link.enabled', function(e) {
       // e.stopPropagation();
-      
+      waitingDialog.showSpinner();
+      waitingDialog.hidePrompt();
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
@@ -832,19 +836,19 @@ function panel_title(srcname, param) {
 
           // test
 
-          test_ajax_call_params = {};
-          test_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.currentFormData);
-          test_ajax_call_params.currentFormData.set('instrument', 'empty-async-return-progress');
-          test_ajax_call_params.currentFormData.set('query_type', 'Real');
-          test_ajax_call_params.currentFormData.set('product_type', 'dummy_html');
-          test_ajax_call_params.action = "dispatch-data/run_analysis"
+          // test_ajax_call_params = {};
+          // test_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.currentFormData);
+          // test_ajax_call_params.currentFormData.set('instrument', 'empty-async-return-progress');
+          // test_ajax_call_params.currentFormData.set('query_type', 'Real');
+          // test_ajax_call_params.currentFormData.set('product_type', 'dummy_html');
+          // test_ajax_call_params.action = "dispatch-data/run_analysis"
           // test_ajax_call_params.form = this;
 
           var return_progress_jqXHR = $.ajax({
-            // url: current_ajax_call_params.action,
-            url: test_ajax_call_params.action,
-            // data: current_ajax_call_params.currentFormData,
-            data: test_ajax_call_params.currentFormData,
+            url: current_ajax_call_params.action,
+            // url: test_ajax_call_params.action,
+            data: current_ajax_call_params.currentFormData,
+            // data: test_ajax_call_params.currentFormData,
             // data: form_elements,
             dataType: 'json',
             processData: false,
@@ -853,7 +857,6 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
-
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               // // new tab opening
               // let tab_progress_product_html = window.open('about:blank', '_blank');
@@ -873,8 +876,12 @@ function panel_title(srcname, param) {
 
           }).complete(function(jqXHR, textStatus) {
             console.log(jqXHR.responseText);
+            waitingDialog.hideSpinner();
+            waitingDialog.showPrompt();
           }).error(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
+            waitingDialog.hideSpinner();
+            waitingDialog.showPrompt();
           });
 
         });

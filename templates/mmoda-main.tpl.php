@@ -54,7 +54,7 @@
         <span class="close" data-dismiss="modal" aria-label="Close"
           aria-hidden="true">&times;</span>
         <h4 class="modal-title"></h4>
-        <div class="return-progress-link">View more &gt;</div>
+        <div class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></div>
         <div class="header-message">
           <div>
             <span class="session-id"></span><span class="job-id"></span>

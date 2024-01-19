@@ -489,6 +489,10 @@ div.ctools-modal-content .modal-content {
   cursor: default;
 }
 
+.return-progress-link .prompt {
+  display: inline;
+}
+
 .return-progress-link.enabled {
   color: #007d64;
   cursor: pointer;

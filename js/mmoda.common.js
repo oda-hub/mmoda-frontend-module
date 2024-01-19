@@ -511,6 +511,12 @@ function get_waitingDialog($modal_dialog) {
         hideLegend: function() {
           $dialog.find('.legend').hide();
         },
+        showPrompt: function() {
+          $dialog.find('.prompt').show();
+        },
+        hidePrompt: function() {
+          $dialog.find('.prompt').hide();
+        },
         enableReturnProgressLink: function() {
           $dialog.find('.return-progress-link').addClass("enabled");
         },
