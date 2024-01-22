@@ -1077,6 +1077,7 @@ function panel_title(srcname, param) {
 
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
+      let instrument_form_id = form_id.replace('mmoda_', '');
       var formData;
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
@@ -1104,14 +1105,14 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+        // let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
         var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
           item.name = item.name.replace(form_id + '_', '');
           if(item.name == 'instrument') {
-            item.value = active_panel_instrument
+            item.value = instrument_form_id
           }
           return (item);
         });
