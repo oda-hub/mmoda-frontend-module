@@ -1105,7 +1105,6 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        // let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
