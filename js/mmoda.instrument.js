@@ -187,12 +187,17 @@ function panel_title(srcname, param) {
             });
           }
 
+          let access_token = current_ajax_call_params.currentFormData.get('token');
           current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
           current_ajax_call_params.currentFormData.append('query_status', data.query_status);
           if (!current_ajax_call_params.currentFormData.has('job_id')) {
             current_ajax_call_params.currentFormData.append('job_id', job_id);
             current_ajax_call_params.currentFormData.append('session_id', session_id);
           }
+
+          if (access_token != undefined)
+            current_ajax_call_params.currentFormData.set('token', access_token);
+
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
           $(".notice-progress-container").hide();
