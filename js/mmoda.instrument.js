@@ -868,11 +868,11 @@ function panel_title(srcname, param) {
               var parent_panel = $('#ldialog-modal-dialog');
               var container_parent_panel = parent_panel.parent();
               var progress_html_offset = {};
-              progress_html_offset.top = e.pageY;
-              progress_html_offset.left = e.pageX;
-              progress_html_offset.top -= container_parent_panel.offset().top;
+              // progress_html_offset.top = e.pageY;
+              // progress_html_offset.left = e.pageX;
+              // progress_html_offset.top -= container_parent_panel.offset().top;
               progress_html_offset.left = parent_panel.offset().left;
-              
+              progress_html_offset.top = 50;
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
