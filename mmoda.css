@@ -77,6 +77,7 @@ label.control-label {
 .mmoda-html-progress .modal-body, .mmoda-html-progress .panel-body {
   max-height: 80vh;
   overflow-y: auto;
+  text-align: left;
 }
 
 .mmoda-html-progress {

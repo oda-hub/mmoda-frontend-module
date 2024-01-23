@@ -185,7 +185,6 @@ function panel_title(srcname, param) {
               trigger: 'hover'
             });
           }
-
           let access_token = current_ajax_call_params.currentFormData.get('token');
           current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
           current_ajax_call_params.currentFormData.append('query_status', data.query_status);
@@ -196,7 +195,6 @@ function panel_title(srcname, param) {
 
           if (access_token != undefined)
             current_ajax_call_params.currentFormData.set('token', access_token);
-
           requestTimer = setTimeout(AJAX_call, 5000);
         } else {
           $(".notice-progress-container").hide();
