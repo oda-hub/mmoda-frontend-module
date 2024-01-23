@@ -831,6 +831,9 @@ function panel_title(srcname, param) {
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
+          current_ajax_call_params.currentFormData.set('query_status', 'new');
+          // current_ajax_call_params.currentFormData.set('session_id', 'new');
+          // current_ajax_call_params.currentFormData.set('job_id', '');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             current_ajax_call_params.currentFormData.append('token', data.token);
 
@@ -849,7 +852,6 @@ function panel_title(srcname, param) {
             // url: test_ajax_call_params.action,
             data: current_ajax_call_params.currentFormData,
             // data: test_ajax_call_params.currentFormData,
-            // data: form_elements,
             dataType: 'json',
             processData: false,
             contentType: false,
