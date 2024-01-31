@@ -28,7 +28,10 @@ function mmoda_isgri($form, &$form_state)
 
   $form['instrument'] = array(
     '#type' => 'hidden',
-    '#value' => 'isgri'
+    '#value' => 'isgri',
+    '#attributes' => array(
+      'integral_instrument' => 'true'
+    )
   );
 
   $form['support_return_progress'] = array(

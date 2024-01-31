@@ -166,7 +166,14 @@ function panel_title(srcname, param) {
           if ($('.notice-progress-container').is(":hidden")) {
             $('.notice-progress-container').show();
           }
-          waitingDialog.showLegend();
+          let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
+          if (current_instrument_query !== undefined) {
+            if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
+            $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+              waitingDialog.showLegend();
+            }
+          }
+
           previous_summary = '';
 
           if (data.products.hasOwnProperty('input_prod_list')) {

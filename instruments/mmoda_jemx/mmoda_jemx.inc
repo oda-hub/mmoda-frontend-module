@@ -27,12 +27,15 @@ function mmoda_jemx($form, &$form_state)
 
   $form['instrument'] = array(
     '#type' => 'hidden',
-    '#value' => 'jemx'
+    '#value' => 'jemx',
+    '#attributes' => array(
+      'integral_instrument' => 'true'
+    )
   );
 
   $form['support_return_progress'] = array(
     '#type' => 'hidden',
-    '#value' => 'true'
+    '#value' => 'false'
   );
 
   $mmoda_settings = variable_get('mmoda_settings');

@@ -20,7 +20,10 @@ function mmoda_spi_acs($form, &$form_state) {
 
   $form ['instrument'] = array (
       '#type' => 'hidden',
-      '#value' => 'spi_acs'
+      '#value' => 'spi_acs',
+      '#attributes' => array(
+        'integral_instrument' => 'true'
+      )
   );
 
   $mmoda_settings = variable_get('mmoda_settings');
