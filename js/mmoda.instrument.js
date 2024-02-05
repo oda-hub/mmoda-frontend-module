@@ -169,9 +169,13 @@ function panel_title(srcname, param) {
           let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
           if (current_instrument_query !== undefined) {
             if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
-            $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+              $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
               waitingDialog.showLegend();
             }
+            // if($(`input[name='support_return_progress']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('integral_instrument') &&
+            //   $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+            //   $('#ldialog .summary').html('');
+            // }
           }
 
           previous_summary = '';
