@@ -1,5 +1,6 @@
 var current_instrument_form_validator;
 var requestTimer;
+var messages = {};
 
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
@@ -91,14 +92,166 @@ function panel_title(srcname, param) {
         }
 
         AJAX_call();
-    }).error(function(jqXHR, textStatus, errorThrown) {
-      console.log('Error in requesting the user token:');
-      console.log('textStatus : ' + textStatus);
-      console.log('errorThrown :' + errorThrown);
-      console.log('jqXHR');
-      console.log(jqXHR);
-      AJAX_call();
-    });
+      }).error(function(jqXHR, textStatus, errorThrown) {
+        console.log('Error in requesting the user token:');
+        console.log('textStatus : ' + textStatus);
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+        AJAX_call();
+      });
+  }
+
+  function response_panel_mismatch(data) {
+    var returned_product_instrument = data.products.analysis_parameters.instrument;
+    var active_panel_instrument = $('input[name="instrument"]', '.instrument-panel.active form').val();
+    if (returned_product_instrument == active_panel_instrument) return false;
+    return true;
+  }
+
+  function mmoda_show_product(data) {
+    if (response_panel_mismatch(data)) return;
+    $(".notice-progress-container").hide();
+    add_dispatcher_response_to_feedback_form(data);
+    var regex = /[\/]*$/;
+    var url = window.location.href.replace(regex, '');
+    if (data.hasOwnProperty('products')) {
+      data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
+      data.products['session_id_old'] = data.products.session_id;
+      data.products['session_id'] = data.session_id;
+    }
+    waitingDialog.hideSpinner();
+    instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
+    $('#ldialog').find('.progress').hide();
+    if (data.exit_status.status != 0) {
+      debug_message = '';
+      if (data.exit_status.debug_message) {
+        debug_message = '<hr>' + debug_message;
+      }
+      $('#ldialog').find('.progress').hide();
+    }
+
+    if (data.hasOwnProperty('htmlResponse')) {
+      product_panel_body = display_in_iframe(data);
+    }
+    else if (data.products.hasOwnProperty('image')) {
+      if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
+        product_panel_body = display_lc_table(job_id, data.products);
+      } else {
+        if (data.products.image.hasOwnProperty('spectral_fit_image')) {
+          product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+        } else if (Array.isArray(data.products.image)) {
+          product_panel_body = display_image_table(data.products, job_id, instrument);
+        } else {
+          product_panel_body = display_image(data.products, job_id, instrument);
+        }
+      }
+    } else if (data.products.hasOwnProperty('spectrum_name')) {
+      product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
+    }
+
+    $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
+    waitingDialog.setClose();
+  }
+
+  function mmoda_update_request_progress(data) {
+    if ($('.notice-progress-container').is(":hidden")) {
+      $('.notice-progress-container').show();
+    }
+    waitingDialog.showLegend();
+    previous_summary = '';
+
+    if (data.products.hasOwnProperty('input_prod_list')) {
+      data_units = data.products.input_prod_list;
+    }
+    if (typeof messages !== 'undefined') {
+      previous_summary = messages.summary;
+    }
+    messages = get_server_message(data, data_units);
+    current_summary = messages.summary;
+    messages.summary = get_current_date_time() + messages.summary;
+    if (current_summary != previous_summary) {
+      waitingDialog.replace(messages);
+      $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
+        trigger: 'hover'
+      });
+    }
+
+    let access_token = current_ajax_call_params.currentFormData.get('token');
+    current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
+    current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+    if (!current_ajax_call_params.currentFormData.has('job_id')) {
+      current_ajax_call_params.currentFormData.append('job_id', job_id);
+      current_ajax_call_params.currentFormData.append('session_id', session_id);
+    }
+
+    if (access_token != undefined)
+      current_ajax_call_params.currentFormData.set('token', access_token);
+
+    requestTimer = setTimeout(AJAX_call, 5000);
+  }
+
+  function mmoda_show_request_failed(data) {
+    waitingDialog.hideSpinner();
+    $('#ldialog').find('.progress').hide();
+    reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
+
+    reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
+    waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+      + reformatted_error_message + '</td></tr></table>', 'danger');
+    waitingDialog.setClose();
+    add_dispatcher_response_to_feedback_form(data);
+  }
+
+  function mmoda_show_request_error(jqXHR, textStatus, errorThrown) {
+    //    console.log('textStatus : ' + textStatus);
+    //    console.log('errorThrown :' + errorThrown);
+    //    console.log('jqXHR');
+    //    console.log(jqXHR);
+    waitingDialog.hideSpinner();
+    $('#ldialog').find('.progress').hide();
+
+    // No need to go further if request aborted by the user
+    if (textStatus == 'abort') return;
+
+    serverResponse = '';
+    try {
+      serverResponse = $.parseJSON(jqXHR.responseText);
+    } catch (e) {
+      serverResponse = jqXHR.responseText;
+    }
+    var message = '<tr><td>' + get_current_date_time() + '</td>';
+    if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
+      // more comprehensive message
+      message += '<td>Timeout error.</td></tr>';
+      message += '<tr><td></td><td>A timeout has occured, this was probably caused by a problem in accessing the server: ' +
+        'please try to resubmit your request. ' +
+        'You can also inspect <a href="http://status.odahub.io">http://status.odahub.io</a> to notice any recent issues.<br\>' +
+        'If the problem persists you can request support by leaving us a feedback.</td></tr>';
+    } else if (jqXHR.status > 0) {
+      message += '<td>' + textStatus.charAt(0).toUpperCase() + textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
+      if (typeof serverResponse == 'string') {
+        message += serverResponse + '</td>';
+      } else {
+        if ('exit_status' in serverResponse) {
+          if ('message' in serverResponse.exit_status)
+            message += serverResponse.exit_status.message;
+          message += '</td></tr>';
+          if ('error_message' in serverResponse.exit_status)
+            message += '<tr><td></td><td>' + serverResponse.exit_status.error_message + '</td></tr>';
+        }
+        else {
+          message += serverResponse.error_message + '</td></tr>';
+        }
+      }
+    } else {
+      message += '<td>Can not reach the data server, unknown error</td>';
+    }
+    // to be consistebnt with the way the error is visulized in case query_failed
+    reformatted_message = message.replace(/\\n/g, "<br />");
+    reformatted_message = reformatted_message.replace(/\n/g, "<br />");
+    waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
   }
 
   function AJAX_call() {
@@ -108,18 +261,15 @@ function panel_title(srcname, param) {
     //      current_ajax_call_params.initialFormData.entries()) {
     //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
-    //    var params = {};
     //    console.log('--- currentFormData');
-    //    for (var parameter of current_ajax_call_params.currentFormData.entries()) {
-    //      params[parameter[0]] = parameter[1];
+    //    for (var parameter of
+    //      current_ajax_call_params.currentFormData.entries()) {
+    //      console.log(parameter[0] + '=' + parameter[1]);
     //    }
-    //    console.log(params);
-
     // must be global variable
     requestTimer = null;
 
     //var startAJAXTime = new Date().getTime();
-
     var mmoda_jqXHR = $.ajax({
       url: current_ajax_call_params.action,
       data: current_ajax_call_params.currentFormData,
@@ -152,155 +302,28 @@ function panel_title(srcname, param) {
           current_nb_attempts_after_failed = 0;
         }
         if (query_failed && (current_nb_attempts_after_failed > max_nb_attempts_after_failed)) {
-          waitingDialog.hideSpinner();
-          $('#ldialog').find('.progress').hide();
-          reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />");
-          reformatted_exit_status_message = reformatted_exit_status_message.replace(/\n/g, "<br />");
-
-          reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />");
-          reformatted_error_message = reformatted_error_message.replace(/\n/g, "<br />");
-          waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-            + reformatted_error_message + '</td></tr></table>', 'danger');
-          waitingDialog.setClose();
-          add_dispatcher_response_to_feedback_form(data);
+          mmoda_show_request_failed(data);
         } else if (data.query_status != 'done') {
-          if ($('.notice-progress-container').is(":hidden")) {
-            $('.notice-progress-container').show();
-          }
-          waitingDialog.showLegend();
-          previous_summary = '';
-
-          if (data.products.hasOwnProperty('input_prod_list')) {
-            data_units = data.products.input_prod_list;
-          }
-
-          if (typeof messages !== 'undefined') {
-            previous_summary = messages.summary;
-          }
-          messages = get_server_message(data, data_units);
-          current_summary = messages.summary;
-          messages.summary = get_current_date_time() + messages.summary;
-          if (current_summary != previous_summary) {
-            waitingDialog.replace(messages);
-            $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
-              trigger: 'hover'
-            });
-          }
-
-          let access_token = current_ajax_call_params.currentFormData.get('token');
-          current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-          current_ajax_call_params.currentFormData.append('query_status', data.query_status);
-          if (!current_ajax_call_params.currentFormData.has('job_id')) {
-            current_ajax_call_params.currentFormData.append('job_id', job_id);
-            current_ajax_call_params.currentFormData.append('session_id', session_id);
-          }
-
-          if (access_token != undefined)
-            current_ajax_call_params.currentFormData.set('token', access_token);
-
-          requestTimer = setTimeout(AJAX_call, 5000);
+          mmoda_update_request_progress(data);
         } else {
-          $(".notice-progress-container").hide();
-          add_dispatcher_response_to_feedback_form(data);
-          var regex = /[\/]*$/;
-          var url = window.location.href.replace(regex, '');
-          if (data.hasOwnProperty('products')) {
-            data.products.api_code = data.products.api_code.replace(/host='([^']+)'/i, "host='" + url + "/dispatch-data'");
-            data.products['session_id_old'] = data.products.session_id;
-            data.products['session_id'] = data.session_id;
-          }
-          waitingDialog.hideSpinner();
-          instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-          waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
-          $('#ldialog').find('.progress').hide();
-          if (data.exit_status.status != 0) {
-            debug_message = '';
-            if (data.exit_status.debug_message) {
-              debug_message = '<hr>' + debug_message;
-            }
-            $('#ldialog').find('.progress').hide();
-          }
-
-          if (data.hasOwnProperty('htmlResponse')) {
-            product_panel_body = display_in_iframe(data);
-          }
-          else if (data.products.hasOwnProperty('image')) {
-            if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-              product_panel_body = display_lc_table(job_id, data.products);
-            } else {
-              if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-                product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
-              } else if (Array.isArray(data.products.image)) {
-                product_panel_body = display_image_table(data.products, job_id, instrument);
-              } else {
-                product_panel_body = display_image(data.products, job_id, instrument);
-              }
-            }
-          } else if (data.products.hasOwnProperty('spectrum_name')) {
-            product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
-          }
-
-          $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
-          waitingDialog.setClose();
+          mmoda_show_product(data);
         }
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
           waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
         }
       }).complete(function(jqXHR, textStatus) {
+
         // console.log('Exec time : ' + (new
         // Date().getTime() -
         // startAJAXTime));
         //        $(".write-feedback-button").hide();
         //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-        
+
       }).error(function(jqXHR, textStatus, errorThrown) {
-        if (textStatus != 'abort') {
-          console.log('textStatus : ' + textStatus);
-          console.log('errorThrown :' + errorThrown);
-          console.log('jqXHR');
-          console.log(jqXHR);
-        }
-        waitingDialog.hideSpinner();
-        $('#ldialog').find('.progress').hide();
-        serverResponse = '';
-        try {
-          serverResponse = $.parseJSON(jqXHR.responseText);
-        } catch (e) {
-          serverResponse = jqXHR.responseText;
-        }
-        var message = '<tr><td>' + get_current_date_time() + '</td>';
-        if (errorThrown == 'timeout' || errorThrown == 'Request Timeout') {
-          // more comprehensive message
-          message += '<td>Timeout error.</td></tr>';
-          message += '<tr><td></td><td>A timeout has occured, this was probably caused by a problem in accessing the server: ' +
-            'please try to resubmit your request. ' +
-            'You can also inspect <a href="http://status.odahub.io">http://status.odahub.io</a> to notice any recent issues.<br\>' +
-            'If the problem persists you can request support by leaving us a feedback.</td></tr>';
-        } else if (jqXHR.status > 0) {
-          message += '<td>' + textStatus.charAt(0).toUpperCase() + textStatus.slice(1) + ' ' + jqXHR.status + ', ' + errorThrown + ': ';
-          if (typeof serverResponse == 'string') {
-            message += serverResponse + '</td>';
-          } else {
-            if ('exit_status' in serverResponse) {
-              if ('message' in serverResponse.exit_status)
-                message += serverResponse.exit_status.message;
-              message += '</td></tr>';
-              if ('error_message' in serverResponse.exit_status)
-                message += '<tr><td></td><td>' + serverResponse.exit_status.error_message + '</td></tr>';
-            }
-            else {
-              message += serverResponse.error_message + '</td></tr>';
-            }
-          }
-        } else {
-          message += '<td>Can not reach the data server, unknown error</td>';
-        }
-        // to be consistebnt with the way the error is visulized in case query_failed
-        reformatted_message = message.replace(/\\n/g, "<br />");
-        reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-        waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
+        mmoda_show_request_error(jqXHR, textStatus, errorThrown);
+
       });
 
     // jqxhr
@@ -596,7 +619,8 @@ function panel_title(srcname, param) {
       delete_multivalued_field(this);
     });
 
-    $('body').on('click', '#ldialog .close-button', function() {
+    $('body').on('click', '#ldialog .close-button', function(e) {
+      e.preventDefault();
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
       }
@@ -606,8 +630,9 @@ function panel_title(srcname, param) {
       $('#ldialog .details').html('');
       $('#ldialog .modal-body .more-less-details').hide();
 
-      if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined')
+      if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
+      }
       if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
 
       $(this).removeData('mmoda_gallery_close');
@@ -836,13 +861,13 @@ function panel_title(srcname, param) {
 
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
             let token = data.token;
             let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
             // remove any previous results
             if (renku_publish_panel.parentElement.nextSibling.className === 'result-renku-publish')
-            renku_publish_panel.parentElement.nextSibling.remove();
+              renku_publish_panel.parentElement.nextSibling.remove();
 
             // disable publish-on-renku button
             e.target.disabled = true;
@@ -903,17 +928,17 @@ function panel_title(srcname, param) {
             publish_response_title = 'Error while publishing to Renku: ';
             publish_result_type = 'publish_error';
             no_user_loged_in_error_message = 'please login to MMODA first and then retry';
-    
+
             let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
             renku_publish_panel.parentElement.after(publish_result_panel);
           }
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log('Error in requesting the user token:');
-        console.log('textStatus : ' + textStatus);
-        console.log('errorThrown :' + errorThrown);
-        console.log('jqXHR');
-        console.log(jqXHR);
-      });
+        }).error(function(jqXHR, textStatus, errorThrown) {
+          console.log('Error in requesting the user token:');
+          console.log('textStatus : ' + textStatus);
+          console.log('errorThrown :' + errorThrown);
+          console.log('jqXHR');
+          console.log(jqXHR);
+        });
 
 
     });
@@ -957,10 +982,10 @@ function panel_title(srcname, param) {
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
       token_text = $("#edit-submitted-copy-button p")[0].textContent;
-      if(token_text !== undefined)
+      if (token_text !== undefined)
         copyToClipboard(token_text);
     });
-    
+
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
@@ -1124,7 +1149,7 @@ function panel_title(srcname, param) {
         // the name
         var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
-          if(item.name == 'instrument') {
+          if (item.name == 'instrument') {
             item.value = active_panel_instrument
           }
           return (item);
@@ -2567,7 +2592,7 @@ function panel_title(srcname, param) {
     if (current_ajax_call_params.currentFormData.get('token') !== null)
       parameters['token'] = current_ajax_call_params.currentFormData.get('token');
     url = 'dispatch-data/download_products?' + $.param(parameters);
-    
+
     return (url);
   }
 
