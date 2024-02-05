@@ -168,9 +168,9 @@ function panel_title(srcname, param) {
     }
     previous_summary = '';
 
-    if (data.products.hasOwnProperty('input_prod_list')) {
-      data_units = data.products.input_prod_list;
-    }
+    // if (data.products.hasOwnProperty('input_prod_list')) {
+    //   data_units = data.products.input_prod_list;
+    // }
     if (typeof messages !== 'undefined') {
       previous_summary = messages.summary;
     }
@@ -351,14 +351,95 @@ function panel_title(srcname, param) {
     $('[name="dispatcher_response"]', '#mmoda-bug-report-form').val(JSON.stringify(data));
   }
 
-  function get_server_message(response, data_units) {
+  function get_server_message(response) {
     var messages = {
       summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
       details: ''
     };
 
-    if ((!response['job_monitor'].hasOwnProperty('full_report_dict_list') || response['job_monitor'].full_report_dict_list.length == 0) && (data_units.length == 0)) {
+    if ((!response['job_monitor'].hasOwnProperty('full_report_dict_list') || response['job_monitor'].full_report_dict_list.length == 0) && (response.products.input_prod_list.length == 0)) {
       return (messages);
+    }
+
+    messages.summary += get_server_summary_message(response);
+    messages.details += get_server_detailed_message(response)
+
+    // var current_status_table = new Array();
+    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
+    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+    //     data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
+    //     node = response['job_monitor'].full_report_dict_list[j].node;
+
+    //     if (data_units.indexOf(data_unit) == -1) {
+    //       data_units.push(data_unit);
+    //     }
+    //     if (typeof current_status_table[data_unit] === 'undefined') {
+    //       current_status_table[data_unit] = new Array();
+    //     }
+    //     if (distinct_nodes.indexOf(node) == -1) {
+    //       distinct_nodes.push(node);
+    //     }
+    //     if (typeof current_status_table[data_unit][node] === 'undefined') {
+    //       current_status_table[data_unit][node] = new Array();
+    //     }
+    //     current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
+    //   }
+    // }
+    // // Get all nodes, columns
+    // messages.summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
+    // first_unit_data = Object.keys(current_status_table)[0];
+    // for (j in distinct_nodes) {
+    //   node = distinct_nodes[j];
+    //   messages.summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
+    // }
+
+    // // Get all data units, rows
+    // messages.summary += '</tr></thead><tbody>';
+    // var counter = 1;
+    // for (i in data_units) {
+    //   data_unit = data_units[i];
+    //   data_unit_label = data_unit;
+    //   var current_counter = pad(counter++, 3);
+    //   if (data_unit == 'inapplicable') {
+    //     data_unit_label = '&nbsp;';
+    //     current_counter = '';
+    //   }
+    //   if (typeof job_status_table[data_unit] === 'undefined') {
+    //     job_status_table[data_unit] = new Array();
+    //   }
+    //   messages.summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+    //   for (j in distinct_nodes) {
+    //     started_or_not = '';
+    //     node = distinct_nodes[j];
+    //     value = '';
+    //     var cssClass = '';
+    //     if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
+    //       && Object.keys(current_status_table[data_unit][node]).length) {
+    //       cssClass = get_node_status_class(current_status_table[data_unit][node]);
+    //     }
+    //     messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+    //   }
+
+    //   messages.summary += '</tr>';
+    // }
+
+    // messages.summary += '</tbody></table>';
+    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
+    //   messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
+    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+    //     messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
+    //       + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+    //   }
+    //   messages.details += '</tbody></table>';
+    // }
+
+    return (messages);
+  }
+
+  function get_server_summary_message(response) {
+    data_units = [];
+    if(response.products.hasOwnProperty('input_prod_list')) {
+      data_units = data.products.input_prod_list;
     }
 
     var current_status_table = new Array();
@@ -383,15 +464,15 @@ function panel_title(srcname, param) {
       }
     }
     // Get all nodes, columns
-    messages.summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
+    summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
     first_unit_data = Object.keys(current_status_table)[0];
     for (j in distinct_nodes) {
       node = distinct_nodes[j];
-      messages.summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
+      summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
     }
 
     // Get all data units, rows
-    messages.summary += '</tr></thead><tbody>';
+    summary += '</tr></thead><tbody>';
     var counter = 1;
     for (i in data_units) {
       data_unit = data_units[i];
@@ -404,7 +485,7 @@ function panel_title(srcname, param) {
       if (typeof job_status_table[data_unit] === 'undefined') {
         job_status_table[data_unit] = new Array();
       }
-      messages.summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+      summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
       for (j in distinct_nodes) {
         started_or_not = '';
         node = distinct_nodes[j];
@@ -414,23 +495,27 @@ function panel_title(srcname, param) {
           && Object.keys(current_status_table[data_unit][node]).length) {
           cssClass = get_node_status_class(current_status_table[data_unit][node]);
         }
-        messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+        summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
       }
 
-      messages.summary += '</tr>';
+      summary += '</tr>';
     }
 
-    messages.summary += '</tbody></table>';
+    summary += '</tbody></table>';
+
+    return summary;
+  }
+
+  function get_server_detailed_message(response) {
     if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
-      messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
+      details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
       for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-        messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
+        details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
           + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
       }
-      messages.details += '</tbody></table>';
+      details += '</tbody></table>';
     }
-
-    return (messages);
+    return details;
   }
 
   function get_node_status_class(node_messages) {
