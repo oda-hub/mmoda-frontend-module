@@ -74,9 +74,8 @@
           <div class="legend-element analysis-exception"></div>
           Analysis exception
         </div>
-        <div class="summary">
-          <!-- <div class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></div> -->
-        </div>
+        <div class="summary"></div>
+        <!-- <span class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></span> -->
         <div class="more-less-details">More details &gt;</div>
         <div class="details"></div>
         <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->

@@ -22,7 +22,8 @@ function mmoda_spi_acs($form, &$form_state) {
       '#type' => 'hidden',
       '#value' => 'spi_acs',
       '#attributes' => array(
-        'integral_instrument' => 'true'
+        'integral_instrument' => 'true',
+        'support_return_progress' => 'false'
       )
   );
 

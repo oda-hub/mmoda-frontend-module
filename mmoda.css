@@ -97,8 +97,8 @@ table.message-table tr td {
   padding-right: 1em;
 }
 
-.mmoda-log .details, .mmoda-log .more-less-details,
-.return-progress-link {
+.mmoda-log .details, .mmoda-log .more-less-details
+{
   display: none;
 }
 
@@ -479,13 +479,11 @@ div.ctools-modal-content .modal-content {
   word-wrap: break-word; /* IE */
 }
 
-.write-feedback-button, 
-.return-progress-link {
+.write-feedback-button {
   display: none;
 }
 
 .return-progress-link {
-  float: right;
   color:gray;
   cursor: default;
 }

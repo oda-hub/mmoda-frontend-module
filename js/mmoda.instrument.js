@@ -49,7 +49,7 @@ function validate_timebin(value, validator, $thefield) {
 
 function panel_title(srcname, param) {
   var title_items = [];
-  if (srcname !== '') title_items.push('Source: ' + srcname);
+  if (srcname !== undefined && srcname !== '') title_items.push('Source: ' + srcname);
   if (param.hasOwnProperty('E1_keV')) title_items.push(param.E1_keV + ' - ' + param.E2_keV + ' keV');
   var time_bin_format = 'sec';
   if (param.hasOwnProperty('time_bin_format')) time_bin_format = param.time_bin_format;
@@ -165,10 +165,6 @@ function panel_title(srcname, param) {
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
         waitingDialog.showLegend();
       }
-      // if($(`input[name='support_return_progress']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('integral_instrument') &&
-      //   $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
-      //   $('#ldialog .summary').html('');
-      // }
     }
     previous_summary = '';
 
@@ -181,6 +177,14 @@ function panel_title(srcname, param) {
     messages = get_server_message(data, data_units);
     current_summary = messages.summary;
     messages.summary = get_current_date_time() + messages.summary;
+    if (current_instrument_query !== undefined) {
+      if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+          if(messages.summary.endsWith('<br>'))
+            messages.summary = messages.summary.substring(0, messages.summary.length - 4)
+          messages.summary += ' - <span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span><br>';
+      }
+    }
     if (current_summary != previous_summary) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
@@ -1209,15 +1213,12 @@ function panel_title(srcname, param) {
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
-        waitingDialog.disableReturnProgressLink();
-        var instrumentFormData = $($(this)[0]).serializeArray().filter(function(item) {
-          if(item.name == 'support_return_progress') {
-            if (item.value == 'true')
-              waitingDialog.enableReturnProgressLink();
-            return false;
-          }
-          return true;
-        }).map(function(item, index) {
+        // waitingDialog.disableReturnProgressLink();
+        // if($(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.hasOwnProperty('support_return_progress') &&
+        //   $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+        //     waitingDialog.enableReturnProgressLink();
+        // }
+        var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
           item.name = item.name.replace(form_id + '_', '');
           if (item.name == 'instrument') {
             item.value = active_panel_instrument

@@ -468,8 +468,11 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          $('.summary', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
-          $('.details', $dialog).html(messages.details);
+          if(messages.hasOwnProperty('summary'))
+            $('.summary', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
+          if(messages.hasOwnProperty('details'))
+            $('.details', $dialog).html(messages.details);
+
           if (messages.details !== '') {
             $('#ldialog .modal-body .more-less-details').show();
           }
