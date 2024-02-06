@@ -160,10 +160,12 @@ function panel_title(srcname, param) {
       $('.notice-progress-container').show();
     }
     let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
+    let integral_instrument = false;
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
         waitingDialog.showLegend();
+        integral_instrument = true;
       }
     }
     previous_summary = '';
@@ -174,7 +176,20 @@ function panel_title(srcname, param) {
     if (typeof messages !== 'undefined') {
       previous_summary = messages.summary;
     }
-    messages = get_server_message(data, data_units);
+
+    response_status = data['job_monitor']['status']
+    if (response_status == 'submitted')
+      waitingDialog.setProgressBarBackgroundcolor('lightgreen');
+    else if (response_status == 'progress')
+      waitingDialog.setProgressBarBackgroundcolor('lightblue');
+    else if (response_status == 'failed')
+      waitingDialog.setProgressBarBackgroundcolor('red');
+    else if (response_status == 'ready')
+      waitingDialog.setProgressBarBackgroundcolor('lightyellow');
+    else if (response_status == 'done')
+      waitingDialog.setProgressBarBackgroundcolor('green');
+
+    messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
     messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
@@ -351,18 +366,20 @@ function panel_title(srcname, param) {
     $('[name="dispatcher_response"]', '#mmoda-bug-report-form').val(JSON.stringify(data));
   }
 
-  function get_server_message(response) {
+  function get_server_message(response, integral_instrument) {
     var messages = {
       summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
       details: ''
     };
 
-    if ((!response['job_monitor'].hasOwnProperty('full_report_dict_list') || response['job_monitor'].full_report_dict_list.length == 0) && (response.products.input_prod_list.length == 0)) {
+    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) && 
+      (!response.products.hasOwnProperty('input_prod_list') || response.products.input_prod_list.length == 0) &&
+      (!response.job_monitor.hasOwnProperty('full_report_dict') || response.job_monitor.full_report_dict == {})) {
       return (messages);
     }
 
-    messages.summary += get_server_summary_message(response);
-    messages.details += get_server_detailed_message(response)
+    messages.summary += get_server_summary_message(response, integral_instrument);
+    messages.details += get_server_detailed_message(response, integral_instrument);
 
     // var current_status_table = new Array();
     // if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
@@ -436,84 +453,100 @@ function panel_title(srcname, param) {
     return (messages);
   }
 
-  function get_server_summary_message(response) {
-    data_units = [];
-    if(response.products.hasOwnProperty('input_prod_list')) {
-      data_units = data.products.input_prod_list;
-    }
-
-    var current_status_table = new Array();
-    if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
-      for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-        data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
-        node = response['job_monitor'].full_report_dict_list[j].node;
-
-        if (data_units.indexOf(data_unit) == -1) {
-          data_units.push(data_unit);
-        }
-        if (typeof current_status_table[data_unit] === 'undefined') {
-          current_status_table[data_unit] = new Array();
-        }
-        if (distinct_nodes.indexOf(node) == -1) {
-          distinct_nodes.push(node);
-        }
-        if (typeof current_status_table[data_unit][node] === 'undefined') {
-          current_status_table[data_unit][node] = new Array();
-        }
-        current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
+  function get_server_summary_message(response, integral_instrument) {
+    summary = '';
+    if (integral_instrument) {
+      data_units = [];
+      if(response.products.hasOwnProperty('input_prod_list')) {
+        data_units = data.products.input_prod_list;
       }
-    }
-    // Get all nodes, columns
-    summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
-    first_unit_data = Object.keys(current_status_table)[0];
-    for (j in distinct_nodes) {
-      node = distinct_nodes[j];
-      summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
-    }
-
-    // Get all data units, rows
-    summary += '</tr></thead><tbody>';
-    var counter = 1;
-    for (i in data_units) {
-      data_unit = data_units[i];
-      data_unit_label = data_unit;
-      var current_counter = pad(counter++, 3);
-      if (data_unit == 'inapplicable') {
-        data_unit_label = '&nbsp;';
-        current_counter = '';
+  
+      var current_status_table = new Array();
+      if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
+        for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+          data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
+          node = response['job_monitor'].full_report_dict_list[j].node;
+  
+          if (data_units.indexOf(data_unit) == -1) {
+            data_units.push(data_unit);
+          }
+          if (typeof current_status_table[data_unit] === 'undefined') {
+            current_status_table[data_unit] = new Array();
+          }
+          if (distinct_nodes.indexOf(node) == -1) {
+            distinct_nodes.push(node);
+          }
+          if (typeof current_status_table[data_unit][node] === 'undefined') {
+            current_status_table[data_unit][node] = new Array();
+          }
+          current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
+        }
       }
-      if (typeof job_status_table[data_unit] === 'undefined') {
-        job_status_table[data_unit] = new Array();
-      }
-      summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+      // Get all nodes, columns
+      summary = '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
+      first_unit_data = Object.keys(current_status_table)[0];
       for (j in distinct_nodes) {
-        started_or_not = '';
         node = distinct_nodes[j];
-        value = '';
-        var cssClass = '';
-        if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
-          && Object.keys(current_status_table[data_unit][node]).length) {
-          cssClass = get_node_status_class(current_status_table[data_unit][node]);
-        }
-        summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+        summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
       }
-
-      summary += '</tr>';
+  
+      // Get all data units, rows
+      summary += '</tr></thead><tbody>';
+      var counter = 1;
+      for (i in data_units) {
+        data_unit = data_units[i];
+        data_unit_label = data_unit;
+        var current_counter = pad(counter++, 3);
+        if (data_unit == 'inapplicable') {
+          data_unit_label = '&nbsp;';
+          current_counter = '';
+        }
+        if (typeof job_status_table[data_unit] === 'undefined') {
+          job_status_table[data_unit] = new Array();
+        }
+        summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+        for (j in distinct_nodes) {
+          started_or_not = '';
+          node = distinct_nodes[j];
+          value = '';
+          var cssClass = '';
+          if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
+            && Object.keys(current_status_table[data_unit][node]).length) {
+            cssClass = get_node_status_class(current_status_table[data_unit][node]);
+          }
+          summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+        }
+  
+        summary += '</tr>';
+      }
+  
+      summary += '</tbody></table>';
     }
-
-    summary += '</tbody></table>';
 
     return summary;
   }
 
-  function get_server_detailed_message(response) {
-    if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
-      details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
-      for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-        details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
-          + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+  function get_server_detailed_message(response, integral_instrument) {
+    // if integral
+    if(integral_instrument) {
+      if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
+        details = '<table class="message-table"><thead><tr><th>Data unit</th><th>node</th><th>message</th></tr></thead><tbody>';
+        for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+          details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
+            + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+        }
+        details += '</tbody></table>';
       }
-      details += '</tbody></table>';
+    } else {
+      if (response['job_monitor'].hasOwnProperty('full_report_dict')) {
+        details = '';
+        if(response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
+          details += `stage: ${response['job_monitor'].full_report_dict.stage}`;
+        if(response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+          details += ` - progress: ${response['job_monitor'].full_report_dict.progress}`;
+        if(details)
+          details += '<br>';
+      }
     }
     return details;
   }
@@ -1356,6 +1389,7 @@ function panel_title(srcname, param) {
         showProgressBar: true,
         showSpinner: false
       });
+      waitingDialog.setProgressBarBackgroundcolor('');
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
       $('.return-progress-link').show();

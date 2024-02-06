@@ -445,6 +445,12 @@ function get_waitingDialog($modal_dialog) {
           // sleep(5);
 
         },
+        setProgressBarType: function(progressBarType) {
+          $dialog.find('.progress-bar').addClass('progress-bar-' + progressBarType);
+        },
+        setProgressBarBackgroundcolor: function(color) {
+          $dialog.find('.progress-bar').css('background-color', color);
+        },
         /**
          * Closes dialog
          */
