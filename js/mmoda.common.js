@@ -642,18 +642,6 @@ function get_waitingDialog($modal_dialog) {
       }
     });
 
-    //    setTimeout(function() {
-    //      //$("span.oda-icon-label").hide("slide", { direction: "right" }, 1000);
-    //      $("span.oda-icon-label").hide("slow")
-    //    }, 5000);
-
-    //    $(".main-toolbar").focusin(function() {
-    //      $("span.oda-icon-label").show("slow")
-    //    });
-    //    $(".main-toolbar").focusOut(function() {
-    //      $("span.oda-icon-label").hide("slow")
-    //    });
-
     if (Drupal.settings.user_uid == 0) {
       $('.main-toolbar .login-link').show();
       $('.main-toolbar .logout-link').hide();
@@ -785,6 +773,21 @@ function get_waitingDialog($modal_dialog) {
     $('.mmoda-banner .views-more-link, .mmoda-banner .views-slideshow-pager-field-item a, .mmoda-banner .views-field-title a, a.open-link-modal').on('click', function(e) {
       e.preventDefault();
       openPageInModal($(this).attr('href'));
+    });
+    
+    $(document).on("ajaxComplete", function(event, request, settings) {
+      if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') &&
+        (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
+        if (request.statusText == 'abort') {
+          if (settings.extraData._triggering_element_name == 'resolve_name')
+          var mbutton = 'button#edit-resolve-src-name';
+          else if (settings.extraData._triggering_element_name == 'explore_name') 
+          var mbutton = 'button#edit-explore-src-name';
+
+          $(mbutton).prop('disabled', false);
+          $('.ajax-progress', mbutton).remove();
+        }
+      }
     });
 
     $(document).on('ajaxSend', function(event, jqxhr, settings) {
