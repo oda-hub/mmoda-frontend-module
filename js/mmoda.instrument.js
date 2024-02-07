@@ -178,16 +178,26 @@ function panel_title(srcname, param) {
     }
 
     response_status = data['job_monitor']['status']
-    if (response_status == 'submitted')
+    if (response_status == 'submitted') {
       waitingDialog.setProgressBarBackgroundcolor('lightgreen');
-    else if (response_status == 'progress')
+      waitingDialog.setProgressBarWidthPercentage(50);
+    }
+    else if (response_status == 'progress'){
       waitingDialog.setProgressBarBackgroundcolor('lightblue');
-    else if (response_status == 'failed')
+      waitingDialog.setProgressBarWidthPercentage(50);
+    }
+    else if (response_status == 'failed') {
       waitingDialog.setProgressBarBackgroundcolor('red');
-    else if (response_status == 'ready')
+      waitingDialog.setProgressBarWidthPercentage(100);
+    }
+    else if (response_status == 'ready') {
       waitingDialog.setProgressBarBackgroundcolor('lightyellow');
-    else if (response_status == 'done')
+      waitingDialog.setProgressBarWidthPercentage(75);
+    }
+    else if (response_status == 'done') {
       waitingDialog.setProgressBarBackgroundcolor('green');
+      waitingDialog.setProgressBarWidthPercentage(100);
+    }
 
     messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
@@ -1390,6 +1400,7 @@ function panel_title(srcname, param) {
         showSpinner: false
       });
       waitingDialog.setProgressBarBackgroundcolor('');
+      waitingDialog.setProgressBarWidthPercentage(0);
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
       $('.return-progress-link').show();

@@ -451,6 +451,9 @@ function get_waitingDialog($modal_dialog) {
         setProgressBarBackgroundcolor: function(color) {
           $dialog.find('.progress-bar').css('background-color', color);
         },
+        setProgressBarWidthPercentage: function(width) {
+          $dialog.find('.progress-bar').css('width', `${width}%`);
+        },
         /**
          * Closes dialog
          */
