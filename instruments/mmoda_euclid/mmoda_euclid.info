@@ -1,0 +1,9 @@
+name = MMODA Euclid
+description = MMODA module for Euclid
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda_euclid.inc
+stylesheets[all][] = mmoda_euclid.css
+
+configure = admin/config/mmoda/euclid
