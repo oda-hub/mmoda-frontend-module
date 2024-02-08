@@ -12,7 +12,7 @@ function mmoda_euclid_instrument_info()
 {
   $info = array(
     'name' => 'euclid',
-    'messenger' => 'XXXXXXX',
+    'messenger' => ' ',
     'title' => 'Euclid'
   );
 
@@ -52,28 +52,26 @@ function mmoda_euclid_install()
 
   $module_settings = array(
     'enabled' => TRUE,
-    'osa_version' => 'OSA11.2',
-    'radius' => 15,
-    'scw_list' => '005100410010.001,005100420010.001',
-    'max_pointings' => 50,
-    'integral_data_rights' => 'public',
-    'E1_keV' => 28.0,
-    'E2_keV' => 40.0,
     'query_type' => 'Real',
-    'detection_threshold' => 7.0,
-    'product_type' => 'euclid_image',
-    'time_bin' => 1000,
-    'time_bin_format' => 'sec',
-    'weight' => -10,
-    'acknowledgement' => '
-    If you use results or material from this instrument in our application, ODA, do not
-    forget to quote our paper:<br> <a
-      href="https://arxiv.org/abs/2002.12895" target="_blank">A.
-      Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno,
-      S.Paltani<br> An online data analysis system of INTEGRAL telescope
-    </a>',
-    'enable_use_catalog' => TRUE,
-    'data_server_local_url' => 'dispatch-data/run_analysis'
+    'weight' => 500,
+    'product_type' => 'Run_Phosphoros_basic',
+
+    'Catalog_URL' => "https://www.astro.unige.ch/~tucci/Phosphoros/Catalog_Galaxy_n1K.fits",
+
+    'ab_magnitude' => false,
+
+    'column_name_DustColumnDensity' => "NONE",
+
+    'column_name_SourceID' => "OBJECT_ID",
+
+    'flag_MissingPhotometry' => -99,
+
+    'flag_UpperLimit' => -99,
+
+    'acknowledgement' => 'Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>',
+    'enable_use_catalog' => FALSE,
+    'allowed_roles' => 'developer',
+    'data_server_local_url' => 'dispatch-data/run_analysis',
   );
   $module_settings = array_merge($instrument_info, $module_settings);
 
@@ -82,7 +80,7 @@ function mmoda_euclid_install()
   $filters = array();
   _mmoda_euclid_read_filters_file($current_dir . '/euclid_filters.csv', $filters);
   unset($filters['Instrument']);
-  $module_settings['filters']=$filters;
+  $module_settings['filters_table']=$filters;
 
   $module_name = basename(__FILE__, '.install');
   _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
@@ -98,10 +96,8 @@ function mmoda_euclid_uninstall()
   _mmoda_common_uninstall($module_name, $instrument);
 }
 
-/**
- * Implements hook_uninstall().
- */
-function _mmoda_euclid_read_filters_file($filename, &$filters)
+
+    function _mmoda_euclid_read_filters_file($filename, &$filters)
 {
   if (! $f = fopen($filename, "r")) {
     $error_message = 'Error, can not read Euclid filters file :' . $filename;

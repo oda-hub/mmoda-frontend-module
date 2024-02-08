@@ -4,8 +4,6 @@
  * @file
  * Provides a block displaying prayer times for the visitor's location
  */
-
-
 function mmoda_euclid_enable() {
   $instrument = mmoda_euclid_instrument_info()['name'];
   _mmodaa_instrument_enable($instrument);
