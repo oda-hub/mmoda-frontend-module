@@ -329,9 +329,9 @@ function panel_title(srcname, param) {
           session_id = data['session_id'];
         }
         if (session_id && job_id) {
-          waitingDialog.setHeaderMessagesSessionId(session_id);
-          waitingDialog.setHeaderMessageJobId(job_id);
-          waitingDialog.showHeaderMessage();
+          waitingDialog.setJobInfoSessionId(session_id);
+          waitingDialog.setJobInfoJobId(job_id);
+          waitingDialog.showJobInfo();
         }
         var query_failed = false;
         if (data.query_status == 'failed' || (data.hasOwnProperty('products') && data.products.hasOwnProperty('image') && data.products.image == null)) {
@@ -768,6 +768,8 @@ function panel_title(srcname, param) {
       }
       $('#ldialog .header-message .job-id').html('');
       $('#ldialog .header-message .session-id').html('');
+      $('#ldialog .job-info .job-id').html('');
+      $('#ldialog .job-info .session-id').html('');
       $('#ldialog .summary').html('');
       $('#ldialog .details').html('');
       $('#ldialog .modal-body .more-less-details').hide();
@@ -1404,6 +1406,7 @@ function panel_title(srcname, param) {
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
       $('.return-progress-link').show();
+      $(".notice-progress-container").hide();
 
       current_ajax_call_params = {};
       current_ajax_call_params.initialFormData = formData;
@@ -1493,7 +1496,8 @@ function panel_title(srcname, param) {
         'showProgress': true,
         'showButton': true
       });
-      waitingDialog.showHeaderMessage();
+      // waitingDialog.showHeaderMessage();
+      waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
       waitingDialog.append('<table class="error-table"><tr>' +

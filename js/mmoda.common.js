@@ -517,6 +517,18 @@ function get_waitingDialog($modal_dialog) {
         hideHeaderMessage: function() {
           $dialog.find('.header-message').hide();
         },
+        setJobInfoSessionId: function(session_id) {
+          $dialog.find('.job-info .session-id').html('Session Id:' + session_id);
+        },
+        setJobInfoJobId: function(job_id) {
+          $dialog.find('.job-info .job-id').html('| Job Id:' + job_id);
+        },
+        showJobInfo: function() {
+          $dialog.find('.job-info').show();
+        },
+        hideJobInfo: function() {
+          $dialog.find('.job-info').hide();
+        },
         showLegend: function() {
           $dialog.find('.legend').show();
         },

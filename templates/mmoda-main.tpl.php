@@ -50,17 +50,17 @@
   aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div id="ldialog-modal-dialog" class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
+      <!-- <div class="modal-header">
         <span class="close" data-dismiss="modal" aria-label="Close"
           aria-hidden="true">&times;</span>
-        <h4 class="modal-title"></h4>
+        <h4 class="modal-title"></h4> -->
         <!-- <div class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></div> -->
-        <div class="header-message">
+        <!-- <div class="header-message">
           <div>
             <span class="session-id"></span><span class="job-id"></span>
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div> -->
       <div class="modal-body">
         <div class="legend">
           <div class="legend-element preparing"></div>
@@ -84,19 +84,25 @@
           <div class="progress-bar" style="width: 100%"></div>
         </div>
       </div>
-      <div class="modal-footer">
-        <div class="notice-progress-container">
-          <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-          <div class="notice-progress-message">You can close this window
-            and resubmit the same request at a later time to check its
-            status or retrieve results</div>
-            <?php  if ($logged_in) :?>
-              <div class="notice-progress-message-email">
-            This can be equally achieved by clicking on the link
-            received by email <br />You will receive a notification at
-            job completion
+      <div class="footer-limit"></div>
+      <div class="notice-progress-container">
+        <!-- add notice in progress modal that request can be closed and re-sent #31  -->
+        <div class="notice-progress-message">You can close this window
+          and resubmit the same request at a later time to check its
+          status or retrieve results</div>
+          <?php  if ($logged_in) :?>
+            <div class="notice-progress-message-email">
+          This can be equally achieved by clicking on the link
+          received by email <br />You will receive a notification at
+          job completion
+        </div>
+          <?php endif;?>
+      </div>
+      <div class="modal-footer" style="border-top: 0px; padding-top: 0px; margin-top: 0px;">
+        <div class="job-info">
+          <div>
+            <span class="session-id"></span><span class="job-id"></span>
           </div>
-            <?php endif;?>
         </div>
         <div class="buttons-container">
           <!-- <div class="return-progress-button">View more &gt;</div> -->
