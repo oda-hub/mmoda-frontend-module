@@ -53,7 +53,7 @@ function mmoda_euclid_install()
   $module_settings = array(
     'enabled' => TRUE,
     'query_type' => 'Real',
-    'weight' => 500,
+    'weight' => -10,
     'product_type' => 'Run_Phosphoros_basic',
 
     'Catalog_URL' => "https://www.astro.unige.ch/~tucci/Phosphoros/Catalog_Galaxy_n1K.fits",

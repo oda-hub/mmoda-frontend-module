@@ -529,28 +529,14 @@ function panel_title(srcname, param) {
         }
       }
     };
-    validator_fields['filters[filter][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please select filter'
-        }
-      }
-    };
-    validator_fields['filters[flux][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        }
-      }
-    };
+    euclid_multi_fields = $('.euclid-instruments-filters .form-control');
 
-    validator_fields['filters[flux_error][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
+    for (let fld of euclid_multi_fields) {
+      validator_fields[fld.name] = {
+        validators: {
+          notEmpty: {
+            message: (fld.type == 'select-one') ? 'Please select filter' : 'Please enter a value'
+          }
         }
       }
     };
@@ -1140,8 +1126,9 @@ function panel_title(srcname, param) {
         var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
+        multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
         $.each(instrument_form_serializeJSON, function(param, value) {
-          if (param == 'filters') instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+          if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
           else instrument_form_serializeArray.push({ 'name': param, 'value': value });
         });
 
