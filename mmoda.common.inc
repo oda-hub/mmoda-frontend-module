@@ -174,7 +174,7 @@ function mmoda_name_resolve($form, &$form_state)
     '#default_value' => $instrument_defaults['src_name'],
     '#required' => TRUE,
     '#parent_classes' => array(
-      'form-group'
+      'form-group',
     ),
     '#label_classes' => array(
       'control-label'
@@ -207,12 +207,10 @@ function mmoda_name_resolve($form, &$form_state)
     ),
     '#states' => array(
       'enabled' => array(
-        ':input[name="src_name"]' => [
-          'filled' => TRUE
-        ]
+        ':input[name="src_name"]' => ['filled' => TRUE]
       )
     ),
-    '#prefix' => '<span id="resolve-src-name" class="input-group-btn-hide form-group align-bottom">'
+    '#prefix' => '<span id="resolve-src-name" class="input-group-btn-hide form-group align-bottom">',
   );
 
   $form['explore_src_name'] = array(
@@ -235,9 +233,7 @@ function mmoda_name_resolve($form, &$form_state)
     ),
     '#states' => array(
       'enabled' => array(
-        ':input[name="src_name"]' => [
-          'filled' => TRUE
-        ]
+        ':input[name="src_name"]' => ['filled' => TRUE]
       )
     ),
     '#suffix' => '</span></div></div></div>'
@@ -411,14 +407,11 @@ function mmoda_common_validate($form, &$form_state)
 }
 
 // Define a menu callback that returns JSON data.
-function mmoda_get_token()
-{
+function mmoda_get_token() {
   if (user_is_logged_in()) {
     $jwt = jwt_link_url();
-    $token_data = array(
-      'token' => $jwt['jwt_encoded_token']
-    );
-    return (drupal_json_output($token_data));
+    $token_data = array('token' => $jwt['jwt_encoded_token']);
+    return(drupal_json_output($token_data));
     // return ($token_data);
   }
 }
@@ -456,3 +449,4 @@ function explore_object_name_callback($form, &$form_state)
     '#commands' => $commands
   );
 }
+
