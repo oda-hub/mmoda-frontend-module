@@ -91,14 +91,14 @@ function panel_title(srcname, param) {
         }
 
         AJAX_call();
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log('Error in requesting the user token:');
-        console.log('textStatus : ' + textStatus);
-        console.log('errorThrown :' + errorThrown);
-        console.log('jqXHR');
-        console.log(jqXHR);
-        AJAX_call();
-      });
+    }).error(function(jqXHR, textStatus, errorThrown) {
+      console.log('Error in requesting the user token:');
+      console.log('textStatus : ' + textStatus);
+      console.log('errorThrown :' + errorThrown);
+      console.log('jqXHR');
+      console.log(jqXHR);
+      AJAX_call();
+    });
   }
 
   function AJAX_call() {
@@ -249,7 +249,7 @@ function panel_title(srcname, param) {
         //        $(".write-feedback-button").hide();
         //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-
+        
       }).error(function(jqXHR, textStatus, errorThrown) {
         if (textStatus != 'abort') {
           console.log('textStatus : ' + textStatus);
@@ -436,7 +436,7 @@ function panel_title(srcname, param) {
     return (cssClass);
   }
 
-  function all_instruments_forms_set_bootstrapValidator() {
+  function current_instrument_form_set_bootstrapValidator() {
 
     var validator_fields = {
       'scw_list': {
@@ -526,9 +526,9 @@ function panel_title(srcname, param) {
         }
       }
     };
-    //$('.instrument-panel form').bootstrapValidator('destroy');
+    $('.instrument-panel form').bootstrapValidator('destroy');
 
-    $('.instrument-panel form').bootstrapValidator({
+    current_instrument_form_validator = $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
       fields: validator_fields,
       feedbackIcons: {
@@ -536,11 +536,10 @@ function panel_title(srcname, param) {
         invalid: 'glyphicon glyphicon-remove',
         validating: 'glyphicon glyphicon-refresh'
       }
-    });
+    }).data('bootstrapValidator');
   }
 
   function insert_new_multivalued_field(add_multivalued_button) {
-    var current_instrument_form_validator = $(add_multivalued_button).closest('.instrument-panel form').data('bootstrapValidator');
     var multivalued_field = $(add_multivalued_button).closest('.multivalued-field');
     var current_row = $(add_multivalued_button).prev();
     var newVAlue = current_row.clone();
@@ -565,7 +564,7 @@ function panel_title(srcname, param) {
   function commonReady() {
     $('.multivalued-field').removeClass('form-group');
 
-    all_instruments_forms_set_bootstrapValidator();
+    current_instrument_form_set_bootstrapValidator();
     var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
     var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
     $('.multivalued-field').append(add_multivalued_elt_button);
@@ -832,13 +831,13 @@ function panel_title(srcname, param) {
 
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== ''){
             let token = data.token;
             let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
             // remove any previous results
             if (renku_publish_panel.parentElement.nextSibling.className === 'result-renku-publish')
-              renku_publish_panel.parentElement.nextSibling.remove();
+            renku_publish_panel.parentElement.nextSibling.remove();
 
             // disable publish-on-renku button
             e.target.disabled = true;
@@ -899,17 +898,17 @@ function panel_title(srcname, param) {
             publish_response_title = 'Error while publishing to Renku: ';
             publish_result_type = 'publish_error';
             no_user_loged_in_error_message = 'please login to MMODA first and then retry';
-
+    
             let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
             renku_publish_panel.parentElement.after(publish_result_panel);
           }
-        }).error(function(jqXHR, textStatus, errorThrown) {
-          console.log('Error in requesting the user token:');
-          console.log('textStatus : ' + textStatus);
-          console.log('errorThrown :' + errorThrown);
-          console.log('jqXHR');
-          console.log(jqXHR);
-        });
+      }).error(function(jqXHR, textStatus, errorThrown) {
+        console.log('Error in requesting the user token:');
+        console.log('textStatus : ' + textStatus);
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+      });
 
 
     });
@@ -953,10 +952,10 @@ function panel_title(srcname, param) {
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
       token_text = $("#edit-submitted-copy-button p")[0].textContent;
-      if (token_text !== undefined)
+      if(token_text !== undefined)
         copyToClipboard(token_text);
     });
-
+    
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
@@ -1120,7 +1119,7 @@ function panel_title(srcname, param) {
         // the name
         var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
-          if (item.name == 'instrument') {
+          if(item.name == 'instrument') {
             item.value = active_panel_instrument
           }
           return (item);
@@ -1255,8 +1254,6 @@ function panel_title(srcname, param) {
   }
 
   function make_request(request_parameters) {
-    var current_instrument_form_validator = $('.instrument-panel.active form').data('bootstrapValidator');
-
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
       waitingDialog.show('Error message', '', {
@@ -2565,7 +2562,7 @@ function panel_title(srcname, param) {
     if (current_ajax_call_params.currentFormData.get('token') !== null)
       parameters['token'] = current_ajax_call_params.currentFormData.get('token');
     url = 'dispatch-data/download_products?' + $.param(parameters);
-
+    
     return (url);
   }
 
