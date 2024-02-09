@@ -78,6 +78,18 @@ label.control-label {
   font-weight: bold;
 }
 
+#ldialog .summary .summary-controls {
+  margin-top: 0.5em;
+}
+
+#ldialog .summary .summary-warnings {
+  margin-top: 0.5em;
+}
+
+#ldialog .summary .details {
+  margin-top: 0.5em;
+}
+
 .modal-dialog .modal-header .modal-title {
   display: inline-block;
 }

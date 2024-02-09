@@ -414,7 +414,9 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('button').hide();
           }
           $dialog.find('h4').html(title);
-          $dialog.find('.summary').html(message);
+          // $dialog.find('.summary').html(message);
+          $('#ldialog .summary-message').html('');
+          $('#ldialog .details').html('');
           $dialog.find('.modal-footer button.submit-button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
 
           // Adding callbacks
@@ -445,6 +447,9 @@ function get_waitingDialog($modal_dialog) {
           // sleep(5);
 
         },
+        resetSummaryControls: function() {
+          $('.summary .summary-controls', $dialog).html('<span class="more-less-details">More details &gt;</span>');
+        },
         setProgressBarType: function(progressBarType) {
           $dialog.find('.progress-bar').addClass('progress-bar-' + progressBarType);
         },
@@ -471,7 +476,15 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
+          // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
+          if(message.hasOwnProperty('summary'))
+            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+          if(message.hasOwnProperty('details'))
+            $('.summary .details', $dialog).html(message.details);
+          if(message.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html(message.warnings);
+          if(message.hasOwnProperty('results'))
+            $('.summary .summary-results', $dialog).html($('<div>' + message.results + '</div>').addClass(message_class));
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
@@ -481,12 +494,14 @@ function get_waitingDialog($modal_dialog) {
             message_class += 'alert alert-' + alert_type;
           }
           if(messages.hasOwnProperty('summary'))
-            $('.summary', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
+            $('.summary .summary-message', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
           if(messages.hasOwnProperty('details'))
-            $('.details', $dialog).html(messages.details);
+            $('.summary .details', $dialog).html(messages.details);
+          if(messages.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html(messages.warnings);
 
           if (messages.details !== '') {
-            $('#ldialog .modal-body .more-less-details').show();
+            $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
           }
         },
         hideSpinner: function() {

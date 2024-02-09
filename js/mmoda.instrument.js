@@ -122,7 +122,8 @@ function panel_title(srcname, param) {
     }
     waitingDialog.hideSpinner();
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-    waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
+    resul_obj = {'results': get_current_date_time() + ' ' + data.query_status}
+    waitingDialog.append(resul_obj, 'success');
     $('#ldialog').find('.progress').hide();
     if (data.exit_status.status != 0) {
       debug_message = '';
@@ -175,11 +176,12 @@ function panel_title(srcname, param) {
     // }
     if (typeof messages !== 'undefined') {
       previous_summary = messages.summary;
+      previous_details = messages.details;
     }
 
     response_status = data['job_monitor']['status'];
     waitingDialog.setProgressBarText(response_status);
-    
+
     if (response_status == 'submitted') {
       waitingDialog.setProgressBarBackgroundcolor('lightgreen');
       waitingDialog.setProgressBarWidthPercentage(50);
@@ -203,16 +205,25 @@ function panel_title(srcname, param) {
 
     messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
-    messages.summary = get_current_date_time() + messages.summary;
+    current_details = messages.details;
+    // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-          if(messages.summary.endsWith('<br>'))
-            messages.summary = messages.summary.substring(0, messages.summary.length - 4)
-          messages.summary += ' - <span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span><br>';
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true' && 
+        !$('#ldialog .summary-controls .return-progress-link').length) {
+          // if(messages.summary.endsWith('<br>'))
+          //   messages.summary = messages.summary.substring(0, messages.summary.length - 4)
+          // messages.summary += '<span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span><br>';
+          $('#ldialog .summary-controls').prepend('<span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span>');
       }
     }
-    if (current_summary != previous_summary) {
+    // if (current_summary != previous_summary) {
+    //   waitingDialog.replace(messages);
+    //   $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
+    //     trigger: 'hover'
+    //   });
+    // }
+    if (current_details != previous_details) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
         trigger: 'hover'
@@ -351,7 +362,8 @@ function panel_title(srcname, param) {
         }
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
-          waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
+          warning_obj = {'warnings' : '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>'};
+          waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
 
@@ -773,9 +785,15 @@ function panel_title(srcname, param) {
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      $('#ldialog .summary').html('');
+      // $('#ldialog .summary').html('');
+      // $('#ldialog .details').html('');
+      $('#ldialog .summary-content').html('');
       $('#ldialog .details').html('');
-      $('#ldialog .modal-body .more-less-details').hide();
+      $('#ldialog .summary-warnings').html('');
+      $('#ldialog .summary-results').html('');
+      waitingDialog.setProgressBarText('');
+      waitingDialog.resetSummaryControls();
+      $('#ldialog .modal-body .summary-controls .more-less-details').hide();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
@@ -1276,7 +1294,8 @@ function panel_title(srcname, param) {
     $('body').on('click', '.mmoda-log .more-less-details', function(e) {
       e.preventDefault();
       var $this = $(this);
-      var details = $(this).parent().find('.details');
+      // var details = $(this).parent().find('.details');
+      var details = $('#ldialog .summary .details');
       details.slideToggle('slow', function() {
         var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
         $this.text(txt);

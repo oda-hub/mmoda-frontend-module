@@ -80,10 +80,16 @@
           <div class="progress-bar" style="width: 100%"></div>
           <div class="progress-bar-text"></div>
         </div>
+        <div class="summary">
+          <div class="summary-message"></div>
+          <div class="summary-controls">
+            <span class="more-less-details">More details &gt;</span>
+          </div>
+          <div class="details"></div>
+          <div class="summary-warnings"></div>
+          <div class="summary-results"></div>
+        </div>
       </div>
-      <div class="more-less-details">More details &gt;</div>
-      <div class="details"></div>
-      <div class="summary"></div>
       <div class="modal-footer">
         <div class="notice-progress-container">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->
