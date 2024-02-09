@@ -642,18 +642,6 @@ function get_waitingDialog($modal_dialog) {
       }
     });
 
-    //    setTimeout(function() {
-    //      //$("span.oda-icon-label").hide("slide", { direction: "right" }, 1000);
-    //      $("span.oda-icon-label").hide("slow")
-    //    }, 5000);
-
-    //    $(".main-toolbar").focusin(function() {
-    //      $("span.oda-icon-label").show("slow")
-    //    });
-    //    $(".main-toolbar").focusOut(function() {
-    //      $("span.oda-icon-label").hide("slow")
-    //    });
-
     if (Drupal.settings.user_uid == 0) {
       $('.main-toolbar .login-link').show();
       $('.main-toolbar .logout-link').hide();
