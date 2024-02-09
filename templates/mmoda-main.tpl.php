@@ -74,16 +74,16 @@
           <div class="legend-element analysis-exception"></div>
           Analysis exception
         </div>
-        <div class="summary"></div>
         <!-- <span class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></span> -->
-        <div class="more-less-details">More details &gt;</div>
-        <div class="details"></div>
         <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->
-        <div class="progress progress-striped active"
-          style="margin-bottom: 0;">
+        <div class="progress progress-striped active" style="margin-bottom: 0;">
           <div class="progress-bar" style="width: 100%"></div>
+          <div class="progress-bar-text"></div>
         </div>
       </div>
+      <div class="more-less-details">More details &gt;</div>
+      <div class="details"></div>
+      <div class="summary"></div>
       <div class="modal-footer">
         <div class="notice-progress-container">
           <!-- add notice in progress modal that request can be closed and re-sent #31  -->

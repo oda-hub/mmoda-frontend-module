@@ -454,6 +454,9 @@ function get_waitingDialog($modal_dialog) {
         setProgressBarWidthPercentage: function(width) {
           $dialog.find('.progress-bar').css('width', `${width}%`);
         },
+        setProgressBarText: function(text) {
+          $dialog.find('.progress-bar-text').text(text);
+        },
         /**
          * Closes dialog
          */

@@ -65,6 +65,19 @@ label.control-label {
   width: 60%;
 }
 
+#ldialog .progress {
+  position: relative;
+}
+
+#ldialog .progress-bar-text {
+  position: absolute;
+  text-align: center;
+  right: 0;
+  left: 0;
+  top: 0;
+  font-weight: bold;
+}
+
 .modal-dialog .modal-header .modal-title {
   display: inline-block;
 }

@@ -177,7 +177,9 @@ function panel_title(srcname, param) {
       previous_summary = messages.summary;
     }
 
-    response_status = data['job_monitor']['status']
+    response_status = data['job_monitor']['status'];
+    waitingDialog.setProgressBarText(response_status);
+    
     if (response_status == 'submitted') {
       waitingDialog.setProgressBarBackgroundcolor('lightgreen');
       waitingDialog.setProgressBarWidthPercentage(50);
@@ -378,7 +380,8 @@ function panel_title(srcname, param) {
 
   function get_server_message(response, integral_instrument) {
     var messages = {
-      summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
+      // summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
+      summary: '',
       details: ''
     };
 
