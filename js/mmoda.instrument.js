@@ -182,39 +182,35 @@ function panel_title(srcname, param) {
     response_status = data['job_monitor']['status'];
     waitingDialog.setProgressBarText(response_status);
 
-    if (response_status == 'submitted') {
-      waitingDialog.setProgressBarBackgroundcolor('lightgreen');
-      waitingDialog.setProgressBarWidthPercentage(50);
-    }
-    else if (response_status == 'progress'){
-      waitingDialog.setProgressBarBackgroundcolor('lightblue');
-      waitingDialog.setProgressBarWidthPercentage(50);
-    }
-    else if (response_status == 'failed') {
-      waitingDialog.setProgressBarBackgroundcolor('red');
-      waitingDialog.setProgressBarWidthPercentage(100);
-    }
-    else if (response_status == 'ready') {
-      waitingDialog.setProgressBarBackgroundcolor('lightyellow');
-      waitingDialog.setProgressBarWidthPercentage(75);
-    }
-    else if (response_status == 'done') {
-      waitingDialog.setProgressBarBackgroundcolor('green');
-      waitingDialog.setProgressBarWidthPercentage(100);
-    }
-
     messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
     current_details = messages.details;
     // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true' && 
-        !$('#ldialog .summary-controls .return-progress-link').length) {
-          // if(messages.summary.endsWith('<br>'))
-          //   messages.summary = messages.summary.substring(0, messages.summary.length - 4)
-          // messages.summary += '<span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span><br>';
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+        if(!$('#ldialog .summary-controls .return-progress-link').length)
           $('#ldialog .summary-controls').prepend('<span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span>');
+        if (response_status == 'submitted') {
+          waitingDialog.setProgressBarBackgroundcolor('lightgreen');
+          waitingDialog.setProgressBarWidthPercentage(50);
+        }
+        else if (response_status == 'progress'){
+          waitingDialog.setProgressBarBackgroundcolor('lightblue');
+          waitingDialog.setProgressBarWidthPercentage(50);
+        }
+        else if (response_status == 'failed') {
+          waitingDialog.setProgressBarBackgroundcolor('red');
+          waitingDialog.setProgressBarWidthPercentage(100);
+        }
+        else if (response_status == 'ready') {
+          waitingDialog.setProgressBarBackgroundcolor('lightyellow');
+          waitingDialog.setProgressBarWidthPercentage(75);
+        }
+        else if (response_status == 'done') {
+          waitingDialog.setProgressBarBackgroundcolor('green');
+          waitingDialog.setProgressBarWidthPercentage(100);
+        }
       }
     }
     // if (current_summary != previous_summary) {
@@ -1335,6 +1331,7 @@ function panel_title(srcname, param) {
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
       var formData;
+      let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
@@ -1361,7 +1358,7 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+        // let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
@@ -1424,7 +1421,11 @@ function panel_title(srcname, param) {
         showSpinner: false
       });
       waitingDialog.setProgressBarBackgroundcolor('');
-      waitingDialog.setProgressBarWidthPercentage(0);
+      if($(`input[value='${active_panel_instrument}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')
+        waitingDialog.setProgressBarWidthPercentage(0);
+      else
+        waitingDialog.setProgressBarWidthPercentage(100);
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
       $('.return-progress-link').show();

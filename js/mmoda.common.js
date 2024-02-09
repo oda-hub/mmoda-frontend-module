@@ -500,7 +500,7 @@ function get_waitingDialog($modal_dialog) {
           if(messages.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).html(messages.warnings);
 
-          if (messages.details !== '') {
+          if (messages.details !== undefined && messages.details !== '') {
             $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
           }
         },
