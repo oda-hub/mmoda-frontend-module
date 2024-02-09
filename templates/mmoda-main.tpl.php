@@ -84,37 +84,38 @@
           <div class="progress-bar" style="width: 100%"></div>
         </div>
       </div>
-      <div class="footer-limit"></div>
-      <div class="notice-progress-container">
-        <!-- add notice in progress modal that request can be closed and re-sent #31  -->
-        <div class="notice-progress-message">You can close this window
-          and resubmit the same request at a later time to check its
-          status or retrieve results</div>
-          <?php  if ($logged_in) :?>
-            <div class="notice-progress-message-email">
-          This can be equally achieved by clicking on the link
-          received by email <br />You will receive a notification at
-          job completion
-        </div>
-          <?php endif;?>
-      </div>
-      <div class="modal-footer" style="border-top: 0px; padding-top: 0px; margin-top: 0px;">
-        <div class="job-info">
-          <div>
-            <span class="session-id"></span><span class="job-id"></span>
+      <div class="modal-footer">
+        <div class="notice-progress-container">
+          <!-- add notice in progress modal that request can be closed and re-sent #31  -->
+          <div class="notice-progress-message">You can close this window
+            and resubmit the same request at a later time to check its
+            status or retrieve results</div>
+            <?php  if ($logged_in) :?>
+              <div class="notice-progress-message-email">
+            This can be equally achieved by clicking on the link
+            received by email <br />You will receive a notification at
+            job completion
           </div>
+            <?php endif;?>
         </div>
-        <div class="buttons-container">
-          <!-- <div class="return-progress-button">View more &gt;</div> -->
-          <a data-toggle="tooltip" title=""
-            data-original-title="Report a bug or write us a feedback"
-            class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
-            href="modal_forms/nojs/webform/392"><span
-            class="oda-icon-label">Write a feedback</span><span
-            class="glyphicon glyphicon-envelope"> </span> </a>
-          <button type="button"
-            class="btn btn-primary form-button submit-button"
-            data-dismiss="modal"></button>
+        <div>
+          <div class="job-info">
+            <div>
+              <span class="session-id"></span><span class="job-id"></span>
+            </div>
+          </div>
+          <div class="buttons-container">
+            <!-- <div class="return-progress-button">View more &gt;</div> -->
+            <a data-toggle="tooltip" title=""
+              data-original-title="Report a bug or write us a feedback"
+              class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
+              href="modal_forms/nojs/webform/392"><span
+              class="oda-icon-label">Write a feedback</span><span
+              class="glyphicon glyphicon-envelope"> </span> </a>
+            <button type="button"
+              class="btn btn-primary form-button submit-button"
+              data-dismiss="modal"></button>
+          </div>
         </div>
       </div>
     </div>
