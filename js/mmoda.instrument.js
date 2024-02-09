@@ -617,7 +617,7 @@ function panel_title(srcname, param) {
     return (cssClass);
   }
 
-  function current_instrument_form_set_bootstrapValidator() {
+  function all_instruments_forms_set_bootstrapValidator() {
 
     var validator_fields = {
       'scw_list': {
@@ -682,34 +682,20 @@ function panel_title(srcname, param) {
         }
       }
     };
-    validator_fields['filters[filter][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please select filter'
-        }
-      }
-    };
-    validator_fields['filters[flux][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        }
-      }
-    };
+    euclid_multi_fields = $('.euclid-instruments-filters .form-control');
 
-    validator_fields['filters[flux_error][]'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
+    for (let fld of euclid_multi_fields) {
+      validator_fields[fld.name] = {
+        validators: {
+          notEmpty: {
+            message: (fld.type == 'select-one') ? 'Please select filter' : 'Please enter a value'
+          }
         }
       }
     };
-    $('.instrument-panel form').bootstrapValidator('destroy');
+    //$('.instrument-panel form').bootstrapValidator('destroy');
 
-    current_instrument_form_validator = $('.instrument-panel form').bootstrapValidator({
+    $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
       fields: validator_fields,
       feedbackIcons: {
@@ -717,10 +703,11 @@ function panel_title(srcname, param) {
         invalid: 'glyphicon glyphicon-remove',
         validating: 'glyphicon glyphicon-refresh'
       }
-    }).data('bootstrapValidator');
+    });
   }
 
   function insert_new_multivalued_field(add_multivalued_button) {
+    var current_instrument_form_validator = $(add_multivalued_button).closest('.instrument-panel form').data('bootstrapValidator');
     var multivalued_field = $(add_multivalued_button).closest('.multivalued-field');
     var current_row = $(add_multivalued_button).prev();
     var newVAlue = current_row.clone();
@@ -745,7 +732,7 @@ function panel_title(srcname, param) {
   function commonReady() {
     $('.multivalued-field').removeClass('form-group');
 
-    current_instrument_form_set_bootstrapValidator();
+    all_instruments_forms_set_bootstrapValidator();
     var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
     var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
     $('.multivalued-field').append(add_multivalued_elt_button);
@@ -1358,16 +1345,20 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        // let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
+        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
+        var instrument_form_serializeArray = [];
+        multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
+        $.each(instrument_form_serializeJSON, function(param, value) {
+          if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+          else instrument_form_serializeArray.push({ 'name': param, 'value': value });
+        });
+
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
-        // waitingDialog.disableReturnProgressLink();
-        // if($(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.hasOwnProperty('support_return_progress') &&
-        //   $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-        //     waitingDialog.enableReturnProgressLink();
-        // }
-        var instrumentFormData = $($(this)[0]).serializeArray().map(function(item, index) {
+        var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
           if (item.name == 'instrument') {
             item.value = active_panel_instrument
@@ -1512,6 +1503,8 @@ function panel_title(srcname, param) {
   }
 
   function make_request(request_parameters) {
+    var current_instrument_form_validator = $('.instrument-panel.active form').data('bootstrapValidator');
+
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
       waitingDialog.show('Error message', '', {

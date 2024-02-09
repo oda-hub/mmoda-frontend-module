@@ -838,7 +838,7 @@ function get_waitingDialog($modal_dialog) {
       e.preventDefault();
       openPageInModal($(this).attr('href'));
     });
-    
+
     $(document).on("ajaxComplete", function(event, request, settings) {
       if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') &&
         (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
