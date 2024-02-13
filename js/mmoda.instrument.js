@@ -764,14 +764,14 @@ function panel_title(srcname, param) {
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
       }
+      // clean-up modal window
       $('#ldialog .header-message .job-id').html('');
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      // $('#ldialog .summary').html('');
-      // $('#ldialog .details').html('');
       $('#ldialog .summary-content').html('');
       $('#ldialog .details').html('');
+      $('#ldialog .details').hide();
       $('#ldialog .summary-warnings').html('');
       $('#ldialog .summary-results').html('');
       waitingDialog.setProgressBarText('');
