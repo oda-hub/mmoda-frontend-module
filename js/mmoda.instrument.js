@@ -189,8 +189,7 @@ function panel_title(srcname, param) {
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-        if(!$('#ldialog .summary-controls .return-progress-link').length)
-          $('#ldialog .summary-controls').prepend('<span class="return-progress-link enabled">Get current output <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i></span>');
+        waitingDialog.enableReturnProgressLink();
         if (response_status == 'submitted') {
           waitingDialog.setProgressBarBackgroundcolor('lightgreen');
           waitingDialog.setProgressBarWidthPercentage(50);
@@ -779,8 +778,10 @@ function panel_title(srcname, param) {
       $('#ldialog .summary-warnings').html('');
       $('#ldialog .summary-results').html('');
       waitingDialog.setProgressBarText('');
-      waitingDialog.resetSummaryControls();
-      $('#ldialog .modal-body .summary-controls .more-less-details').hide();
+      waitingDialog.disableReturnProgressLink();
+      waitingDialog.disableMoreLessLink();
+      // waitingDialog.resetSummaryControls();
+      // $('#ldialog .modal-body .summary-controls .more-less-details').hide();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
@@ -1278,7 +1279,7 @@ function panel_title(srcname, param) {
     // The main block is hidden at startup (in mmoda.css) and
     // shown here after the setup of DOM and the field controls
     $('.block-mmoda').show();
-    $('body').on('click', '.mmoda-log .more-less-details', function(e) {
+    $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
       e.preventDefault();
       var $this = $(this);
       // var details = $(this).parent().find('.details');
@@ -1417,13 +1418,15 @@ function panel_title(srcname, param) {
       });
       waitingDialog.setProgressBarBackgroundcolor('');
       if($(`input[value='${active_panel_instrument}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')
-        waitingDialog.setProgressBarWidthPercentage(0);
+        $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+          waitingDialog.enableReturnProgressLink();
+          waitingDialog.setProgressBarWidthPercentage(0);
+      }
       else
         waitingDialog.setProgressBarWidthPercentage(100);
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
-      $('.return-progress-link').show();
+      // $('.return-progress-link').show();
       $(".notice-progress-container").hide();
 
       current_ajax_call_params = {};

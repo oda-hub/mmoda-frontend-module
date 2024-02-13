@@ -122,15 +122,15 @@ table.message-table tr td {
   padding-right: 1em;
 }
 
-.mmoda-log .details, .mmoda-log .more-less-details
+/* .mmoda-log .details, .mmoda-log .more-less-details
 {
   display: none;
-}
+} */
 
-.mmoda-log .more-less-details {
+/* .mmoda-log .more-less-details {
   color: #007d64;
   cursor: pointer;
-}
+} */
 
 #ldialog .legend {
   display: none;
@@ -514,7 +514,8 @@ div.ctools-modal-content .modal-content {
   display: none;
 }
 
-.return-progress-link {
+.return-progress-link,
+.more-less-details {
   color:gray;
   cursor: default;
 }
@@ -523,7 +524,8 @@ div.ctools-modal-content .modal-content {
   display: inline;
 }
 
-.return-progress-link.enabled {
+.return-progress-link.enabled,
+.more-less-details.enabled {
   color: #007d64;
   cursor: pointer;
 }

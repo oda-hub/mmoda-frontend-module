@@ -83,6 +83,9 @@
         <div class="summary">
           <div class="summary-message"></div>
           <div class="summary-controls">
+            <span class="return-progress-link">Get current output 
+              <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+            </span>
             <span class="more-less-details">More details &gt;</span>
           </div>
           <div class="details"></div>
