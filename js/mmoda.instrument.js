@@ -122,7 +122,7 @@ function panel_title(srcname, param) {
     }
     waitingDialog.hideSpinner();
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-    resul_obj = {'results': get_current_date_time() + ' ' + data.query_status}
+    resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
     waitingDialog.append(resul_obj, 'success');
     $('#ldialog').find('.progress').hide();
     if (data.exit_status.status != 0) {
@@ -299,7 +299,8 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
+    warning_obj = {'warnings' : '<table class="error-table">' + reformatted_message + '</table>'};
+    waitingDialog.append(warning_obj, 'danger');
   }
 
   function AJAX_call() {
