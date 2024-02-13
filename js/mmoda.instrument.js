@@ -246,8 +246,11 @@ function panel_title(srcname, param) {
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-      + reformatted_error_message + '</td></tr></table>', 'danger');
+    warning_obj = {'warnings' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+     + reformatted_error_message + '</td></tr></table>'
+    };
+    waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
     add_dispatcher_response_to_feedback_form(data);
   }
