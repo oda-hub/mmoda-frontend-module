@@ -122,11 +122,6 @@ table.message-table tr td {
   padding-right: 1em;
 }
 
-/* .mmoda-log .details, .mmoda-log .more-less-details
-{
-  display: none;
-} */
-
 /* .mmoda-log .more-less-details {
   color: #007d64;
   cursor: pointer;
@@ -134,6 +129,7 @@ table.message-table tr td {
 
 #ldialog .legend {
   display: none;
+  margin-bottom: 1em;
 }
 
 /***************** End vertically center modal   ***/
@@ -511,6 +507,11 @@ div.ctools-modal-content .modal-content {
 }
 
 .write-feedback-button {
+  display: none;
+}
+
+.mmoda-log .details
+{
   display: none;
 }
 
