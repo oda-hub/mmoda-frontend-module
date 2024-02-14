@@ -62,18 +62,6 @@
         </div> -->
       <!-- </div> -->
       <div class="modal-body">
-        <div class="legend">
-          <div class="legend-element preparing"></div>
-          Preparing
-          <div class="legend-element calculating"></div>
-          Calculating
-          <div class="legend-element calculated"></div>
-          Done
-          <div class="legend-element from-cache"></div>
-          Restored from cache
-          <div class="legend-element analysis-exception"></div>
-          Analysis exception
-        </div>
         <!-- <span class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></span> -->
         <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->
         <div class="progress progress-striped active" style="margin-bottom: 0;">
@@ -81,6 +69,20 @@
           <div class="progress-bar-text"></div>
         </div>
         <div class="summary">
+          <div class="summary-legend">
+            <div class="legend">
+              <div class="legend-element preparing"></div>
+              Preparing
+              <div class="legend-element calculating"></div>
+              Calculating
+              <div class="legend-element calculated"></div>
+              Done
+              <div class="legend-element from-cache"></div>
+              Restored from cache
+              <div class="legend-element analysis-exception"></div>
+              Analysis exception
+            </div>
+          </div>
           <div class="summary-message"></div>
           <div class="summary-controls">
             <span class="return-progress-link">Get current output 

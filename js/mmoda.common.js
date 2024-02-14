@@ -447,8 +447,8 @@ function get_waitingDialog($modal_dialog) {
           // sleep(5);
 
         },
-        resetSummaryControls: function() {
-          $('.summary .summary-controls', $dialog).html('<span class="more-less-details">More details &gt;</span>');
+        resetSummaryControlsMoreLessDetails: function() {
+          $('.summary .summary-controls .more-less-details', $dialog).text('More details >');
         },
         setProgressBarBackgroundcolor: function(color) {
           $dialog.find('.progress-bar').css('background-color', color);

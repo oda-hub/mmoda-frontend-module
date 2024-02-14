@@ -771,7 +771,7 @@ function panel_title(srcname, param) {
       waitingDialog.setProgressBarText('');
       waitingDialog.disableReturnProgressLink();
       waitingDialog.disableMoreLessLink();
-      // waitingDialog.resetSummaryControls();
+      waitingDialog.resetSummaryControlsMoreLessDetails();
       // $('#ldialog .modal-body .summary-controls .more-less-details').hide();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
