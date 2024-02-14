@@ -366,9 +366,9 @@ function get_waitingDialog($modal_dialog) {
           if (typeof options === 'undefined') {
             options = {};
           }
-          if (typeof title === 'undefined') {
-            title = 'Loading ...';
-          }
+          // if (typeof title === 'undefined') {
+          //   title = 'Loading ...';
+          // }
           if (typeof message === 'undefined') {
             message = '';
           }
@@ -413,7 +413,7 @@ function get_waitingDialog($modal_dialog) {
           else {
             $dialog.find('button').hide();
           }
-          $dialog.find('h4').html(title);
+          // $dialog.find('h4').html(title);
           // $dialog.find('.summary').html(message);
           $('#ldialog .summary-message').html('');
           $('#ldialog .details').html('');
@@ -450,11 +450,34 @@ function get_waitingDialog($modal_dialog) {
         resetSummaryControls: function() {
           $('.summary .summary-controls', $dialog).html('<span class="more-less-details">More details &gt;</span>');
         },
-        setProgressBarType: function(progressBarType) {
-          $dialog.find('.progress-bar').addClass('progress-bar-' + progressBarType);
-        },
         setProgressBarBackgroundcolor: function(color) {
           $dialog.find('.progress-bar').css('background-color', color);
+        },
+        setProgressBarStatus: function(status, progress, progress_max) {
+          if (status == 'submitted') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('#d0d69e');
+          }
+          else if (status == 'progress'){
+            if(progress !== undefined && progress_max !== undefined) {
+              this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
+            }
+            else
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('lightgreen');
+          }
+          else if (status == 'failed') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('red');
+          }
+          else if (status == 'ready') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('green');
+          }
+          else if (status == 'done') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('green');
+          }
         },
         setProgressBarWidthPercentage: function(width) {
           $dialog.find('.progress-bar').css('width', `${width}%`);

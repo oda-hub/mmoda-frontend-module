@@ -180,6 +180,13 @@ function panel_title(srcname, param) {
     }
 
     response_status = data['job_monitor']['status'];
+    let progress, progress_max;
+    if (data['job_monitor'].hasOwnProperty('full_report_dict')) {
+      if (data['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+        progress = data['job_monitor']['full_report_dict']['progress'];
+      if (data['job_monitor'].full_report_dict.hasOwnProperty('progress_max'))
+        progress_max = data['job_monitor']['full_report_dict']['progress_max'];
+    }
     waitingDialog.setProgressBarText(response_status);
 
     messages = get_server_message(data, integral_instrument);
@@ -189,28 +196,12 @@ function panel_title(srcname, param) {
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-        waitingDialog.enableReturnProgressLink();
-        if (response_status == 'submitted') {
-          waitingDialog.setProgressBarBackgroundcolor('lightgreen');
-          waitingDialog.setProgressBarWidthPercentage(50);
-        }
-        else if (response_status == 'progress'){
-          waitingDialog.setProgressBarBackgroundcolor('lightblue');
-          waitingDialog.setProgressBarWidthPercentage(50);
-        }
-        else if (response_status == 'failed') {
-          waitingDialog.setProgressBarBackgroundcolor('red');
-          waitingDialog.setProgressBarWidthPercentage(100);
-        }
-        else if (response_status == 'ready') {
-          waitingDialog.setProgressBarBackgroundcolor('lightyellow');
-          waitingDialog.setProgressBarWidthPercentage(75);
-        }
-        else if (response_status == 'done') {
-          waitingDialog.setProgressBarBackgroundcolor('green');
-          waitingDialog.setProgressBarWidthPercentage(100);
-        }
+        if (response_status == 'progress')
+          waitingDialog.enableReturnProgressLink();
+        waitingDialog.setProgressBarStatus(response_status, progress, progress_max);
       }
+      else
+        waitingDialog.setProgressBarStatus(response_status);
     }
     // if (current_summary != previous_summary) {
     //   waitingDialog.replace(messages);
@@ -1416,17 +1407,11 @@ function panel_title(srcname, param) {
         showProgressBar: true,
         showSpinner: false
       });
-      waitingDialog.setProgressBarBackgroundcolor('');
-      if($(`input[value='${active_panel_instrument}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${active_panel_instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-          waitingDialog.enableReturnProgressLink();
-          waitingDialog.setProgressBarWidthPercentage(0);
-      }
-      else
-        waitingDialog.setProgressBarWidthPercentage(100);
+      waitingDialog.setProgressBarText('processing request');
+      waitingDialog.setProgressBarBackgroundcolor('#8da38f');
+      waitingDialog.setProgressBarWidthPercentage(100);
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
-      // $('.return-progress-link').show();
       $(".notice-progress-container").hide();
 
       current_ajax_call_params = {};
