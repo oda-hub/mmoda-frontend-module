@@ -75,7 +75,7 @@ label.control-label {
   right: 0;
   left: 0;
   top: 0;
-  font-weight: bold;
+  font-weight: bolder;
 }
 
 #ldialog .summary .summary-controls {

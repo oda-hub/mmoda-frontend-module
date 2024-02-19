@@ -453,17 +453,20 @@ function get_waitingDialog($modal_dialog) {
         setProgressBarBackgroundcolor: function(color) {
           $dialog.find('.progress-bar').css('background-color', color);
         },
-        setProgressBarStatus: function(status, progress, progress_max) {
+        setProgressBarStatus: function(status, enable_progress, progress, progress_max) {
           if (status == 'submitted') {
             this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('#d0d69e');
           }
-          else if (status == 'progress'){
-            if(progress !== undefined && progress_max !== undefined) {
-              this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
+          else if (status == 'progress') {
+            if(enable_progress) {
+              if(progress !== undefined && progress_max !== undefined)
+                this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
+              else
+                this.setProgressBarWidthPercentage(0);  
             }
-            else
-            this.setProgressBarWidthPercentage(100);
+            else 
+              this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('lightgreen');
           }
           else if (status == 'failed') {

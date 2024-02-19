@@ -198,10 +198,10 @@ function panel_title(srcname, param) {
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
         if (response_status == 'progress')
           waitingDialog.enableReturnProgressLink();
-        waitingDialog.setProgressBarStatus(response_status, progress, progress_max);
+        waitingDialog.setProgressBarStatus(response_status, true, progress, progress_max);
       }
       else
-        waitingDialog.setProgressBarStatus(response_status);
+        waitingDialog.setProgressBarStatus(response_status, false);
     }
     // if (current_summary != previous_summary) {
     //   waitingDialog.replace(messages);
