@@ -64,9 +64,14 @@
       <div class="modal-body">
         <!-- <span class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></span> -->
         <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->
-        <div class="progress progress-striped active" style="margin-bottom: 0;">
-          <div class="progress-bar" style="width: 100%"></div>
-          <div class="progress-bar-text"></div>
+        <div class="modal-controls">
+          <div class="progress progress-striped active" style="margin-bottom: 0;">
+            <div class="progress-bar" style="width: 100%"></div>
+            <div class="progress-bar-text"></div>
+          </div>
+          <div class="return-progress-link">
+            <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+          </div>
         </div>
         <div class="summary">
           <div class="summary-legend">
@@ -84,12 +89,12 @@
             </div>
           </div>
           <div class="summary-message"></div>
-          <div class="summary-controls">
-            <span class="return-progress-link">Get current output 
-              <div class="prompt">&gt;</div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
-            </span>
-            <span class="more-less-details">More details &gt;</span>
-          </div>
+          <!-- <div class="summary-controls"> -->
+            <!-- <div class="return-progress-link">View notebook progress 
+              <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+            </div> -->
+            <!-- <div class="more-less-details">More details &gt;</div> -->
+          <!-- </div> -->
           <div class="details"></div>
           <div class="summary-warnings"></div>
           <div class="summary-results"></div>

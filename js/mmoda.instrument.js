@@ -121,10 +121,12 @@ function panel_title(srcname, param) {
       data.products['session_id'] = data.session_id;
     }
     waitingDialog.hideSpinner();
+
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
     resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
     waitingDialog.append(resul_obj, 'success');
-    $('#ldialog').find('.progress').hide();
+    waitingDialog.hideProgressBar();
+    waitingDialog.hideReturnProgressLink();
     if (data.exit_status.status != 0) {
       debug_message = '';
       if (data.exit_status.debug_message) {
@@ -1406,7 +1408,8 @@ function panel_title(srcname, param) {
       waitingDialog.show('Processing ...', '', {
         progressType: 'success',
         showProgressBar: true,
-        showSpinner: false
+        showSpinner: false,
+        showReturnProgressLink: true
       });
       waitingDialog.setProgressBarText('processing request');
       waitingDialog.setProgressBarBackgroundcolor('#8da38f');

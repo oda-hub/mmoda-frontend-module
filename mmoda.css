@@ -67,6 +67,7 @@ label.control-label {
 
 #ldialog .progress {
   position: relative;
+  width: 100%;
 }
 
 #ldialog .progress-bar-text {
@@ -78,8 +79,10 @@ label.control-label {
   font-weight: bolder;
 }
 
-#ldialog .summary .summary-controls {
+#ldialog .modal-controls {
   margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  display: flex;
 }
 
 #ldialog .summary .summary-warnings {
@@ -522,13 +525,26 @@ div.ctools-modal-content .modal-content {
 }
 
 .return-progress-link .prompt {
-  display: inline;
+  display: inline; 
+  background: url(images/jupyter_icon.png) no-repeat;
+  background-size: 20px 20px;
+  background-position: 5px center;
+  padding-left: 28px;
+  filter: grayscale(1);
 }
 
 .return-progress-link.enabled,
 .more-less-details.enabled {
   color: #007d64;
   cursor: pointer;
+}
+
+.return-progress-link .fa-spinner {
+  margin-left: 5px;
+}
+
+.return-progress-link.enabled .prompt {
+  filter: grayscale(0);
 }
 
 .modal-footer .buttons-container {
