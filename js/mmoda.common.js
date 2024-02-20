@@ -381,7 +381,8 @@ function get_waitingDialog($modal_dialog) {
             showLegend: false,
             showCloseInHeader: false,
             showButton: true,
-            buttonText: 'Close'
+            buttonText: 'Close',
+            showReturnProgressLink: false,
             // This callback runs after the dialog was hidden
           }, options);
           // Configuring dialog
@@ -393,6 +394,10 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.modal-header .close').hide();
           else $dialog.find('.modal-header .close').show();
 
+          if (!settings.showReturnProgressLink)
+            $dialog.find('.return-progress-link').hide();
+          else
+            $dialog.find('.return-progress-link').show();
 
           if (!settings.showProgressBar) {
             //            $dialog.find('.progress').addClass('hidden');
@@ -450,6 +455,9 @@ function get_waitingDialog($modal_dialog) {
         resetSummaryControlsMoreLessDetails: function() {
           $('.summary .summary-controls .more-less-details', $dialog).text('More details >');
         },
+        hideProgressBar: function() {
+          $dialog.find('.progress').hide();
+        },
         setProgressBarBackgroundcolor: function(color) {
           $dialog.find('.progress-bar').css('background-color', color);
         },
@@ -462,8 +470,11 @@ function get_waitingDialog($modal_dialog) {
             if(enable_progress) {
               if(progress !== undefined && progress_max !== undefined)
                 this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
-              else
-                this.setProgressBarWidthPercentage(0);  
+              else {
+                // let progressBarWidthPercentage = ($dialog.find('.progress-bar').width()/$dialog.find('.progress-bar').parent().width() ) * 100;
+                // if (!(progressBarWidthPercentage !== undefined && progressBarWidthPercentage > 0 && progressBarWidthPercentage < 100))
+                this.setProgressBarWidthPercentage(0);
+              }
             }
             else 
               this.setProgressBarWidthPercentage(100);
@@ -590,6 +601,12 @@ function get_waitingDialog($modal_dialog) {
         },
         hidePrompt: function() {
           $dialog.find('.prompt').hide();
+        },
+        hideReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').hide();
+        },
+        showReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').show();
         },
         enableReturnProgressLink: function() {
           $dialog.find('.return-progress-link').addClass("enabled");
