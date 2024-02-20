@@ -196,7 +196,7 @@ function panel_title(srcname, param) {
     if (current_instrument_query !== undefined) {
       if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
-        if (response_status == 'progress')
+        if (response_status == 'progress' || response_status == 'ready')
           waitingDialog.enableReturnProgressLink();
         waitingDialog.setProgressBarStatus(response_status, true, progress, progress_max);
       }
@@ -769,6 +769,7 @@ function panel_title(srcname, param) {
       $('#ldialog .summary-warnings').html('');
       $('#ldialog .summary-results').html('');
       waitingDialog.setProgressBarText('');
+      waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
       waitingDialog.disableMoreLessLink();
       waitingDialog.resetSummaryControlsMoreLessDetails();
