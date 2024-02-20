@@ -604,11 +604,13 @@ div.ctools-modal-content .modal-content {
   white-space: nowrap;
 }
 
-.result-renku-publish-link:hover .result-renku-publish-link-tooltip {
+.result-renku-publish-link:hover .result-renku-publish-link-tooltip,
+.return-progress-link:hover .return-progress-link-tooltip {
   visibility: visible;
 }
 
-.result-renku-publish-link-tooltip {
+.result-renku-publish-link-tooltip,
+.return-progress-link-tooltip {
   visibility: hidden;
   max-width: 450px;
   background: rgba(51, 51, 51, 0.95);
@@ -625,6 +627,13 @@ div.ctools-modal-content .modal-content {
   white-space: pre-line;
   font: inherit;
 }
+
+.return-progress-link-tooltip {
+  right: 50%;
+  white-space: nowrap;
+}
+
+
 
 .result-renku-publish-title {
   font-weight: bold;
