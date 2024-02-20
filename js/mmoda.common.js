@@ -476,6 +476,7 @@ function get_waitingDialog($modal_dialog) {
           else if (status == 'ready') {
             this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('green');
+            this.setProgressBarTextColor('white');
           }
           else if (status == 'done') {
             this.setProgressBarWidthPercentage(100);
@@ -484,9 +485,13 @@ function get_waitingDialog($modal_dialog) {
         },
         setProgressBarWidthPercentage: function(width) {
           $dialog.find('.progress-bar').css('width', `${width}%`);
+          $dialog.find('.progress-bar').css('transition', 'none');
         },
         setProgressBarText: function(text) {
           $dialog.find('.progress-bar-text').text(text);
+        },
+        setProgressBarTextColor: function(color) {
+          $dialog.find('.progress-bar-text').css('color', color);
         },
         /**
          * Closes dialog
