@@ -132,7 +132,6 @@ function panel_title(srcname, param) {
       if (data.exit_status.debug_message) {
         debug_message = '<hr>' + debug_message;
       }
-      $('#ldialog').find('.progress').hide();
     }
 
     if (data.hasOwnProperty('htmlResponse')) {
@@ -234,7 +233,8 @@ function panel_title(srcname, param) {
 
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
-    $('#ldialog').find('.progress').hide();
+    waitingDialog.hideProgressBar();
+    waitingDialog.hideReturnProgressLink();
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
@@ -253,7 +253,8 @@ function panel_title(srcname, param) {
     //    console.log('jqXHR');
     //    console.log(jqXHR);
     waitingDialog.hideSpinner();
-    $('#ldialog').find('.progress').hide();
+    waitingDialog.hideProgressBar();
+    waitingDialog.hideReturnProgressLink();
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
@@ -1969,7 +1970,7 @@ function panel_title(srcname, param) {
     });
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
-    $(afterDiv).addClass('ldraggable ui-draggable');
+    // $(afterDiv).addClass('ldraggable ui-draggable');
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
     $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
   }
