@@ -775,8 +775,6 @@ function panel_title(srcname, param) {
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
       waitingDialog.disableMoreLessLink();
-      waitingDialog.resetSummaryControlsMoreLessDetails();
-      // $('#ldialog .modal-body .summary-controls .more-less-details').hide();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
@@ -1280,8 +1278,8 @@ function panel_title(srcname, param) {
       // var details = $(this).parent().find('.details');
       var details = $('#ldialog .summary .details');
       details.slideToggle('slow', function() {
-        var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
-        $this.text(txt);
+        // var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
+        // $this.text(txt);
       });
     });
 

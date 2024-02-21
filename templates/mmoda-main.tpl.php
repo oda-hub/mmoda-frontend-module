@@ -62,42 +62,43 @@
         </div> -->
       <!-- </div> -->
       <div class="modal-body">
-        <!-- <span class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></span> -->
-        <!--i class="fa fa-spinner fa-spin" style="font-size: 24px"></i-->
         <div class="modal-controls">
           <div class="progress progress-striped active" style="margin-bottom: 0;">
             <div class="progress-bar" style="width: 100%"></div>
-            <div class="progress-bar-text"></div>
+            <div class="progress-bar-text-container"><span class="progress-bar-text"></span> <span class="more-less-details"><i class="fa fa-info-circle" aria-hidden="true"></i></span></div>
           </div>
           <div class="return-progress-link">
             <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
           </div>
         </div>
-        <div class="summary">
-          <div class="summary-legend">
-            <div class="legend">
-              <div class="legend-element preparing"></div>
-              Preparing
-              <div class="legend-element calculating"></div>
-              Calculating
-              <div class="legend-element calculated"></div>
-              Done
-              <div class="legend-element from-cache"></div>
-              Restored from cache
-              <div class="legend-element analysis-exception"></div>
-              Analysis exception
+        <div style="margin-top: 0.5em;margin-bottom: 0.5em;display: flex;">
+          <div class="summary" style="position: relative;width: 100%;">
+            <div class="summary-legend">
+              <div class="legend">
+                <div class="legend-element preparing"></div>
+                Preparing
+                <div class="legend-element calculating"></div>
+                Calculating
+                <div class="legend-element calculated"></div>
+                Done
+                <div class="legend-element from-cache"></div>
+                Restored from cache
+                <div class="legend-element analysis-exception"></div>
+                Analysis exception
+              </div>
             </div>
+            <div class="summary-message"></div>
+            <div class="summary-controls">
+              <!-- <div class="return-progress-link">View notebook progress 
+                <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+              </div> -->
+              <!-- <div class="more-less-details">More details &gt;</div> -->
+            </div>
+            <div class="details"></div>
+            <div class="summary-warnings"></div>
+            <div class="summary-results"></div>
           </div>
-          <div class="summary-message"></div>
-          <!-- <div class="summary-controls"> -->
-            <!-- <div class="return-progress-link">View notebook progress 
-              <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
-            </div> -->
-            <!-- <div class="more-less-details">More details &gt;</div> -->
-          <!-- </div> -->
-          <div class="details"></div>
-          <div class="summary-warnings"></div>
-          <div class="summary-results"></div>
+          <div style="width: 28px;"></div>
         </div>
       </div>
       <div class="modal-footer">

@@ -544,7 +544,8 @@ function get_waitingDialog($modal_dialog) {
 
           if (messages.details !== undefined && messages.details !== '') {
             // $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
-            $('#ldialog .modal-body .summary .summary-controls .more-less-details').addClass("enabled");
+            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').addClass("enabled");
+            this.enableMoreLessLink();
           }
         },
         hideSpinner: function() {
@@ -612,7 +613,6 @@ function get_waitingDialog($modal_dialog) {
           $dialog.find('.return-progress-link').addClass("enabled");
         },
         disableReturnProgressLink: function() {
-          // $dialog.find('.return-progress-button').hide();
           $dialog.find('.return-progress-link').removeClass("enabled");
         },
         enableMoreLessLink: function() {

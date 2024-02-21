@@ -70,7 +70,7 @@ label.control-label {
   width: 100%;
 }
 
-#ldialog .progress-bar-text {
+#ldialog .progress-bar-text-container {
   position: absolute;
   text-align: center;
   right: 0;
