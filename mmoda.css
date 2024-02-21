@@ -623,12 +623,15 @@ div.ctools-modal-content .modal-content {
   z-index: 1;
   border-color: #333 #333 #333 #333;
   border-width: 5px;
+  border-style: solid;
+  white-space: pre-line;
   font: inherit;
 }
 
 .return-progress-link-tooltip {
   right: 50%;
   white-space: nowrap;
+  border-style: none;
 }
 
 
