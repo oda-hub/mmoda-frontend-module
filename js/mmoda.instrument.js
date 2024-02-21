@@ -1970,7 +1970,6 @@ function panel_title(srcname, param) {
     });
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
-    // $(afterDiv).addClass('ldraggable ui-draggable');
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
     $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
   }
