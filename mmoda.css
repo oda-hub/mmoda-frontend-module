@@ -68,6 +68,7 @@ label.control-label {
 #ldialog .progress {
   position: relative;
   width: 100%;
+  height: 25px;
 }
 
 #ldialog .progress-bar-text-container {
@@ -77,6 +78,10 @@ label.control-label {
   left: 0;
   top: 0;
   font-weight: bolder;
+}
+
+#ldialog .progress-bar-text {
+  vertical-align: middle;
 }
 
 #ldialog .modal-controls {
@@ -124,11 +129,6 @@ label.control-label {
 table.message-table tr td {
   padding-right: 1em;
 }
-
-/* .mmoda-log .more-less-details {
-  color: #007d64;
-  cursor: pointer;
-} */
 
 #ldialog .legend {
   display: none;
@@ -524,10 +524,14 @@ div.ctools-modal-content .modal-content {
   cursor: default;
 }
 
+.more-less-details {
+  vertical-align: middle;
+} 
+
 .return-progress-link .prompt {
   display: inline; 
   background: url(images/jupyter_icon_text.png) no-repeat;
-  background-size: 20px 20px;
+  background-size: 23px 23px;
   background-position: 5px center;
   padding-left: 28px;
   filter: grayscale(1);
