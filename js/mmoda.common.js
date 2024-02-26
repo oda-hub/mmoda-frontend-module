@@ -488,10 +488,14 @@ function get_waitingDialog($modal_dialog) {
             this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('green');
             this.setProgressBarTextColor('white');
+            $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
           }
           else if (status == 'done') {
             this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('green');
+            this.setProgressBarTextColor('white');
+            $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
+            $dialog.find('.progress').removeClass('progress-striped');
           }
         },
         setProgressBarWidthPercentage: function(width) {

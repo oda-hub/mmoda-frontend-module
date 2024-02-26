@@ -123,10 +123,12 @@ function panel_title(srcname, param) {
     waitingDialog.hideSpinner();
 
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-    resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
-    waitingDialog.append(resul_obj, 'success');
-    waitingDialog.hideProgressBar();
-    waitingDialog.hideReturnProgressLink();
+    // resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
+    // waitingDialog.append(resul_obj, 'success');
+    // waitingDialog.hideProgressBar();
+    // waitingDialog.hideReturnProgressLink();
+    waitingDialog.setProgressBarStatus('done', false);
+    waitingDialog.setProgressBarText('done');
     if (data.exit_status.status != 0) {
       debug_message = '';
       if (data.exit_status.debug_message) {
@@ -771,6 +773,8 @@ function panel_title(srcname, param) {
       $('#ldialog .details').hide();
       $('#ldialog .summary-warnings').html('');
       $('#ldialog .summary-results').html('');
+      $('#ldialog .more-less-details .fa-info-circle').css('color', '');
+      $('#ldialog .progress').addClass('progress-striped');
       waitingDialog.setProgressBarText('');
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
