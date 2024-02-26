@@ -65,7 +65,14 @@
         <div class="modal-controls">
           <div class="progress progress-striped active" style="margin-bottom: 0;">
             <div class="progress-bar" style="width: 100%"></div>
-            <div class="progress-bar-text-container"><span class="progress-bar-text"></span> <span class="more-less-details"><i class="fa fa-info-circle" aria-hidden="true"></i></span></div>
+            <div class="progress-bar-text-container">
+              <span class="progress-bar-text"></span> 
+              <span class="more-less-details">
+                <i class="fa fa-info-circle" aria-hidden="true">
+                  <span class="more-less-details-tooltip">View messages</span>
+                </i>
+              </span>
+            </div>
           </div>
           <div class="return-progress-link">
             <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
