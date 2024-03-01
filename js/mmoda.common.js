@@ -649,11 +649,17 @@ function get_waitingDialog($modal_dialog) {
     $(this).draggable({
       handle: '.panel-heading, .panel-footer',
       stack: '.ldraggable',
-      containment: "parent"
+      containment: "parent",
+      // drag: function(event, ui) {
+      //   $(this).css('z-index', '1050 !important'); // Reset z-index during drag
+      // },
+      // stop: function(event, ui) {
+      //     $(this).css('z-index', '1050 !important'); // Reset z-index after drag ends
+      // }
     });
   }
 
-  $.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
+  $.fn.insert_new_panel = function(i, product_type, datetime, left, top, draggable) {
     var panel_id = product_type + '-wrapper-' + i;
     var panel_body_id = product_type + '-' + i;
 
@@ -670,8 +676,10 @@ function get_waitingDialog($modal_dialog) {
     if (top) {
       $result_panel.css('top', top + 'px');
     }
-
-    $('#' + panel_id).set_panel_draggable();
+    if (typeof draggable === 'undefined')
+      draggable = true;
+    if(draggable)
+      $('#' + panel_id).set_panel_draggable();
     return ({ 'panel_id': panel_id, 'panel_body_id': panel_body_id });
   }
 
@@ -709,7 +717,8 @@ function get_waitingDialog($modal_dialog) {
 
   $.fn.highlight_progress_panel = function(offset) {
     max_zindexes = $('#ldialog-modal-dialog').zIndex();
-    $(this).css('z-index', max_zindexes + 1);
+    // $(this).css('z-index', max_zindexes + 1);
+    $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
     var thisObject = $(this);
     thisObject.offset(offset);
     thisObject.show('highlight', { color: '#adebad' }, 1000);

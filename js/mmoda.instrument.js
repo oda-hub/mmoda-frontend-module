@@ -1962,7 +1962,7 @@ function panel_title(srcname, param) {
   }
 
   function display_progress_html_output(html_content, afterDiv, offset) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress');
+    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, false);
     $('#' + panel_ids.panel_body_id).append(html_content);
     $(afterDiv).data({
       progress_html_output_panel_id: '#' + panel_ids.panel_id
