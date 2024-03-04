@@ -49,7 +49,7 @@ function validate_timebin(value, validator, $thefield) {
 
 function panel_title(srcname, param) {
   var title_items = [];
-  if (srcname !== '') title_items.push('Source: ' + srcname);
+  if (srcname !== undefined && srcname !== '') title_items.push('Source: ' + srcname);
   if (param.hasOwnProperty('E1_keV')) title_items.push(param.E1_keV + ' - ' + param.E2_keV + ' keV');
   var time_bin_format = 'sec';
   if (param.hasOwnProperty('time_bin_format')) time_bin_format = param.time_bin_format;
@@ -121,15 +121,19 @@ function panel_title(srcname, param) {
       data.products['session_id'] = data.session_id;
     }
     waitingDialog.hideSpinner();
+
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
-    waitingDialog.append(get_current_date_time() + ' ' + data.query_status, 'success');
-    $('#ldialog').find('.progress').hide();
+    // resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
+    // waitingDialog.append(resul_obj, 'success');
+    // waitingDialog.hideProgressBar();
+    // waitingDialog.hideReturnProgressLink();
+    waitingDialog.setProgressBarStatus('done', false);
+    waitingDialog.setProgressBarText('done');
     if (data.exit_status.status != 0) {
       debug_message = '';
       if (data.exit_status.debug_message) {
         debug_message = '<hr>' + debug_message;
       }
-      $('#ldialog').find('.progress').hide();
     }
 
     if (data.hasOwnProperty('htmlResponse')) {
@@ -159,19 +163,56 @@ function panel_title(srcname, param) {
     if ($('.notice-progress-container').is(":hidden")) {
       $('.notice-progress-container').show();
     }
-    waitingDialog.showLegend();
+    let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
+    let integral_instrument = false;
+    if (current_instrument_query !== undefined) {
+      if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+        waitingDialog.showLegend();
+        integral_instrument = true;
+      }
+    }
     previous_summary = '';
 
-    if (data.products.hasOwnProperty('input_prod_list')) {
-      data_units = data.products.input_prod_list;
-    }
+    // if (data.products.hasOwnProperty('input_prod_list')) {
+    //   data_units = data.products.input_prod_list;
+    // }
     if (typeof messages !== 'undefined') {
       previous_summary = messages.summary;
+      previous_details = messages.details;
     }
-    messages = get_server_message(data, data_units);
+
+    response_status = data['job_monitor']['status'];
+    let progress, progress_max;
+    if (data['job_monitor'].hasOwnProperty('full_report_dict')) {
+      if (data['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+        progress = data['job_monitor']['full_report_dict']['progress'];
+      if (data['job_monitor'].full_report_dict.hasOwnProperty('progress_max'))
+        progress_max = data['job_monitor']['full_report_dict']['progress_max'];
+    }
+    waitingDialog.setProgressBarText(response_status);
+
+    messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
-    messages.summary = get_current_date_time() + messages.summary;
-    if (current_summary != previous_summary) {
+    current_details = messages.details;
+    // messages.summary = get_current_date_time() + messages.summary;
+    if (current_instrument_query !== undefined) {
+      if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+        if (response_status == 'progress' || response_status == 'ready')
+          waitingDialog.enableReturnProgressLink();
+        waitingDialog.setProgressBarStatus(response_status, true, progress, progress_max);
+      }
+      else
+        waitingDialog.setProgressBarStatus(response_status, false);
+    }
+    // if (current_summary != previous_summary) {
+    //   waitingDialog.replace(messages);
+    //   $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
+    //     trigger: 'hover'
+    //   });
+    // }
+    if (current_details != previous_details) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
         trigger: 'hover'
@@ -194,12 +235,16 @@ function panel_title(srcname, param) {
 
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
-    $('#ldialog').find('.progress').hide();
+    waitingDialog.hideProgressBar();
+    waitingDialog.hideReturnProgressLink();
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    waitingDialog.append('<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>' + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-      + reformatted_error_message + '</td></tr></table>', 'danger');
+    warning_obj = {'warnings' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+     + reformatted_error_message + '</td></tr></table>'
+    };
+    waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
     add_dispatcher_response_to_feedback_form(data);
   }
@@ -210,7 +255,8 @@ function panel_title(srcname, param) {
     //    console.log('jqXHR');
     //    console.log(jqXHR);
     waitingDialog.hideSpinner();
-    $('#ldialog').find('.progress').hide();
+    waitingDialog.hideProgressBar();
+    waitingDialog.hideReturnProgressLink();
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
@@ -251,7 +297,8 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    waitingDialog.append('<table class="error-table">' + reformatted_message + '</table>', 'danger');
+    warning_obj = {'warnings' : '<table class="error-table">' + reformatted_message + '</table>'};
+    waitingDialog.append(warning_obj, 'danger');
   }
 
   function AJAX_call() {
@@ -290,9 +337,9 @@ function panel_title(srcname, param) {
           session_id = data['session_id'];
         }
         if (session_id && job_id) {
-          waitingDialog.setHeaderMessagesSessionId(session_id);
-          waitingDialog.setHeaderMessageJobId(job_id);
-          waitingDialog.showHeaderMessage();
+          waitingDialog.setJobInfoSessionId(session_id);
+          waitingDialog.setJobInfoJobId(job_id);
+          waitingDialog.showJobInfo();
         }
         var query_failed = false;
         if (data.query_status == 'failed' || (data.hasOwnProperty('products') && data.products.hasOwnProperty('image') && data.products.image == null)) {
@@ -310,7 +357,8 @@ function panel_title(srcname, param) {
         }
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
-          waitingDialog.append('<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>');
+          warning_obj = {'warnings' : '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>'};
+          waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
 
@@ -337,86 +385,190 @@ function panel_title(srcname, param) {
     $('[name="dispatcher_response"]', '#mmoda-bug-report-form').val(JSON.stringify(data));
   }
 
-  function get_server_message(response, data_units) {
+  function get_server_message(response, integral_instrument) {
     var messages = {
-      summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
+      // summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
+      summary: '',
       details: ''
     };
 
-    if ((!response['job_monitor'].hasOwnProperty('full_report_dict_list') || response['job_monitor'].full_report_dict_list.length == 0) && (data_units.length == 0)) {
+    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) && 
+      (!response.products.hasOwnProperty('input_prod_list') || response.products.input_prod_list.length == 0) &&
+      (!response.job_monitor.hasOwnProperty('full_report_dict') || response.job_monitor.full_report_dict == {})) {
       return (messages);
     }
 
-    var current_status_table = new Array();
-    if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
-      for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-        data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
-        node = response['job_monitor'].full_report_dict_list[j].node;
+    messages.summary += get_server_summary_message(response, integral_instrument);
+    messages.details += get_server_detailed_message(response, integral_instrument);
 
-        if (data_units.indexOf(data_unit) == -1) {
-          data_units.push(data_unit);
-        }
-        if (typeof current_status_table[data_unit] === 'undefined') {
-          current_status_table[data_unit] = new Array();
-        }
-        if (distinct_nodes.indexOf(node) == -1) {
-          distinct_nodes.push(node);
-        }
-        if (typeof current_status_table[data_unit][node] === 'undefined') {
-          current_status_table[data_unit][node] = new Array();
-        }
-        current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
-      }
-    }
-    // Get all nodes, columns
-    messages.summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
-    first_unit_data = Object.keys(current_status_table)[0];
-    for (j in distinct_nodes) {
-      node = distinct_nodes[j];
-      messages.summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
-    }
+    // var current_status_table = new Array();
+    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
+    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+    //     data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
+    //     node = response['job_monitor'].full_report_dict_list[j].node;
 
-    // Get all data units, rows
-    messages.summary += '</tr></thead><tbody>';
-    var counter = 1;
-    for (i in data_units) {
-      data_unit = data_units[i];
-      data_unit_label = data_unit;
-      var current_counter = pad(counter++, 3);
-      if (data_unit == 'inapplicable') {
-        data_unit_label = '&nbsp;';
-        current_counter = '';
-      }
-      if (typeof job_status_table[data_unit] === 'undefined') {
-        job_status_table[data_unit] = new Array();
-      }
-      messages.summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
-      for (j in distinct_nodes) {
-        started_or_not = '';
-        node = distinct_nodes[j];
-        value = '';
-        var cssClass = '';
-        if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
-          && Object.keys(current_status_table[data_unit][node]).length) {
-          cssClass = get_node_status_class(current_status_table[data_unit][node]);
-        }
-        messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
-      }
+    //     if (data_units.indexOf(data_unit) == -1) {
+    //       data_units.push(data_unit);
+    //     }
+    //     if (typeof current_status_table[data_unit] === 'undefined') {
+    //       current_status_table[data_unit] = new Array();
+    //     }
+    //     if (distinct_nodes.indexOf(node) == -1) {
+    //       distinct_nodes.push(node);
+    //     }
+    //     if (typeof current_status_table[data_unit][node] === 'undefined') {
+    //       current_status_table[data_unit][node] = new Array();
+    //     }
+    //     current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
+    //   }
+    // }
+    // // Get all nodes, columns
+    // messages.summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
+    // first_unit_data = Object.keys(current_status_table)[0];
+    // for (j in distinct_nodes) {
+    //   node = distinct_nodes[j];
+    //   messages.summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
+    // }
 
-      messages.summary += '</tr>';
-    }
+    // // Get all data units, rows
+    // messages.summary += '</tr></thead><tbody>';
+    // var counter = 1;
+    // for (i in data_units) {
+    //   data_unit = data_units[i];
+    //   data_unit_label = data_unit;
+    //   var current_counter = pad(counter++, 3);
+    //   if (data_unit == 'inapplicable') {
+    //     data_unit_label = '&nbsp;';
+    //     current_counter = '';
+    //   }
+    //   if (typeof job_status_table[data_unit] === 'undefined') {
+    //     job_status_table[data_unit] = new Array();
+    //   }
+    //   messages.summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+    //   for (j in distinct_nodes) {
+    //     started_or_not = '';
+    //     node = distinct_nodes[j];
+    //     value = '';
+    //     var cssClass = '';
+    //     if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
+    //       && Object.keys(current_status_table[data_unit][node]).length) {
+    //       cssClass = get_node_status_class(current_status_table[data_unit][node]);
+    //     }
+    //     messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+    //   }
 
-    messages.summary += '</tbody></table>';
-    if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
-      messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
-      for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-        messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
-          + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
-      }
-      messages.details += '</tbody></table>';
-    }
+    //   messages.summary += '</tr>';
+    // }
+
+    // messages.summary += '</tbody></table>';
+    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
+    //   messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
+    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+    //     messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
+    //       + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+    //   }
+    //   messages.details += '</tbody></table>';
+    // }
 
     return (messages);
+  }
+
+  function get_server_summary_message(response, integral_instrument) {
+    summary = '';
+    if (integral_instrument) {
+      data_units = [];
+      if(response.products.hasOwnProperty('input_prod_list')) {
+        data_units = data.products.input_prod_list;
+      }
+  
+      var current_status_table = new Array();
+      if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
+        for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+          data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
+          node = response['job_monitor'].full_report_dict_list[j].node;
+  
+          if (data_units.indexOf(data_unit) == -1) {
+            data_units.push(data_unit);
+          }
+          if (typeof current_status_table[data_unit] === 'undefined') {
+            current_status_table[data_unit] = new Array();
+          }
+          if (distinct_nodes.indexOf(node) == -1) {
+            distinct_nodes.push(node);
+          }
+          if (typeof current_status_table[data_unit][node] === 'undefined') {
+            current_status_table[data_unit][node] = new Array();
+          }
+          current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
+        }
+      }
+      // Get all nodes, columns
+      summary = '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
+      first_unit_data = Object.keys(current_status_table)[0];
+      for (j in distinct_nodes) {
+        node = distinct_nodes[j];
+        summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
+      }
+  
+      // Get all data units, rows
+      summary += '</tr></thead><tbody>';
+      var counter = 1;
+      for (i in data_units) {
+        data_unit = data_units[i];
+        data_unit_label = data_unit;
+        var current_counter = pad(counter++, 3);
+        if (data_unit == 'inapplicable') {
+          data_unit_label = '&nbsp;';
+          current_counter = '';
+        }
+        if (typeof job_status_table[data_unit] === 'undefined') {
+          job_status_table[data_unit] = new Array();
+        }
+        summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
+        for (j in distinct_nodes) {
+          started_or_not = '';
+          node = distinct_nodes[j];
+          value = '';
+          var cssClass = '';
+          if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
+            && Object.keys(current_status_table[data_unit][node]).length) {
+            cssClass = get_node_status_class(current_status_table[data_unit][node]);
+          }
+          summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
+        }
+  
+        summary += '</tr>';
+      }
+  
+      summary += '</tbody></table>';
+    }
+
+    return summary;
+  }
+
+  function get_server_detailed_message(response, integral_instrument) {
+    // if integral
+    if(integral_instrument) {
+      if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
+        details = '<table class="message-table"><thead><tr><th>Data unit</th><th>node</th><th>message</th></tr></thead><tbody>';
+        for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
+          details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
+            + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
+        }
+        details += '</tbody></table>';
+      }
+    } else {
+      if (response['job_monitor'].hasOwnProperty('full_report_dict')) {
+        details = '';
+        if(response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
+          details += `stage: ${response['job_monitor'].full_report_dict.stage}`;
+        if(response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+          details += ` - progress: ${response['job_monitor'].full_report_dict.progress}`;
+        if(details)
+          details += '<br>';
+      }
+    }
+    return details;
   }
 
   function get_node_status_class(node_messages) {
@@ -611,11 +763,22 @@ function panel_title(srcname, param) {
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
       }
+      // clean-up modal window
       $('#ldialog .header-message .job-id').html('');
       $('#ldialog .header-message .session-id').html('');
-      $('#ldialog .summary').html('');
+      $('#ldialog .job-info .job-id').html('');
+      $('#ldialog .job-info .session-id').html('');
+      $('#ldialog .summary-content').html('');
       $('#ldialog .details').html('');
-      $('#ldialog .modal-body .more-less-details').hide();
+      $('#ldialog .details').hide();
+      $('#ldialog .summary-warnings').html('');
+      $('#ldialog .summary-results').html('');
+      $('#ldialog .more-less-details .fa-info-circle').css('color', '');
+      $('#ldialog .progress').addClass('progress-striped');
+      waitingDialog.setProgressBarText('');
+      waitingDialog.setProgressBarTextColor('black');
+      waitingDialog.disableReturnProgressLink();
+      waitingDialog.disableMoreLessLink();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
@@ -839,6 +1002,66 @@ function panel_title(srcname, param) {
       }
     });
 
+    $("body").on('click', '.return-progress-link.enabled', function(e) {
+      // e.stopPropagation();
+      waitingDialog.showSpinner();
+      waitingDialog.hidePrompt();
+      AJAX_call_get_token().done(
+        function(data, textStatus, jqXHR) {
+          current_ajax_call_params.currentFormData.append('return_progress', 'True');
+          current_ajax_call_params.currentFormData.set('query_status', 'new');
+          // current_ajax_call_params.currentFormData.set('session_id', 'new');
+          // current_ajax_call_params.currentFormData.set('job_id', '');
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
+            current_ajax_call_params.currentFormData.append('token', data.token);
+
+          // test
+
+          // test_ajax_call_params = {};
+          // test_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.currentFormData);
+          // test_ajax_call_params.currentFormData.set('instrument', 'empty-async-return-progress');
+          // test_ajax_call_params.currentFormData.set('query_type', 'Real');
+          // test_ajax_call_params.currentFormData.set('product_type', 'dummy_html');
+          // test_ajax_call_params.action = "dispatch-data/run_analysis"
+          // test_ajax_call_params.form = this;
+
+          var return_progress_jqXHR = $.ajax({
+            url: current_ajax_call_params.action,
+            // url: test_ajax_call_params.action,
+            data: current_ajax_call_params.currentFormData,
+            // data: test_ajax_call_params.currentFormData,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            timeout: ajax_request_timeout,
+            type: 'POST'
+          }).done(function(data, textStatus, jqXHR) {
+            console.log(data);
+            if (data.products.hasOwnProperty('progress_product_html_output')) {
+              // // new tab opening
+              // let tab_progress_product_html = window.open('about:blank', '_blank');
+              // tab_progress_product_html.document.write(data.products.progress_product_html_output);
+              // tab_progress_product_html.document.close();
+              // display in a dedicated panel
+              var parent_panel = $('#ldialog-modal-dialog');
+              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+            }
+
+          }).complete(function(jqXHR, textStatus) {
+            console.log(jqXHR.responseText);
+            waitingDialog.hideSpinner();
+            waitingDialog.showPrompt();
+          }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText);
+            waitingDialog.hideSpinner();
+            waitingDialog.showPrompt();
+          });
+
+        });
+
+    });
+
     $("body").on('click', '.result-panel .renku-publish', function(e) {
       e.preventDefault();
       renku_publish_formData = new FormData();
@@ -1053,13 +1276,14 @@ function panel_title(srcname, param) {
     // The main block is hidden at startup (in mmoda.css) and
     // shown here after the setup of DOM and the field controls
     $('.block-mmoda').show();
-    $('body').on('click', '.mmoda-log .more-less-details', function(e) {
+    $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
       e.preventDefault();
       var $this = $(this);
-      var details = $(this).parent().find('.details');
+      // var details = $(this).parent().find('.details');
+      var details = $('#ldialog .summary .details');
       details.slideToggle('slow', function() {
-        var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
-        $this.text(txt);
+        // var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
+        // $this.text(txt);
       });
     });
 
@@ -1096,6 +1320,7 @@ function panel_title(srcname, param) {
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
       var formData;
+      let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
@@ -1186,10 +1411,15 @@ function panel_title(srcname, param) {
       waitingDialog.show('Processing ...', '', {
         progressType: 'success',
         showProgressBar: true,
-        showSpinner: false
+        showSpinner: false,
+        showReturnProgressLink: true
       });
+      waitingDialog.setProgressBarText('processing request');
+      waitingDialog.setProgressBarBackgroundcolor('#8da38f');
+      waitingDialog.setProgressBarWidthPercentage(100);
       waitingDialog.hideHeaderMessage();
       $('.write-feedback-button').show();
+      $(".notice-progress-container").hide();
 
       current_ajax_call_params = {};
       current_ajax_call_params.initialFormData = formData;
@@ -1281,7 +1511,8 @@ function panel_title(srcname, param) {
         'showProgress': true,
         'showButton': true
       });
-      waitingDialog.showHeaderMessage();
+      // waitingDialog.showHeaderMessage();
+      waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
       waitingDialog.append('<table class="error-table"><tr>' +
@@ -1728,7 +1959,21 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Log');
     $('#' + panel_ids.panel_id).addClass('mmoda-log');
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+  }
 
+  function display_progress_html_output(html_content, afterDiv, offset) {
+    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, false);
+    $('#' + panel_ids.panel_body_id).append(html_content);
+    $(afterDiv).data({
+      progress_html_output_panel_id: '#' + panel_ids.panel_id
+    });
+    $('#' + panel_ids.panel_id).data({
+      progress_html_output_panel_id: afterDiv
+    });
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
+    $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
+    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
+    $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
   }
 
   function display_query_parameters(query_parameters, afterDiv, datetime, offset) {

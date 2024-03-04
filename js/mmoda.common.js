@@ -1,4 +1,5 @@
 var instrument_panel_margin = 150;
+var progress_panel_margin = 150;
 var common_form_validator;
 var mmoda_ajax_jqxhr = [];
 
@@ -365,9 +366,9 @@ function get_waitingDialog($modal_dialog) {
           if (typeof options === 'undefined') {
             options = {};
           }
-          if (typeof title === 'undefined') {
-            title = 'Loading ...';
-          }
+          // if (typeof title === 'undefined') {
+          //   title = 'Loading ...';
+          // }
           if (typeof message === 'undefined') {
             message = '';
           }
@@ -380,7 +381,8 @@ function get_waitingDialog($modal_dialog) {
             showLegend: false,
             showCloseInHeader: false,
             showButton: true,
-            buttonText: 'Close'
+            buttonText: 'Close',
+            showReturnProgressLink: false,
             // This callback runs after the dialog was hidden
           }, options);
           // Configuring dialog
@@ -392,6 +394,10 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.modal-header .close').hide();
           else $dialog.find('.modal-header .close').show();
 
+          if (!settings.showReturnProgressLink)
+            $dialog.find('.return-progress-link').hide();
+          else
+            $dialog.find('.return-progress-link').show();
 
           if (!settings.showProgressBar) {
             //            $dialog.find('.progress').addClass('hidden');
@@ -412,8 +418,10 @@ function get_waitingDialog($modal_dialog) {
           else {
             $dialog.find('button').hide();
           }
-          $dialog.find('h4').html(title);
-          $dialog.find('.summary').html(message);
+          // $dialog.find('h4').html(title);
+          // $dialog.find('.summary').html(message);
+          $('#ldialog .summary-message').html('');
+          $('#ldialog .details').html('');
           $dialog.find('.modal-footer button.submit-button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
 
           // Adding callbacks
@@ -444,6 +452,62 @@ function get_waitingDialog($modal_dialog) {
           // sleep(5);
 
         },
+        resetSummaryControlsMoreLessDetails: function() {
+          $('.summary .summary-controls .more-less-details', $dialog).text('More details >');
+        },
+        hideProgressBar: function() {
+          $dialog.find('.progress').hide();
+        },
+        setProgressBarBackgroundcolor: function(color) {
+          $dialog.find('.progress-bar').css('background-color', color);
+        },
+        setProgressBarStatus: function(status, enable_progress, progress, progress_max) {
+          if (status == 'submitted') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('#d0d69e');
+          }
+          else if (status == 'progress') {
+            if(enable_progress) {
+              if(progress !== undefined && progress_max !== undefined)
+                this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
+              else {
+                // let progressBarWidthPercentage = ($dialog.find('.progress-bar').width()/$dialog.find('.progress-bar').parent().width() ) * 100;
+                // if (!(progressBarWidthPercentage !== undefined && progressBarWidthPercentage > 0 && progressBarWidthPercentage < 100))
+                this.setProgressBarWidthPercentage(0);
+              }
+            }
+            else 
+              this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('lightgreen');
+          }
+          else if (status == 'failed') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('red');
+          }
+          else if (status == 'ready') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('green');
+            this.setProgressBarTextColor('white');
+            $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
+          }
+          else if (status == 'done') {
+            this.setProgressBarWidthPercentage(100);
+            this.setProgressBarBackgroundcolor('green');
+            this.setProgressBarTextColor('white');
+            $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
+            $dialog.find('.progress').removeClass('progress-striped');
+          }
+        },
+        setProgressBarWidthPercentage: function(width) {
+          $dialog.find('.progress-bar').css('width', `${width}%`);
+          $dialog.find('.progress-bar').css('transition', 'none');
+        },
+        setProgressBarText: function(text) {
+          $dialog.find('.progress-bar-text').text(text);
+        },
+        setProgressBarTextColor: function(color) {
+          $dialog.find('.progress-bar-text').css('color', color);
+        },
         /**
          * Closes dialog
          */
@@ -458,7 +522,15 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
+          // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
+          if(message.hasOwnProperty('summary'))
+            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+          if(message.hasOwnProperty('details'))
+            $('.summary .details', $dialog).html(message.details);
+          if(message.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html($('<div>' + message.warnings + '</div>').addClass(message_class));
+          if(message.hasOwnProperty('results'))
+            $('.summary .summary-results', $dialog).html($('<div>' + message.results + '</div>').addClass(message_class));
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
@@ -467,10 +539,17 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          $('.summary', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
-          $('.details', $dialog).html(messages.details);
-          if (messages.details !== '') {
-            $('#ldialog .modal-body .more-less-details').show();
+          if(messages.hasOwnProperty('summary'))
+            $('.summary .summary-message', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
+          if(messages.hasOwnProperty('details'))
+            $('.summary .details', $dialog).html(messages.details);
+          if(messages.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html(messages.warnings);
+
+          if (messages.details !== undefined && messages.details !== '') {
+            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
+            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').addClass("enabled");
+            this.enableMoreLessLink();
           }
         },
         hideSpinner: function() {
@@ -504,11 +583,47 @@ function get_waitingDialog($modal_dialog) {
         hideHeaderMessage: function() {
           $dialog.find('.header-message').hide();
         },
+        setJobInfoSessionId: function(session_id) {
+          $dialog.find('.job-info .session-id').html('Session Id:' + session_id);
+        },
+        setJobInfoJobId: function(job_id) {
+          $dialog.find('.job-info .job-id').html('| Job Id:' + job_id);
+        },
+        showJobInfo: function() {
+          $dialog.find('.job-info').show();
+        },
+        hideJobInfo: function() {
+          $dialog.find('.job-info').hide();
+        },
         showLegend: function() {
           $dialog.find('.legend').show();
         },
         hideLegend: function() {
           $dialog.find('.legend').hide();
+        },
+        showPrompt: function() {
+          $dialog.find('.prompt').show();
+        },
+        hidePrompt: function() {
+          $dialog.find('.prompt').hide();
+        },
+        hideReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').hide();
+        },
+        showReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').show();
+        },
+        enableReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').addClass("enabled");
+        },
+        disableReturnProgressLink: function() {
+          $dialog.find('.return-progress-link').removeClass("enabled");
+        },
+        enableMoreLessLink: function() {
+          $dialog.find('.more-less-details').addClass("enabled");
+        },
+        disableMoreLessLink: function() {
+          $dialog.find('.more-less-details').removeClass("enabled");
         }
       };
 
@@ -534,11 +649,17 @@ function get_waitingDialog($modal_dialog) {
     $(this).draggable({
       handle: '.panel-heading, .panel-footer',
       stack: '.ldraggable',
-      containment: "parent"
+      containment: "parent",
+      // drag: function(event, ui) {
+      //   $(this).css('z-index', '1050 !important'); // Reset z-index during drag
+      // },
+      // stop: function(event, ui) {
+      //     $(this).css('z-index', '1050 !important'); // Reset z-index after drag ends
+      // }
     });
   }
 
-  $.fn.insert_new_panel = function(i, product_type, datetime, left, top) {
+  $.fn.insert_new_panel = function(i, product_type, datetime, left, top, draggable) {
     var panel_id = product_type + '-wrapper-' + i;
     var panel_body_id = product_type + '-' + i;
 
@@ -555,8 +676,10 @@ function get_waitingDialog($modal_dialog) {
     if (top) {
       $result_panel.css('top', top + 'px');
     }
-
-    $('#' + panel_id).set_panel_draggable();
+    if (typeof draggable === 'undefined')
+      draggable = true;
+    if(draggable)
+      $('#' + panel_id).set_panel_draggable();
     return ({ 'panel_id': panel_id, 'panel_body_id': panel_body_id });
   }
 
@@ -590,6 +713,15 @@ function get_waitingDialog($modal_dialog) {
         }
       });
     }
+  }
+
+  $.fn.highlight_progress_panel = function(offset) {
+    max_zindexes = $('#ldialog-modal-dialog').zIndex();
+    // $(this).css('z-index', max_zindexes + 1);
+    $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
+    var thisObject = $(this);
+    thisObject.offset(offset);
+    thisObject.show('highlight', { color: '#adebad' }, 1000);
   }
 
   $(document).ready(commonReady);
