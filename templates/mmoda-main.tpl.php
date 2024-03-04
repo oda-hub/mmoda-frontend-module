@@ -75,7 +75,8 @@
             </div>
           </div>
           <div class="return-progress-link">
-            <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+            <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+            <i class="fa fa-spinner hidden fa-spin"></i>
           </div>
         </div>
         <div style="margin-top: 0.5em;margin-bottom: 0.5em;display: flex;">

@@ -545,6 +545,9 @@ div.ctools-modal-content .modal-content {
 
 .return-progress-link .fa-spinner {
   margin-left: 5px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 21px;
 }
 
 .return-progress-link.enabled .prompt {
