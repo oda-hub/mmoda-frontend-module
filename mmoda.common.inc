@@ -264,7 +264,7 @@ function mmoda_common($form, &$form_state)
     '#title' => t("RA"),
     '#description' => t("The right ascension."),
     '#default_value' => $instrument_defaults['RA'],
-    '#required' => TRUE,
+    // '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
       'form-group',
@@ -285,7 +285,7 @@ function mmoda_common($form, &$form_state)
     '#title' => t("Dec"),
     '#description' => t("The declination."),
     '#default_value' => $instrument_defaults['DEC'],
-    '#required' => TRUE,
+    // '#required' => TRUE,
     '#size' => 10,
     '#parent_classes' => array(
       'form-group',
