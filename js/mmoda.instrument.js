@@ -2,6 +2,19 @@ var current_instrument_form_validator;
 var requestTimer;
 var messages = {};
 
+function validate_paste($thefield) {
+  var maxlength = parseInt($thefield.attr('maxlength'));
+  var pastedValueLength = $thefield.data('pastedValueLength');
+  if ($thefield.data('truncatedPaste')) {
+    $thefield.removeData('truncatedPaste pastedValueLength');
+    return {
+      valid: false,
+      message: 'Pasted value too large (' + pastedValueLength + '), maximum allowed length is ' + maxlength
+    }
+  };
+  return true;
+}
+
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
   if ($thefield.data('mmodaTimeBinMin')) {
@@ -166,7 +179,7 @@ function panel_title(srcname, param) {
     let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     let integral_instrument = false;
     if (current_instrument_query !== undefined) {
-      if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
         waitingDialog.showLegend();
         integral_instrument = true;
@@ -197,7 +210,7 @@ function panel_title(srcname, param) {
     current_details = messages.details;
     // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
-      if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
         if (response_status == 'progress' || response_status == 'ready')
           waitingDialog.enableReturnProgressLink();
@@ -297,7 +310,7 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    warning_obj = {'warnings' : '<table class="error-table">' + reformatted_message + '</table>'};
+    warning_obj = { 'warnings': '<table class="error-table">' + reformatted_message + '</table>' };
     waitingDialog.append(warning_obj, 'danger');
   }
 
@@ -357,7 +370,7 @@ function panel_title(srcname, param) {
         }
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
-          warning_obj = {'warnings' : '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>'};
+          warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
           waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
@@ -392,7 +405,7 @@ function panel_title(srcname, param) {
       details: ''
     };
 
-    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) && 
+    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) &&
       (!response.products.hasOwnProperty('input_prod_list') || response.products.input_prod_list.length == 0) &&
       (!response.job_monitor.hasOwnProperty('full_report_dict') || response.job_monitor.full_report_dict == {})) {
       return (messages);
@@ -477,16 +490,16 @@ function panel_title(srcname, param) {
     summary = '';
     if (integral_instrument) {
       data_units = [];
-      if(response.products.hasOwnProperty('input_prod_list')) {
+      if (response.products.hasOwnProperty('input_prod_list')) {
         data_units = data.products.input_prod_list;
       }
-  
+
       var current_status_table = new Array();
       if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
         for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
           data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
           node = response['job_monitor'].full_report_dict_list[j].node;
-  
+
           if (data_units.indexOf(data_unit) == -1) {
             data_units.push(data_unit);
           }
@@ -509,7 +522,7 @@ function panel_title(srcname, param) {
         node = distinct_nodes[j];
         summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
       }
-  
+
       // Get all data units, rows
       summary += '</tr></thead><tbody>';
       var counter = 1;
@@ -536,10 +549,10 @@ function panel_title(srcname, param) {
           }
           summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
         }
-  
+
         summary += '</tr>';
       }
-  
+
       summary += '</tbody></table>';
     }
 
@@ -548,7 +561,7 @@ function panel_title(srcname, param) {
 
   function get_server_detailed_message(response, integral_instrument) {
     // if integral
-    if(integral_instrument) {
+    if (integral_instrument) {
       if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
         details = '<table class="message-table"><thead><tr><th>Data unit</th><th>node</th><th>message</th></tr></thead><tbody>';
         for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
@@ -560,11 +573,11 @@ function panel_title(srcname, param) {
     } else {
       if (response['job_monitor'].hasOwnProperty('full_report_dict')) {
         details = '';
-        if(response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
+        if (response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
           details += `stage: ${response['job_monitor'].full_report_dict.stage}`;
-        if(response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+        if (response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
           details += ` - progress: ${response['job_monitor'].full_report_dict.progress}`;
-        if(details)
+        if (details)
           details += '<br>';
       }
     }
@@ -614,6 +627,31 @@ function panel_title(srcname, param) {
       default:
     }
     return (cssClass);
+  }
+
+  function showErrorWhenTruncatedPaste() {
+    $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function(e) {
+      var pastedDataLength = e.originalEvent.clipboardData.getData('text').length;
+      if ($(this)[0].hasAttribute('maxlength') && !isNaN(parseInt($(this).attr('maxlength')))) {
+        var maxlength = parseInt($(this).attr('maxlength'));
+        if (pastedDataLength > maxlength) {
+          $(this).data('truncatedPaste', true);
+          $(this).data('pastedValueLength', pastedDataLength);
+          var gparent_elt = $(this).parent().parent();
+          $('label', gparent_elt).addClass('control-label');
+          gparent_elt.addClass('has-feedback has-error');
+          e.preventDefault();
+          var current_form = $(this).closest('form');
+          var elt_name = $(this).attr('name');
+          current_form.data('bootstrapValidator').updateStatus(elt_name, 'NOT_VALIDATED').validateField(elt_name);
+        }
+      }
+    });
+
+    $("input[type=text], textarea").bind("input", function(e) {
+      var parent_elt = $(this).parent().parent();
+      parent_elt.removeClass('has-feedback has-error');
+    });
   }
 
   function all_instruments_forms_set_bootstrapValidator() {
@@ -692,8 +730,23 @@ function panel_title(srcname, param) {
         }
       }
     };
-    //$('.instrument-panel form').bootstrapValidator('destroy');
 
+    $("input[type=text][maxlength], textarea[maxlength]").each(function(index) {
+      var name = $(this).attr('name');
+      //      var maxlength = parseInt($(this).attr('maxlength'));
+      validator_fields[name] = {
+        // enabled: false,
+        validators: {
+          callback: {
+            callback: function(value, validator, $field) {
+              return (validate_paste($field));
+            }
+          }
+        }
+      }
+    });
+
+    //$('.instrument-panel form').bootstrapValidator('destroy');
     $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
       fields: validator_fields,
@@ -1498,7 +1551,7 @@ function panel_title(srcname, param) {
     if (Drupal.settings.hasOwnProperty('url_parameters')) {
       make_request(Drupal.settings.url_parameters);
     }
-
+    showErrorWhenTruncatedPaste();
   }
 
   function make_request(request_parameters) {
