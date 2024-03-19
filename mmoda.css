@@ -19,6 +19,10 @@ label.control-label {
   width: 90% !important;
 }
 
+.instrument-params-panel textarea.form-control {
+  width: 100% !important;
+}
+
 #formwrapper {
   display: inline-block;
 }
