@@ -371,7 +371,8 @@ function panel_title(srcname, param) {
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
           warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
-          waitingDialog.replace(warning_obj);
+          // waitingDialog.replace(warning_obj);
+          waitingDialog.append(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
 

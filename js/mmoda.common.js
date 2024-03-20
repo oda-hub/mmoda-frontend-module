@@ -524,13 +524,13 @@ function get_waitingDialog($modal_dialog) {
           }
           // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
           if(message.hasOwnProperty('summary'))
-            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+            $('.summary .summary-message', $dialog).append($('<span>' + message.summary + '</span>').addClass(message_class));
           if(message.hasOwnProperty('details'))
             $('.summary .details', $dialog).html(message.details);
           if(message.hasOwnProperty('warnings'))
-            $('.summary .summary-warnings', $dialog).html($('<div>' + message.warnings + '</div>').addClass(message_class));
+            $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
           if(message.hasOwnProperty('results'))
-            $('.summary .summary-results', $dialog).html($('<div>' + message.results + '</div>').addClass(message_class));
+            $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
@@ -547,8 +547,6 @@ function get_waitingDialog($modal_dialog) {
             $('.summary .summary-warnings', $dialog).html(messages.warnings);
 
           if (messages.details !== undefined && messages.details !== '') {
-            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
-            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').addClass("enabled");
             this.enableMoreLessLink();
           }
         },
