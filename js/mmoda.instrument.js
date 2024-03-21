@@ -253,7 +253,7 @@ function panel_title(srcname, param) {
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    warning_obj = {'warnings' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+    warning_obj = {'failures' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
      + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
      + reformatted_error_message + '</td></tr></table>'
     };
@@ -371,8 +371,7 @@ function panel_title(srcname, param) {
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
           warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
-          // waitingDialog.replace(warning_obj);
-          waitingDialog.append(warning_obj);
+          waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
 

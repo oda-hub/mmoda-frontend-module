@@ -529,24 +529,28 @@ function get_waitingDialog($modal_dialog) {
             $('.summary .details', $dialog).html(message.details);
           if(message.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
+          if(message.hasOwnProperty('failures'))
+              $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
           if(message.hasOwnProperty('results'))
             $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
-        replace: function(messages, alert_type) {
+        replace: function(message, alert_type) {
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          if(messages.hasOwnProperty('summary'))
-            $('.summary .summary-message', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
-          if(messages.hasOwnProperty('details'))
-            $('.summary .details', $dialog).html(messages.details);
-          if(messages.hasOwnProperty('warnings'))
-            $('.summary .summary-warnings', $dialog).html(messages.warnings);
+          if(message.hasOwnProperty('summary'))
+            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+          if(message.hasOwnProperty('details'))
+            $('.summary .details', $dialog).html(message.details);
+          if(message.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html(message.warnings);
+          if(message.hasOwnProperty('failures'))
+            $('.summary .summary-failures', $dialog).html(message.failures);
 
-          if (messages.details !== undefined && messages.details !== '') {
+          if (message.details !== undefined && message.details !== '') {
             this.enableMoreLessLink();
           }
         },
