@@ -526,7 +526,7 @@ function get_waitingDialog($modal_dialog) {
           if(message.hasOwnProperty('summary'))
             $('.summary .summary-message', $dialog).append($('<span>' + message.summary + '</span>').addClass(message_class));
           if(message.hasOwnProperty('details'))
-            $('.summary .details', $dialog).html(message.details);
+            $('.summary .details', $dialog).append(message.details);
           if(message.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
           if(message.hasOwnProperty('failures'))
