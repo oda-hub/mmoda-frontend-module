@@ -310,7 +310,7 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    warning_obj = { 'warnings': '<table class="error-table">' + reformatted_message + '</table>' };
+    warning_obj = { 'failures': '<table class="error-table">' + reformatted_message + '</table>' };
     waitingDialog.append(warning_obj, 'danger');
   }
 
@@ -1568,11 +1568,13 @@ function panel_title(srcname, param) {
       waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
-      waitingDialog.append('<table class="error-table"><tr>' +
+
+      warning_obj = {'failures' : '<table class="error-table"><tr>' +
         '<td>' + get_current_date_time() + '</td>' +
         '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
         '</tr></table>',
-        'danger');
+      };
+      waitingDialog.append(warning_obj, 'danger');
     }
     else {
       // Set catalog in the corresponding instrument form
@@ -1661,7 +1663,8 @@ function panel_title(srcname, param) {
           showProgressBar: false,
           showSpinner: false
         });
-        waitingDialog.append(error_message, 'danger');
+        warning_obj = {'failures' : error_message};
+        waitingDialog.append(warning_obj, 'danger');
         $('.write-feedback-button').show();
       }
     }
