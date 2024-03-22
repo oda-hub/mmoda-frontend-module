@@ -2,6 +2,19 @@ var current_instrument_form_validator;
 var requestTimer;
 var messages = {};
 
+function validate_paste($thefield) {
+  var maxlength = parseInt($thefield.attr('maxlength'));
+  var pastedValueLength = $thefield.data('pastedValueLength');
+  if ($thefield.data('truncatedPaste')) {
+    $thefield.removeData('truncatedPaste pastedValueLength');
+    return {
+      valid: false,
+      message: 'Pasted value too large (' + pastedValueLength + '), maximum allowed length is ' + maxlength
+    }
+  };
+  return true;
+}
+
 function validate_timebin(value, validator, $thefield) {
   var time_bin_format = validator.getFieldElements('time_bin_format').val();
   if ($thefield.data('mmodaTimeBinMin')) {
@@ -617,6 +630,31 @@ function panel_title(srcname, param) {
     return (cssClass);
   }
 
+  function showErrorWhenTruncatedPaste() {
+    $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function(e) {
+      var pastedDataLength = e.originalEvent.clipboardData.getData('text').length;
+      if ($(this)[0].hasAttribute('maxlength') && !isNaN(parseInt($(this).attr('maxlength')))) {
+        var maxlength = parseInt($(this).attr('maxlength'));
+        if (pastedDataLength > maxlength) {
+          $(this).data('truncatedPaste', true);
+          $(this).data('pastedValueLength', pastedDataLength);
+          var gparent_elt = $(this).parent().parent();
+          $('label', gparent_elt).addClass('control-label');
+          gparent_elt.addClass('has-feedback has-error');
+          e.preventDefault();
+          var current_form = $(this).closest('form');
+          var elt_name = $(this).attr('name');
+          current_form.data('bootstrapValidator').updateStatus(elt_name, 'NOT_VALIDATED').validateField(elt_name);
+        }
+      }
+    });
+
+    $("input[type=text], textarea").bind("input", function(e) {
+      var parent_elt = $(this).parent().parent();
+      parent_elt.removeClass('has-feedback has-error');
+    });
+  }
+
   function all_instruments_forms_set_bootstrapValidator() {
 
     var validator_fields = {
@@ -693,8 +731,23 @@ function panel_title(srcname, param) {
         }
       }
     };
-    //$('.instrument-panel form').bootstrapValidator('destroy');
 
+    $("input[type=text][maxlength], textarea[maxlength]").each(function(index) {
+      var name = $(this).attr('name');
+      //      var maxlength = parseInt($(this).attr('maxlength'));
+      validator_fields[name] = {
+        // enabled: false,
+        validators: {
+          callback: {
+            callback: function(value, validator, $field) {
+              return (validate_paste($field));
+            }
+          }
+        }
+      }
+    });
+
+    //$('.instrument-panel form').bootstrapValidator('destroy');
     $('.instrument-panel form').bootstrapValidator({
       // live :'disabled',
       fields: validator_fields,
@@ -1495,7 +1548,7 @@ function panel_title(srcname, param) {
       $('.instruments-panel .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
       make_request(Drupal.settings.url_parameters);
     }
-
+    showErrorWhenTruncatedPaste();
   }
 
   function make_request(request_parameters) {
