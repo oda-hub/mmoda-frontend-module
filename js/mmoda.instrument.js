@@ -1282,7 +1282,6 @@ function panel_title(srcname, param) {
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
       var formData;
-      let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
@@ -1309,7 +1308,6 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
@@ -1324,9 +1322,6 @@ function panel_title(srcname, param) {
         // the name
         var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
-          if (item.name == 'instrument') {
-            item.value = active_panel_instrument
-          }
           return (item);
         });
 
@@ -1450,13 +1445,15 @@ function panel_title(srcname, param) {
     });
 
     if (Drupal.settings.hasOwnProperty('url_parameters')) {
+      $('.instruments-panel .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
       make_request(Drupal.settings.url_parameters);
     }
     showErrorWhenTruncatedPaste();
   }
 
   function make_request(request_parameters) {
-    var current_instrument_form_validator = $('.instrument-panel.active form').data('bootstrapValidator');
+    var instrument_panel = $(".instrument-panel-" + request_parameters.instrument);
+    var current_instrument_form_validator = $('form', instrument_panel).data('bootstrapValidator');
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
@@ -1465,7 +1462,6 @@ function panel_title(srcname, param) {
         'showProgress': true,
         'showButton': true
       });
-      // waitingDialog.showHeaderMessage();
       waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
@@ -1482,11 +1478,9 @@ function panel_title(srcname, param) {
       if (request_parameters.hasOwnProperty('selected_catalog') && request_parameters.selected_catalog) {
         var catalog = JSON.parse(request_parameters.selected_catalog);
         var datetime = get_current_date_time();
-        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
-        $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
+        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-params-panel", instrument_panel));
+        $(".instrument-params-panel .inline-user-catalog", instrument_panel).removeClass("hidden");
       }
-
-      $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
       make_request_error = false;
       var make_request_error_messages = [];
       var all_form_inputs = [];
