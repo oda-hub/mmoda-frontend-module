@@ -166,7 +166,7 @@ function panel_title(srcname, param) {
     let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     let integral_instrument = false;
     if (current_instrument_query !== undefined) {
-      if($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
         waitingDialog.showLegend();
         integral_instrument = true;
@@ -197,7 +197,7 @@ function panel_title(srcname, param) {
     current_details = messages.details;
     // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
-      if($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
         if (response_status == 'progress' || response_status == 'ready')
           waitingDialog.enableReturnProgressLink();
@@ -240,9 +240,10 @@ function panel_title(srcname, param) {
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    warning_obj = {'warnings' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
-     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-     + reformatted_error_message + '</td></tr></table>'
+    warning_obj = {
+      'warnings': '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+        + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+        + reformatted_error_message + '</td></tr></table>'
     };
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
@@ -297,7 +298,7 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    warning_obj = {'warnings' : '<table class="error-table">' + reformatted_message + '</table>'};
+    warning_obj = { 'warnings': '<table class="error-table">' + reformatted_message + '</table>' };
     waitingDialog.append(warning_obj, 'danger');
   }
 
@@ -357,7 +358,7 @@ function panel_title(srcname, param) {
         }
         // data.exit_status.comment = 'Hoho';
         if (data.exit_status.comment) {
-          warning_obj = {'warnings' : '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>'};
+          warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
           waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
@@ -392,7 +393,7 @@ function panel_title(srcname, param) {
       details: ''
     };
 
-    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) && 
+    if ((!response.job_monitor.hasOwnProperty('full_report_dict_list') || response.job_monitor.full_report_dict_list.length == 0) &&
       (!response.products.hasOwnProperty('input_prod_list') || response.products.input_prod_list.length == 0) &&
       (!response.job_monitor.hasOwnProperty('full_report_dict') || response.job_monitor.full_report_dict == {})) {
       return (messages);
@@ -477,16 +478,16 @@ function panel_title(srcname, param) {
     summary = '';
     if (integral_instrument) {
       data_units = [];
-      if(response.products.hasOwnProperty('input_prod_list')) {
+      if (response.products.hasOwnProperty('input_prod_list')) {
         data_units = data.products.input_prod_list;
       }
-  
+
       var current_status_table = new Array();
       if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
         for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
           data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
           node = response['job_monitor'].full_report_dict_list[j].node;
-  
+
           if (data_units.indexOf(data_unit) == -1) {
             data_units.push(data_unit);
           }
@@ -509,7 +510,7 @@ function panel_title(srcname, param) {
         node = distinct_nodes[j];
         summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
       }
-  
+
       // Get all data units, rows
       summary += '</tr></thead><tbody>';
       var counter = 1;
@@ -536,10 +537,10 @@ function panel_title(srcname, param) {
           }
           summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
         }
-  
+
         summary += '</tr>';
       }
-  
+
       summary += '</tbody></table>';
     }
 
@@ -548,7 +549,7 @@ function panel_title(srcname, param) {
 
   function get_server_detailed_message(response, integral_instrument) {
     // if integral
-    if(integral_instrument) {
+    if (integral_instrument) {
       if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
         details = '<table class="message-table"><thead><tr><th>Data unit</th><th>node</th><th>message</th></tr></thead><tbody>';
         for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
@@ -560,11 +561,11 @@ function panel_title(srcname, param) {
     } else {
       if (response['job_monitor'].hasOwnProperty('full_report_dict')) {
         details = '';
-        if(response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
+        if (response['job_monitor'].full_report_dict.hasOwnProperty('stage'))
           details += `stage: ${response['job_monitor'].full_report_dict.stage}`;
-        if(response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
+        if (response['job_monitor'].full_report_dict.hasOwnProperty('progress'))
           details += ` - progress: ${response['job_monitor'].full_report_dict.progress}`;
-        if(details)
+        if (details)
           details += '<br>';
       }
     }
@@ -1320,7 +1321,6 @@ function panel_title(srcname, param) {
       var form_id = $(this).attr('id').replace(/-/g, "_");
       var form_panel = $(this).closest('.panel');
       var formData;
-      let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
@@ -1347,7 +1347,6 @@ function panel_title(srcname, param) {
           }
           return (item);
         });
-        let active_panel_instrument = $('input[name=instrument]', ".instrument-panel.active").val();
         var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
@@ -1362,9 +1361,6 @@ function panel_title(srcname, param) {
         // the name
         var instrumentFormData = instrument_form_serializeArray.map(function(item) {
           item.name = item.name.replace(form_id + '_', '');
-          if (item.name == 'instrument') {
-            item.value = active_panel_instrument
-          }
           return (item);
         });
 
@@ -1496,13 +1492,15 @@ function panel_title(srcname, param) {
     });
 
     if (Drupal.settings.hasOwnProperty('url_parameters')) {
+      $('.instruments-panel .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
       make_request(Drupal.settings.url_parameters);
     }
 
   }
 
   function make_request(request_parameters) {
-    var current_instrument_form_validator = $('.instrument-panel.active form').data('bootstrapValidator');
+    var instrument_panel = $(".instrument-panel-" + request_parameters.instrument);
+    var current_instrument_form_validator = $('form', instrument_panel).data('bootstrapValidator');
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
@@ -1511,7 +1509,6 @@ function panel_title(srcname, param) {
         'showProgress': true,
         'showButton': true
       });
-      // waitingDialog.showHeaderMessage();
       waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
@@ -1526,11 +1523,9 @@ function panel_title(srcname, param) {
       if (request_parameters.hasOwnProperty('selected_catalog') && request_parameters.selected_catalog) {
         var catalog = JSON.parse(request_parameters.selected_catalog);
         var datetime = get_current_date_time();
-        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel"));
-        $(".instrument-panel-" + request_parameters.instrument + " .instrument-params-panel .inline-user-catalog").removeClass("hidden");
+        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-params-panel", instrument_panel));
+        $(".instrument-params-panel .inline-user-catalog", instrument_panel).removeClass("hidden");
       }
-
-      $(".instruments-panel ul.nav-tabs li#" + request_parameters.instrument + '-tab a').tab('show');
       make_request_error = false;
       var make_request_error_messages = [];
       var all_form_inputs = [];
