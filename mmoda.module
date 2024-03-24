@@ -59,12 +59,12 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
     $is_mxroomid_empty = false;
     if(property_exists($user, 'field_matrix_room_id'))
       $is_mxroomid_empty = empty($user->field_matrix_room_id);
-    
+
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'jwt-link':
           if (user_is_logged_in()) {
-            
+
             $jwt = jwt_link_url();
             $alg = variable_get('jwt_link_alg', 'HS256');
             $key = variable_get('jwt_link_key', '');
@@ -73,7 +73,7 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
             $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
               $alg
             ));
-            
+
             if($is_mxroomid_empty) {
               unset($jwt_decoded_token -> mxroomid);
               $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
@@ -84,7 +84,7 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
               $url_parsed['query'] = $new_query_string;
               $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
             }
-            
+
             $link_text = variable_get('jwt_link_text', t('Visit Site...'));
             $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
           }
@@ -353,6 +353,7 @@ function mmoda_main_block_content()
   drupal_add_css(drupal_get_path('module', 'mmoda') . '/mmoda.css');
 
   drupal_add_js(drupal_get_path('module', 'mmoda') . '/js/mmoda.common.js');
+  drupal_add_js(drupal_get_path('module', 'mmoda') . '/js/mmoda.form_validation.js');
   drupal_add_js(drupal_get_path('module', 'mmoda') . '/js/mmoda.instrument.js');
 
   drupal_add_js('https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js', 'external');

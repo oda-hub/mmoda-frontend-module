@@ -43,6 +43,22 @@ function mmoda_isgri($form, &$form_state)
 
   $form['#action'] = $instrument_defaults['data_server_local_url'];
 
+  $form['test_textarea'] = array(
+    '#type' => 'textarea',
+    '#title' => t("Textarea"),
+    '#default_value' => 'Coucou',
+    '#parent_classes' => array(
+      'form-group',
+      'col-md-12'
+    ),
+    '#label_classes' => array(
+      'control-label'
+    ),
+    '#attributes' => array(
+      'maxlength' => 800
+    )
+  );
+
   $form['osa_version'] = array(
     '#type' => 'select',
     '#title' => t("OSA Version"),
@@ -432,7 +448,9 @@ function mmoda_isgri($form, &$form_state)
   $form['user_catalog_file'] = array(
     '#type' => 'file',
     '#title' => t("User catalog"),
-    '#description' => t('If needed, create a custom catalog following one of the templates : <a href="' . $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' . $module_path . '/data/catalog.fits" download>FITS</a>.'),
+    '#description' => t(
+      'If needed, create a custom catalog following one of the templates : <a href="' . $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' .
+      $module_path . '/data/catalog.fits" download>FITS</a>.'),
     '#attributes' => array(
       'name' => 'user_catalog_file'
     ),
