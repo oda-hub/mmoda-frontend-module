@@ -2,6 +2,7 @@ var current_instrument_form_validator;
 var requestTimer;
 var messages = {};
 
+// Validate paste
 function validate_paste($thefield) {
   var maxlength = parseInt($thefield.attr('maxlength'));
   var pastedValueLength = $thefield.data('pastedValueLength');
