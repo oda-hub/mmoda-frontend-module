@@ -1,4 +1,3 @@
-var current_instrument_form_validator;
 
 // Validate paste
 function validate_paste($thefield) {
