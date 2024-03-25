@@ -571,7 +571,7 @@ function panel_title(srcname, param) {
       }
     });
 
-    $("input[type=text], textarea").bind("input", function(e) {
+    $("input[type=text], textarea").bind("input", function() {
       var parent_elt = $(this).parent().parent();
       parent_elt.removeClass('has-feedback has-error');
     });
@@ -579,18 +579,34 @@ function panel_title(srcname, param) {
 
   function all_instruments_forms_set_bootstrapValidator() {
 
-    var validator_fields = {
-      'scw_list': {
+    var validator_fields = {};
+    
+    $("input[type=text][maxlength], textarea[maxlength]").each(function() {
+      var name = $(this).attr('name');
+      //      var maxlength = parseInt($(this).attr('maxlength'));
+      validator_fields[name] = {
+        // enabled: false,
+        validators: {
+          callback: {
+            callback: function(value, validator, $field) {
+              return (validate_paste($field));
+            }
+          }
+        }
+      }
+    });
+
+    validator_fields['scw_list'] = {
         // enabled: false,
         validators: {
           callback: {
             callback: function(value, validator, $field) {
               return (validate_scws(value, 500));
             }
-          }
         }
       }
     };
+    
     validator_fields['time_bin'] = {
       // enabled: false,
       validators: {
@@ -654,24 +670,7 @@ function panel_title(srcname, param) {
       }
     };
 
-    $("input[type=text][maxlength], textarea[maxlength]").each(function(index) {
-      var name = $(this).attr('name');
-      //      var maxlength = parseInt($(this).attr('maxlength'));
-      validator_fields[name] = {
-        // enabled: false,
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_paste($field));
-            }
-          }
-        }
-      }
-    });
-
-    //$('.instrument-panel form').bootstrapValidator('destroy');
     $('.instrument-panel form').bootstrapValidator({
-      // live :'disabled',
       fields: validator_fields,
       feedbackIcons: {
         valid: 'glyphicon glyphicon-ok',
