@@ -253,10 +253,9 @@ function panel_title(srcname, param) {
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    warning_obj = {
-      'warnings': '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
-        + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-        + reformatted_error_message + '</td></tr></table>'
+    warning_obj = {'failures' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+     + reformatted_error_message + '</td></tr></table>'
     };
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
@@ -311,7 +310,7 @@ function panel_title(srcname, param) {
     // to be consistebnt with the way the error is visulized in case query_failed
     reformatted_message = message.replace(/\\n/g, "<br />");
     reformatted_message = reformatted_message.replace(/\n/g, "<br />");
-    warning_obj = { 'warnings': '<table class="error-table">' + reformatted_message + '</table>' };
+    warning_obj = { 'failures': '<table class="error-table">' + reformatted_message + '</table>' };
     waitingDialog.append(warning_obj, 'danger');
   }
 
@@ -375,14 +374,7 @@ function panel_title(srcname, param) {
           waitingDialog.replace(warning_obj);
         }
       }).complete(function(jqXHR, textStatus) {
-
-        // console.log('Exec time : ' + (new
-        // Date().getTime() -
-        // startAJAXTime));
-        //        $(".write-feedback-button").hide();
-        //        $('#ldialog button.write-feedback-button').removeClass('hidden');
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-
       }).error(function(jqXHR, textStatus, errorThrown) {
         mmoda_show_request_error(jqXHR, textStatus, errorThrown);
 
@@ -401,7 +393,6 @@ function panel_title(srcname, param) {
 
   function get_server_message(response, integral_instrument) {
     var messages = {
-      // summary: ' Status : ' + response['job_monitor']['status'] + '<br>',
       summary: '',
       details: ''
     };
@@ -414,75 +405,6 @@ function panel_title(srcname, param) {
 
     messages.summary += get_server_summary_message(response, integral_instrument);
     messages.details += get_server_detailed_message(response, integral_instrument);
-
-    // var current_status_table = new Array();
-    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list')) {
-    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-    //     data_unit = response['job_monitor'].full_report_dict_list[j].scwid;
-    //     node = response['job_monitor'].full_report_dict_list[j].node;
-
-    //     if (data_units.indexOf(data_unit) == -1) {
-    //       data_units.push(data_unit);
-    //     }
-    //     if (typeof current_status_table[data_unit] === 'undefined') {
-    //       current_status_table[data_unit] = new Array();
-    //     }
-    //     if (distinct_nodes.indexOf(node) == -1) {
-    //       distinct_nodes.push(node);
-    //     }
-    //     if (typeof current_status_table[data_unit][node] === 'undefined') {
-    //       current_status_table[data_unit][node] = new Array();
-    //     }
-    //     current_status_table[data_unit][node][response['job_monitor'].full_report_dict_list[j].message] = Object.keys(current_status_table[data_unit][node]).length;
-    //   }
-    // }
-    // // Get all nodes, columns
-    // messages.summary += '<table class="status-table"><thead><tr><th></th><th>Data unit</th>';
-    // first_unit_data = Object.keys(current_status_table)[0];
-    // for (j in distinct_nodes) {
-    //   node = distinct_nodes[j];
-    //   messages.summary += '<th class="rotate"><div><span>' + node + '</span></div></th>';
-    // }
-
-    // // Get all data units, rows
-    // messages.summary += '</tr></thead><tbody>';
-    // var counter = 1;
-    // for (i in data_units) {
-    //   data_unit = data_units[i];
-    //   data_unit_label = data_unit;
-    //   var current_counter = pad(counter++, 3);
-    //   if (data_unit == 'inapplicable') {
-    //     data_unit_label = '&nbsp;';
-    //     current_counter = '';
-    //   }
-    //   if (typeof job_status_table[data_unit] === 'undefined') {
-    //     job_status_table[data_unit] = new Array();
-    //   }
-    //   messages.summary += '<tr><td>' + current_counter + '</td><td>' + data_unit_label + '</td>';
-    //   for (j in distinct_nodes) {
-    //     started_or_not = '';
-    //     node = distinct_nodes[j];
-    //     value = '';
-    //     var cssClass = '';
-    //     if (typeof current_status_table[data_unit] !== 'undefined' && typeof current_status_table[data_unit][node] !== 'undefined'
-    //       && Object.keys(current_status_table[data_unit][node]).length) {
-    //       cssClass = get_node_status_class(current_status_table[data_unit][node]);
-    //     }
-    //     messages.summary += '<td class="' + cssClass + '" data-toggle="tooltip" data-container="#ldialog .summary" title="' + value + '"></td>';
-    //   }
-
-    //   messages.summary += '</tr>';
-    // }
-
-    // messages.summary += '</tbody></table>';
-    // if (response['job_monitor'].hasOwnProperty('full_report_dict_list') && response['job_monitor'].full_report_dict_list.length > 0) {
-    //   messages.details = '<table class="message-table"><thead><tr><th>Dta unit</th><th>node</th><th>message</th></tr></thead><tbody>';
-    //   for (var j = 0; j < response['job_monitor'].full_report_dict_list.length; j++) {
-    //     messages.details += '<tr><td>' + response['job_monitor'].full_report_dict_list[j].scwid + '</td><td>' + response['job_monitor'].full_report_dict_list[j].node + '</td><td>'
-    //       + response['job_monitor'].full_report_dict_list[j].message + '</td></tr>';
-    //   }
-    //   messages.details += '</tbody></table>';
-    // }
 
     return (messages);
   }
@@ -822,10 +744,11 @@ function panel_title(srcname, param) {
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      $('#ldialog .summary-content').html('');
       $('#ldialog .details').html('');
       $('#ldialog .details').hide();
+      $('#ldialog .summary-content').html('');
       $('#ldialog .summary-warnings').html('');
+      $('#ldialog .summary-failures').html('');
       $('#ldialog .summary-results').html('');
       $('#ldialog .more-less-details .fa-info-circle').css('color', '');
       $('#ldialog .progress').addClass('progress-striped');
@@ -1069,16 +992,6 @@ function panel_title(srcname, param) {
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             current_ajax_call_params.currentFormData.append('token', data.token);
 
-          // test
-
-          // test_ajax_call_params = {};
-          // test_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.currentFormData);
-          // test_ajax_call_params.currentFormData.set('instrument', 'empty-async-return-progress');
-          // test_ajax_call_params.currentFormData.set('query_type', 'Real');
-          // test_ajax_call_params.currentFormData.set('product_type', 'dummy_html');
-          // test_ajax_call_params.action = "dispatch-data/run_analysis"
-          // test_ajax_call_params.form = this;
-
           var return_progress_jqXHR = $.ajax({
             url: current_ajax_call_params.action,
             // url: test_ajax_call_params.action,
@@ -1092,11 +1005,6 @@ function panel_title(srcname, param) {
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
             if (data.products.hasOwnProperty('progress_product_html_output')) {
-              // // new tab opening
-              // let tab_progress_product_html = window.open('about:blank', '_blank');
-              // tab_progress_product_html.document.write(data.products.progress_product_html_output);
-              // tab_progress_product_html.document.close();
-              // display in a dedicated panel
               var parent_panel = $('#ldialog-modal-dialog');
               var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
@@ -1488,14 +1396,6 @@ function panel_title(srcname, param) {
       AJAX_submit_call();
     });
 
-    //    $('body').on('click', '#ldialog .book-toc button', function() {
-    //      console.log('outline clicked!');
-    //      var bh = $('#ldialog .modal-body').height();
-    //      var mh =$('#ldialog .modal-body .book-toc .dropdown-menu').height();
-    //      console.log('body height:'+bh+', menu height:'+mh);
-    //      $('#ldialog .modal-body').scrollTop(bh+mh-5);
-    //    });
-
     $('body').on('click', '.open-in-modal', function(e) {
       e.preventDefault();
 
@@ -1565,11 +1465,13 @@ function panel_title(srcname, param) {
       waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
-      waitingDialog.append('<table class="error-table"><tr>' +
+
+      warning_obj = {'failures' : '<table class="error-table"><tr>' +
         '<td>' + get_current_date_time() + '</td>' +
         '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
         '</tr></table>',
-        'danger');
+      };
+      waitingDialog.append(warning_obj, 'danger');
     }
     else {
       // Set catalog in the corresponding instrument form
@@ -1656,7 +1558,8 @@ function panel_title(srcname, param) {
           showProgressBar: false,
           showSpinner: false
         });
-        waitingDialog.append(error_message, 'danger');
+        warning_obj = {'failures' : error_message};
+        waitingDialog.append(warning_obj, 'danger');
         $('.write-feedback-button').show();
       }
     }

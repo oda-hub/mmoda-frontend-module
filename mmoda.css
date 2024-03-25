@@ -94,10 +94,8 @@ label.control-label {
   display: flex;
 }
 
-#ldialog .summary .summary-warnings {
-  margin-top: 0.5em;
-}
-
+#ldialog .summary .summary-warnings, 
+#ldialog .summary .summary-failures, 
 #ldialog .summary .details {
   margin-top: 0.5em;
 }

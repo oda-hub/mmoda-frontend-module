@@ -103,6 +103,7 @@
               <!-- <div class="more-less-details">More details &gt;</div> -->
             </div>
             <div class="details"></div>
+            <div class="summary-failures"></div>
             <div class="summary-warnings"></div>
             <div class="summary-results"></div>
           </div>
