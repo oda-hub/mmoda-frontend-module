@@ -1,3 +1,44 @@
+var common_form_validator;
+
+function valid_iso_date(value) {
+  var iso_date_pattern = new RegExp("^([1|2]\\d\\d\\d)(?:-?(10|11|12|0\\d)(?:-?(30|31|[0-2]\\d)" +
+    "(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$");
+  return (iso_date_pattern.test(value));
+}
+
+function valid_mjd_date(value) {
+  var mjd_date_pattern = new RegExp("^(\\d+\.?\\d*)$");
+  return (mjd_date_pattern.test(value) && value >= 0 && value <= max_mjd_date);
+}
+
+function validate_scws(value, nb_scws) {
+  var scws_pattern = new RegExp("^$|^(\\d{12}\\.00\\d)(\\s*,\\s*\\d{12}\\.00\\d){0," + (nb_scws - 1) + "}$");
+  if (!scws_pattern.test(value)) {
+    return {
+      valid: false,
+      message: 'Please enter a valid list of ScWs, maximum ' + nb_scws
+    }
+  }
+  return true;
+}
+
+function validate_date(value, validator) {
+  max_mjd_date = get_today_mjd();
+  var time_format_type = validator.getFieldElements('T_format').val();
+  if (time_format_type == 'isot' && !valid_iso_date(value)) {
+    return {
+      valid: false,
+      message: 'Please enter a valid UTC ISO date, YYYY-MM-DDThh:mm:ss.s'
+    }
+  }
+  else if (time_format_type == 'mjd' && !valid_mjd_date(value)) {
+    return {
+      valid: false,
+      message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, ' + max_mjd_date + ']</span>'
+    }
+  }
+  return true;
+}
 
 // Validate paste
 function validate_paste($thefield) {
@@ -84,22 +125,83 @@ function validate_timebin(value, validator, $thefield) {
     });
   }
 
+  function common_form_set_bootstrapValidator() {
+    var validator_fields = {};
+    
+    validator_fields['RA'] = {
+      validators: {
+        callback: {
+          callback: function(value, validator, $field) {
+            var decimalRA;
+            return (HMS2Decimal(value, decimalRA));
+          }
+        }
+      }
+    };
+    validator_fields['DEC'] = {
+      validators: {
+        callback: {
+          callback: function(value, validator, $field) {
+            var decimalDEC;
+            return (DMS2Decimal(value, decimalDEC));
+          }
+        }
+      }
+    };
+    validator_fields['T1'] = {
+      validators: {
+        callback: {
+          callback: function(value, cbvalidator, $field) {
+            return (validate_date(value, cbvalidator, $field));
+          }
+        }
+      }
+    };
+    validator_fields['T2'] = {
+      validators: {
+        callback: {
+          callback: function(value, cbvalidator, $field) {
+            return (validate_date(value, cbvalidator, $field));
+          }
+        }
+      }
+    };
+    
+    common_form_validator = $('form#mmoda-common').bootstrapValidator({
+      fields: validator_fields,
+      feedbackIcons: {
+        valid: 'glyphicon glyphicon-ok',
+        invalid: 'glyphicon glyphicon-remove',
+        validating: 'glyphicon glyphicon-refresh'
+      },
+    }).data('bootstrapValidator'); // .validate();
+  }
+  
   function all_instruments_forms_set_bootstrapValidator() {
-
-    var validator_fields = {
-      'scw_list': {
-        // enabled: false,
+    var validator_fields = {};
+   
+    $("input[type=text][maxlength], textarea[maxlength]").each(function() {
+      var name = $(this).attr('name');
+      validator_fields[name] = {
+        validators: {
+          callback: {
+            callback: function(value, validator, $field) {
+              return (validate_paste($field));
+            }
+          }
+        }
+      }
+    });
+    validator_fields['scw_list'] = {
         validators: {
           callback: {
             callback: function(value, validator, $field) {
               return (validate_scws(value, 500));
             }
-          }
         }
       }
     };
     validator_fields['time_bin'] = {
-      // enabled: false,
       validators: {
         callback: {
           callback: function(value, validator, $field) {
@@ -110,14 +212,12 @@ function validate_timebin(value, validator, $thefield) {
     };
 
     validator_fields['E1_keV'] = {
-      // enabled: false,
       validators: {
         notEmpty: {
           message: 'Please enter a value'
         },
         callback: {
           callback: function(value, validator, $field) {
-            console.log('E1 checked');
             var E2_keV = validator.getFieldElements('E2_keV').val();
             if (Number(value) >= Number(E2_keV)) {
               return {
@@ -131,7 +231,6 @@ function validate_timebin(value, validator, $thefield) {
       }
     };
     validator_fields['E2_keV'] = {
-      // enabled: false,
       validators: {
         notEmpty: {
           message: 'Please enter a value'
@@ -162,24 +261,7 @@ function validate_timebin(value, validator, $thefield) {
       }
     };
 
-    $("input[type=text][maxlength], textarea[maxlength]").each(function() {
-      var name = $(this).attr('name');
-      //      var maxlength = parseInt($(this).attr('maxlength'));
-      validator_fields[name] = {
-        // enabled: false,
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_paste($field));
-            }
-          }
-        }
-      }
-    });
-
-    //$('.instrument-panel form').bootstrapValidator('destroy');
     $('.instrument-panel form').bootstrapValidator({
-      // live :'disabled',
       fields: validator_fields,
       feedbackIcons: {
         valid: 'glyphicon glyphicon-ok',
@@ -188,7 +270,9 @@ function validate_timebin(value, validator, $thefield) {
       }
     });
   }
+  
   $(document).ready(function() {
+    common_form_set_bootstrapValidator();
     all_instruments_forms_set_bootstrapValidator();
 
     // Create validator and validate a frist time :

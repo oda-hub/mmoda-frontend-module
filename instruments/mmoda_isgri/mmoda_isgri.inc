@@ -43,21 +43,21 @@ function mmoda_isgri($form, &$form_state)
 
   $form['#action'] = $instrument_defaults['data_server_local_url'];
 
-  $form['test_textarea'] = array(
-    '#type' => 'textarea',
-    '#title' => t("Textarea"),
-    '#default_value' => 'Coucou',
-    '#parent_classes' => array(
-      'form-group',
-      'col-md-12'
-    ),
-    '#label_classes' => array(
-      'control-label'
-    ),
-    '#attributes' => array(
-      'maxlength' => 800
-    )
-  );
+//   $form['test_textarea'] = array(
+//     '#type' => 'textarea',
+//     '#title' => t("Textarea"),
+//     '#default_value' => 'Coucou',
+//     '#parent_classes' => array(
+//       'form-group',
+//       'col-md-12'
+//     ),
+//     '#label_classes' => array(
+//       'control-label'
+//     ),
+//     '#attributes' => array(
+//       'maxlength' => 800
+//     )
+//   );
 
   $form['osa_version'] = array(
     '#type' => 'select',

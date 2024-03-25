@@ -1,6 +1,5 @@
 var instrument_panel_margin = 150;
 var progress_panel_margin = 150;
-var common_form_validator;
 var mmoda_ajax_jqxhr = [];
 
 Date.prototype.getJulian = function() {
@@ -47,28 +46,6 @@ function get_today_mjd() {
   var today = new Date(); // set any date
   var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian
   return (today_mjd);
-}
-
-function valid_iso_date(value) {
-  var iso_date_pattern = new RegExp("^([1|2]\\d\\d\\d)(?:-?(10|11|12|0\\d)(?:-?(30|31|[0-2]\\d)" +
-    "(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$");
-  return (iso_date_pattern.test(value));
-}
-
-function valid_mjd_date(value) {
-  var mjd_date_pattern = new RegExp("^(\\d+\.?\\d*)$");
-  return (mjd_date_pattern.test(value) && value >= 0 && value <= max_mjd_date);
-}
-
-function validate_scws(value, nb_scws) {
-  var scws_pattern = new RegExp("^$|^(\\d{12}\\.00\\d)(\\s*,\\s*\\d{12}\\.00\\d){0," + (nb_scws - 1) + "}$");
-  if (!scws_pattern.test(value)) {
-    return {
-      valid: false,
-      message: 'Please enter a valid list of ScWs, maximum ' + nb_scws
-    }
-  }
-  return true;
 }
 
 function HMS2Decimal(hmsVal, decimalVal) {
@@ -194,7 +171,6 @@ function copyToClipboard(text) {
 
   try {
     var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
   } catch (err) {
   }
 
@@ -524,31 +500,33 @@ function get_waitingDialog($modal_dialog) {
           }
           // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
           if(message.hasOwnProperty('summary'))
-            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+            $('.summary .summary-message', $dialog).append($('<span>' + message.summary + '</span>').addClass(message_class));
           if(message.hasOwnProperty('details'))
-            $('.summary .details', $dialog).html(message.details);
+            $('.summary .details', $dialog).append(message.details);
           if(message.hasOwnProperty('warnings'))
-            $('.summary .summary-warnings', $dialog).html($('<div>' + message.warnings + '</div>').addClass(message_class));
+            $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
+          if(message.hasOwnProperty('failures'))
+              $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
           if(message.hasOwnProperty('results'))
-            $('.summary .summary-results', $dialog).html($('<div>' + message.results + '</div>').addClass(message_class));
+            $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
-        replace: function(messages, alert_type) {
+        replace: function(message, alert_type) {
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          if(messages.hasOwnProperty('summary'))
-            $('.summary .summary-message', $dialog).html($('<span>' + messages.summary + '</span>').addClass(message_class));
-          if(messages.hasOwnProperty('details'))
-            $('.summary .details', $dialog).html(messages.details);
-          if(messages.hasOwnProperty('warnings'))
-            $('.summary .summary-warnings', $dialog).html(messages.warnings);
+          if(message.hasOwnProperty('summary'))
+            $('.summary .summary-message', $dialog).html($('<span>' + message.summary + '</span>').addClass(message_class));
+          if(message.hasOwnProperty('details'))
+            $('.summary .details', $dialog).html(message.details);
+          if(message.hasOwnProperty('warnings'))
+            $('.summary .summary-warnings', $dialog).html(message.warnings);
+          if(message.hasOwnProperty('failures'))
+            $('.summary .summary-failures', $dialog).html(message.failures);
 
-          if (messages.details !== undefined && messages.details !== '') {
-            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').show();
-            // $('#ldialog .modal-body .summary .summary-controls .more-less-details').addClass("enabled");
+          if (message.details !== undefined && message.details !== '') {
             this.enableMoreLessLink();
           }
         },
@@ -668,7 +646,6 @@ function get_waitingDialog($modal_dialog) {
     if (datetime) $result_panel.find('.date').text('[' + datetime + ']');
     $result_panel.find('.panel-body').attr('id', panel_body_id);
 
-    // $($result_panel).insertAfter(insertAfter);
     $(this).after($result_panel);
     if (left) {
       $result_panel.css('left', left + 'px');
@@ -726,24 +703,6 @@ function get_waitingDialog($modal_dialog) {
 
   $(document).ready(commonReady);
 
-  function validate_date(value, validator) {
-    max_mjd_date = get_today_mjd();
-    var time_format_type = validator.getFieldElements('T_format').val();
-
-    if (time_format_type == 'isot' && !valid_iso_date(value)) {
-      return {
-        valid: false,
-        message: 'Please enter a valid UTC ISO date, YYYY-MM-DDThh:mm:ss.s'
-      }
-    }
-    else if (time_format_type == 'mjd' && !valid_mjd_date(value)) {
-      return {
-        valid: false,
-        message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, ' + max_mjd_date + ']</span>'
-      }
-    }
-    return true;
-  }
 
   function commonReady() {
 
@@ -971,67 +930,7 @@ function get_waitingDialog($modal_dialog) {
     });
     $('.instrument-params-panel').set_panel_draggable();
 
-    // Create validator and validate a frist time :
-    // This is important in Firefox when the page is refreshed
-    // where indeed the old values are still in the form
 
-    common_form_validator = $('form#mmoda-common').bootstrapValidator({
-      // live :'disabled',
-      fields: {
-        'RA': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var decimalRA;
-                return (HMS2Decimal(value, decimalRA));
-              }
-            }
-          }
-        },
-        'DEC': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var decimalDEC;
-                return (DMS2Decimal(value, decimalDEC));
-              }
-            }
-          }
-        },
-        'T1': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, cbvalidator, $field) {
-                return (validate_date(value, cbvalidator, $field));
-              }
-            }
-          }
-        },
-        'T2': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, cbvalidator, $field) {
-                return (validate_date(value, cbvalidator, $field));
-              }
-            }
-          }
-        }
-      },
-      feedbackIcons: {
-        valid: 'glyphicon glyphicon-ok',
-        invalid: 'glyphicon glyphicon-remove',
-        validating: 'glyphicon glyphicon-refresh'
-      },
-    }).data('bootstrapValidator'); // .validate();
-
-    // if (! common_form_validator.isValid()) {
-    // console.log('disabling submit');
-    // common_form_validator.disableSubmitButtons(true);
-    // }
   }
 
 })(jQuery);
