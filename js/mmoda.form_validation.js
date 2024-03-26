@@ -179,7 +179,8 @@ function validate_timebin(value, validator, $thefield) {
   
   function all_instruments_forms_set_bootstrapValidator() {
     var validator_fields = {};
-   
+    
+   // Validate truncated paste
     $("input[type=text][maxlength], textarea[maxlength]").each(function() {
       var name = $(this).attr('name');
       validator_fields[name] = {

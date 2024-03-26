@@ -515,11 +515,8 @@ function panel_title(srcname, param) {
     var nb_rows = $('.multivalued-value', multivalued_field).length;
     if (nb_rows == 1) $('button.delete-multivalued-element', multivalued_field).prop('disabled', true)
   }
-
-
-  function commonReady() {
-    $('.multivalued-field').removeClass('form-group');
-
+  
+  function set_multivalued_events() {
     var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
     var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
     $('.multivalued-field').append(add_multivalued_elt_button);
@@ -545,7 +542,12 @@ function panel_title(srcname, param) {
       e.preventDefault();
       delete_multivalued_field(this);
     });
+  }
 
+  function commonReady() {
+    $('.multivalued-field').removeClass('form-group');
+    set_multivalued_events();
+    
     $('body').on('click', '#ldialog .close-button', function(e) {
       e.preventDefault();
       if (requestTimer !== null) {
@@ -1052,12 +1054,8 @@ function panel_title(srcname, param) {
     $('.block-mmoda').show();
     $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
       e.preventDefault();
-      var $this = $(this);
-      // var details = $(this).parent().find('.details');
       var details = $('#ldialog .summary .details');
       details.slideToggle('slow', function() {
-        // var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
-        // $this.text(txt);
       });
     });
 
@@ -2595,15 +2593,19 @@ function panel_title(srcname, param) {
     var js9_ext_id = Drupal.settings.mmoda[instrument].js9_ext_id;
     var panel_ids = $(".instrument-params-panel",
       ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
-    $('#' + panel_ids.panel_body_id).append($('<iframe>', {
+    $('#' + panel_ids.panel_body_id).addClass('js9-panel');
+    $('#' + panel_ids.panel_body_id).append($('<div>').addClass('js9-loader-text loader-position').text('Loading ...'));
+    $('#' + panel_ids.panel_body_id).append($('<div>').addClass('loader js9-loader loader-position'));
+    $('#' + panel_ids.panel_body_id).append($('<div>').addClass('js9-iframe'));
+    $('#' + panel_ids.panel_body_id+' div.js9-iframe').append($('<iframe>', {     
       src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=' + js9_ext_id,
       id: 'js9iframe',
       width: '650',
       height: '700',
       frameborder: 0,
       scrolling: 'no'
-    }));
-
+    })
+    );
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data));
     $('#' + panel_ids.panel_id).highlight_result_panel();
   }

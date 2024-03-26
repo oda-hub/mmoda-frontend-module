@@ -709,3 +709,48 @@ button.renku-publish {
   margin-left: 0;
   margin-right: 0;
 }
+
+.js9-panel {
+  position: relative;
+  width: 650px;
+  height: 700px;
+}
+
+.loader-position {
+  position: absolute;
+  z-index : 5;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.js9-loader {
+  width: 120px;
+  height: 120px;
+}
+
+.js9-loader-text {
+  width: 100px;
+  height: 20px;
+  padding-left: 2em;
+}
+
+.js9-iframe {
+  position: absolute;
+  z-index : 7;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #007d64; /* Blue */
+  border-radius: 50%;
+  animation: mmoda-spin 2s linear infinite;
+  margin: auto;
+}
+
+@keyframes mmoda-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
