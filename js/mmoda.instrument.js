@@ -479,6 +479,10 @@ function panel_title(srcname, param) {
       summary += '</tbody></table>';
     }
 
+    if (summary !== '') {
+      summary = '<span>' + summary + '</span>';
+    }
+
     return summary;
   }
 
@@ -1365,7 +1369,7 @@ function panel_title(srcname, param) {
 
       request_draw_spectrum = false;
 
-      waitingDialog.show('Processing ...', '', {
+      waitingDialog.show('Processing ...', {'summary': ''}, {
         progressType: 'success',
         showProgressBar: true,
         showSpinner: false,
@@ -1430,8 +1434,10 @@ function panel_title(srcname, param) {
           }
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
-        waitingDialog.show(home_link + title, help_text, {
+        message = { 'summary': help_text };
+        waitingDialog.show(home_link + title, message, {
           dialogSize: 'lg',
+          showTitle: true,
           buttonText: 'Close',
           showCloseInHeader: true,
         });
@@ -1457,7 +1463,7 @@ function panel_title(srcname, param) {
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
-      waitingDialog.show('Error message', '', {
+      waitingDialog.show('Error message', {'summary': ''}, {
         progressType: 'success',
         'showProgress': true,
         'showButton': true
@@ -1554,7 +1560,7 @@ function panel_title(srcname, param) {
           + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
       }
       if (make_request_error) {
-        waitingDialog.show('Processing request parameters ...', '', {
+        waitingDialog.show('Processing request parameters ...', {'summary': ''}, {
           showProgressBar: false,
           showSpinner: false
         });
