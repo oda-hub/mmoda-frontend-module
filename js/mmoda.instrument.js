@@ -479,10 +479,6 @@ function panel_title(srcname, param) {
       summary += '</tbody></table>';
     }
 
-    if (summary !== '') {
-      summary = '<span>' + summary + '</span>';
-    }
-
     return summary;
   }
 
