@@ -740,12 +740,8 @@ function panel_title(srcname, param) {
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      $('#ldialog .details').html('');
+      waitingDialog.replace();
       $('#ldialog .details').hide();
-      $('#ldialog .summary-content').html('');
-      $('#ldialog .summary-warnings').html('');
-      $('#ldialog .summary-failures').html('');
-      $('#ldialog .summary-results').html('');
       $('#ldialog .more-less-details .fa-info-circle').css('color', '');
       $('#ldialog .progress').addClass('progress-striped');
       waitingDialog.setProgressBarText('');

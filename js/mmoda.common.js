@@ -545,6 +545,9 @@ function get_waitingDialog($modal_dialog) {
           // $dialog).prop("scrollHeight")}, 500);
         },
         replace: function(message, alert_type) {
+          if (typeof message === 'undefined') {
+            message = {'summary': '', 'details': '', 'warnings': '', 'failures': ''};
+          }
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
