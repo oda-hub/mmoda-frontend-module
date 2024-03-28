@@ -245,7 +245,7 @@ function panel_title(srcname, param) {
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    waitingDialog.hideReturnProgressLink();
+    // waitingDialog.hideReturnProgressLink();
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
@@ -265,7 +265,7 @@ function panel_title(srcname, param) {
     //    console.log(jqXHR);
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    waitingDialog.hideReturnProgressLink();
+    // waitingDialog.hideReturnProgressLink();
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
