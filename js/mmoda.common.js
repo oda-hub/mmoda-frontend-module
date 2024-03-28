@@ -524,29 +524,37 @@ function get_waitingDialog($modal_dialog) {
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $('#mmoda_bug_report_form_container', $dialog).addClass('hidden');
         },
-        append: function(message, alert_type) {
+        append: function(message, alert_type, area) {
           // element = $dialog.find('.message');
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
+          if (typeof area === 'undefined') {
+            area = 'summary';
+          }
           // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('summary'))
-            $('.summary .summary-message', $dialog).append($(message.summary).addClass(message_class));
-          if(message.hasOwnProperty('details'))
-            $('.summary .details', $dialog).append(message.details);
-          if(message.hasOwnProperty('warnings'))
-            $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('failures'))
+          // if (area == 'summary') {
+            if(message.hasOwnProperty('summary'))
+              $('.summary .summary-message', $dialog).append($(message.summary).addClass(message_class));
+            if(message.hasOwnProperty('details'))
+              $('.summary .details', $dialog).append(message.details);
+            if(message.hasOwnProperty('warnings'))
+              $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
+            if(message.hasOwnProperty('failures'))
               $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('results'))
-            $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
+            if(message.hasOwnProperty('results'))
+              $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
+          // } else if (area == 'controls') {
+          //   if(message.hasOwnProperty('warnings'))
+          //     $('.modal-controls .alert-message', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
+          // }
           // $('.message', $dialog).animate({scrollTop: $('.message',
           // $dialog).prop("scrollHeight")}, 500);
         },
         replace: function(message, alert_type) {
           if (typeof message === 'undefined') {
-            message = {'summary': '', 'details': '', 'warnings': '', 'failures': ''};
+            message = {'summary': '', 'details': '', 'warnings': '', 'failures': '', 'results': ''};
           }
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
@@ -560,6 +568,8 @@ function get_waitingDialog($modal_dialog) {
             $('.summary .summary-warnings', $dialog).html(message.warnings);
           if(message.hasOwnProperty('failures'))
             $('.summary .summary-failures', $dialog).html(message.failures);
+          if(message.hasOwnProperty('results'))
+            $('.summary .summary-results', $dialog).html(message.results);
 
           if (message.details !== undefined && message.details !== '') {
             this.enableMoreLessLink();
