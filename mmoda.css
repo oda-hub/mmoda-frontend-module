@@ -89,14 +89,19 @@ label.control-label {
 }
 
 #ldialog .modal-controls {
-  margin-top: 0.5em;
   margin-bottom: 0.5em;
   display: flex;
 }
 
+#ldialog .modal-controls-progress-bar {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+
 #ldialog .summary .summary-warnings, 
 #ldialog .summary .summary-failures, 
-#ldialog .summary .details {
+#ldialog .summary .details,
+#ldialog .return-progress-link {
   margin-top: 0.5em;
 }
 

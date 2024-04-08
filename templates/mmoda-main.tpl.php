@@ -61,53 +61,62 @@
           </div>
         </div> -->
       </div>
-      <div class="modal-body">
-        <div class="modal-controls">
-          <div class="progress progress-striped active" style="margin-bottom: 0;">
-            <div class="progress-bar" style="width: 100%"></div>
-            <div class="progress-bar-text-container">
-              <span class="progress-bar-text"></span> 
-              <span class="more-less-details">
-                <i class="fa fa-info-circle" aria-hidden="true">
-                  <span class="more-less-details-tooltip">View messages</span>
-                </i>
-              </span>
-            </div>
-          </div>
-          <div class="return-progress-link">
-            <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
-            <i class="fa fa-spinner hidden fa-spin"></i>
-          </div>
-        </div>
-        <div style="margin-top: 0.5em;margin-bottom: 0.5em;display: flex;">
-          <div class="summary" style="position: relative;width: 100%;">
-            <div class="summary-legend">
-              <div class="legend">
-                <div class="legend-element preparing"></div>
-                Preparing
-                <div class="legend-element calculating"></div>
-                Calculating
-                <div class="legend-element calculated"></div>
-                Done
-                <div class="legend-element from-cache"></div>
-                Restored from cache
-                <div class="legend-element analysis-exception"></div>
-                Analysis exception
+      <div class="modal-body" style="display: flex;">
+        <div style="width: 100%;">
+          <div class="modal-controls">
+            <div class="progress progress-striped active modal-controls-progress-bar">
+              <div class="progress-bar" style="width: 100%"></div>
+              <div class="progress-bar-text-container">
+                <span class="progress-bar-text"></span> 
+                <span class="more-less-details">
+                  <i class="fa fa-info-circle" aria-hidden="true">
+                    <span class="more-less-details-tooltip">View messages</span>
+                  </i>
+                </span>
               </div>
             </div>
-            <div class="summary-message"></div>
-            <div class="summary-controls">
-              <!-- <div class="return-progress-link">View notebook progress 
-                <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
-              </div> -->
-              <!-- <div class="more-less-details">More details &gt;</div> -->
-            </div>
-            <div class="details"></div>
-            <div class="summary-failures"></div>
-            <div class="summary-warnings"></div>
-            <div class="summary-results"></div>
+            <!-- <div class="alert-message"></div> -->
+            <!-- <div class="return-progress-link">
+              <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+              <i class="fa fa-spinner hidden fa-spin"></i>
+            </div> -->
           </div>
-          <div style="width: 28px;"></div>
+
+          <div>
+            <div class="summary" style="position: relative;width: 100%;">
+              <div class="summary-legend">
+                <div class="legend">
+                  <div class="legend-element preparing"></div>
+                  Preparing
+                  <div class="legend-element calculating"></div>
+                  Calculating
+                  <div class="legend-element calculated"></div>
+                  Done
+                  <div class="legend-element from-cache"></div>
+                  Restored from cache
+                  <div class="legend-element analysis-exception"></div>
+                  Analysis exception
+                </div>
+              </div>
+              <div class="summary-message"></div>
+              <div class="summary-controls">
+                <!-- <div class="return-progress-link">View notebook progress 
+                  <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
+                </div> -->
+                <!-- <div class="more-less-details">More details &gt;</div> -->
+              </div>
+              <div class="details"></div>
+              <div class="summary-failures"></div>
+              <div class="summary-warnings"></div>
+              <div class="summary-results"></div>
+            </div>
+            <!-- <div style="width: 28px;"></div> -->
+          </div>
+        </div>
+
+        <div class="return-progress-link">
+          <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+          <i class="fa fa-spinner hidden fa-spin"></i>
         </div>
       </div>
       <div class="modal-footer">
