@@ -27,7 +27,7 @@ function explore_gallery_object($source_name)
       'params' => $query_params,
       'json_response' => $json_response,
       'htmlResponse' => '<iframe id="mmoda-gallery-iframe" src="' . $url . '" title="MMODA Gallery"></iframe><br/>
-                        <p class="text-center current-message">Please visit the gallery to see the full list of products for this source <a href="' . $url_complete . '" target="_blank"> >> </a></p>'
+                        <p class="text-center current-message"><a href="' . $url_complete . '" target="_blank">Please visit the gallery to see the full list of products for this source >> </a></p>'
     );
   }
 

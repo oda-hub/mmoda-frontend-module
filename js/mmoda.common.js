@@ -636,7 +636,13 @@ function get_waitingDialog($modal_dialog) {
         },
         disableMoreLessLink: function() {
           $dialog.find('.more-less-details').removeClass("enabled");
-        }
+        },
+        hideMoreLessLink: function() {
+          $dialog.find('.more-less-details').hide();
+        },
+        showMoreLessLink: function() {
+          $dialog.find('.more-less-details').show();
+        },
       };
 
     })(jQuery);
@@ -940,17 +946,20 @@ function get_waitingDialog($modal_dialog) {
         var message = '';
         if (settings.extraData._triggering_element_name == 'resolve_name') {
           message = 'Resolving object name ...';
+          waitingDialog.hideMoreLessLink();
         }
         else if (settings.extraData._triggering_element_name == 'explore_name') {
           $('#mmoda-gallery-panel').remove();
           message = 'Requesting data from MMODA Gallery ...';
+          waitingDialog.hideMoreLessLink();
         }
         waitingDialog.show(message, '', {
           progressType: 'success',
           showProgressBar: true,
-          showSpinner: false
+          showSpinner: false,
+          showTitle: true
         });
-        waitingDialog.hideHeaderMessage();
+        waitingDialog.setProgressBarBackgroundcolor('#5cb85c');
 
         var index = mmoda_ajax_jqxhr.push(jqxhr);
         $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);

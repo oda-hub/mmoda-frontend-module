@@ -746,6 +746,7 @@ function panel_title(srcname, param) {
       waitingDialog.setProgressBarText('');
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
+      waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
