@@ -636,7 +636,13 @@ function get_waitingDialog($modal_dialog) {
         },
         disableMoreLessLink: function() {
           $dialog.find('.more-less-details').removeClass("enabled");
-        }
+        },
+        hideMoreLessLink: function() {
+          $dialog.find('.more-less-details').hide();
+        },
+        showMoreLessLink: function() {
+          $dialog.find('.more-less-details').show();
+        },
       };
 
     })(jQuery);
@@ -884,12 +890,13 @@ function get_waitingDialog($modal_dialog) {
 
     function openPageInModal(href) {
       $.get(href, function(data) {
-        html = $.parseHTML(data),
-          waitingDialog.show('', $(html).filter('.main-container').html(), {
-            dialogSize: 'lg',
-            buttonText: 'Close',
-            showCloseInHeader: true,
-          })
+        html = $.parseHTML(data);
+        message = { 'summary': $(html).filter('.main-container').html() };
+        waitingDialog.show('', message, {
+          dialogSize: 'lg',
+          buttonText: 'Close',
+          showCloseInHeader: true,
+        })
       })
     }
     $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').on('click', function(e) {
@@ -940,17 +947,20 @@ function get_waitingDialog($modal_dialog) {
         var message = '';
         if (settings.extraData._triggering_element_name == 'resolve_name') {
           message = 'Resolving object name ...';
+          waitingDialog.hideMoreLessLink();
         }
         else if (settings.extraData._triggering_element_name == 'explore_name') {
           $('#mmoda-gallery-panel').remove();
           message = 'Requesting data from MMODA Gallery ...';
+          waitingDialog.hideMoreLessLink();
         }
-        waitingDialog.show(message, '', {
+        waitingDialog.show(message, {'summary': ''}, {
           progressType: 'success',
           showProgressBar: true,
-          showSpinner: false
+          showSpinner: false,
+          showTitle: true
         });
-        waitingDialog.hideHeaderMessage();
+        waitingDialog.setProgressBarBackgroundcolor('#5cb85c');
 
         var index = mmoda_ajax_jqxhr.push(jqxhr);
         $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);
