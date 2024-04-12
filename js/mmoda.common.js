@@ -890,12 +890,13 @@ function get_waitingDialog($modal_dialog) {
 
     function openPageInModal(href) {
       $.get(href, function(data) {
-        html = $.parseHTML(data),
-          waitingDialog.show('', $(html).filter('.main-container').html(), {
-            dialogSize: 'lg',
-            buttonText: 'Close',
-            showCloseInHeader: true,
-          })
+        html = $.parseHTML(data);
+        message = { 'summary': $(html).filter('.main-container').html() };
+        waitingDialog.show('', message, {
+          dialogSize: 'lg',
+          buttonText: 'Close',
+          showCloseInHeader: true,
+        })
       })
     }
     $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').on('click', function(e) {
