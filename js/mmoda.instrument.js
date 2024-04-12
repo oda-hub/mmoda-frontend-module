@@ -751,6 +751,7 @@ function panel_title(srcname, param) {
       waitingDialog.disableReturnProgressLink();
       waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
+      waitingDialog.hideLegend();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
