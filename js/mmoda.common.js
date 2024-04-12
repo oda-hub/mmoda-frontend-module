@@ -954,7 +954,7 @@ function get_waitingDialog($modal_dialog) {
           message = 'Requesting data from MMODA Gallery ...';
           waitingDialog.hideMoreLessLink();
         }
-        waitingDialog.show(message, '', {
+        waitingDialog.show(message, {'summary': ''}, {
           progressType: 'success',
           showProgressBar: true,
           showSpinner: false,
