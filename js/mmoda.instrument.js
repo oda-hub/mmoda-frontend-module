@@ -177,7 +177,6 @@ function panel_title(srcname, param) {
     if (current_instrument_query !== undefined) {
       if ($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
-        waitingDialog.showLegend();
         integral_instrument = true;
       }
     }
@@ -221,6 +220,10 @@ function panel_title(srcname, param) {
     //     trigger: 'hover'
     //   });
     // }
+
+    if (current_details !== '')
+      waitingDialog.showLegend();
+
     if (current_details != previous_details) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
