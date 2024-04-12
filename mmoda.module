@@ -339,10 +339,10 @@ function mmoda_main_block_content()
     drupal_set_message(t('Error : can not load highlightjs library.'), 'error');
     return;
   }
-  if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
+//   if (! ($library_bokeh = libraries_load('bokeh')) || empty($library_bokeh['bokeh'])) {
     // drupal_set_message ( t ( 'Error : can not load Bokeh library.' ), 'error' );
     // return;
-  }
+//   }
   // drupal_add_js ( 'var $j = jQuery.noConflict();', array (
   // 'type' => 'inline',
   // 'scope' => 'header',

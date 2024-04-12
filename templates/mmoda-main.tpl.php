@@ -50,23 +50,23 @@
   aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div id="ldialog-modal-dialog" class="modal-dialog modal-lg">
     <div class="modal-content">
-      <!-- <div class="modal-header">
-        <span class="close" data-dismiss="modal" aria-label="Close"
-          aria-hidden="true">&times;</span>
-        <h4 class="modal-title"></h4> -->
+      <div class="modal-header">
+        <!-- <span class="close" data-dismiss="modal" aria-label="Close"
+          aria-hidden="true">&times;</span> -->
+        <h4 class="modal-title"></h4>
         <!-- <div class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></div> -->
         <!-- <div class="header-message">
           <div>
             <span class="session-id"></span><span class="job-id"></span>
           </div>
         </div> -->
-      <!-- </div> -->
+      </div>
       <div class="modal-body">
         <div class="modal-controls">
           <div class="progress progress-striped active" style="margin-bottom: 0;">
             <div class="progress-bar" style="width: 100%"></div>
             <div class="progress-bar-text-container">
-              <span class="progress-bar-text"></span> 
+              <span class="progress-bar-text"></span>
               <span class="more-less-details">
                 <i class="fa fa-info-circle" aria-hidden="true">
                   <span class="more-less-details-tooltip">View messages</span>
@@ -97,12 +97,13 @@
             </div>
             <div class="summary-message"></div>
             <div class="summary-controls">
-              <!-- <div class="return-progress-link">View notebook progress 
+              <!-- <div class="return-progress-link">View notebook progress
                 <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
               </div> -->
               <!-- <div class="more-less-details">More details &gt;</div> -->
             </div>
             <div class="details"></div>
+            <div class="summary-failures"></div>
             <div class="summary-warnings"></div>
             <div class="summary-results"></div>
           </div>

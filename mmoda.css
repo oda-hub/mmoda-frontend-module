@@ -7,7 +7,7 @@
 }
 
 label.control-label {
-  display: block;;
+  display: block;
 }
 
 .form-item-E1-keV .form-control, .form-item-E2-keV .form-control,
@@ -32,7 +32,7 @@ label.control-label {
   vertical-align: top;
   display: none;
   float: left;
-  width: auto;
+ /* width: auto;*/
 }
 
 .block-mmoda {
@@ -160,7 +160,6 @@ table.mmoda tr td, table.mmoda tr th {
 .instrument-params-panel {
   float: left;
   display: block;
-  vertical-align: top;
   width: 30%;
   clear: right;
 }
@@ -754,3 +753,5 @@ button.renku-publish {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
