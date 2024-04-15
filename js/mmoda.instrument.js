@@ -87,6 +87,7 @@ function panel_title(srcname, param) {
   var distinct_nodes;
 
   var current_ajax_call_params = {};
+  var run_analysis_data_query_status = undefined;
   var last_dataserver_response = {};
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
@@ -136,8 +137,13 @@ function panel_title(srcname, param) {
     waitingDialog.hideSpinner();
 
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     waitingDialog.setProgressBarStatus('done', false);
     waitingDialog.setProgressBarText('done');
+    if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+          waitingDialog.enableReturnProgressLink();
+    }
     if (data.exit_status.status != 0) {
       debug_message = '';
       if (data.exit_status.debug_message) {
@@ -233,7 +239,7 @@ function panel_title(srcname, param) {
 
     let access_token = current_ajax_call_params.currentFormData.get('token');
     current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-    current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+    run_analysis_data_query_status = data.query_status;
     if (!current_ajax_call_params.currentFormData.has('job_id')) {
       current_ajax_call_params.currentFormData.append('job_id', job_id);
       current_ajax_call_params.currentFormData.append('session_id', session_id);
@@ -327,6 +333,10 @@ function panel_title(srcname, param) {
     //    }
     // must be global variable
     requestTimer = null;
+
+    current_ajax_call_params.currentFormData.delete('return_progress');
+    if(typeof run_analysis_data_query_status !== 'undefined')
+      current_ajax_call_params.currentFormData.set('query_status', run_analysis_data_query_status);
 
     //var startAJAXTime = new Date().getTime();
     var mmoda_jqXHR = $.ajax({
@@ -1000,10 +1010,10 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
-            if (data.products.hasOwnProperty('progress_product_html_output')) {
+            if (data.hasOwnProperty('return_progress_products') && data.return_progress_products.hasOwnProperty('progress_product_html_output')) {
               var parent_panel = $('#ldialog-modal-dialog');
               var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
-              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              display_progress_html_output(data.return_progress_products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
           }).complete(function(jqXHR, textStatus) {
