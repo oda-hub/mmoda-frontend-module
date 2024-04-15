@@ -227,7 +227,7 @@ function panel_title(srcname, param) {
     //   });
     // }
 
-    if (current_details !== '')
+    if (current_details !== '' && integral_instrument)
       waitingDialog.showLegend();
 
     if (current_details != previous_details) {
