@@ -985,7 +985,7 @@ function panel_title(srcname, param) {
       }
     });
 
-    $("body").on('click', '.return-progress-link.enabled', function(e) {
+    $("body").on('click', '.return-progress-link.enabled .prompt', function(e) {
       // e.stopPropagation();
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();

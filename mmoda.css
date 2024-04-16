@@ -545,8 +545,14 @@ div.ctools-modal-content .modal-content {
 }
 
 .return-progress-link.enabled,
-.more-less-details.enabled {
+.more-less-details.enabled
+{
   color: #007d64;
+}
+
+.return-progress-link.enabled .prompt,
+.more-less-details.enabled
+{
   cursor: pointer;
 }
 
