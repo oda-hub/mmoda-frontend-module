@@ -625,7 +625,7 @@ div.ctools-modal-content .modal-content {
 }
 
 .result-renku-publish-link:hover .result-renku-publish-link-tooltip,
-.return-progress-link:hover .return-progress-link-tooltip,
+.return-progress-link .prompt:hover .return-progress-link-tooltip,
 .more-less-details:hover .more-less-details-tooltip {
   visibility: visible;
 }
