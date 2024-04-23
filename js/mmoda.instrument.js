@@ -1398,6 +1398,7 @@ function panel_title(srcname, param) {
       data_units = new Array();
       job_status_table = new Array();
       distinct_nodes = new Array();
+      run_analysis_data_query_status = undefined;
 
       AJAX_submit_call();
     });
