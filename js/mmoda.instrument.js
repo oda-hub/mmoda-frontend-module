@@ -1010,10 +1010,10 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
-            if (data.hasOwnProperty('return_progress_products') && data.return_progress_products.hasOwnProperty('progress_product_html_output')) {
+            if (data.products.hasOwnProperty('progress_product_html_output')) {
               var parent_panel = $('#ldialog-modal-dialog');
               var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
-              display_progress_html_output(data.return_progress_products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
           }).complete(function(jqXHR, textStatus) {
