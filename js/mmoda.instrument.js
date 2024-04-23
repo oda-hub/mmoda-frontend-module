@@ -763,6 +763,13 @@ function panel_title(srcname, param) {
       waitingDialog.disableMoreLessLink();
       waitingDialog.hideLegend();
 
+      // remove any child html-progress modal window
+      $("#ldialog > *").each(function() {
+        var id = $(this).attr('id');
+        if (id !== 'ldialog-modal-dialog')
+          $(this).remove();
+    });
+
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
