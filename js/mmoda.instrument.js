@@ -768,7 +768,7 @@ function panel_title(srcname, param) {
         var id = $(this).attr('id');
         if (id !== 'ldialog-modal-dialog')
           $(this).remove();
-    });
+      });
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
