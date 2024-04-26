@@ -1,0 +1,6 @@
+mmoda.content:
+  path: '/mmoda'
+  defaults:
+    _controller: '\Drupal\mmoda\Controller\mmodaController::content'
+  requirements:
+    _permission: 'access content'

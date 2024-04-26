@@ -1,66 +1,7 @@
-var current_instrument_form_validator;
 var requestTimer;
 var messages = {};
 
-function validate_paste($thefield) {
-  var maxlength = parseInt($thefield.attr('maxlength'));
-  var pastedValueLength = $thefield.data('pastedValueLength');
-  if ($thefield.data('truncatedPaste')) {
-    $thefield.removeData('truncatedPaste pastedValueLength');
-    return {
-      valid: false,
-      message: 'Pasted value too large (' + pastedValueLength + '), maximum allowed length is ' + maxlength
-    }
-  };
-  return true;
-}
-
-function validate_timebin(value, validator, $thefield) {
-  var time_bin_format = validator.getFieldElements('time_bin_format').val();
-  if ($thefield.data('mmodaTimeBinMin')) {
-    var time_bin_min_seconds = $thefield.data('mmodaTimeBinMin');
-    var time_bin_format_message = time_bin_min_seconds + ' seconds';
-    if (time_bin_format == 'jd') {
-      time_bin_min_days = (time_bin_min_seconds / 86400).toFixed(6);
-      var time_bin_format_message = time_bin_min_days + ' day (' + time_bin_min_seconds + ' seconds)';
-    }
-    if (value < time_bin_min) {
-      return {
-        valid: false,
-        message: 'Please enter a time bin higher than ' + time_bin_format_message
-      }
-    }
-  }
-
-  if ($thefield.data('mmodaTimeBinMultiple')) {
-    var time_bin_min = $thefield.data('mmodaTimeBinMin');
-    var time_bin_format_message = time_bin_min + ' seconds';
-    value *= 1000;
-    if (time_bin_format == 'jd') {
-      value = value * 86400;
-    }
-    if (value % 50 != 0) {
-      value_inf = (value - (value % 50));
-      value_sup = value_inf + 50;
-      if (time_bin_format == 'jd') {
-        million = Math.pow(10, 6);
-        value_inf *= million;
-        value_sup *= million;
-        value_inf = ((value_inf - (value_inf % 86400))) / (86400 * million);
-        value_sup = ((value_sup - (value_sup % 86400))) / (86400 * million);
-      }
-      value_inf /= 1000;
-      value_sup /= 1000;
-      return {
-        valid: false,
-        message: 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
-      }
-    }
-  }
-  return true;
-}
-
-function panel_title(srcname, param) {
+function card_title(srcname, param) {
   var title_items = [];
   if (srcname !== undefined && srcname !== '') title_items.push('Source: ' + srcname);
   if (param.hasOwnProperty('E1_keV')) title_items.push(param.E1_keV + ' - ' + param.E2_keV + ' keV');
@@ -73,7 +14,7 @@ function panel_title(srcname, param) {
 
 (function($) {
   $(document).ready(commonReady);
-  var desktop_panel_counter = 1;
+  var desktop_card_counter = 1;
 
   var request_draw_spectrum = false;
   var request_spectrum_form_element;
@@ -98,32 +39,32 @@ function panel_title(srcname, param) {
   }
 
   function AJAX_submit_call() {
-    AJAX_call_get_token().done(
-      function(data, textStatus, jqXHR) {
-        if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
-          current_ajax_call_params.currentFormData.append('token', data.token);
-        }
+    //    AJAX_call_get_token().done(
+    //      function(data, textStatus, jqXHR) {
+    //        if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
+    //          current_ajax_call_params.currentFormData.append('token', data.token);
+    //        }
 
-        AJAX_call();
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        console.log('Error in requesting the user token:');
-        console.log('textStatus : ' + textStatus);
-        console.log('errorThrown :' + errorThrown);
-        console.log('jqXHR');
-        console.log(jqXHR);
-        AJAX_call();
-      });
+    AJAX_call();
+    //      }).fail(function(jqXHR, textStatus, errorThrown) {
+    //        console.log('Error in requesting the user token:');
+    //        console.log('textStatus : ' + textStatus);
+    //        console.log('errorThrown :' + errorThrown);
+    //        console.log('jqXHR');
+    //        console.log(jqXHR);
+    //        AJAX_call();
+    //      });
   }
 
-  function response_panel_mismatch(data) {
+  function response_card_mismatch(data) {
     var returned_product_instrument = data.products.analysis_parameters.instrument;
-    var active_panel_instrument = $('input[name="instrument"]', '.instrument-panel.active form').val();
-    if (returned_product_instrument == active_panel_instrument) return false;
+    var active_card_instrument = $('input[name="instrument"]', '.instrument-card.active form').val();
+    if (returned_product_instrument == active_card_instrument) return false;
     return true;
   }
 
   function mmoda_show_product(data) {
-    if (response_panel_mismatch(data)) return;
+    if (response_card_mismatch(data)) return;
     $(".notice-progress-container").hide();
     add_dispatcher_response_to_feedback_form(data);
     var regex = /[\/]*$/;
@@ -135,7 +76,11 @@ function panel_title(srcname, param) {
     }
     waitingDialog.hideSpinner();
 
-    instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    instrument = $('input[name=instrument]', ".instrument-card.active").val();
+    // resul_obj = {'results': get_current_date_time() + ' ' + data.query_status};
+    // waitingDialog.append(resul_obj, 'success');
+    // waitingDialog.hideProgressBar();
+    // waitingDialog.hideReturnProgressLink();
     waitingDialog.setProgressBarStatus('done', false);
     waitingDialog.setProgressBarText('done');
     if (data.exit_status.status != 0) {
@@ -146,25 +91,25 @@ function panel_title(srcname, param) {
     }
 
     if (data.hasOwnProperty('htmlResponse')) {
-      product_panel_body = display_in_iframe(data);
+      product_card_body = display_in_iframe(data);
     }
     else if (data.products.hasOwnProperty('image')) {
       if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-        product_panel_body = display_lc_table(job_id, data.products);
+        product_card_body = display_lc_table(job_id, data.products);
       } else {
         if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-          product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+          product_card_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
         } else if (Array.isArray(data.products.image)) {
-          product_panel_body = display_image_table(data.products, job_id, instrument);
+          product_card_body = display_image_table(data.products, job_id, instrument);
         } else {
-          product_panel_body = display_image(data.products, job_id, instrument);
+          product_card_body = display_image(data.products, job_id, instrument);
         }
       }
     } else if (data.products.hasOwnProperty('spectrum_name')) {
-      product_panel_body = display_spectrum_table(job_id, data.query_status, data.products);
+      product_card_body = display_spectrum_table(job_id, data.query_status, data.products);
     }
 
-    $('.instrument-panel.active .instrument-params-panel .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_panel_body);
+    $('.instrument-card.active .instrument-params-card .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_card_body);
     waitingDialog.setClose();
   }
 
@@ -175,8 +120,9 @@ function panel_title(srcname, param) {
     let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     let integral_instrument = false;
     if (current_instrument_query !== undefined) {
-      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-card")[0].attributes.hasOwnProperty('integral_instrument') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-card")[0].attributes.integral_instrument.value == 'true') {
+        waitingDialog.showLegend();
         integral_instrument = true;
       }
     }
@@ -205,8 +151,8 @@ function panel_title(srcname, param) {
     current_details = messages.details;
     // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
-      if ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+      if ($(`input[value='${current_instrument_query}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
         if (response_status == 'progress' || response_status == 'ready')
           waitingDialog.enableReturnProgressLink();
         waitingDialog.setProgressBarStatus(response_status, true, progress, progress_max);
@@ -220,10 +166,6 @@ function panel_title(srcname, param) {
     //     trigger: 'hover'
     //   });
     // }
-
-    if (current_details !== '')
-      waitingDialog.showLegend();
-
     if (current_details != previous_details) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
@@ -248,13 +190,14 @@ function panel_title(srcname, param) {
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    waitingDialog.hideReturnProgressLink();
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    warning_obj = {'failures' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
-     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-     + reformatted_error_message + '</td></tr></table>'
+    warning_obj = {
+      'failures': '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+        + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+        + reformatted_error_message + '</td></tr></table>'
     };
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
@@ -268,7 +211,7 @@ function panel_title(srcname, param) {
     //    console.log(jqXHR);
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    waitingDialog.hideReturnProgressLink();
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
@@ -337,7 +280,9 @@ function panel_title(srcname, param) {
       contentType: false,
       timeout: ajax_request_timeout,
       type: 'POST'
-    }).done(
+    });
+    
+    mmoda_jqXHR.done(
       function(data, textStatus, jqXHR) {
         last_dataserver_response = data;
         job_id = '';
@@ -372,12 +317,13 @@ function panel_title(srcname, param) {
           warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
           waitingDialog.replace(warning_obj);
         }
-      }).complete(function(jqXHR, textStatus) {
-        $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-      }).error(function(jqXHR, textStatus, errorThrown) {
-        mmoda_show_request_error(jqXHR, textStatus, errorThrown);
-
       });
+    mmoda_jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+      mmoda_show_request_error(jqXHR, textStatus, errorThrown);
+    });
+    mmoda_jqXHR.always(function(jqXHR, textStatus) {
+      $('button[type=submit]', ".instrument-card.active, .common-params").prop('disabled', false);
+    });
 
     // jqxhr
     var index = mmoda_ajax_jqxhr.push(mmoda_jqXHR);
@@ -551,136 +497,8 @@ function panel_title(srcname, param) {
     return (cssClass);
   }
 
-  function showErrorWhenTruncatedPaste() {
-    $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function(e) {
-      var pastedDataLength = e.originalEvent.clipboardData.getData('text').length;
-      if ($(this)[0].hasAttribute('maxlength') && !isNaN(parseInt($(this).attr('maxlength')))) {
-        var maxlength = parseInt($(this).attr('maxlength'));
-        if (pastedDataLength > maxlength) {
-          $(this).data('truncatedPaste', true);
-          $(this).data('pastedValueLength', pastedDataLength);
-          var gparent_elt = $(this).parent().parent();
-          $('label', gparent_elt).addClass('control-label');
-          gparent_elt.addClass('has-feedback has-error');
-          e.preventDefault();
-          var current_form = $(this).closest('form');
-          var elt_name = $(this).attr('name');
-          current_form.data('bootstrapValidator').updateStatus(elt_name, 'NOT_VALIDATED').validateField(elt_name);
-        }
-      }
-    });
-
-    $("input[type=text], textarea").bind("input", function() {
-      var parent_elt = $(this).parent().parent();
-      parent_elt.removeClass('has-feedback has-error');
-    });
-  }
-
-  function all_instruments_forms_set_bootstrapValidator() {
-
-    var validator_fields = {};
-    
-    $("input[type=text][maxlength], textarea[maxlength]").each(function() {
-      var name = $(this).attr('name');
-      //      var maxlength = parseInt($(this).attr('maxlength'));
-      validator_fields[name] = {
-        // enabled: false,
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_paste($field));
-            }
-          }
-        }
-      }
-    });
-
-    validator_fields['scw_list'] = {
-        // enabled: false,
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_scws(value, 500));
-            }
-        }
-      }
-    };
-    
-    validator_fields['time_bin'] = {
-      // enabled: false,
-      validators: {
-        callback: {
-          callback: function(value, validator, $field) {
-            return (validate_timebin(value, validator, $field));
-          }
-        }
-      }
-    };
-
-    validator_fields['E1_keV'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        },
-        callback: {
-          callback: function(value, validator, $field) {
-            var E2_keV = validator.getFieldElements('E2_keV').val();
-            if (Number(value) >= Number(E2_keV)) {
-              return {
-                valid: false,
-                message: 'Energy min must be lower that energy max'
-              }
-            }
-            return true;
-          }
-        }
-      }
-    };
-    validator_fields['E2_keV'] = {
-      // enabled: false,
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        },
-        callback: {
-          callback: function(value, validator, $field) {
-            var E1_keV = validator.getFieldElements('E1_keV').val();
-            if (Number(value) <= Number(E1_keV)) {
-              return {
-                valid: false,
-                message: 'Energy max must be higher that energy min'
-              }
-            }
-            return true;
-          }
-        }
-      }
-    };
-    euclid_multi_fields = $('.euclid-instruments-filters .form-control');
-
-    for (let fld of euclid_multi_fields) {
-      validator_fields[fld.name] = {
-        validators: {
-          notEmpty: {
-            message: (fld.type == 'select-one') ? 'Please select filter' : 'Please enter a value'
-          }
-        }
-      }
-    };
-
-    $('.instrument-panel form').bootstrapValidator({
-      fields: validator_fields,
-      feedbackIcons: {
-        valid: 'glyphicon glyphicon-ok',
-        invalid: 'glyphicon glyphicon-remove',
-        validating: 'glyphicon glyphicon-refresh'
-      }
-    });
-  }
-
   function insert_new_multivalued_field(add_multivalued_button) {
-    var current_instrument_form_validator = $(add_multivalued_button).closest('.instrument-panel form').data('bootstrapValidator');
+    var current_instrument_form_validator = $(add_multivalued_button).closest('.instrument-card form').data('bootstrapValidator');
     var multivalued_field = $(add_multivalued_button).closest('.multivalued-field');
     var current_row = $(add_multivalued_button).prev();
     var newVAlue = current_row.clone();
@@ -701,11 +519,7 @@ function panel_title(srcname, param) {
     if (nb_rows == 1) $('button.delete-multivalued-element', multivalued_field).prop('disabled', true)
   }
 
-
-  function commonReady() {
-    $('.multivalued-field').removeClass('form-group');
-
-    all_instruments_forms_set_bootstrapValidator();
+  function set_multivalued_events() {
     var add_multivalued_elt_button = $('<button>').addClass('btn btn-secondary add-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-plus'));
     var del_multivalued_elt_button = $('<button>').addClass('btn btn-secondary delete-multivalued-element').append($('<span>').addClass('glyphicon glyphicon-minus'));
     $('.multivalued-field').append(add_multivalued_elt_button);
@@ -731,6 +545,11 @@ function panel_title(srcname, param) {
       e.preventDefault();
       delete_multivalued_field(this);
     });
+  }
+
+  function commonReady() {
+    $('.multivalued-field').removeClass('form-group');
+    set_multivalued_events();
 
     $('body').on('click', '#ldialog .close-button', function(e) {
       e.preventDefault();
@@ -742,21 +561,23 @@ function panel_title(srcname, param) {
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      waitingDialog.replace();
+      $('#ldialog .details').html('');
       $('#ldialog .details').hide();
+      $('#ldialog .summary-content').html('');
+      $('#ldialog .summary-warnings').html('');
+      $('#ldialog .summary-failures').html('');
+      $('#ldialog .summary-results').html('');
       $('#ldialog .more-less-details .fa-info-circle').css('color', '');
-      $('#ldialog .progress').addClass('progress-striped');
+      $('#ldialog .progress-bar').addClass('progress-bar-striped');
       waitingDialog.setProgressBarText('');
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
-      waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
-      waitingDialog.hideLegend();
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
-      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-card').data("mmoda_gallery_close", 1);
 
       $(this).removeData('mmoda_gallery_close');
       $(this).removeData('mmoda_jqxhr_index');
@@ -771,22 +592,22 @@ function panel_title(srcname, param) {
     $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
-      var current_panel = $(this).closest('.panel');
-      var product_type = current_panel.data("product_type");
+      var current_card = $(this).closest('.card');
+      var product_type = current_card.data("product_type");
       $('#multi-product-' + product_type + '-tab a').click();
       // return;
-      if (multiproduct_panel_id = data['multiproduct_' + product_type + '_panel_id']) {
-        $(multiproduct_panel_id).highlight_result_panel(lightcurve_offset);
-        $('.fa-chevron-down', multiproduct_panel_id).click();
+      if (multiproduct_card_id = data['multiproduct_' + product_type + '_card_id']) {
+        $(multiproduct_card_id).highlight_result_card(lightcurve_offset);
+        $('.fa-chevron-down', multiproduct_card_id).click();
 
       } else {
-        $(".instrument-panel.active").data("lightcurve_table_current_row", current_row);
+        $(".instrument-card.active").data("lightcurve_table_current_row", current_row);
         var lc_index = data.index;
-        var parent_catalog_offset = $(".instrument-panel.active").offset();
+        var parent_catalog_offset = $(".instrument-card.active").offset();
         var catalog_offset = {};
         catalog_offset.top = e.pageY - parent_catalog_offset.top;
         catalog_offset.left = e.pageX - parent_catalog_offset.left;
-        display_multiproduct_table(current_panel, lc_index, datetime, catalog_offset);
+        display_multiproduct_table(current_card, lc_index, datetime, catalog_offset);
       }
     });
 
@@ -796,19 +617,19 @@ function panel_title(srcname, param) {
       var lightcurve_offset = {};
       lightcurve_offset.top = e.pageY;
       lightcurve_offset.left = e.pageX;
-      if (lightcurve_panel_id = data.lightcurve_panel_id) {
-        $(lightcurve_panel_id).highlight_result_panel(lightcurve_offset);
-        $('.fa-chevron-down', lightcurve_panel_id).click();
+      if (lightcurve_card_id = data.lightcurve_card_id) {
+        $(lightcurve_card_id).highlight_result_card(lightcurve_offset);
+        $('.fa-chevron-down', lightcurve_card_id).click();
 
       } else {
-        $(".instrument-panel.active").data("lightcurve_table_current_row", current_row);
+        $(".instrument-card.active").data("lightcurve_table_current_row", current_row);
         var lc_index = data.index;
-        var current_panel = $(this).closest('.panel');
-        var parent_catalog_offset = $(".instrument-panel.active").offset();
+        var current_card = $(this).closest('.card');
+        var parent_catalog_offset = $(".instrument-card.active").offset();
         var catalog_offset = {};
         catalog_offset.top = e.pageY - parent_catalog_offset.top;
         catalog_offset.left = e.pageX - parent_catalog_offset.left;
-        display_lc_image(current_panel, lc_index, datetime, catalog_offset);
+        display_lc_image(current_card, lc_index, datetime, catalog_offset);
       }
     });
 
@@ -819,9 +640,9 @@ function panel_title(srcname, param) {
       spectrum_offset.top = e.pageY;
       spectrum_offset.left = e.pageX;
 
-      if (spectrum_panel_id = data.spectrum_panel_id) {
-        $(spectrum_panel_id).highlight_result_panel(spectrum_offset);
-        $('.fa-chevron-down', spectrum_panel_id).click();
+      if (spectrum_card_id = data.spectrum_card_id) {
+        $(spectrum_card_id).highlight_result_card(spectrum_offset);
+        $('.fa-chevron-down', spectrum_card_id).click();
 
       } else {
 
@@ -833,8 +654,8 @@ function panel_title(srcname, param) {
         draw_spectrum_form_elements.append('session_id', data.session_id);
         draw_spectrum_form_elements.append('query_status', 'ready');
         draw_spectrum_form_elements.append('job_id', data.job_id);
-        draw_spectrum_form_elements.append('instrument', $('input[name=instrument]', ".instrument-panel.active").val());
-        draw_spectrum_form_elements.append('query_type', $('select[name=query_type]', ".instrument-panel.active").val());
+        draw_spectrum_form_elements.append('instrument', $('input[name=instrument]', ".instrument-card.active").val());
+        draw_spectrum_form_elements.append('query_type', $('select[name=query_type]', ".instrument-card.active").val());
         draw_spectrum_form_elements.append('product_type', 'spectral_fit');
         draw_spectrum_form_elements.append('xspec_model', data.xspec_model);
         draw_spectrum_form_elements.append('ph_file_name', data.ph_file_name);
@@ -846,132 +667,132 @@ function panel_title(srcname, param) {
         $(this).data('source_name', data.source_name);
         $(this).data('files', data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name);
 
-        $(".instrument-panel.active").data("last_click_position", {
+        $(".instrument-card.active").data("last_click_position", {
           'top': e.pageY,
           'left': e.pageX
         });
-        $(".instrument-panel.active").data("spectrum_table_current_row", current_row);
-        $(".form-submit", ".instrument-panel.active").click();
+        $(".instrument-card.active").data("spectrum_table_current_row", current_row);
+        $(".form-submit", ".instrument-card.active").click();
       }
     });
 
-    $("body").on('click', '.panel .close-panel', function() {
-      var panel = $(this).closest('.panel');
-      if (panel.data('catalog')) {
-        // delete catalog when attached to panel
-        panel.removeData('catalog');
+    $("body").on('click', '.card .close-card', function() {
+      var card = $(this).closest('.card');
+      if (card.data('catalog')) {
+        // delete catalog when attached to card
+        card.removeData('catalog');
 
       }
-      if (panel.data('log')) {
-        // delete log when attached to panel
-        panel.removeData('log');
+      if (card.data('log')) {
+        // delete log when attached to card
+        card.removeData('log');
 
       }
 
-      // update the catalog only if it is in the parameters panel
-      if (panel.data('catalog_parent_panel_id')) {
-        catalog_parent_panel_id = $(panel.data('catalog_parent_panel_id'));
-        catalog_parent_panel_id.removeData('catalog_panel_id');
+      // update the catalog only if it is in the parameters card
+      if (card.data('catalog_parent_card_id')) {
+        catalog_parent_card_id = $(card.data('catalog_parent_card_id'));
+        catalog_parent_card_id.removeData('catalog_card_id');
       }
 
-      // update the spectrum only if it is in the parameters panel
-      if (panel.data('spectrum_parent_panel_id')) {
-        spectrum_parent_panel_id = $(panel.data('spectrum_parent_panel_id'));
-        spectrum_parent_panel_id.removeData('spectrum_panel_id');
+      // update the spectrum only if it is in the parameters card
+      if (card.data('spectrum_parent_card_id')) {
+        spectrum_parent_card_id = $(card.data('spectrum_parent_card_id'));
+        spectrum_parent_card_id.removeData('spectrum_card_id');
       }
 
-      // update the lightcurve only if it is in the parameters panel
-      if (panel.data('lightcurve_parent_panel_id')) {
-        lightcurve_parent_panel_id = $(panel.data('lightcurve_parent_panel_id'));
-        lightcurve_parent_panel_id.removeData('lightcurve_panel_id');
+      // update the lightcurve only if it is in the parameters card
+      if (card.data('lightcurve_parent_card_id')) {
+        lightcurve_parent_card_id = $(card.data('lightcurve_parent_card_id'));
+        lightcurve_parent_card_id.removeData('lightcurve_card_id');
       }
 
-      if (panel.data('log_product_panel_id')) {
-        log_product_panel_id = panel.data('log_product_panel_id');
-        $(log_product_panel_id).removeData('log_panel_id');
+      if (card.data('log_product_card_id')) {
+        log_product_card_id = card.data('log_product_card_id');
+        $(log_product_card_id).removeData('log_card_id');
       }
 
-      if (panel.data('api_code_product_panel_id')) {
-        log_product_panel_id = panel.data('api_code_product_panel_id');
-        $(log_product_panel_id).removeData('api_code_panel_id');
+      if (card.data('api_code_product_card_id')) {
+        log_product_card_id = card.data('api_code_product_card_id');
+        $(log_product_card_id).removeData('api_code_card_id');
       }
 
-      if (panel.data('query_parameters_product_panel_id')) {
-        query_parameters_product_panel_id = panel.data('query_parameters_product_panel_id');
-        $(query_parameters_product_panel_id).removeData('query_parameters_panel_id');
+      if (card.data('query_parameters_product_card_id')) {
+        query_parameters_product_card_id = card.data('query_parameters_product_card_id');
+        $(query_parameters_product_card_id).removeData('query_parameters_card_id');
       }
-      panel.remove();
+      card.remove();
     });
 
-    $("body").on('click', '.instrument-params-panel .show-catalog, .result-panel .show-catalog', function(e) {
+    $("body").on('click', '.instrument-params-card .show-catalog, .result-card .show-catalog', function(e) {
       e.preventDefault();
       var showUseCatalog = false;
-      var catalog_parent_panel = $(this).parents('.result-panel, .instrument-params-panel');
-      if (catalog_parent_panel.hasClass('result-panel')) {
+      var catalog_parent_card = $(this).parents('.result-card, .instrument-params-card');
+      if (catalog_parent_card.hasClass('result-card')) {
         showUseCatalog = true;
       }
-      var parent_catalog_offset = $(".instrument-panel.active").offset();
+      var parent_catalog_offset = $(".instrument-card.active").offset();
       var catalog_offset = {};
       catalog_offset.top = e.pageY;
       catalog_offset.left = e.pageX;
-      if (catalog_panel_id = catalog_parent_panel.data('catalog_panel_id')) {
-        $(catalog_panel_id).highlight_result_panel(catalog_offset);
-        $('.fa-chevron-down', catalog_panel_id).click();
+      if (catalog_card_id = catalog_parent_card.data('catalog_card_id')) {
+        $(catalog_card_id).highlight_result_card(catalog_offset);
+        $('.fa-chevron-down', catalog_card_id).click();
 
       } else {
         // Show catalog
-        var catalog = clone(catalog_parent_panel.data('catalog'));
+        var catalog = clone(catalog_parent_card.data('catalog'));
         catalog_offset.top -= parent_catalog_offset.top;
         catalog_offset.left -= parent_catalog_offset.left;
-        display_catalog(catalog, '#' + catalog_parent_panel.attr('id'), catalog_offset, showUseCatalog);
+        display_catalog(catalog, '#' + catalog_parent_card.attr('id'), catalog_offset, showUseCatalog);
       }
     });
 
-    $("body").on('click', '.result-panel .show-js9', function(e) {
+    $("body").on('click', '.result-card .show-js9', function(e) {
       e.preventDefault();
       display_image_js9($(this).data("image_file_path"), $(this).data());
     });
 
-    $("body").on('click', '.result-panel .show-log', function(e) {
+    $("body").on('click', '.result-card .show-log', function(e) {
       e.preventDefault();
-      var log_parent_panel = $(this).closest('.panel');
-      var log = log_parent_panel.data('log');
-      var parent_log_offset = $(this).closest(".instrument-panel").offset();
+      var log_parent_card = $(this).closest('.card');
+      var log = log_parent_card.data('log');
+      var parent_log_offset = $(this).closest(".instrument-card").offset();
 
       var log_offset = {};
       log_offset.top = e.pageY;
       log_offset.left = e.pageX;
-      if (log_panel_id = log_parent_panel.data('log_panel_id')) {
-        $(log_panel_id).highlight_result_panel(log_offset);
-        $('.fa-chevron-down', log_panel_id).click();
+      if (log_card_id = log_parent_card.data('log_card_id')) {
+        $(log_card_id).highlight_result_card(log_offset);
+        $('.fa-chevron-down', log_card_id).click();
       } else {
         // Show log
         var datetime = $(this).attr('data-datetime');
         log_offset.top -= parent_log_offset.top;
         log_offset.left -= parent_log_offset.left;
 
-        display_log(log, '#' + log_parent_panel.attr('id'), datetime, log_offset);
+        display_log(log, '#' + log_parent_card.attr('id'), datetime, log_offset);
       }
     });
 
-    $("body").on('click', '.result-panel .api-code', function(e) {
+    $("body").on('click', '.result-card .api-code', function(e) {
       e.preventDefault();
-      var api_code_parent_panel = $(this).closest('.panel');
-      var parent_api_code_offset = $(this).closest(".instrument-panel").offset();
+      var api_code_parent_card = $(this).closest('.card');
+      var parent_api_code_offset = $(this).closest(".instrument-card").offset();
 
       var api_code_offset = {};
       api_code_offset.top = e.pageY;
       api_code_offset.left = e.pageX;
-      if (api_code_panel_id = api_code_parent_panel.data('api_code_panel_id')) {
-        $(api_code_panel_id).highlight_result_panel(api_code_offset);
-        $('.fa-chevron-down', api_code_panel_id).click();
+      if (api_code_card_id = api_code_parent_card.data('api_code_card_id')) {
+        $(api_code_card_id).highlight_result_card(api_code_offset);
+        $('.fa-chevron-down', api_code_card_id).click();
       } else {
         // Show api_code
         var datetime = $(this).attr('data-datetime');
         api_code_offset.top -= parent_api_code_offset.top;
         api_code_offset.left -= parent_api_code_offset.left;
 
-        display_api_code(api_code_parent_panel.data('api_code'), '#' + api_code_parent_panel.attr('id'), datetime, api_code_offset);
+        display_api_code(api_code_parent_card.data('api_code'), '#' + api_code_parent_card.attr('id'), datetime, api_code_offset);
       }
     });
 
@@ -1001,16 +822,16 @@ function panel_title(srcname, param) {
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
             if (data.products.hasOwnProperty('progress_product_html_output')) {
-              var parent_panel = $('#ldialog-modal-dialog');
-              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
-              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              var parent_card = $('#ldialog-modal-dialog');
+              var progress_html_offset = { left: parent_card.offset().left, top: 50 };
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_card.attr('id'), progress_html_offset);
             }
 
-          }).complete(function(jqXHR, textStatus) {
+          }).always(function(jqXHR, textStatus) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
-          }).error(function(jqXHR, textStatus, errorThrown) {
+          }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
@@ -1020,12 +841,12 @@ function panel_title(srcname, param) {
 
     });
 
-    $("body").on('click', '.result-panel .renku-publish', function(e) {
+    $("body").on('click', '.result-card .renku-publish', function(e) {
       e.preventDefault();
       renku_publish_formData = new FormData();
       url_params = {};
       let job_id = $(this).data('job_id');
-      let renku_publish_panel = $(this)[0];
+      let renku_publish_card = $(this)[0];
 
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
@@ -1034,15 +855,15 @@ function panel_title(srcname, param) {
             let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
 
             // remove any previous results
-            if (renku_publish_panel.parentElement.nextSibling.className === 'result-renku-publish')
-              renku_publish_panel.parentElement.nextSibling.remove();
+            if (renku_publish_card.parentElement.nextSibling.className === 'result-renku-publish')
+              renku_publish_card.parentElement.nextSibling.remove();
 
             // disable publish-on-renku button
             e.target.disabled = true;
 
             // show spinner
             let div_spinner = get_div_spinner();
-            renku_publish_panel.parentElement.after(div_spinner);
+            renku_publish_card.parentElement.after(div_spinner);
 
             var renku_publish_jqxhr = $.ajax({
               url: url_dispatcher_renku_publish_url,
@@ -1051,7 +872,7 @@ function panel_title(srcname, param) {
               context: this,
               timeout: ajax_request_timeout,
               type: 'POST'
-            }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+            }).always(function(renku_publish_jqXHR, renku_publish_textStatus) {
               serverResponse = '';
               try {
                 serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
@@ -1083,10 +904,10 @@ function panel_title(srcname, param) {
               // re-enable publish-on-renku button, or disable it forever?
               e.target.disabled = false;
 
-              let publish_result_panel = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
-              renku_publish_panel.parentElement.after(publish_result_panel);
+              let publish_result_card = display_renku_publish_result(publish_result_type, serverResponse, publish_response_title);
+              renku_publish_card.parentElement.after(publish_result_card);
 
-            }).error(
+            }).fail(
               function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
                 console.log(renku_publish_textStatus);
                 e.target.disabled = false;
@@ -1097,10 +918,10 @@ function panel_title(srcname, param) {
             publish_result_type = 'publish_error';
             no_user_loged_in_error_message = 'please login to MMODA first and then retry';
 
-            let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
-            renku_publish_panel.parentElement.after(publish_result_panel);
+            let publish_result_card = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
+            renku_publish_card.parentElement.after(publish_result_card);
           }
-        }).error(function(jqXHR, textStatus, errorThrown) {
+        }).fail(function(jqXHR, textStatus, errorThrown) {
           console.log('Error in requesting the user token:');
           console.log('textStatus : ' + textStatus);
           console.log('errorThrown :' + errorThrown);
@@ -1111,38 +932,38 @@ function panel_title(srcname, param) {
 
     });
 
-    $("body").on('click', '.panel .copy-api-code', function(e) {
+    $("body").on('click', '.card .copy-api-code', function(e) {
       e.preventDefault();
-      var parent_panel = $(this).closest('.panel');
-      api_code_product_panel_id = parent_panel.data('api_code_product_panel_id');
-      copyToClipboard($(api_code_product_panel_id).data('api_code'));
+      var parent_card = $(this).closest('.card');
+      api_code_product_card_id = parent_card.data('api_code_product_card_id');
+      copyToClipboard($(api_code_product_card_id).data('api_code'));
     });
 
-    $("body").on('click', '.result-panel .show-query-parameters', function(e) {
+    $("body").on('click', '.result-card .show-query-parameters', function(e) {
       e.preventDefault();
-      var query_parameters_parent_panel = $(this).closest('.result-panel');
-      var query_parameters = query_parameters_parent_panel.data('analysis_parameters');
-      var parent_query_parameters_offset = $(".instrument-panel.active").offset();
+      var query_parameters_parent_card = $(this).closest('.result-card');
+      var query_parameters = query_parameters_parent_card.data('analysis_parameters');
+      var parent_query_parameters_offset = $(".instrument-card.active").offset();
       var query_parameters_offset = {};
       query_parameters_offset.top = e.pageY;
       query_parameters_offset.left = e.pageX;
-      if (query_parameters_panel_id = query_parameters_parent_panel.data('query_parameters_panel_id')) {
-        $(query_parameters_panel_id).highlight_result_panel(query_parameters_offset);
-        $('.fa-chevron-down', query_parameters_panel_id).click();
+      if (query_parameters_card_id = query_parameters_parent_card.data('query_parameters_card_id')) {
+        $(query_parameters_card_id).highlight_result_card(query_parameters_offset);
+        $('.fa-chevron-down', query_parameters_card_id).click();
       } else {
         // Show query_parameters
         var datetime = $(this).attr('data-datetime');
         query_parameters_offset.top -= parent_query_parameters_offset.top;
         query_parameters_offset.left -= parent_query_parameters_offset.left;
 
-        display_query_parameters(query_parameters, '#' + query_parameters_parent_panel.attr('id'), datetime, query_parameters_offset);
+        display_query_parameters(query_parameters, '#' + query_parameters_parent_card.attr('id'), datetime, query_parameters_offset);
       }
     });
 
-    $("body").on('click', '.result-panel .share-query', function(e) {
+    $("body").on('click', '.result-card .share-query', function(e) {
       e.preventDefault();
-      var query_parameters_parent_panel = $(this).closest('.result-panel');
-      var query_parameters = query_parameters_parent_panel.data('analysis_parameters');
+      var query_parameters_parent_card = $(this).closest('.result-card');
+      var query_parameters = query_parameters_parent_card.data('analysis_parameters');
       var url = get_query_url(query_parameters);
       copyToClipboard(url);
     });
@@ -1156,7 +977,7 @@ function panel_title(srcname, param) {
 
     // --------------- Catalog Toolbar start
     var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-secondary');
 
     // Add button : Show inline catalogue
     button = dbutton.clone().addClass('show-catalog').text('Inline catalog');
@@ -1175,34 +996,34 @@ function panel_title(srcname, param) {
     // only those objects will be copied to the used catalog
     $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function(e) {
       e.preventDefault();
-      var catalog_panel = $(this).closest('.panel');
-      var dataTable = catalog_panel.data('dataTable');
+      var catalog_card = $(this).closest('.card');
+      var dataTable = catalog_card.data('dataTable');
       if (dataTable.rows({ selected: true }).count() == 0) {
-        $('.use-catalog', catalog_panel).text('Use catalog').removeClass('highlight');
+        $('.use-catalog', catalog_card).text('Use catalog').removeClass('highlight');
       }
       else {
-        $('.use-catalog', catalog_panel).text('Use catalog with selected objects only').addClass('underline');
+        $('.use-catalog', catalog_card).text('Use catalog with selected objects only').addClass('underline');
       }
     });
 
-    $("body").on('click', '.result-panel .use-catalog', function(e) {
+    $("body").on('click', '.result-card .use-catalog', function(e) {
       e.preventDefault();
-      var catalog_panel = $(this).parents('.result-panel');
-      var catalog_parent_panel = $(catalog_panel.data('catalog_parent_panel_id'));
-      var catalog = clone(catalog_parent_panel.data('catalog'));
-      var dataTable = catalog_panel.data('dataTable');
+      var catalog_card = $(this).parents('.result-card');
+      var catalog_parent_card = $(catalog_card.data('catalog_parent_card_id'));
+      var catalog = clone(catalog_parent_card.data('catalog'));
+      var dataTable = catalog_card.data('dataTable');
       if (dataTable.rows({ selected: true }).count() > 0) {
         dataTable.rows({ selected: false }).remove();
       }
       catalog.data = dataTable.data().toArray();
-      $(".instrument-panel.active .instrument-params-panel").data({
+      $(".instrument-card.active .instrument-params-card").data({
         catalog: catalog,
         dataTable: dataTable
       });
-      $('.instrument-panel.active .instrument-params-panel .inline-user-catalog').css('display', 'inline-block');
+      $('.instrument-card.active .instrument-params-card .inline-user-catalog').css('display', 'inline-block');
 
       var event = $.Event('click');
-      var showCatalog = $('.instrument-panel.active .instrument-params-panel .inline-user-catalog');
+      var showCatalog = $('.instrument-card.active .instrument-params-card .inline-user-catalog');
       var catalog_position = showCatalog.position();
       var new_catalog_position = {
         left: catalog_position.left + showCatalog.width() / 2,
@@ -1211,103 +1032,71 @@ function panel_title(srcname, param) {
       var catalog_offset = showCatalog.offset();
       event.pageX = catalog_offset.left + showCatalog.width() / 2;
       event.pageY = catalog_offset.top + showCatalog.height() / 2;
-      catalog_panel.animate(new_catalog_position, "slow", function() {
-        $('.close-panel', catalog_panel).click();
+      catalog_card.animate(new_catalog_position, "slow", function() {
+        $('.close-card', catalog_card).click();
         $('button.show-catalog', showCatalog).trigger(event);
       });
     });
 
-    // delete catalog when attached to panel
-    $(".instrument-panel .instrument-params-panel .inline-user-catalog").on('click', ".remove-catalog", function() {
+    // delete catalog when attached to card
+    $(".instrument-card .instrument-params-card .inline-user-catalog").on('click', ".remove-catalog", function() {
       $(this).parent().hide();
-      var panel = $(this).closest(".instrument-params-panel");
-      if (panel.data('catalog')) {
-        panel.removeData('catalog');
+      var card = $(this).closest(".instrument-params-card");
+      if (card.data('catalog')) {
+        card.removeData('catalog');
       }
-      if (panel.data('catalog_panel_id')) {
-        catalog_panel_id = panel.data('catalog_panel_id');
-        $(catalog_panel_id).remove();
+      if (card.data('catalog_card_id')) {
+        catalog_card_id = card.data('catalog_card_id');
+        $(catalog_card_id).remove();
       }
     });
 
-    waitingDialog = get_waitingDialog();
+    //    waitingDialog = get_waitingDialog();
     // The main block is hidden at startup (in mmoda.css) and
     // shown here after the setup of DOM and the field controls
     $('.block-mmoda').show();
     $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
       e.preventDefault();
-      var $this = $(this);
-      // var details = $(this).parent().find('.details');
       var details = $('#ldialog .summary .details');
       details.slideToggle('slow', function() {
-        // var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
-        // $this.text(txt);
       });
     });
 
-    // Create validator and validate a frist time :
-    // This is important in Firefox when the page is refreshed
-    // where indeed the old values are still in the form
-
-    $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function() {
-      var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('time_bin', 'NOT_VALIDATED').validateField('time_bin');
-    });
-
-    $('[name=E1_keV]', '.instrument-params-panel form').on('change', function() {
-      var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('E2_keV', 'NOT_VALIDATED').validateField('E2_keV');
-    });
-
-    $('[name=E2_keV]', '.instrument-params-panel form').on('change', function() {
-      var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('E1_keV', 'NOT_VALIDATED').validateField('E1_keV');
-    });
-
-    $('.instrument-panel form').on('error.form.bv', function(e) {
+    $('.form-submit', '.instrument-card form').on('click', function(e) {
       e.preventDefault();
-    });
-
-    $('.instrument-panel form').on('success.form.bv', function(e) {
-      e.preventDefault();
-      //      if ($(e.target).is('.instrument-panel form.mmoda-iframe-result')) {
-      //        e.stopPropagation();
-      //        return;
-      //      }
-
-      var form_id = $(this).attr('id').replace(/-/g, "_");
-      var form_panel = $(this).closest('.panel');
+      //      console.log('showing dialog');
+      var current_form = $(this).closest('form');
+      var form_id = current_form.attr('id').replace(/-/g, "_");
+      var form_card = current_form.closest('.card');
       var formData;
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
-        $('input:not(:file)', this).val(function(_, value) {
+        $('input:not(:file)', current_form).val(function(_, value) {
           return $.trim(value);
         });
 
         // Disable form elements added by Drupal
-        $('[name^=form_]', this).prop('disabled', true);
+        $('[name^=form_]', current_form).prop('disabled', true);
         $('[name^=form_]', '.common-params').prop('disabled', true);
-        // $('[name=catalog_selected_objects]',
-        // this).prop('disabled',
-        // true);
+        // $('[name=catalog_selected_objects]',this).prop('disabled', true);
 
         // Collect object name 
-        var allFormData = $("form#mmoda-name-resolve").serializeArray().map(function(item, index) {
+        var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function(item, index) {
           return (item);
         });
 
         // Collect common parameters
-        var commonFormData = $("form#mmoda-common").serializeArray().map(function(item, index) {
+        var commonFormData = $("form#mmoda-common-form").serializeArray().map(function(item, index) {
           if (item.name == 'T1' || item.name == 'T2') {
             item.value = item.value.replace(' ', 'T')
           }
           return (item);
         });
-        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
+        var instrument_form_serializeJSON = current_form.serializeJSON();
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
-        multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
+        multival_pars = $.unique($.map(current_form.find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
         $.each(instrument_form_serializeJSON, function(param, value) {
           if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
           else instrument_form_serializeArray.push({ 'name': param, 'value': value });
@@ -1317,7 +1106,7 @@ function panel_title(srcname, param) {
         // form id prefix from
         // the name
         var instrumentFormData = instrument_form_serializeArray.map(function(item) {
-          item.name = item.name.replace(form_id + '_', '');
+          item.name = item.name.replace(form_id, '');
           return (item);
         });
 
@@ -1331,11 +1120,11 @@ function panel_title(srcname, param) {
         // $('[name=catalog_selected_objects]',this).prop('disabled',
         // false);
 
-        if (form_panel.data('catalog')) {
-          catalog = form_panel.data('catalog').initial_catalog;
+        if (form_card.data('catalog')) {
+          catalog = form_card.data('catalog').initial_catalog;
           var catalog_selected_objects_string = '';
-          if (form_panel.data('dataTable')) {
-            var dataTable = form_panel.data('dataTable');
+          if (form_card.data('dataTable')) {
+            var dataTable = form_card.data('dataTable');
             catalog.cat_column_list = dataTable.columns().data().toArray();
             catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
             catalog_selected_objects = catalog_selected_objects.map(function(x, i) {
@@ -1361,7 +1150,7 @@ function panel_title(srcname, param) {
 
       request_draw_spectrum = false;
 
-      waitingDialog.show('Processing ...', {'summary': ''}, {
+      waitingDialog.show('Processing ...', '', {
         progressType: 'success',
         showProgressBar: true,
         showSpinner: false,
@@ -1382,7 +1171,7 @@ function panel_title(srcname, param) {
         current_ajax_call_params.currentFormData.append('session_id', 'new');
         current_ajax_call_params.currentFormData.append('job_id', '');
       }
-      current_ajax_call_params.action = $(this).attr('action');
+      current_ajax_call_params.action = current_form.attr('action');
       current_ajax_call_params.form = this;
 
       data_units = new Array();
@@ -1426,10 +1215,8 @@ function panel_title(srcname, param) {
           }
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
-        message = { 'summary': help_text };
-        waitingDialog.show(home_link + title, message, {
+        waitingDialog.show(home_link + title, help_text, {
           dialogSize: 'lg',
-          showTitle: true,
           buttonText: 'Close',
           showCloseInHeader: true,
         });
@@ -1442,20 +1229,19 @@ function panel_title(srcname, param) {
       return false;
     });
 
-    if (Drupal.settings.hasOwnProperty('url_parameters')) {
-      $('.instruments-panel .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
-      make_request(Drupal.settings.url_parameters);
-    }
-    showErrorWhenTruncatedPaste();
+    //    if (Drupal.settings.hasOwnProperty('url_parameters')) {
+    //      $('.instruments-card .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
+    //      make_request(Drupal.settings.url_parameters);
+    //    }
   }
 
   function make_request(request_parameters) {
-    var instrument_panel = $(".instrument-panel-" + request_parameters.instrument);
-    var current_instrument_form_validator = $('form', instrument_panel).data('bootstrapValidator');
+    var instrument_card = $(".instrument-card-" + request_parameters.instrument);
+    var current_instrument_form_validator = $('form', instrument_card).data('bootstrapValidator');
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
-      waitingDialog.show('Error message', {'summary': ''}, {
+      waitingDialog.show('Error message', '', {
         progressType: 'success',
         'showProgress': true,
         'showButton': true
@@ -1464,10 +1250,11 @@ function panel_title(srcname, param) {
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
 
-      warning_obj = {'failures' : '<table class="error-table"><tr>' +
-        '<td>' + get_current_date_time() + '</td>' +
-        '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
-        '</tr></table>',
+      warning_obj = {
+        'failures': '<table class="error-table"><tr>' +
+          '<td>' + get_current_date_time() + '</td>' +
+          '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
+          '</tr></table>',
       };
       waitingDialog.append(warning_obj, 'danger');
     }
@@ -1476,13 +1263,13 @@ function panel_title(srcname, param) {
       if (request_parameters.hasOwnProperty('selected_catalog') && request_parameters.selected_catalog) {
         var catalog = JSON.parse(request_parameters.selected_catalog);
         var datetime = get_current_date_time();
-        attach_catalog_data_image_panel(datetime, catalog, $(".instrument-params-panel", instrument_panel));
-        $(".instrument-params-panel .inline-user-catalog", instrument_panel).removeClass("hidden");
+        attach_catalog_data_image_card(datetime, catalog, $(".instrument-params-card", instrument_card));
+        $(".instrument-params-card .inline-user-catalog", instrument_card).removeClass("hidden");
       }
       make_request_error = false;
       var make_request_error_messages = [];
       var all_form_inputs = [];
-      $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function() {
+      $('input, textarea, select', 'form#mmoda-name-resolve-form, form#mmoda-common-form, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
         all_form_inputs.push(field_name);
@@ -1521,7 +1308,7 @@ function panel_title(srcname, param) {
 
       if (!make_request_error) {
         both_forms_valid = true;
-        $('input, textarea, select', 'form#mmoda-common').each(function() {
+        $('input, textarea, select', 'form#mmoda-common-form').each(function() {
           common_form_validator.validateField($(this).attr('name'));
           if (!common_form_validator.isValidField($(this).attr('name')))
             both_forms_valid = false;
@@ -1552,11 +1339,11 @@ function panel_title(srcname, param) {
           + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
       }
       if (make_request_error) {
-        waitingDialog.show('Processing request parameters ...', {'summary': ''}, {
+        waitingDialog.show('Processing request parameters ...', '', {
           showProgressBar: false,
           showSpinner: false
         });
-        warning_obj = {'failures' : error_message};
+        warning_obj = { 'failures': error_message };
         waitingDialog.append(warning_obj, 'danger');
         $('.write-feedback-button').show();
       }
@@ -1692,42 +1479,42 @@ function panel_title(srcname, param) {
   function display_catalog(catalog, afterDiv, offset, showUseCatalog) {
     var datetime = catalog.datetime;
 
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-catalog', datetime);
+    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-catalog', datetime);
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Image catalog');
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Image catalog');
 
 
-    var catalog_panel = $('#' + panel_ids.panel_id);
+    var catalog_card = $('#' + card_ids.card_id);
     var catalog_help_text = '<div class="help-text">To select multiple rows :<ol>' +
       '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>' +
       '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
 
-    $('#' + panel_ids.panel_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>' + catalog_help_text);
+    $('#' + card_ids.card_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>' + catalog_help_text);
 
     $(afterDiv).data({
-      catalog_panel_id: '#' + panel_ids.panel_id
+      catalog_card_id: '#' + card_ids.card_id
     });
-    catalog_panel.data({
-      catalog_parent_panel_id: afterDiv
+    catalog_card.data({
+      catalog_parent_card_id: afterDiv
     });
 
-    var instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    var instrument = $('input[name=instrument]', ".instrument-card.active").val();
     var enable_use_catalog = Drupal.settings.mmoda[instrument].enable_use_catalog;
     if (enable_use_catalog && showUseCatalog) {
-      $('.panel-footer', '#' + panel_ids.panel_id).append(
+      $('.card-footer', '#' + card_ids.card_id).append(
         '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
 
     var editor = new $.fn.dataTable.Editor({
-      table: '#' + panel_ids.panel_id + ' .catalog-wrapper .mmoda',
+      table: '#' + card_ids.card_id + ' .catalog-wrapper .mmoda',
       fields: catalog.fields,
     });
 
-    var catalog_container = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id);
+    var catalog_container = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id);
 
     var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
 
-    catalog_panel.data({
+    catalog_card.data({
       dataTable: dataTable,
       currentRowId: catalog.data.length
     });
@@ -1773,10 +1560,10 @@ function panel_title(srcname, param) {
                   'opacity': ''
                 });
 
-                editor.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
+                editor.fail('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
                   + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
                 setTimeout(function() {
-                  var row = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
+                  var row = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id).DataTable().row(rowIdx).node();
 
                   $(row).removeClass('alert alert-danger')
                 }, 5000);
@@ -1788,12 +1575,12 @@ function panel_title(srcname, param) {
 
         // validate RA between 0 and 360
         if (ra.val() < 0 || ra.val() > 360) {
-          ra.error('Value must be between 0 and 360');
+          ra.fail('Value must be between 0 and 360');
         }
 
         // validate RA between 0 and 360
         if (dec.val() < -90 || dec.val() > 90) {
-          dec.error('Value must be between -90 and 90');
+          dec.fail('Value must be between -90 and 90');
         }
 
         // If any error was reported, cancel the
@@ -1810,20 +1597,20 @@ function panel_title(srcname, param) {
     // create, remove or edit of any cell
     if (!showUseCatalog) {
       editor.on('create remove edit', function(e, json, data) {
-        var catalog_parent_panel = $(afterDiv);
-        if (catalog_parent_panel.hasClass('instrument-params-panel')) {
-          var panel = $('#' + panel_ids.panel_id);
-          var dataTable = panel.data('dataTable');
-          var catalog = catalog_parent_panel.data('catalog');
+        var catalog_parent_card = $(afterDiv);
+        if (catalog_parent_card.hasClass('instrument-params-card')) {
+          var card = $('#' + card_ids.card_id);
+          var dataTable = card.data('dataTable');
+          var catalog = catalog_parent_card.data('catalog');
           catalog.data = dataTable.data().toArray();
-          catalog_parent_panel.data({
+          catalog_parent_card.data({
             'catalog': catalog,
             'dataTable': dataTable
           });
         }
       });
     }
-    catalog_panel.highlight_result_panel(offset);
+    catalog_card.highlight_result_card(offset);
 
   }
 
@@ -1841,20 +1628,20 @@ function panel_title(srcname, param) {
   }
 
   function display_api_code(api_code, afterDiv, datetime, offset) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-api-code', datetime);
-    $('#' + panel_ids.panel_body_id).append('<div class="api-code-wrapper"><pre><code class="language-python">' + api_code + '</code></pre></div>');
+    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-api-code', datetime);
+    $('#' + card_ids.card_body_id).append('<div class="api-code-wrapper"><pre><code class="language-python">' + api_code + '</code></pre></div>');
 
-    $('#' + panel_ids.panel_body_id).append('<button type="button" class="btn btn-default copy-api-code">Copy API code to clipboard<span class="glyphicon glyphicon-copy"></span></button>');
+    $('#' + card_ids.card_body_id).append('<button type="button" class="btn btn-outline-secondary copy-api-code">Copy API code to clipboard<span class="glyphicon glyphicon-copy"></span></button>');
     $(afterDiv).data({
-      api_code_panel_id: '#' + panel_ids.panel_id
+      api_code_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      api_code_product_panel_id: afterDiv
+    $('#' + card_ids.card_id).data({
+      api_code_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - API code');
-    $('#' + panel_ids.panel_id).addClass('mmoda-api-code');
-    $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - API code');
+    $('#' + card_ids.card_id).addClass('mmoda-api-code');
+    $('#' + card_ids.card_id).highlight_result_card(offset);
     hljs.highlightAll();
 
   }
@@ -1896,37 +1683,37 @@ function panel_title(srcname, param) {
   }
 
   function display_log(log, afterDiv, datetime, offset) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-log', datetime);
-    $('#' + panel_ids.panel_body_id).append('<div class="log-wrapper">' + log + '</div>');
+    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-log', datetime);
+    $('#' + card_ids.card_body_id).append('<div class="log-wrapper">' + log + '</div>');
     $(afterDiv).data({
-      log_panel_id: '#' + panel_ids.panel_id
+      log_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      log_product_panel_id: afterDiv
+    $('#' + card_ids.card_id).data({
+      log_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' - Log');
-    $('#' + panel_ids.panel_id).addClass('mmoda-log');
-    $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Log');
+    $('#' + card_ids.card_id).addClass('mmoda-log');
+    $('#' + card_ids.card_id).highlight_result_card(offset);
   }
 
   function display_progress_html_output(html_content, afterDiv, offset) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, false);
-    $('#' + panel_ids.panel_body_id).append(html_content);
+    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'html-progress', undefined, undefined, undefined, false);
+    $('#' + card_ids.card_body_id).append(html_content);
     $(afterDiv).data({
-      progress_html_output_panel_id: '#' + panel_ids.panel_id
+      progress_html_output_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      progress_html_output_panel_id: afterDiv
+    $('#' + card_ids.card_id).data({
+      progress_html_output_card_id: afterDiv
     });
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
-    $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
-    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
-    $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Current progress');
+    $('#' + card_ids.card_id).addClass('mmoda-html-progress');
+    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + card_ids.card_id).width()) / 2;
+    $('#' + card_ids.card_id).highlight_progress_card(offset);
   }
 
   function display_query_parameters(query_parameters, afterDiv, datetime, offset) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'image-query_parameters', datetime);
+    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-query_parameters', datetime);
 
     var header = '<tr><th>Parameter</th><th>Value</th><th/></tr>';
     var body = '';
@@ -1936,19 +1723,19 @@ function panel_title(srcname, param) {
       }
     }
     var html = '<table class=""><thead>' + header + '</thead><tbody>' + body + '</tbody></table>';
-    $('#' + panel_ids.panel_body_id).append('<div class="query_parameters-wrapper">' + html + '</div>');
+    $('#' + card_ids.card_body_id).append('<div class="query_parameters-wrapper">' + html + '</div>');
 
     $(afterDiv).data({
-      query_parameters_panel_id: '#' + panel_ids.panel_id
+      query_parameters_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      query_parameters_product_panel_id: afterDiv
+    $('#' + card_ids.card_id).data({
+      query_parameters_product_card_id: afterDiv
     });
 
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + source_name + ' -  Query parameters');
-    $('#' + panel_ids.panel_id).addClass('mmoda-query_parameters');
-    $('#' + panel_ids.panel_id).highlight_result_panel(offset);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' -  Query parameters');
+    $('#' + card_ids.card_id).addClass('mmoda-query_parameters');
+    $('#' + card_ids.card_id).highlight_result_card(offset);
 
   }
 
@@ -1987,16 +1774,16 @@ function panel_title(srcname, param) {
   function display_lc_table(job_id, data) {
     datetime = get_current_date_time();
 
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'lc-table', datetime);
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
-    $('#' + panel_ids.panel_id).data("product_type", 'lc');
+    $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + card_ids.card_id).data("product_type", 'lc');
 
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
 
     // Add button : Show query parameters
@@ -2029,20 +1816,20 @@ function panel_title(srcname, param) {
     toolbar.append(get_token_button());
 
     // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
+    activate_modal('#' + card_ids.card_body_id);
     // -------------- Toolbar end 
 
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
-      $('#' + panel_ids.panel_body_id).append(
+      $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
-      $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
+      $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
         e.preventDefault();
         return true;
       }).popover({
@@ -2054,20 +1841,20 @@ function panel_title(srcname, param) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       'job_id': job_id
     });
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       'products': data
     });
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
     });
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters.src_name, data.analysis_parameters));
+    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title(data.analysis_parameters.src_name, data.analysis_parameters));
 
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
@@ -2078,7 +1865,7 @@ function panel_title(srcname, param) {
       }
     }
 
-    $('#' + panel_ids.panel_body_id).append('<div class="lightcurve-table-wrapper"><table class="lightcurve-table table-striped"></table></div>');
+    $('#' + card_ids.card_body_id).append('<div class="lightcurve-table-wrapper"><table class="lightcurve-table table-striped"></table></div>');
     var lightcurve_table_column_names = [{
       title: "Source Name",
       name: "source_name",
@@ -2099,7 +1886,7 @@ function panel_title(srcname, param) {
       //    },
     ];
 
-    var lightcurve_table_container = $(".lightcurve-table", '#' + panel_ids.panel_id);
+    var lightcurve_table_container = $(".lightcurve-table", '#' + card_ids.card_id);
 
     var dataTable = lightcurve_table_container.DataTable({
       // "bAutoWidth": false,
@@ -2114,24 +1901,24 @@ function panel_title(srcname, param) {
       }
     });
 
-    $('#' + panel_ids.panel_id).highlight_result_panel();
+    $('#' + card_ids.card_id).highlight_result_card();
 
   }
 
   function display_image_table(data, job_id, query_status) {
     datetime = get_current_date_time();
 
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image-table', datetime);
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'image-table', datetime);
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
-    $('#' + panel_ids.panel_id).data("product_type", 'image');
+    $('#' + card_ids.card_id).data("product_type", 'image');
 
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
 
     // Add button : Show query parameters
@@ -2164,20 +1951,20 @@ function panel_title(srcname, param) {
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
+    activate_modal('#' + card_ids.card_body_id);
     // -------------- Toolbar end 
 
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
-      $('#' + panel_ids.panel_body_id).append(
+      $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
-      $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
+      $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
         e.preventDefault();
         return true;
       }).popover({
@@ -2189,20 +1976,20 @@ function panel_title(srcname, param) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       'job_id': job_id
     });
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       'products': data
     });
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
     });
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters.src_name, data.analysis_parameters));
+    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title(data.analysis_parameters.src_name, data.analysis_parameters));
 
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
@@ -2213,7 +2000,7 @@ function panel_title(srcname, param) {
       }
     }
 
-    $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
+    $('#' + card_ids.card_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
     var image_table_column_names = [{
       title: "Source Name",
       name: "source_name",
@@ -2226,7 +2013,7 @@ function panel_title(srcname, param) {
       orderable: false
     },];
 
-    var image_table_container = $(".image-table", '#' + panel_ids.panel_id);
+    var image_table_container = $(".image-table", '#' + card_ids.card_id);
 
     var dataTable = image_table_container.DataTable({
       // "bAutoWidth": false,
@@ -2241,27 +2028,27 @@ function panel_title(srcname, param) {
       }
     });
 
-    $('#' + panel_ids.panel_id).highlight_result_panel();
+    $('#' + card_ids.card_id).highlight_result_card();
 
-    return ($('#' + panel_ids.panel_body_id));
+    return ($('#' + card_ids.card_body_id));
 
   }
 
-  function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
+  function display_lc_image(current_card, lc_index, datetime, catalog_offset) {
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'image', datetime);
 
-    var current_row = $(".instrument-panel.active").data("lightcurve_table_current_row");
+    var current_row = $(".instrument-card.active").data("lightcurve_table_current_row");
     $(current_row).data({
-      lightcurve_panel_id: '#' + panel_ids.panel_id
+      lightcurve_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      lightcurve_parent_panel_id: current_row
+    $('#' + card_ids.card_id).data({
+      lightcurve_parent_card_id: current_row
     });
 
-    var data = current_panel.data('products');
+    var data = current_card.data('products');
 
     var image = data.image[lc_index];
-    var job_id = current_panel.data('job_id');
+    var job_id = current_card.data('job_id');
 
     var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
 
@@ -2275,7 +2062,7 @@ function panel_title(srcname, param) {
 
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
 
     // Add button "Download" : download light curve in FITS format
@@ -2289,32 +2076,32 @@ function panel_title(srcname, param) {
     };
     var download_url = get_download_url(url_params);
     var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-    link.addClass('btn btn-default');
+    link.addClass('btn btn-outline-secondary');
     var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "Light curve in FITS format" });
     link.append(glyphicon);
     toolbar.append(link);
 
     // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
+    activate_modal('#' + card_ids.card_body_id);
     // -------------- Toolbar end 
 
-    $('#' + panel_ids.panel_body_id).append(image.image.script + image.image.div);
+    $('#' + card_ids.card_body_id).append(image.image.script + image.image.div);
 
-    panel_body_append_header_footer(panel_ids, data);
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    card_body_append_header_footer(card_ids, data);
+    product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.name[lc_index], data.analysis_parameters));
+    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title(data.name[lc_index], data.analysis_parameters));
 
     // set_draggable();
-    $('#' + panel_ids.panel_id).css({
-      // 'width' : $('#' + panel_ids.panel_id).width()
+    $('#' + card_ids.card_id).css({
+      // 'width' : $('#' + card_ids.card_id).width()
     });
 
-    $('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
-    return ($('#' + panel_ids.panel_body_id));
+    $('#' + card_ids.card_id).highlight_result_card(catalog_offset);
+    return ($('#' + card_ids.card_body_id));
 
 
   }
@@ -2323,14 +2110,14 @@ function panel_title(srcname, param) {
 
     datetime = get_current_date_time();
 
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'spectrum-table', datetime);
 
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
 
     // Add button "Download" : download image, catalog and region file
@@ -2344,14 +2131,14 @@ function panel_title(srcname, param) {
     //    };
     //    var download_url = get_download_url(url_params);
     //    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-    //    link.addClass('btn btn-default');
+    //    link.addClass('btn btn-outline-secondary');
     //    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     //    glyphicon.attr({ title: "image, catalog and region file" });
     //    link.append(glyphicon);
     //    toolbar.append(link);
 
     // Add button "Catalog": show catalog
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
     if (product_type.endsWith('image')) {
       button = dbutton.clone().addClass('show-catalog').text('Catalog ');
       toolbar.append(button);
@@ -2386,13 +2173,13 @@ function panel_title(srcname, param) {
     toolbar.append(get_token_button());
 
     // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
+    activate_modal('#' + card_ids.card_body_id);
     // --------------- Toolbar end
 
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + data.analysis_parameters.src_name);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + data.analysis_parameters.src_name);
 
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
@@ -2409,12 +2196,12 @@ function panel_title(srcname, param) {
       }
     }
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
     });
 
-    $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
+    $('#' + card_ids.card_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
     var spectrum_table_column_names = [
       {
         title: "Source Name",
@@ -2450,7 +2237,7 @@ function panel_title(srcname, param) {
             instrument: data.instrument
           };
           var download_url = get_download_url(url_params);
-          var downloadButton = '<a class="btn btn-default" role="button" href="' + download_url
+          var downloadButton = '<a class="btn btn-outline-secondary" role="button" href="' + download_url
             + '" >Download <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="Spectrum, rmf and arf in FITS format" ></span></a>';
           return (downloadButton);
         },
@@ -2467,10 +2254,10 @@ function panel_title(srcname, param) {
       type: "readonly",
     },];
     var editor = new $.fn.dataTable.Editor({
-      table: '#' + panel_ids.panel_id + ' .spectrum-table',
+      table: '#' + card_ids.card_id + ' .spectrum-table',
       fields: spectrum_table_fields,
     });
-    var spectrum_table_container = $(".spectrum-table", '#' + panel_ids.panel_id);
+    var spectrum_table_container = $(".spectrum-table", '#' + card_ids.card_id);
 
     var dataTable = spectrum_table_container.DataTable({
       // "bAutoWidth": false,
@@ -2495,48 +2282,48 @@ function panel_title(srcname, param) {
 
     editor.on('postEdit', function(e, json, data) {
       if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
-        $('.instrument-panel.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_panel_id');
+        $('.instrument-card.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_card_id');
       }
     });
 
-    // highlight_result_panel(panel_ids.panel_id);
-    $('#' + panel_ids.panel_id).highlight_result_panel();
-    return ($('#' + panel_ids.panel_body_id));
+    // highlight_result_card(card_ids.card_id);
+    $('#' + card_ids.card_id).highlight_result_card();
+    return ($('#' + card_ids.card_body_id));
 
   }
 
   function display_spectrum(metadata, data, job_id, instrument) {
 
     datetime = get_current_date_time();
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'spectrum', datetime);
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'spectrum', datetime);
 
-    var current_row = $(".instrument-panel.active").data("spectrum_table_current_row");
+    var current_row = $(".instrument-card.active").data("spectrum_table_current_row");
     $(current_row).data({
-      spectrum_panel_id: '#' + panel_ids.panel_id
+      spectrum_card_id: '#' + card_ids.card_id
     });
-    $('#' + panel_ids.panel_id).data({
-      spectrum_parent_panel_id: current_row
+    $('#' + card_ids.card_id).data({
+      spectrum_parent_card_id: current_row
     });
 
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
-    $('#' + panel_ids.panel_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
+    product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
+    $('#' + card_ids.card_body_id).append(data.image.spectral_fit_image.script + data.image.spectral_fit_image.div);
 
-    panel_body_append_header_footer(panel_ids, data);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Source : ' + metadata.source_name);
+    card_body_append_header_footer(card_ids, data);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + metadata.source_name);
 
-    var x = $('#' + panel_ids.panel_id).offset().top - 100;
+    var x = $('#' + card_ids.card_id).offset().top - 100;
     jQuery('body').animate({
       scrollTop: x
     }, 500);
-    var parent_spectrum_offset = $(".instrument-panel.active").offset();
-    var last_click_position = $(".instrument-panel.active").data('last_click_position');
+    var parent_spectrum_offset = $(".instrument-card.active").offset();
+    var last_click_position = $(".instrument-card.active").data('last_click_position');
 
     var spectrum_offset = {};
     spectrum_offset.top = last_click_position.top - parent_spectrum_offset.top;
     spectrum_offset.left = last_click_position.left - parent_spectrum_offset.left;
 
-    $('#' + panel_ids.panel_id).highlight_result_panel(spectrum_offset);
-    return ($('#' + panel_ids.panel_body_id));
+    $('#' + card_ids.card_id).highlight_result_card(spectrum_offset);
+    return ($('#' + card_ids.card_body_id));
 
   }
 
@@ -2544,7 +2331,7 @@ function panel_title(srcname, param) {
     return (Number(data).toFixed(4));
   }
 
-  function attach_catalog_data_image_panel(datetime, catalog, JQpanel) {
+  function attach_catalog_data_image_card(datetime, catalog, JQcard) {
     // var catalog = data.catalog;
     var columns = [];
     var fields = [];
@@ -2594,7 +2381,7 @@ function panel_title(srcname, param) {
       }
     }
     var selectedRows = new Array(catalog.cat_column_list[0].length);
-    JQpanel.data({
+    JQcard.data({
       catalog: {
         initial_catalog: catalog,
         data: dataSet,
@@ -2613,7 +2400,7 @@ function panel_title(srcname, param) {
     //      title = 'Request an API token';
     //      button = 'api-token-ask';
     //    }
-    //    return '<button class="btn btn-default ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title + '" ></span></button>';
+    //    return '<button class="btn btn-outline-secondary ' + button + '" type="button">API token <span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" title="' + title + '" ></span></button>';
     return '';
   }
 
@@ -2633,34 +2420,34 @@ function panel_title(srcname, param) {
     return button;
   }
 
-  function panel_body_append_header_footer(panel_ids, data) {
+  function card_body_append_header_footer(card_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
-      $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
+      $('#' + card_ids.card_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
     if (data.image.hasOwnProperty('table_text'))
-      $('#' + panel_ids.panel_body_id).append(get_text_table(data.image.table_text));
+      $('#' + card_ids.card_body_id).append(get_text_table(data.image.table_text));
     if (data.image.hasOwnProperty('footer_text'))
-      $('#' + panel_ids.panel_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
+      $('#' + card_ids.card_body_id).append(data.image.footer_text.replace(/\n/g, "<br />"));
   }
 
   function display_image(data, job_id, instrument) {
     datetime = get_current_date_time();
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'image', datetime);
 
     if (data.hasOwnProperty('catalog')) {
-      attach_catalog_data_image_panel(datetime, data.catalog, $('#' + panel_ids.panel_id));
+      attach_catalog_data_image_card(datetime, data.catalog, $('#' + card_ids.card_id));
     }
 
-    $('#' + panel_ids.panel_id).data({
+    $('#' + card_ids.card_id).data({
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
     });
 
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
-    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
 
 
@@ -2687,14 +2474,14 @@ function panel_title(srcname, param) {
     };
     var download_url = get_download_url(url_params);
     var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-    link.addClass('btn btn-default');
+    link.addClass('btn btn-outline-secondary');
     var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
     glyphicon.attr({ title: "image, catalog and region file" });
     link.append(glyphicon);
     toolbar.append(link);
 
     // Add button "Catalog": show catalog
-    product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
+    product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
     if (product_type.endsWith('image')) {
       button = dbutton.clone().addClass('show-catalog').text('Catalog ');
       toolbar.append(button);
@@ -2729,20 +2516,20 @@ function panel_title(srcname, param) {
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
     // Install toolbar 
-    $('#' + panel_ids.panel_body_id).append(toolbar);
+    $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
-    activate_modal('#' + panel_ids.panel_body_id);
+    activate_modal('#' + card_ids.card_body_id);
     // --------------- Toolbar end
 
     if (data.input_prod_list.length > 0) {
       scw_list = data.input_prod_list.join(', ');
-      $('#' + panel_ids.panel_body_id).append(
+      $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
       $('.copy-to-clipboard').on('click', function() {
         copyToClipboard($(this).parent().find('.scw-list .mmoda-popover-content').text());
       });
-      $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      var pop = $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
+      var pop = $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
         e.preventDefault();
         return true;
       }).popover({
@@ -2754,21 +2541,21 @@ function panel_title(srcname, param) {
         template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
       });
     }
-    $('#' + panel_ids.panel_body_id).append(data.image.image.script + data.image.image.div);
+    $('#' + card_ids.card_body_id).append(data.image.image.script + data.image.image.div);
 
-    panel_body_append_header_footer(panel_ids, data);
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data.analysis_parameters));
+    card_body_append_header_footer(card_ids, data);
+    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title('', data.analysis_parameters));
 
-    $('#' + panel_ids.panel_id).highlight_result_panel();
-    return ($('#' + panel_ids.panel_body_id));
+    $('#' + card_ids.card_id).highlight_result_card();
+    return ($('#' + card_ids.card_body_id));
   }
 
   function display_in_iframe(data) {
     datetime = get_current_date_time();
-    var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'iframe', datetime);
-    $('#' + panel_ids.panel_body_id).append(data.htmlResponse);
-    $('#' + panel_ids.panel_id).highlight_result_panel();
-    return ($('#' + panel_ids.panel_body_id));
+    var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'iframe', datetime);
+    $('#' + card_ids.card_body_id).append(data.htmlResponse);
+    $('#' + card_ids.card_id).highlight_result_card();
+    return ($('#' + card_ids.card_body_id));
   }
 
   function get_download_url(parameters) {
@@ -2792,7 +2579,8 @@ function panel_title(srcname, param) {
   }
 
   function activate_modal($element) {
-    $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function() {
+//    $(once('bind-click-event', '.grid-item', context)
+    $('area.ctools-use-modal, a.ctools-use-modal', $element).each('ctools-use-modal', function() {
       var $this = $(this);
       $this.click(Drupal.CTools.Modal.clickAjaxLink);
       // Create a drupal ajax object
@@ -2809,19 +2597,23 @@ function panel_title(srcname, param) {
 
   function display_image_js9(image_file_path, data) {
     var js9_ext_id = Drupal.settings.mmoda[instrument].js9_ext_id;
-    var panel_ids = $(".instrument-params-panel",
-      ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'js9', data.datetime);
-    $('#' + panel_ids.panel_body_id).append($('<iframe>', {
+    var card_ids = $(".instrument-params-card",
+      ".instrument-card.active").insert_new_card(desktop_card_counter++, 'js9', data.datetime);
+    $('#' + card_ids.card_body_id).addClass('js9-card');
+    $('#' + card_ids.card_body_id).append($('<div>').addClass('js9-loader-text loader-position').text('Loading ...'));
+    $('#' + card_ids.card_body_id).append($('<div>').addClass('loader js9-loader loader-position'));
+    $('#' + card_ids.card_body_id).append($('<div>').addClass('js9-iframe'));
+    $('#' + card_ids.card_body_id + ' div.js9-iframe').append($('<iframe>', {
       src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=' + js9_ext_id,
       id: 'js9iframe',
       width: '650',
       height: '700',
       frameborder: 0,
       scrolling: 'no'
-    }));
-
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title('', data));
-    $('#' + panel_ids.panel_id).highlight_result_panel();
+    })
+    );
+    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title('', data));
+    $('#' + card_ids.card_id).highlight_result_card();
   }
 
 })(jQuery);

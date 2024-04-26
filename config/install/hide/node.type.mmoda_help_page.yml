@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - mmoda
+name: 'MMODA help page'
+type: mmoda_help_page
+description: 'A dedicated content type for the help pages of the module MMODA.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: true
+third_party_settings: {  }

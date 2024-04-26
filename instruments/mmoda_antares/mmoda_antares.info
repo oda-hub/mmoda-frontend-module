@@ -1,8 +1,0 @@
-name = MMODA Antares
-description = Astro Online Data Analysis module for Antares
-core = 7.x
-dependencies[] = mmoda
-
-files[] = mmoda_antares.inc
-
-configure = admin/config/mmoda/antares

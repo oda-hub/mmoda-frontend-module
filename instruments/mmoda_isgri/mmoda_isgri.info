@@ -1,8 +1,0 @@
-name = MMODA ISGRI
-description = MMODA module for ISGRI
-core = 7.x
-dependencies[] = mmoda_integral
-
-files[] = mmoda_isgri.inc
-
-configure = admin/config/mmoda/isgri

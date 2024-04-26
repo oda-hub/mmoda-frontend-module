@@ -1,0 +1,75 @@
+mmoda_libs:
+  version: 1.x
+  css:
+    layout:
+      css/mmoda-layout.css: {}
+    theme:
+      css/mmoda-theme.css: {}
+  js:
+    js/mmoda.common.js: {}
+#    js/mmoda.form_validation.js: {}
+    js/mmoda.instrument.js: {}
+  dependencies:
+     - core/drupalSettings
+     - core/jquery
+     - core/once
+     - jquery_ui/core
+     - jquery_ui_draggable/draggable
+     - jquery_ui_resizable/resizable
+     - jquery_ui_effects/highlight
+     - core/drupal
+
+     
+bootstrap_form_validator:
+  version: 0.5.3
+  js:
+    /sites/all/libraries/bootstrap_form_validator/js/bootstrapValidator.js: {}
+  dependencies:
+     - core/jquery
+   
+highlight_js:
+  version: 11.0.1
+  css:
+    theme:
+      /sites/all/libraries/highlightjs/default.min.css: { minified: true }
+  js:
+    /sites/all/libraries/highlightjs/highlight.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+    
+jquery_serialize_json:
+  version: 3.2.1
+  js:
+    /sites/all/libraries/jquery_serializejson/jquery.serializejson.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+    
+datatables:
+  version: 1.10.12
+  css:
+    theme:
+      /sites/all/libraries/datatables/dataTables.bootstrap.min.css: { minified: true }
+      /sites/all/libraries/datatables/Buttons/css/buttons.dataTables.min.css: { minified: true }
+      /sites/all/libraries/datatables/Responsive/css/responsive.dataTables.min.css: { minified: true }
+      /sites/all/libraries/datatables/Select/css/select.dataTables.min.css: { minified: true }
+      /sites/all/libraries/datatables/Editor/css/editor.bootstrap.css: { minified: true }
+  js:
+    /sites/all/libraries/datatables/datatables.min.js: { minified: true }
+    /sites/all/libraries/datatables/Select/js/dataTables.select.min.js: { minified: true }
+    /sites/all/libraries/datatables/Buttons/js/dataTables.buttons.min.js: { minified: true }
+    /sites/all/libraries/datatables/Responsive/js/dataTables.responsive.min.js: { minified: true }
+    /sites/all/libraries/datatables/Editor/js/dataTables.editor.min.js: { minified: true }
+    /sites/all/libraries/datatables/Editor/js/editor.bootstrap.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+    
+bokeh:
+  remote: https://bokeh.org/
+  version: 2.4.2
+  license:
+    name: BSD
+    url: https://github.com/bokeh/bokeh.org/blob/main/LICENSE.txt
+    gpl-compatible: true
+  js:
+    https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js: { type: external, minified: true } 
+    https://cdn.bokeh.org/bokeh/release/bokeh-widgets-2.4.2.min.js: { type: external, minified: true }  

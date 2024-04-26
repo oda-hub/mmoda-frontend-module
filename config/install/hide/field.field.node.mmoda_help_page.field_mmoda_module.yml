@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.mmoda_help_page
+  module:
+    - node
+    - options
+  enforced:
+    module:
+      - mmoda
+id: node.mmoda_help_page.field_mmoda_module
+field_name: field_mmoda_module
+entity_type: node
+bundle: mmoda_help_page
+label: MMODA module
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+third_party_settings: {  }
+field_type: list_string
+settings:
+  allowed_values:
+    -
+      value: mmoda
+      label: MMODA
+  allowed_values_function: ''
+

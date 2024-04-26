@@ -1,0 +1,270 @@
+{# /** * @file * Theme override to display a block. * * Available
+variables: * - plugin_id: The ID of the block implementation. * - label:
+The configured label of the block if visible. * - configuration: A list
+of the block's configuration values. * - label: The configured label for
+the block. * - label_display: The display settings for the label. * -
+provider: The module or other provider that provided this block plugin.
+* - Block plugin specific settings will also be stored here. * -
+in_preview: Whether the plugin is being rendered in preview mode. * -
+content: The content of this block. * - attributes: array of HTML
+attributes populated by modules, intended to * be added to the main
+container tag of this template. * - id: A valid HTML ID and guaranteed
+unique. * - title_attributes: Same as attributes, except applied to the
+main title * tag that appears in the template. * - title_prefix:
+Additional output populated by modules, intended to be * displayed in
+front of the main title tag that appears in the template. * -
+title_suffix: Additional output populated by modules, intended to be *
+displayed after the main title tag that appears in the template. * *
+@see template_preprocess_block() */ #}
+{{ attach_library('mmoda/mmoda_libs') }}
+{{ attach_library('mmoda/datatables') }}
+{{ attach_library('mmoda/highlight_js') }}
+{{ attach_library('mmoda/jquery_serialize_json') }}
+{{ attach_library('mmoda/bokeh') }}
+{%
+  set classes = [
+    'block',
+    'block-' ~ configuration.provider|clean_class,
+    'block-' ~ plugin_id|clean_class,
+  ]
+%}
+<div {{ attributes.addClass(classes) }}>
+  {{ title_prefix }}
+  {% if label %}
+  <h2 {{ title_attributes }}>
+    {{ label }}
+  </h2>
+  {% endif %}
+  {{ title_suffix }}
+  {% block content %}
+
+  <div class="content">
+    {% if instruments %}
+    <div class="card card-default">
+      <div class="card-header bg-primary">
+        <div class="float-end">
+          <div class="main-toolbar btn-group" role="group">
+            {% if logged_in %}
+            <a data-toggle="tooltip" title=""
+              data-original-title="Show API token, copy it or request it by email"
+              class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary btn-sm"
+              href="modal_forms/nojs/webform/384"><span
+              class="oda-icon-label">API token</span><span
+              class="ms-1 bi bi-key-fill"> </span> </a>
+            {% endif %}
+            <a title="Contact us"
+              class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary btn-sm"
+              href="modal_forms/nojs/webform/383"> <span
+              class="oda-icon-label">Contact us</span> <span
+              class="ms-1 bi bi-envelope-fill"> </span>
+            </a> <a id="help-home" title="{{ site_name }} Help"
+              class="btn btn-primary btn-sm open-in-modal help-home"
+              href="{{ help_page_url }}"><span
+              class="oda-icon-label">Help</span><i
+              class="ms-1 bi bi-info-circle-fill"></i></a>
+          </div>
+        </div>
+      </div>
+      <div id="formwrapper" class="card-body">
+        <div id="common-params"
+          class="row d-flex justify-content-center">
+          <div class="col-md-5">
+            {{ name_resolve_form }}
+            {{ common_form }}
+          </div>
+        </div>
+        <div class="instruments-card  with-nav-tabs card card-default">
+          <div class="card-header bg-primary"></div>
+          <div class="card-body">
+            <div class="tabs">
+              <ul class="nav nav-tabs">
+                {% for instrument in instruments %}
+                <li id="{{ instrument.name }}" class="nav-item"><a
+                  class="nav-link {{ instrument.active }}" href="#{{ instrument.name }}-tab" data-bs-toggle="tab">
+                    <div class="tab-messenger">
+                      {{ instrument.messenger }}
+                    </div>
+                    <div class="tab-title">
+                      {{ instrument.title }}
+                    </div>
+                </a></li>
+                {% endfor %}
+              </ul>
+              <div class="tab-content">
+                {% for instrument in instruments %}
+                <div class="tab-pane instrument-card instrument-card-{{ instrument.name }} fade show {{ instrument.active }}"
+                  id="{{ instrument.name }}-tab">
+                  <div id="{{ instrument.name }}-params-card"
+                    class="card card-default instrument-params-card m-2 w-25 ldraggable">
+                    <div class="card-header d-flex justify-content-between">
+                      <div class="instrument-params-card-title">Query parameters</div>                      
+                      
+                      <div class="card-header-toolbox float-end">
+                        {% if instrument.help_page_url %}
+                        <button type="button" class="btn btn-primary btn-sm btn-help open-in-modal" aria-label="Help" data-toggle="tooltip" data-placement="left" title="Help" data-mmoda-href="{{ instrument.help_page_url }}">
+                          <i class="bi bi-info-circle-fill"></i></a>
+                        </button>
+                         {% endif %}
+                        <div class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="#{{ instrument.name }}-params-card-body" aria-expanded="true" aria-controls="{{ instrument.name }}-params-card-body">
+                           <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <div id="{{ instrument.name }}-params-card-body" class="show card-body" >
+                      {{ instrument.form }}
+                      {% if instrument.acknowledgement %}
+                      <div id="{{ instrument.name }}-paper-quote"
+                        class="paper-quote alert alert-info alert-dismissible hidden"
+                        role="alert">
+                        <hr>                       
+                        <div class="header-info-text">
+                          <i class="bi bi-exclamation-triangle-fill"></i>
+                               {{ instrument.acknowledgement | raw}}
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div>
+      No instruments module installed.<br>Please install and enable
+      at least one instrument module.
+    </div>
+    {% endif %}
+
+  </div>
+  {% endblock %}
+</div>
+
+{# Modal Dialog #}
+<div id="ldialog" class="modal fade mmoda-log mmoda-dialog-modal" aria-hidden="true"  aria-labelledby="MMODA dialog box" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div id="ldialog-modal-dialog" class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-controls">
+          <div class="progress active">
+            <div class="progress-bar progress-bar-striped "></div>
+            <div class="progress-bar-text-container">
+              <span class="progress-bar-text"></span> 
+              <span class="more-less-details">
+                <i class="bi bi-info-circle-fill" aria-hidden="true">
+                  <span class="more-less-details-tooltip">View messages</span>
+                </i>
+              </span>
+            </div>
+          </div>
+          <div class="return-progress-link">
+            <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+            <i class="fa fa-spinner hidden fa-spin"></i>
+          </div>
+        </div>
+        <div class="summary-container" >
+          <div class="summary">
+            <div class="summary-legend">
+              <div class="legend">
+                <div class="legend-element preparing"></div>
+                Preparing
+                <div class="legend-element calculating"></div>
+                Calculating
+                <div class="legend-element calculated"></div>
+                Done
+                <div class="legend-element from-cache"></div>
+                Restored from cache
+                <div class="legend-element analysis-exception"></div>
+                Analysis exception
+              </div>
+            </div>
+            <div class="summary-message"></div>
+            <div class="summary-controls"></div>
+            <div class="details"></div>
+            <div class="summary-failures"></div>
+            <div class="summary-warnings"></div>
+            <div class="summary-results"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="notice-progress-container">
+          {# add notice in progress modal that request can be closed and re-sent #31  #}
+          <div class="notice-progress-message">You can close this window
+            and resubmit the same request at a later time to check its
+            status or retrieve results</div>
+            {% if logged_in %}
+            <div class="notice-progress-message-email">
+            This can be equally achieved by clicking on the link
+            received by email <br />You will receive a notification at
+            job completion
+           </div>
+           {% endif %}
+        </div>
+        <div class="job-info-and-buttons">
+          <div class="job-info">
+            <div>
+              <span class="session-id"></span><span class="job-id"></span>
+            </div>
+          </div>
+          <div class="buttons-container">
+            <a data-toggle="tooltip" title=""
+              data-original-title="Report a bug or write us a feedback"
+              class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
+              href="modal_forms/nojs/webform/392"><span
+              class="oda-icon-label">Write a feedback</span><span
+              class="glyphicon glyphicon-envelope"> </span> </a>
+            <button type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Result card #}
+<div id="mmoda_card_model"
+  class="result-card card card-default ldraggable">
+  <div class="card-header lang-card-header-tools">
+    <span class="card-title"></span>
+    <span class="card-header-toolbox float-end">
+       <span class="date"></span>
+       <button class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="true" aria-controls="">
+         <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
+      </button>
+       <button type="button" class="btn-close close-card" aria-label="Close"></button>
+    </span> 
+    </span>
+  </div>
+  <div class="card-body"></div>
+  <div class="card-footer"></div>
+</div>
+
+{# MMODA Gallery card #}
+<div id="mmoda-gallery-card-model" class="card card-primary">
+  <div class="card-header">
+    <div class="collapsible">
+      <span class="card-title">MMODA Gallery</span> <span
+        class="card-header-toolbox float-end"> <span class="date"></span> <span><i
+          class="fa fa-chevron-up"></i></span> <span
+        class="fa fa-times close-card"></span>
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+  <div class="progress progress-bar progress-bar-success"></div>
+  </div>
+</div>
+
+<div>

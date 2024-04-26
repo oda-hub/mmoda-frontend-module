@@ -1,0 +1,16 @@
+name: MMODA  Module
+description: Multi-Messenger Online Data Analysis.
+type: module
+version: '1.0'
+core_version_requirement: '>=8'
+dependencies:
+  - drupal:block
+  - drupal:node
+
+library_dependencies:
+  - bootstrap-form-validator
+  - datatables
+  - bokeh
+  - highlight
+  - jquery.serializeJSON
+

@@ -1,8 +1,0 @@
-name = MMODA GW
-description = MMODA module for GW
-core = 7.x
-dependencies[] = mmoda
-
-files[] = mmoda_gw.inc
-
-configure = admin/config/mmoda/gw

@@ -1,7 +1,7 @@
-var instrument_panel_margin = 150;
-var progress_panel_margin = 150;
-var common_form_validator;
+var instrument_card_margin = 150;
+var progress_card_margin = 150;
 var mmoda_ajax_jqxhr = [];
+var waitingDialog = {};
 
 Date.prototype.getJulian = function() {
   //  return Math.floor((this / 86400000) - (this.getTimezoneOffset() / 1440) + 2440587.5);
@@ -47,28 +47,6 @@ function get_today_mjd() {
   var today = new Date(); // set any date
   var today_mjd = today.getJulian() - 2400000.5; // get Modified Julian
   return (today_mjd);
-}
-
-function valid_iso_date(value) {
-  var iso_date_pattern = new RegExp("^([1|2]\\d\\d\\d)(?:-?(10|11|12|0\\d)(?:-?(30|31|[0-2]\\d)" +
-    "(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$");
-  return (iso_date_pattern.test(value));
-}
-
-function valid_mjd_date(value) {
-  var mjd_date_pattern = new RegExp("^(\\d+\.?\\d*)$");
-  return (mjd_date_pattern.test(value) && value >= 0 && value <= max_mjd_date);
-}
-
-function validate_scws(value, nb_scws) {
-  var scws_pattern = new RegExp("^$|^(\\d{12}\\.00\\d)(\\s*,\\s*\\d{12}\\.00\\d){0," + (nb_scws - 1) + "}$");
-  if (!scws_pattern.test(value)) {
-    return {
-      valid: false,
-      message: 'Please enter a valid list of ScWs, maximum ' + nb_scws
-    }
-  }
-  return true;
 }
 
 function HMS2Decimal(hmsVal, decimalVal) {
@@ -174,8 +152,8 @@ function jsUcfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function set_panel_resizable(thisPanel) {
-  thisPanel.resizable({
+function set_card_resizable(thiscard) {
+  thiscard.resizable({
   });
 }
 
@@ -194,7 +172,6 @@ function copyToClipboard(text) {
 
   try {
     var successful = document.execCommand('copy');
-    var msg = successful ? 'successful' : 'unsuccessful';
   } catch (err) {
   }
 
@@ -224,109 +201,109 @@ function get_current_date_time() {
 var waitingDialog;
 
 (function($, Drupal) {
-  $(document).ready(function() {
-    if (Drupal.settings.hasOwnProperty('mmoda_signed')) {
-      var mmoda_signed = Drupal.settings.mmoda_signed;
-      // Sending message to iframe
-      var iframe = document.getElementById("mmoda-gallery-hidden-iframe");
-      //iframe.contentWindow.postMessage({ mmoda_signed }, "*");
-      $(window).on("message", function(e) {
-        if (e.originalEvent.data.hasOwnProperty('mready'))
-          iframe.contentWindow.postMessage({ mmoda_signed }, "*");
-      });
-    }
-  })
+//  $(document).ready(function() {
+//    if (Drupal.settings.hasOwnProperty('mmoda_signed')) {
+//      var mmoda_signed = Drupal.settings.mmoda_signed;
+//      // Sending message to iframe
+//      var iframe = document.getElementById("mmoda-gallery-hidden-iframe");
+//      //iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+//      $(window).on("message", function(e) {
+//        if (e.originalEvent.data.hasOwnProperty('mready'))
+//          iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+//      });
+//    }
+//  });
 
-  Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
-    $('input,select,textarea', '#lfeedback').prop('disabled', false);
-    $('.modal-footer button.cancel-button', '#lfeedback').show();
-  }
-
-  Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
-    $('#mmoda-bug-report-form').addClass('hidden');
-    $('textarea#edit-comment', '#mmoda-bug-report-form').val('');
-    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
-    $('.modal-footer button#edit-submit', '#lfeedback').hide();
-  }
-
-  Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
-    $('input,select,textarea', '#ltoken').prop('disabled', false);
-    $('.modal-footer button.cancel-button', '#ltoken').show();
-  }
-
-  Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
-    $('input,textarea', '#ltoken').prop('disabled', false);
-    $('#mmoda-ask-token-form').addClass('hidden');
-    $('textarea#edit-message', '#mmoda-ask-token-form').val('');
-    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
-    $('.modal-footer button#edit-submit--2', '#ltoken').hide();
-  }
-  Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-    waitingDialog.hide();
-    html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-      + response.args.message
-      + '</small>';
-    elt = $('.form-item-src-name', '#mmoda-name-resolve').parent().after(html);
-    elt.find('.alert').hide();
-    if (response.args.status == 0) {
-      $('.row', '#mmoda-name-resolve').removeClass('has-error');
-      if (response.args.ra) {
-        common_form_validator.resetField('RA');
-        $('.form-item-RA input.form-control').val(response.args.ra);
-      }
-      if (response.args.dec) {
-        common_form_validator.resetField('DEC');
-        $('.form-item-DEC input.form-control').val(response.args.dec);
-      }
-      if (response.args.t1) {
-        if ($('select[name="T_format"]', '#mmoda-common').val() == 'isot') {
-          $('input[name="T1"]', '#mmoda-common').val(response.args.t1.utc).trigger('input');
-          $('input[name="T2"]', '#mmoda-common').val(response.args.t2.utc).trigger('input');
-        }
-        else {
-          $('input[name="T1"]', '#mmoda-common').val(response.args.t1.mjd).trigger('input');
-          $('input[name="T2"]', '#mmoda-common').val(response.args.t2.mjd).trigger('input');
-        }
-      }
-      elt.find('.alert').addClass('alert-success').show();
-    }
-    else {
-      $('button#edit-resolve-src-name').prop('disabled', true);
-      $('.row', '#mmoda-name-resolve').removeClass('has-success').addClass('has-error');
-    }
-    $('form#mmoda-common').bootstrapValidator({ 'live': 'enabled' });
-  }
-  Drupal.ajax.prototype.commands.set_object_gallery = function(ajax, response, status) {
-    if (response.args.status != 0) {
-      messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
-      waitingDialog.setTitle('Response from MMODA Gallery');
-      waitingDialog.hideSpinner();
-      $('#ldialog').find('.progress').hide()
-      waitingDialog.replace(messages);
-      waitingDialog.showClose();
-      return;
-    }
-    $result_panel = $('#mmoda-gallery-panel-model').clone();
-    $result_panel.attr('id', 'mmoda-gallery-panel');
-    $('#common-params').after($result_panel);
-    $('#mmoda-gallery-panel .panel-heading .panel-title').text('MMODA Gallery - Object : ' + response.args.json_response['title']);
-    $('#mmoda-gallery-panel .panel-body').append(response.args.htmlResponse);
-    $('#mmoda-gallery-panel iframe#mmoda-gallery-iframe').load(function() {
-      if ((typeof $('#mmoda-gallery-panel').data("mmoda_gallery_close") !== 'undefined') && ($('#mmoda-gallery-panel').data("mmoda_gallery_close") == 1)) {
-        $('#mmoda-gallery-panel').remove();
-      }
-      else {
-        $('#mmoda-gallery-panel').slideDown(2000);
-      }
-      waitingDialog.hide();
-    })
-  }
+//  Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
+//    $('input,select,textarea', '#lfeedback').prop('disabled', false);
+//    $('.modal-footer button.cancel-button', '#lfeedback').show();
+//  }
+//
+//  Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
+//    $('#mmoda-bug-report-form').addClass('hidden');
+//    $('textarea#edit-comment', '#mmoda-bug-report-form').val('');
+//    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
+//    $('.modal-footer button#edit-submit', '#lfeedback').hide();
+//  }
+//
+//  Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
+//    $('input,select,textarea', '#ltoken').prop('disabled', false);
+//    $('.modal-footer button.cancel-button', '#ltoken').show();
+//  }
+//
+//  Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
+//    $('input,textarea', '#ltoken').prop('disabled', false);
+//    $('#mmoda-ask-token-form').addClass('hidden');
+//    $('textarea#edit-message', '#mmoda-ask-token-form').val('');
+//    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
+//    $('.modal-footer button#edit-submit--2', '#ltoken').hide();
+//  }
+//  Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
+//    waitingDialog.hide();
+//    html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
+//      + response.args.message
+//      + '</small>';
+//    elt = $('.form-item-src-name', '#mmoda-name-resolve-form').parent().after(html);
+//    elt.find('.alert').hide();
+//    if (response.args.status == 0) {
+//      $('.row', '#mmoda-name-resolve-form').removeClass('has-error');
+//      if (response.args.ra) {
+//        common_form_validator.resetField('RA');
+//        $('.form-item-RA input.form-control').val(response.args.ra);
+//      }
+//      if (response.args.dec) {
+//        common_form_validator.resetField('DEC');
+//        $('.form-item-DEC input.form-control').val(response.args.dec);
+//      }
+//      if (response.args.t1) {
+//        if ($('select[name="T_format"]', '#mmoda-common-form').val() == 'isot') {
+//          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.utc).trigger('input');
+//          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.utc).trigger('input');
+//        }
+//        else {
+//          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.mjd).trigger('input');
+//          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.mjd).trigger('input');
+//        }
+//      }
+//      elt.find('.alert').addClass('alert-success').show();
+//    }
+//    else {
+//      $('button#edit-resolve-src-name').prop('disabled', true);
+//      $('.row', '#mmoda-name-resolve-form').removeClass('has-success').addClass('has-error');
+//    }
+//    $('form#mmoda-common-form').bootstrapValidator({ 'live': 'enabled' });
+//  }
+//  Drupal.ajax.prototype.commands.set_object_gallery = function(ajax, response, status) {
+//    if (response.args.status != 0) {
+//      messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
+//      waitingDialog.setTitle('Response from MMODA Gallery');
+//      waitingDialog.hideSpinner();
+//      $('#ldialog').find('.progress').hide()
+//      waitingDialog.replace(messages);
+//      waitingDialog.showClose();
+//      return;
+//    }
+//    $result_card = $('#mmoda-gallery-card-model').clone();
+//    $result_card.attr('id', 'mmoda-gallery-card');
+//    $('#common-params').after($result_card);
+//    $('#mmoda-gallery-card .card-header .card-title').text('MMODA Gallery - Object : ' + response.args.json_response['title']);
+//    $('#mmoda-gallery-card .card-body').append(response.args.htmlResponse);
+//    $('#mmoda-gallery-card iframe#mmoda-gallery-iframe').load(function() {
+//      if ((typeof $('#mmoda-gallery-card').data("mmoda_gallery_close") !== 'undefined') && ($('#mmoda-gallery-card').data("mmoda_gallery_close") == 1)) {
+//        $('#mmoda-gallery-card').remove();
+//      }
+//      else {
+//        $('#mmoda-gallery-card').slideDown(2000);
+//      }
+//      waitingDialog.hide();
+//    })
+//  }
 })(jQuery, Drupal);
 
 function get_div_spinner() {
   var spinner_div = (function($) {
     let inner_div = $('<div>').addClass('progress-bar').css("width", '100%');
-    let outer_div = $('<div>').addClass('renku-progress progress progress-striped active').css("width", '100%');
+    let outer_div = $('<div>').addClass('renku-progress progress progress-bar-striped active').css("width", '100%');
     outer_div.append(inner_div);
 
     return outer_div;
@@ -342,6 +319,7 @@ function get_div_spinner() {
  */
 
 function get_waitingDialog($modal_dialog) {
+  console.log('Creating waiting dialog');
   var waitingDialog = waitingDialog
     || (function($) {
       'use strict';
@@ -366,14 +344,11 @@ function get_waitingDialog($modal_dialog) {
           if (typeof options === 'undefined') {
             options = {};
           }
-          // if (typeof title === 'undefined') {
-          //   title = 'Loading ...';
-          // }
           if (typeof message === 'undefined') {
             message = {'summary': ''};
           }
           var settings = $.extend({
-            dialogSize: 'm',
+            dialogSize: 'xl',
             progressType: '',
             onHide: null,
             showProgressBar: false,
@@ -384,12 +359,10 @@ function get_waitingDialog($modal_dialog) {
             showButton: true,
             buttonText: 'Close',
             showReturnProgressLink: false,
-            // This callback runs after the dialog was hidden
           }, options);
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
-          $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
-            .addClass('modal-' + settings.dialogSize);
+          //$dialog.find('.modal-dialog').addClass('modal-' + settings.dialogSize);
 
           if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
@@ -453,10 +426,8 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.legend').show();
           }
           // Opening dialog
-          $dialog.modal({ keyboard: true });
-          $dialog.find('.close-panel').on("click", function() {
-
-          });
+//          $dialog.modal({ keyboard: true });
+          $dialog.modal('show');
           // sleep(5);
 
         },
@@ -503,7 +474,7 @@ function get_waitingDialog($modal_dialog) {
             this.setProgressBarBackgroundcolor('green');
             this.setProgressBarTextColor('white');
             $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
-            $dialog.find('.progress').removeClass('progress-striped');
+            $dialog.find('.progress-bar').removeClass('progress-bar-striped');
           }
         },
         setProgressBarWidthPercentage: function(width) {
@@ -530,6 +501,7 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
+          // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
           if(message.hasOwnProperty('summary'))
             $('.summary .summary-message', $dialog).append($(message.summary).addClass(message_class));
           if(message.hasOwnProperty('details'))
@@ -537,13 +509,15 @@ function get_waitingDialog($modal_dialog) {
           if(message.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
           if(message.hasOwnProperty('failures'))
-            $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
+              $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
           if(message.hasOwnProperty('results'))
             $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
+          // $('.message', $dialog).animate({scrollTop: $('.message',
+          // $dialog).prop("scrollHeight")}, 500);
         },
         replace: function(message, alert_type) {
           if (typeof message === 'undefined') {
-            message = {'summary': '', 'details': '', 'warnings': '', 'failures': '', 'results': ''};
+            message = {'summary': '', 'details': '', 'warnings': '', 'failures': ''};
           }
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
@@ -557,8 +531,6 @@ function get_waitingDialog($modal_dialog) {
             $('.summary .summary-warnings', $dialog).html(message.warnings);
           if(message.hasOwnProperty('failures'))
             $('.summary .summary-failures', $dialog).html(message.failures);
-          if(message.hasOwnProperty('results'))
-            $('.summary .summary-results', $dialog).html(message.results);
 
           if (message.details !== undefined && message.details !== '') {
             this.enableMoreLessLink();
@@ -636,13 +608,7 @@ function get_waitingDialog($modal_dialog) {
         },
         disableMoreLessLink: function() {
           $dialog.find('.more-less-details').removeClass("enabled");
-        },
-        hideMoreLessLink: function() {
-          $dialog.find('.more-less-details').hide();
-        },
-        showMoreLessLink: function() {
-          $dialog.find('.more-less-details').show();
-        },
+        }
       };
 
     })(jQuery);
@@ -656,16 +622,16 @@ function get_waitingDialog($modal_dialog) {
       function(e) {
         let message = e.data;
         if (message.height) {
-          $("#mmoda-gallery-panel iframe").height(message.height + 30);
+          $("#mmoda-gallery-card iframe").height(message.height + 30);
         }
       },
       false
     );
   }
 
-  $.fn.set_panel_draggable = function() {
+  $.fn.set_card_draggable = function() {
     $(this).draggable({
-      handle: '.panel-heading, .panel-footer',
+      handle: '.card-header, .card-footer',
       stack: '.ldraggable',
       containment: "parent",
       // drag: function(event, ui) {
@@ -677,65 +643,65 @@ function get_waitingDialog($modal_dialog) {
     });
   }
 
-  $.fn.insert_new_panel = function(i, product_type, datetime, left, top, draggable) {
-    var panel_id = product_type + '-wrapper-' + i;
-    var panel_body_id = product_type + '-' + i;
+  $.fn.insert_new_card = function(i, product_type, datetime, left, top, draggable) {
+    var card_id = product_type + '-wrapper-' + i;
+    var card_body_id = product_type + '-' + i;
 
-    $result_panel = $('#mmoda_panel_model').clone();
-    $result_panel.attr('id', panel_id);
-    if (datetime) $result_panel.find('.date').text('[' + datetime + ']');
-    $result_panel.find('.panel-body').attr('id', panel_body_id);
+    $result_card = $('#mmoda_card_model').clone();
+    $result_card.attr('id', card_id);
+    if (datetime) $result_card.find('.date').text('[' + datetime + ']');
+    $result_card.find('.card-body').attr('id', card_body_id);
 
-    // $($result_panel).insertAfter(insertAfter);
-    $(this).after($result_panel);
+    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#'+card_id +' .card-body');
+
+    $(this).after($result_card);
     if (left) {
-      $result_panel.css('left', left + 'px');
+      $result_card.css('left', left + 'px');
     }
     if (top) {
-      $result_panel.css('top', top + 'px');
+      $result_card.css('top', top + 'px');
     }
     if (typeof draggable === 'undefined')
       draggable = true;
     if(draggable)
-      $('#' + panel_id).set_panel_draggable();
-    return ({ 'panel_id': panel_id, 'panel_body_id': panel_body_id });
+      $('#' + card_id).set_card_draggable();
+    return ({ 'card_id': card_id, 'card_body_id': card_body_id });
   }
 
-  $.fn.highlight_result_panel = function(offset) {
-    max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).zIndex()); }).get());
+  $.fn.highlight_result_card = function(offset) {
+    max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).css('z-index')); }).get());
     $(this).css('z-index', max_zindexes + 1);
     var thisObject = $(this);
-    instrument_panel = $(this).closest('.instrument-panel');
+    instrument_card = $(this).closest('.instrument-card');
 
     if (offset) {
       $(this).offset(offset);
       thisObject.show('highlight', { color: '#adebad' }, 1000);
-      var instrument_panel_resized_height = thisObject.height() + thisObject.offset().top + instrument_panel_margin;
-      if (instrument_panel_resized_height > instrument_panel.height()) {
-        instrument_panel.height(instrument_panel_resized_height);
+      var instrument_card_resized_height = thisObject.height() + thisObject.offset().top + instrument_card_margin;
+      if (instrument_card_resized_height > instrument_card.height()) {
+        instrument_card.height(instrument_card_resized_height);
       }
     }
     else {
       position_left = parseInt(($(this).parent().width() - $(this).width()) / 2);
       $(this).css('left', position_left);
 
-      var y = instrument_panel.position().top - 100;
+      var y = instrument_card.position().top - 100;
 
       $('body').animate({ 'scrollTop': y + 'px' }, 500, function() {
         // Animation complete.
         thisObject.show('highlight', { color: '#adebad' }, 1000);
-        var instrument_panel_resized_height = thisObject.height() + thisObject.offset().top + instrument_panel_margin;
-        // resize instrument panel to fit the product panel
-        if (instrument_panel_resized_height > instrument_panel.height()) {
-          instrument_panel.height(instrument_panel_resized_height);
+        var instrument_card_resized_height = thisObject.height() + thisObject.offset().top + instrument_card_margin;
+        // resize instrument card to fit the product card
+        if (instrument_card_resized_height > instrument_card.height()) {
+          instrument_card.height(instrument_card_resized_height);
         }
       });
     }
   }
 
-  $.fn.highlight_progress_panel = function(offset) {
-    max_zindexes = $('#ldialog-modal-dialog').zIndex();
-    // $(this).css('z-index', max_zindexes + 1);
+  $.fn.highlight_progress_card = function(offset) {
+    max_zindexes = $('#ldialog-modal-dialog').css('z-index');
     $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
     var thisObject = $(this);
     thisObject.offset(offset);
@@ -744,72 +710,57 @@ function get_waitingDialog($modal_dialog) {
 
   $(document).ready(commonReady);
 
-  function validate_date(value, validator) {
-    max_mjd_date = get_today_mjd();
-    var time_format_type = validator.getFieldElements('T_format').val();
-
-    if (time_format_type == 'isot' && !valid_iso_date(value)) {
-      return {
-        valid: false,
-        message: 'Please enter a valid UTC ISO date, YYYY-MM-DDThh:mm:ss.s'
-      }
-    }
-    else if (time_format_type == 'mjd' && !valid_mjd_date(value)) {
-      return {
-        valid: false,
-        message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, ' + max_mjd_date + ']</span>'
-      }
-    }
-    return true;
-  }
 
   function commonReady() {
 
     autoHeight();
     // Ignore carriage return in common parameters
-    $('input', '#mmoda-common, #mmoda-name-resolve').keypress(function(event) {
+    $('input', '#mmoda-common-form, #mmoda-name-resolve-form').keypress(function(event) {
       var keycode = (event.keyCode ? event.keyCode : event.which);
       if (keycode == '13') {
         event.preventDefault();
       }
     });
-    $('#edit-src-name', '#mmoda-name-resolve').on('keyup', function(event) {
-      $('.row', '#mmoda-name-resolve').removeClass('has-success').removeClass('has-error');
-      $('small.help-block', '#mmoda-name-resolve').remove();
+    $('#edit-src-name', '#mmoda-name-resolve-form').on('keyup', function(event) {
+      $('.row', '#mmoda-name-resolve-form').removeClass('has-success').removeClass('has-error');
+      $('small.help-block', '#mmoda-name-resolve-form').remove();
       //$('button#edit-resolve-src-name').prop('disabled', !$(this).val());
     });
 
-    $('body').on('click', '.panel-heading .collapsible', function() {
+    /* No more needed, provided by Bootstrap 5
+    $('body').on('click', '.card-header .collapsible', function() {
       var $this = $(this);
-      if (!$this.hasClass('panel-collapsed')) {
-        $this.closest('.panel').find('.panel-body').slideUp();
-        $this.addClass('panel-collapsed');
+      if (!$this.hasClass('card-collapsed')) {
+        $this.closest('.card').find('.card-body').slideUp();
+        $this.addClass('card-collapsed');
         $this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
       }
       else {
-        $this.closest('.panel').find('.panel-body').slideDown();
-        $this.removeClass('panel-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+        $this.closest('.card').find('.card-body').slideDown();
+        $this.removeClass('card-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
       }
     });
+    */
 
-    if (Drupal.settings.user_uid == 0) {
-      $('.main-toolbar .login-link').show();
-      $('.main-toolbar .logout-link').hide();
-    }
-    else {
-      $('.main-toolbar .login-link').hide();
-      $('.main-toolbar .logout-link').show();
-    }
+//    if (Drupal.settings.user_uid == 0) {
+//      $('.main-toolbar .login-link').show();
+//      $('.main-toolbar .logout-link').hide();
+//    }
+//    else {
+//      $('.main-toolbar .login-link').hide();
+//      $('.main-toolbar .logout-link').show();
+//    }
 
     $(document).on('show.bs.modal', '.modal', function() {
-      var zIndex = 1040 + (10 * $('.modal:visible').length);
-      $(this).css('z-index', zIndex);
-      setTimeout(function() {
-        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-      }, 0);
+      console.log('in show bs modal');
+//      var zIndex = 1040 + (10 * $('.modal:visible').length);
+//      $(this).css('z-index', zIndex);
+//      setTimeout(function() {
+//        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+//      }, 0);
     });
 
-    $('#mmoda-common').submit(function(event) {
+    $('#mmoda-common-form').submit(function(event) {
       var $target = $(event.target);
       if ($target.is('input[type=submit]')) {
         return true;
@@ -890,13 +841,12 @@ function get_waitingDialog($modal_dialog) {
 
     function openPageInModal(href) {
       $.get(href, function(data) {
-        html = $.parseHTML(data);
-        message = { 'summary': $(html).filter('.main-container').html() };
-        waitingDialog.show('', message, {
-          dialogSize: 'lg',
-          buttonText: 'Close',
-          showCloseInHeader: true,
-        })
+        html = $.parseHTML(data),
+          waitingDialog.show('', $(html).filter('.main-container').html(), {
+            dialogSize: 'lg',
+            buttonText: 'Close',
+            showCloseInHeader: true,
+          })
       })
     }
     $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').on('click', function(e) {
@@ -947,113 +897,50 @@ function get_waitingDialog($modal_dialog) {
         var message = '';
         if (settings.extraData._triggering_element_name == 'resolve_name') {
           message = 'Resolving object name ...';
-          waitingDialog.hideMoreLessLink();
         }
         else if (settings.extraData._triggering_element_name == 'explore_name') {
-          $('#mmoda-gallery-panel').remove();
+          $('#mmoda-gallery-card').remove();
           message = 'Requesting data from MMODA Gallery ...';
-          waitingDialog.hideMoreLessLink();
         }
-        waitingDialog.show(message, {'summary': ''}, {
+        waitingDialog.show(message, '', {
           progressType: 'success',
           showProgressBar: true,
-          showSpinner: false,
-          showTitle: true
+          showSpinner: false
         });
-        waitingDialog.setProgressBarBackgroundcolor('#5cb85c');
+        waitingDialog.hideHeaderMessage();
 
         var index = mmoda_ajax_jqxhr.push(jqxhr);
         $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);
         $('#ldialog .close-button').data("mmoda_gallery_close", 1);
 
-        $('.form-item-src-name', '#mmoda-name-resolve').parent().parent().find('small').remove();
-        $('input:not(:file)', '#mmoda-common').val(function(_, value) {
+        $('.form-item-src-name', '#mmoda-name-resolve-form').parent().parent().find('small').remove();
+        $('input:not(:file)', '#mmoda-common-form').val(function(_, value) {
           return $.trim(value.replace(/\s+/g, " "));
         });
       }
     });
 
     // Disable main submit if error in common parameters
-    $('input, select, textarea', '#mmoda-common').on('error.field.bv', function() {
+    $('input, select, textarea', '#mmoda-common-form').on('error.field.bv', function() {
       // Disabling submit
-      $('[type="submit"]', '.instrument-panel').prop('disabled', true);
+      $('[type="submit"]', '.instrument-card').prop('disabled', true);
     }).on('success.field.bv', function() {
       // Enabling submit
-      $('[type="submit"]', '.instrument-panel').prop('disabled', false);
+      $('[type="submit"]', '.instrument-card').prop('disabled', false);
 
     });
 
-    $('select[name="T_format"]', '#mmoda-common').on('change', function() {
-      $('input[name="T1"]', '#mmoda-common').trigger('input');
-      $('input[name="T2"]', '#mmoda-common').trigger('input');
+    $('select[name="T_format"]', '#mmoda-common-form').on('change', function() {
+      $('input[name="T1"]', '#mmoda-common-form').trigger('input');
+      $('input[name="T2"]', '#mmoda-common-form').trigger('input');
     });
 
-    $('.instrument-panel').resizable({
+    $('.instrument-card').resizable({
       handles: 's'
     });
-    $('.instrument-params-panel').set_panel_draggable();
+    $('.instrument-params-card').set_card_draggable();
 
-    // Create validator and validate a frist time :
-    // This is important in Firefox when the page is refreshed
-    // where indeed the old values are still in the form
 
-    common_form_validator = $('form#mmoda-common').bootstrapValidator({
-      // live :'disabled',
-      fields: {
-        'RA': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var decimalRA;
-                return (HMS2Decimal(value, decimalRA));
-              }
-            }
-          }
-        },
-        'DEC': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, validator, $field) {
-                var decimalDEC;
-                return (DMS2Decimal(value, decimalDEC));
-              }
-            }
-          }
-        },
-        'T1': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, cbvalidator, $field) {
-                return (validate_date(value, cbvalidator, $field));
-              }
-            }
-          }
-        },
-        'T2': {
-          // enabled: false,
-          validators: {
-            callback: {
-              callback: function(value, cbvalidator, $field) {
-                return (validate_date(value, cbvalidator, $field));
-              }
-            }
-          }
-        }
-      },
-      feedbackIcons: {
-        valid: 'glyphicon glyphicon-ok',
-        invalid: 'glyphicon glyphicon-remove',
-        validating: 'glyphicon glyphicon-refresh'
-      },
-    }).data('bootstrapValidator'); // .validate();
-
-    // if (! common_form_validator.isValid()) {
-    // console.log('disabling submit');
-    // common_form_validator.disableSubmitButtons(true);
-    // }
   }
 
 })(jQuery);

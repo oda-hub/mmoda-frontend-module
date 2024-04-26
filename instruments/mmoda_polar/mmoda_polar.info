@@ -1,8 +1,0 @@
-name = MMODA Polar
-description = Astro Online Data Analysis module for Polar
-core = 7.x
-dependencies[] = mmoda
-
-files[] = mmoda_polar.inc
-
-configure = admin/config/mmoda/polar

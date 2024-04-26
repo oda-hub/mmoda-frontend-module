@@ -1,6 +1,0 @@
-name = MMODA INTEGRAL
-description = MMODA module for INTEGRAL
-core = 7.x
-dependencies[] = mmoda
-
-configure = admin/config/mmoda/integral

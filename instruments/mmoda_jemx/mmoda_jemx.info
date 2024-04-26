@@ -1,8 +1,0 @@
-name = MMODA JEM-X
-description = Astro Online Data Analysis module for JEM-X
-core = 7.x
-dependencies[] = mmoda_integral
-
-files[] = mmoda_jemx.inc
-
-configure = admin/config/mmoda/jemx
