@@ -1,0 +1,13 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: integral
+messenger: Hard X-rays
+title: INTEGRAL
+
+
+virtual: true
+weight: 10

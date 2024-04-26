@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+// function mmoda_integral_theme($existing, $type, $theme, $path)
+// {
+// }

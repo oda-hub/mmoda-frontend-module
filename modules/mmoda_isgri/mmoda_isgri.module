@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_isgri_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_isgri_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}

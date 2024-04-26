@@ -1,0 +1,65 @@
+<div class="block-rows-sep">
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}
+<div class="row">
+  <div class="col-md-6">
+    {{ form.osa_version }}
+  </div>
+  <div class="col-md-6">
+    {{ form.radius }}
+  </div>
+</div>
+<div class="row">
+  {{ form.use_scws }}
+  {{ form.max_pointings }}
+  {{ form.scw_list }}
+  {{ form.user_scw_list_file }}
+</div>
+
+<div class="row">
+  {{ form.integral_data_rights }}
+</div>
+
+<div class="row">
+  {{ form.jemx_num }}
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    {{ form.E1_keV }}
+  </div>
+  <div class="col-md-6">
+    {{ form.E2_keV }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    {{ form.query_type }}
+  </div>
+  <div class="col-md-6">
+    {{ form.detection_threshold }}
+  </div>
+</div>
+
+<div class="row">
+  {{ form.product_type }}
+</div>
+
+<div class="row">
+  <div class="col-md-5">
+    {{ form.time_bin }}
+  </div>
+  <div class="col-md-4">
+    {{ form.time_bin_format }}
+  </div>
+</div>
+<div class="row">
+  {{ form.user_catalog_file }}
+</div>
+
+<div class="actions mt-5">
+  {{ form.submit }}
+</div>
+</div>
