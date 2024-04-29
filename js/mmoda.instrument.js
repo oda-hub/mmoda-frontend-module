@@ -1935,6 +1935,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       progress_html_output_panel_id: afterDiv
     });
+    $('#' + panel_ids.panel_id).removeClass('ldraggable');
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
