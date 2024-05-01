@@ -931,13 +931,19 @@ function get_waitingDialog($modal_dialog) {
         (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
         if (request.statusText == 'abort') {
           if (settings.extraData._triggering_element_name == 'resolve_name')
-          var mbutton = 'button#edit-resolve-src-name';
+            var mbutton = 'button#edit-resolve-src-name';
           else if (settings.extraData._triggering_element_name == 'explore_name') 
-          var mbutton = 'button#edit-explore-src-name';
+            var mbutton = 'button#edit-explore-src-name';
 
           $(mbutton).prop('disabled', false);
           $('.ajax-progress', mbutton).remove();
         }
+
+        if (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name') {
+          waitingDialog.showMoreLessLink();
+          waitingDialog.disableMoreLessLink();
+        }
+        
       }
     });
 

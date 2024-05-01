@@ -87,6 +87,7 @@ function panel_title(srcname, param) {
   var distinct_nodes;
 
   var current_ajax_call_params = {};
+  var run_analysis_data_query_status = undefined;
   var last_dataserver_response = {};
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
@@ -136,8 +137,13 @@ function panel_title(srcname, param) {
     waitingDialog.hideSpinner();
 
     instrument = $('input[name=instrument]', ".instrument-panel.active").val();
+    let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     waitingDialog.setProgressBarStatus('done', false);
     waitingDialog.setProgressBarText('done');
+    if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+          waitingDialog.enableReturnProgressLink();
+    }
     if (data.exit_status.status != 0) {
       debug_message = '';
       if (data.exit_status.debug_message) {
@@ -221,7 +227,7 @@ function panel_title(srcname, param) {
     //   });
     // }
 
-    if (current_details !== '')
+    if (current_details !== '' && integral_instrument)
       waitingDialog.showLegend();
 
     if (current_details != previous_details) {
@@ -233,7 +239,7 @@ function panel_title(srcname, param) {
 
     let access_token = current_ajax_call_params.currentFormData.get('token');
     current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-    current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+    run_analysis_data_query_status = data.query_status;
     if (!current_ajax_call_params.currentFormData.has('job_id')) {
       current_ajax_call_params.currentFormData.append('job_id', job_id);
       current_ajax_call_params.currentFormData.append('session_id', session_id);
@@ -327,6 +333,10 @@ function panel_title(srcname, param) {
     //    }
     // must be global variable
     requestTimer = null;
+
+    current_ajax_call_params.currentFormData.delete('return_progress');
+    if(typeof run_analysis_data_query_status !== 'undefined')
+      current_ajax_call_params.currentFormData.set('query_status', run_analysis_data_query_status);
 
     //var startAJAXTime = new Date().getTime();
     var mmoda_jqXHR = $.ajax({
@@ -753,6 +763,13 @@ function panel_title(srcname, param) {
       waitingDialog.disableMoreLessLink();
       waitingDialog.hideLegend();
 
+      // remove any child html-progress modal window
+      $("#ldialog > *").each(function() {
+        var id = $(this).attr('id');
+        if (id !== 'ldialog-modal-dialog')
+          $(this).remove();
+      });
+
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
@@ -975,7 +992,7 @@ function panel_title(srcname, param) {
       }
     });
 
-    $("body").on('click', '.return-progress-link.enabled', function(e) {
+    $("body").on('click', '.return-progress-link.enabled .prompt', function(e) {
       // e.stopPropagation();
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
@@ -983,8 +1000,6 @@ function panel_title(srcname, param) {
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
           current_ajax_call_params.currentFormData.set('query_status', 'new');
-          // current_ajax_call_params.currentFormData.set('session_id', 'new');
-          // current_ajax_call_params.currentFormData.set('job_id', '');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             current_ajax_call_params.currentFormData.append('token', data.token);
 
@@ -1388,6 +1403,7 @@ function panel_title(srcname, param) {
       data_units = new Array();
       job_status_table = new Array();
       distinct_nodes = new Array();
+      run_analysis_data_query_status = undefined;
 
       AJAX_submit_call();
     });
@@ -1919,6 +1935,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       progress_html_output_panel_id: afterDiv
     });
+    $('#' + panel_ids.panel_id).removeClass('ldraggable');
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;

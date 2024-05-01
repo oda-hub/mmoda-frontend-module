@@ -545,8 +545,14 @@ div.ctools-modal-content .modal-content {
 }
 
 .return-progress-link.enabled,
-.more-less-details.enabled {
+.more-less-details.enabled
+{
   color: #007d64;
+}
+
+.return-progress-link.enabled .prompt,
+.more-less-details.enabled
+{
   cursor: pointer;
 }
 
@@ -619,7 +625,7 @@ div.ctools-modal-content .modal-content {
 }
 
 .result-renku-publish-link:hover .result-renku-publish-link-tooltip,
-.return-progress-link:hover .return-progress-link-tooltip,
+.return-progress-link .prompt:hover .return-progress-link-tooltip,
 .more-less-details:hover .more-less-details-tooltip {
   visibility: visible;
 }
