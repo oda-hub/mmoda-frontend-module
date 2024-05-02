@@ -423,7 +423,7 @@ function resolve_object_name_callback($form, &$form_state)
   $form['radec']['RA']['#value'] = 50;
   $form['radec']['DEC']['#value'] = 80;
 
-  $args = resolve_object_name($form_state['input']['src_name'], $form_state['input']['use_resolver']);
+  $args = resolve_object_name($form_state['input']['src_name']);
   $commands[] = array(
     'command' => 'set_ra_dec', // the name of your javascript callback
     'args' => $args

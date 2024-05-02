@@ -763,6 +763,13 @@ function panel_title(srcname, param) {
       waitingDialog.disableMoreLessLink();
       waitingDialog.hideLegend();
 
+      // remove any child html-progress modal window
+      $("#ldialog > *").each(function() {
+        var id = $(this).attr('id');
+        if (id !== 'ldialog-modal-dialog')
+          $(this).remove();
+      });
+
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
@@ -993,8 +1000,6 @@ function panel_title(srcname, param) {
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
           current_ajax_call_params.currentFormData.set('query_status', 'new');
-          // current_ajax_call_params.currentFormData.set('session_id', 'new');
-          // current_ajax_call_params.currentFormData.set('job_id', '');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             current_ajax_call_params.currentFormData.append('token', data.token);
 
@@ -1010,10 +1015,10 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
-            if (data.hasOwnProperty('return_progress_products') && data.return_progress_products.hasOwnProperty('progress_product_html_output')) {
+            if (data.products.hasOwnProperty('progress_product_html_output')) {
               var parent_panel = $('#ldialog-modal-dialog');
               var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
-              display_progress_html_output(data.return_progress_products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
           }).complete(function(jqXHR, textStatus) {
@@ -1398,6 +1403,7 @@ function panel_title(srcname, param) {
       data_units = new Array();
       job_status_table = new Array();
       distinct_nodes = new Array();
+      run_analysis_data_query_status = undefined;
 
       AJAX_submit_call();
     });
@@ -1929,6 +1935,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       progress_html_output_panel_id: afterDiv
     });
+    $('#' + panel_ids.panel_id).removeClass('ldraggable');
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
