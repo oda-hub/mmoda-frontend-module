@@ -272,13 +272,11 @@ function panel_title(srcname, param) {
   }
 
   function mmoda_show_request_error(jqXHR, textStatus, errorThrown) {
-    //    console.log('textStatus : ' + textStatus);
-    //    console.log('errorThrown :' + errorThrown);
-    //    console.log('jqXHR');
-    //    console.log(jqXHR);
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    // no need to enable the return progress link as this function is called when the request is aborted,
+    // or there is a timeout, or the server is not reachable, so the return progress link is not relevant
+    // or the request cannot be processed by the disptcher (eg instrument not available)
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
