@@ -254,7 +254,7 @@ function panel_title(srcname, param) {
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
@@ -262,6 +262,10 @@ function panel_title(srcname, param) {
      + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
      + reformatted_error_message + '</td></tr></table>'
     };
+    if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+          waitingDialog.enableReturnProgressLink();
+    }
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
     add_dispatcher_response_to_feedback_form(data);
