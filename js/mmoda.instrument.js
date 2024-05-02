@@ -2012,7 +2012,7 @@ function panel_title(srcname, param) {
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
     $('#' + panel_ids.panel_id).data("product_type", 'lc');
 
     // -------------- Toolbar start 
@@ -2146,7 +2146,7 @@ function panel_title(srcname, param) {
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     $('#' + panel_ids.panel_id).data("product_type", 'image');
 
@@ -2347,7 +2347,7 @@ function panel_title(srcname, param) {
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
 
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
@@ -2677,7 +2677,7 @@ function panel_title(srcname, param) {
     });
 
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
