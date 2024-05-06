@@ -1011,9 +1011,7 @@ function panel_title(srcname, param) {
 
           var return_progress_jqXHR = $.ajax({
             url: current_ajax_call_params.action,
-            // url: test_ajax_call_params.action,
             data: current_ajax_call_params.currentFormData,
-            // data: test_ajax_call_params.currentFormData,
             dataType: 'json',
             processData: false,
             contentType: false,
@@ -1021,10 +1019,12 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
+            var parent_panel = $('#ldialog-modal-dialog');
+            var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
-              var parent_panel = $('#ldialog-modal-dialog');
-              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+            } else  {
+              display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
           }).complete(function(jqXHR, textStatus) {
