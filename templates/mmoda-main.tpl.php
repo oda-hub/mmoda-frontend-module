@@ -296,6 +296,8 @@
                 </div>
              <?php endforeach; ?>
             </div>
+            <hr class="hr-default" />
+            <div class="pull-right">version: 1.0.0</div>
             </div>
           </div>
         </div>
