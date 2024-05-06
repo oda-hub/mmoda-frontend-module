@@ -1000,13 +1000,10 @@ function panel_title(srcname, param) {
       waitingDialog.hidePrompt();
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
-          current_ajax_call_params.currentFormData.delete('return_progress');
-          current_ajax_call_params.currentFormData.append('return_progress', 'True');
-
+          current_ajax_call_params.currentFormData.set('return_progress', 'True');
           current_ajax_call_params.currentFormData.set('query_status', 'new');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
-            current_ajax_call_params.currentFormData.delete('token');
-            current_ajax_call_params.currentFormData.append('token', data.token);
+            current_ajax_call_params.currentFormData.set('token', data.token);
           }
 
           var return_progress_jqXHR = $.ajax({
