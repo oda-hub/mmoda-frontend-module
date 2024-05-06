@@ -296,14 +296,21 @@
                 </div>
              <?php endforeach; ?>
             </div>
-            <hr class="hr-default" />
-            <div class="pull-right">version: 1.0.0</div>
+            <?php if (isset($instruments)): ?>
+              <hr class="hr-default" />
+              <div class="pull-right">version: <?=$frontend_version?></div>
+            <?php endif; ?>
             </div>
           </div>
         </div>
       </div>
     </div>
   <?php endif;?>
+  <?php if (! isset($instruments)): ?>
+    <hr class="hr-default" />
+    <div class="pull-right">version: <?=$frontend_version?></div>
+  <?php endif; ?>
+
 </div>
 </div>
 
