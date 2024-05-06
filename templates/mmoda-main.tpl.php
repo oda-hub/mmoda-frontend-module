@@ -51,15 +51,7 @@
   <div id="ldialog-modal-dialog" class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <!-- <span class="close" data-dismiss="modal" aria-label="Close"
-          aria-hidden="true">&times;</span> -->
         <h4 class="modal-title"></h4>
-        <!-- <div class="return-progress-link">View more <div class="prompt">&gt;</div> <i class="fa fa-spinner fa-spin" style="font-size: 15px;"></i></div> -->
-        <!-- <div class="header-message">
-          <div>
-            <span class="session-id"></span><span class="job-id"></span>
-          </div>
-        </div> -->
       </div>
       <div class="modal-body" style="display: flex;">
         <div style="width: 100%;">
@@ -75,11 +67,6 @@
                 </span>
               </div>
             </div>
-            <!-- <div class="alert-message"></div> -->
-            <!-- <div class="return-progress-link">
-              <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
-              <i class="fa fa-spinner hidden fa-spin"></i>
-            </div> -->
           </div>
 
           <div>
@@ -99,12 +86,7 @@
                 </div>
               </div>
               <div class="summary-message"></div>
-              <div class="summary-controls">
-                <!-- <div class="return-progress-link">View notebook progress 
-                  <div class="prompt"></div> <i class="fa fa-spinner hidden fa-spin" style="font-size: 15px;"></i>
-                </div> -->
-                <!-- <div class="more-less-details">More details &gt;</div> -->
-              </div>
+              <div class="summary-controls"></div>
               <div class="details"></div>
               <div class="summary-failures"></div>
               <div class="summary-warnings"></div>
@@ -140,7 +122,6 @@
             </div>
           </div>
           <div class="buttons-container">
-            <!-- <div class="return-progress-button">View more &gt;</div> -->
             <a data-toggle="tooltip" title=""
               data-original-title="Report a bug or write us a feedback"
               class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
@@ -295,6 +276,8 @@
                       </span>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
+                      <hr class="hr-default" />
+                        <div class="pull-right">version: <?=$instrument['instrument_version']?></div>
                     <?php  if ($instrument['acknowledgement']) :?>
                     <div id="<?=$name?>-paper-quote"
                         class="paper-quote alert alert-info alert-dismissible hidden"

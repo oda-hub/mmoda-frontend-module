@@ -399,6 +399,7 @@ function mmoda_main_block_content()
         'messenger' => $instrument['messenger'],
         'title' => $instrument['title'],
         'acknowledgement' => isset($instrument['acknowledgement']) ? $instrument['acknowledgement'] : '',
+        'instrument_version' => isset($instrument['instrument_version']) ? $instrument['instrument_version'] : '',
         'help_page' => (isset($instrument['help_page_nids']) and (! empty($instrument['help_page_nids']))) ? drupal_get_path_alias('node/' . $instrument['help_page_nids'][0]) : '',
         'active' => ''
       );
