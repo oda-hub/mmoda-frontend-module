@@ -531,6 +531,11 @@ div.ctools-modal-content .modal-content {
   cursor: default;
 }
 
+.return-progress-link-result-panel {
+  display: inline;
+  padding: 5px;
+}
+
 .more-less-details {
   vertical-align: middle;
 } 

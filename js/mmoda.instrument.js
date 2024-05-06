@@ -89,6 +89,7 @@ function panel_title(srcname, param) {
   var current_ajax_call_params = {};
   var run_analysis_data_query_status = undefined;
   var last_dataserver_response = {};
+  var request_return_progress_from_result_panel = false;
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
 
@@ -993,46 +994,61 @@ function panel_title(srcname, param) {
     });
 
     $("body").on('click', '.return-progress-link.enabled .prompt', function(e) {
-      // e.stopPropagation();
-      waitingDialog.showSpinner();
-      waitingDialog.hidePrompt();
-      AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
-          current_ajax_call_params.currentFormData.append('return_progress', 'True');
-          current_ajax_call_params.currentFormData.set('query_status', 'new');
-          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
-            current_ajax_call_params.currentFormData.append('token', data.token);
+      if(!e.target.classList.contains('return-progress-link-tooltip')) {
+        if(e.target.parentElement.classList.contains('return-progress-link-result-panel')) {
+          $(e.target.parentNode).find('.fa-spinner').removeClass('hidden'); 
+          $(e.target).hide();
+        } else {
+          waitingDialog.showSpinner();
+          waitingDialog.hidePrompt();
+        }
+        AJAX_call_get_token().done(
+          function(data, textStatus, jqXHR) {
+            current_ajax_call_params.currentFormData.append('return_progress', 'True');
+            current_ajax_call_params.currentFormData.set('query_status', 'new');
+            if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
+              current_ajax_call_params.currentFormData.append('token', data.token);
 
-          var return_progress_jqXHR = $.ajax({
-            url: current_ajax_call_params.action,
-            // url: test_ajax_call_params.action,
-            data: current_ajax_call_params.currentFormData,
-            // data: test_ajax_call_params.currentFormData,
-            dataType: 'json',
-            processData: false,
-            contentType: false,
-            timeout: ajax_request_timeout,
-            type: 'POST'
-          }).done(function(data, textStatus, jqXHR) {
-            console.log(data);
-            if (data.products.hasOwnProperty('progress_product_html_output')) {
-              var parent_panel = $('#ldialog-modal-dialog');
-              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
-              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
-            }
+            var return_progress_jqXHR = $.ajax({
+              url: current_ajax_call_params.action,
+              // url: test_ajax_call_params.action,
+              data: current_ajax_call_params.currentFormData,
+              // data: test_ajax_call_params.currentFormData,
+              dataType: 'json',
+              processData: false,
+              contentType: false,
+              timeout: ajax_request_timeout,
+              type: 'POST'
+            }).done(function(data, textStatus, jqXHR) {
+              console.log(data);
+              if (data.products.hasOwnProperty('progress_product_html_output')) {
+                var parent_panel = $('#ldialog-modal-dialog');
+                var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
+                display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              }
 
-          }).complete(function(jqXHR, textStatus) {
-            console.log(jqXHR.responseText);
-            waitingDialog.hideSpinner();
-            waitingDialog.showPrompt();
-          }).error(function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR.responseText);
-            waitingDialog.hideSpinner();
-            waitingDialog.showPrompt();
+            }).complete(function(jqXHR, textStatus) {
+              console.log(jqXHR.responseText);
+              if(!e.target.parentElement.classList.contains('return-progress-link-result-panel')) {
+                waitingDialog.hideSpinner();
+                waitingDialog.showPrompt();
+              } else {
+                $(e.target.parentNode).find('.fa-spinner').hide();
+                $(e.target).show();
+              }
+            }).error(function(jqXHR, textStatus, errorThrown) {
+              console.log(jqXHR.responseText);
+              if(!e.target.parentElement.classList.contains('return-progress-link-result-panel')) {
+                waitingDialog.hideSpinner();
+                waitingDialog.showPrompt();
+              } else {
+                $(e.target.parentNode).find('.fa-spinner').hide();
+                $(e.target).show();
+              }
+            });
+
           });
-
-        });
-
+        }
     });
 
     $("body").on('click', '.result-panel .renku-publish', function(e) {
@@ -2007,6 +2023,7 @@ function panel_title(srcname, param) {
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'lc-table', datetime);
 
     var session_id = data.session_id;
+    let instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
     $('#' + panel_ids.panel_id).data("product_type", 'lc');
@@ -2040,6 +2057,14 @@ function panel_title(srcname, param) {
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
+
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument_query !== undefined && $(`input[value='${instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
@@ -2135,7 +2160,7 @@ function panel_title(srcname, param) {
 
   }
 
-  function display_image_table(data, job_id, query_status) {
+  function display_image_table(data, job_id, instrument) {
     datetime = get_current_date_time();
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image-table', datetime);
@@ -2180,6 +2205,14 @@ function panel_title(srcname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
+
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2217,6 +2250,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
+      formData_return_progress_link: current_ajax_call_params.currentFormData
     });
 
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters.src_name, data.analysis_parameters));
@@ -2342,6 +2376,7 @@ function panel_title(srcname, param) {
 
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'spectrum-table', datetime);
 
+    var instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
 
@@ -2397,6 +2432,14 @@ function panel_title(srcname, param) {
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
+
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument_query !== undefined && $(`input[value='${instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
@@ -2650,6 +2693,19 @@ function panel_title(srcname, param) {
     return button;
   }
 
+  function get_return_progress_link_button(enable = true) {
+    let inner_html = $(`<div class="btn return-progress-link return-progress-link-result-panel">
+    <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+    <i class="fa fa-spinner hidden fa-spin"></i>
+    </div>
+    `);
+    if (enable)
+      inner_html.addClass('enabled');
+    else
+      inner_html.addClass('disabled');
+    return inner_html;
+  }
+
   function panel_body_append_header_footer(panel_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
       $('#' + panel_ids.panel_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
@@ -2744,6 +2800,14 @@ function panel_title(srcname, param) {
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
+
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
 
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
