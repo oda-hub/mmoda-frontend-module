@@ -1021,6 +1021,7 @@ function panel_title(srcname, param) {
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             } else  {
+              progress_html_offset.top = $('#' + parent_panel.attr('id')).offset().top / 2 ;
               display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset);
             }
 
