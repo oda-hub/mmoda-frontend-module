@@ -124,6 +124,10 @@ label.control-label {
   width: 75%;
 }
 
+.mmoda-html-progress-error-display {
+  top: 30%;
+}
+
 .panel.mmoda-log table.status-table {
   /* Important ! to show the rotated headings of the status table */
   margin-right: 100px;
