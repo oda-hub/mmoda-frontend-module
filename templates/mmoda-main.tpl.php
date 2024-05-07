@@ -276,8 +276,10 @@
                       </span>
                     </div>
                     <div class="panel-body"><?=render($instrument['form'])?>
-                      <hr class="hr-default" />
+                    <?php  if ($instrument['instrument_version']) :?>
+                        <hr class="hr-default" />
                         <div class="pull-right">version: <?=$instrument['instrument_version']?></div>
+                    <?php endif; ?>
                     <?php  if ($instrument['acknowledgement']) :?>
                     <div id="<?=$name?>-paper-quote"
                         class="paper-quote alert alert-info alert-dismissible hidden"

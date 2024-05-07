@@ -255,7 +255,7 @@ function panel_title(srcname, param) {
   function mmoda_show_request_failed(data) {
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    let current_instrument_query = current_ajax_call_params.initialFormData.get('instrument');
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
@@ -263,19 +263,21 @@ function panel_title(srcname, param) {
      + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
      + reformatted_error_message + '</td></tr></table>'
     };
+    if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+          waitingDialog.enableReturnProgressLink();
+    }
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
     add_dispatcher_response_to_feedback_form(data);
   }
 
   function mmoda_show_request_error(jqXHR, textStatus, errorThrown) {
-    //    console.log('textStatus : ' + textStatus);
-    //    console.log('errorThrown :' + errorThrown);
-    //    console.log('jqXHR');
-    //    console.log(jqXHR);
     waitingDialog.hideSpinner();
     waitingDialog.hideProgressBar();
-    // waitingDialog.hideReturnProgressLink();
+    // no need to enable the return progress link as this function is called when the request is aborted,
+    // or there is a timeout, or the server is not reachable, so the return progress link is not relevant
+    // or the request cannot be processed by the disptcher (eg instrument not available)
 
     // No need to go further if request aborted by the user
     if (textStatus == 'abort') return;
@@ -1004,11 +1006,10 @@ function panel_title(srcname, param) {
         }
         AJAX_call_get_token().done(
           function(data, textStatus, jqXHR) {
-            current_ajax_call_params.currentFormData.append('return_progress', 'True');
+            current_ajax_call_params.currentFormData.set('return_progress', 'True');
             current_ajax_call_params.currentFormData.set('query_status', 'new');
             if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
-              current_ajax_call_params.currentFormData.append('token', data.token);
-
+              current_ajax_call_params.currentFormData.set('token', data.token);
             var return_progress_jqXHR = $.ajax({
               url: current_ajax_call_params.action,
               // url: test_ajax_call_params.action,
@@ -1021,12 +1022,13 @@ function panel_title(srcname, param) {
               type: 'POST'
             }).done(function(data, textStatus, jqXHR) {
               console.log(data);
+              var parent_panel = $('#ldialog-modal-dialog');
+              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
               if (data.products.hasOwnProperty('progress_product_html_output')) {
-                var parent_panel = $('#ldialog-modal-dialog');
-                var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
                 display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+              } else  {
+                display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
               }
-
             }).complete(function(jqXHR, textStatus) {
               console.log(jqXHR.responseText);
               if(!e.target.parentElement.classList.contains('return-progress-link-result-panel')) {
@@ -1046,9 +1048,9 @@ function panel_title(srcname, param) {
                 $(e.target).show();
               }
             });
-
-          });
-        }
+          }
+        );
+      }
     });
 
     $("body").on('click', '.result-panel .renku-publish', function(e) {
@@ -1942,7 +1944,7 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
   }
 
-  function display_progress_html_output(html_content, afterDiv, offset) {
+  function display_progress_html_output(html_content, afterDiv, offset, errorDisplay = false) {
     var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, false);
     $('#' + panel_ids.panel_body_id).append(html_content);
     $(afterDiv).data({
@@ -1954,7 +1956,12 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).removeClass('ldraggable');
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
+    if (errorDisplay) {
+      $('#' + panel_ids.panel_id).addClass('mmoda-html-progress-error-display');
+      delete offset.top;
+    }
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
+    
     $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
   }
 
@@ -2025,7 +2032,7 @@ function panel_title(srcname, param) {
     var session_id = data.session_id;
     let instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
     $('#' + panel_ids.panel_id).data("product_type", 'lc');
 
     // -------------- Toolbar start 
@@ -2167,7 +2174,7 @@ function panel_title(srcname, param) {
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     $('#' + panel_ids.panel_id).data("product_type", 'image');
 
@@ -2378,7 +2385,7 @@ function panel_title(srcname, param) {
 
     var instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
@@ -2729,7 +2736,7 @@ function panel_title(srcname, param) {
     });
 
     var session_job_ids = '<div>Session ID : ' + data.session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
+    $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     // --------------- Toolbar start
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
