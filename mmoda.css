@@ -718,3 +718,7 @@ button.renku-publish {
   margin-left: 0;
   margin-right: 0;
 }
+
+div[id^="image-table-wrapper-"] {
+  width: 65%;
+}

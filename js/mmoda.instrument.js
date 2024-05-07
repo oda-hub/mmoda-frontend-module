@@ -2146,8 +2146,6 @@ function panel_title(srcname, param) {
 
     var session_id = data.session_id;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
-    // width: 75%;
-    $('#' + panel_ids.panel_id).css('width', '65%');
     $('#' + panel_ids.panel_id).data("log", session_job_ids + $('.summary', '#ldialog').html());
 
     $('#' + panel_ids.panel_id).data("product_type", 'image');
