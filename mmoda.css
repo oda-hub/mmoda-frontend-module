@@ -633,8 +633,8 @@ div.ctools-modal-content .modal-content {
   white-space: nowrap;
 }
 
-.result-renku-publish-link:hover .result-renku-publish-link-tooltip,
-.return-progress-link .prompt:hover .return-progress-link-tooltip,
+.result-renku-publish-link.enabled:hover .result-renku-publish-link-tooltip,
+.return-progress-link.enabled .prompt:hover .return-progress-link-tooltip,
 .more-less-details:hover .more-less-details-tooltip {
   visibility: visible;
 }
