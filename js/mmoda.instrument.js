@@ -1109,6 +1109,11 @@ function panel_title(srcname, param) {
             timeout: ajax_request_timeout,
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
+            $("#ldialog > *").each(function() {
+              var id = $(this).attr('id');
+              if (id !== 'ldialog-modal-dialog')
+                $(this).remove();
+            });
             console.log(data);
             var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
