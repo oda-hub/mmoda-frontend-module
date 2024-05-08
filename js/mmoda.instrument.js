@@ -1008,12 +1008,18 @@ function panel_title(srcname, param) {
     $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function(e) {
       let target_obj = $(e.target);
       let parent_target_obj = target_obj.parent();
-      parent_target_obj.find('.fa-spinner').removeClass('hidden'); 
-      target_obj.hide();
       let parent_panel = $(this).closest('.panel');
       let formData_return_progress_link = parent_panel.data('formData_return_progress_link');
       let return_progress_html_output = parent_panel.data('return_progress_html_output');
       let return_progress_html_panel_id = parent_panel.data('return_progress_html_output_id');
+      if (return_progress_html_panel_id) {
+        var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY };
+        $(return_progress_html_panel_id).highlight_result_panel(progress_html_offset);
+        $('.fa-chevron-down', return_progress_html_panel_id).click();
+        return;
+      }
+      parent_target_obj.find('.fa-spinner').show();
+      target_obj.hide();
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           formData_return_progress_link.set('return_progress', 'True');
@@ -1048,7 +1054,7 @@ function panel_title(srcname, param) {
                 }
                 parent_panel.data({
                   'return_progress_html_output': output_html,
-                  'return_progress_html_output_id': panel_id
+                  'return_progress_html_output_id': '#' + panel_id
                 });
             }).complete(function(jqXHR, textStatus) {
               parent_target_obj.find('.fa-spinner').hide();
@@ -2759,9 +2765,10 @@ function panel_title(srcname, param) {
   function get_return_progress_link_button(enable = true) {
     let inner_html = $(`<div class="btn return-progress-link return-progress-link-result-panel">
     <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
-    <i class="fa fa-spinner hidden fa-spin"></i>
+    <i class="fa fa-spinner fa-spin"></i>
     </div>
     `);
+    inner_html.find('.fa-spinner').hide();
     if (enable)
       inner_html.addClass('enabled');
     else
