@@ -920,6 +920,12 @@ function panel_title(srcname, param) {
         query_parameters_product_panel_id = panel.data('query_parameters_product_panel_id');
         $(query_parameters_product_panel_id).removeData('query_parameters_panel_id');
       }
+
+      if (panel.data('return_progress_html_output_product_panel_id')) {
+        query_parameters_product_panel_id = panel.data('return_progress_html_output_product_panel_id');
+        $(query_parameters_product_panel_id).removeData('return_progress_html_output_id');
+      }
+
       panel.remove();
     });
 
@@ -1006,6 +1012,8 @@ function panel_title(srcname, param) {
       target_obj.hide();
       let parent_panel = $(this).closest('.panel');
       let formData_return_progress_link = parent_panel.data('formData_return_progress_link');
+      let return_progress_html_output = parent_panel.data('return_progress_html_output');
+      let return_progress_html_panel_id = parent_panel.data('return_progress_html_output_id');
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           formData_return_progress_link.set('return_progress', 'True');
@@ -1024,18 +1032,24 @@ function panel_title(srcname, param) {
               console.log(data);
               var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
               if (data.products.hasOwnProperty('progress_product_html_output')) {
-                display_progress_html_output(data.products.progress_product_html_output, 
+                output_html = data.products.progress_product_html_output;
+                panel_id = display_progress_html_output(output_html,
                   '#' + parent_panel.attr('id'),
                   progress_html_offset,
                   false,
                   true);
-              } else  {
-                display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>',
+                } else  {
+                  output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
+                  panel_id = display_progress_html_output(output_html,
                   '#' + parent_panel.attr('id'), 
                   progress_html_offset, 
                   true, 
                   true);
-              }
+                }
+                parent_panel.data({
+                  'return_progress_html_output': output_html,
+                  'return_progress_html_output_id': panel_id
+                });
             }).complete(function(jqXHR, textStatus) {
               parent_target_obj.find('.fa-spinner').hide();
               target_obj.show();
@@ -1999,6 +2013,12 @@ function panel_title(srcname, param) {
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
     
     $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
+
+    $('#' + panel_ids.panel_id).data({
+      return_progress_html_output_product_panel_id: afterDiv
+    });
+
+    return panel_ids.panel_id;
   }
 
   function display_query_parameters(query_parameters, afterDiv, datetime, offset) {
