@@ -777,6 +777,7 @@ function panel_title(srcname, param) {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
       if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+      if ($('#ldialog-modal-dialog').data("return_progress_jqxhr")) $('#ldialog-modal-dialog').data("return_progress_jqxhr").abort();
 
       $(this).removeData('mmoda_gallery_close');
       $(this).removeData('mmoda_jqxhr_index');
@@ -926,6 +927,11 @@ function panel_title(srcname, param) {
         $(query_parameters_product_panel_id).removeData('return_progress_html_output_id');
       }
 
+      if (panel.data('return_progress_jqxhr')) {
+        return_progress_jqxhr = panel.data('return_progress_jqxhr');
+        return_progress_jqxhr.abort();
+      }
+
       panel.remove();
     });
 
@@ -1055,18 +1061,18 @@ function panel_title(srcname, param) {
                   progress_html_offset,
                   true,
                   true);
-                } else  {
-                  output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
-                  panel_id = display_progress_html_output(output_html,
+              } else  {
+                output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
+                panel_id = display_progress_html_output(output_html,
                   '#' + parent_panel.attr('id'), 
                   progress_html_offset, 
                   true, 
                   true);
-                }
-                parent_panel.data({
-                  'return_progress_html_output': output_html,
-                  'return_progress_html_output_id': '#' + panel_id
-                });
+              }
+              parent_panel.data({
+                'return_progress_html_output': output_html,
+                'return_progress_html_output_id': '#' + panel_id
+              });
             }).complete(function(jqXHR, textStatus) {
               parent_target_obj.find('.fa-spinner').hide();
               target_obj.show();
@@ -1074,16 +1080,20 @@ function panel_title(srcname, param) {
               parent_target_obj.find('.fa-spinner').hide();
               target_obj.show();
             });
+            
+            // jqxhr
+            parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
+
         }
       );
 
     });
 
     
-
     $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function(e) {
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
+      let parent_panel = $('#ldialog-modal-dialog');
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.set('return_progress', 'True');
@@ -1092,9 +1102,7 @@ function panel_title(srcname, param) {
             current_ajax_call_params.currentFormData.set('token', data.token);
           var return_progress_jqXHR = $.ajax({
             url: current_ajax_call_params.action,
-            // url: test_ajax_call_params.action,
             data: current_ajax_call_params.currentFormData,
-            // data: test_ajax_call_params.currentFormData,
             dataType: 'json',
             processData: false,
             contentType: false,
@@ -1102,7 +1110,6 @@ function panel_title(srcname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
-            let parent_panel = $('#ldialog-modal-dialog');
             var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
@@ -1119,6 +1126,8 @@ function panel_title(srcname, param) {
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
           });
+          // jqxhr
+          parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
         }
       );
     });
