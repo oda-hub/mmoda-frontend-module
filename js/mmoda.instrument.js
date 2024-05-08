@@ -1022,11 +1022,19 @@ function panel_title(srcname, param) {
               type: 'POST'
             }).done(function(data, textStatus, jqXHR) {
               console.log(data);
-              var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
+              var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
               if (data.products.hasOwnProperty('progress_product_html_output')) {
-                display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+                display_progress_html_output(data.products.progress_product_html_output, 
+                  '#' + parent_panel.attr('id'),
+                  progress_html_offset,
+                  false,
+                  true);
               } else  {
-                display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
+                display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>',
+                  '#' + parent_panel.attr('id'), 
+                  progress_html_offset, 
+                  true, 
+                  true);
               }
             }).complete(function(jqXHR, textStatus) {
               parent_target_obj.find('.fa-spinner').hide();
@@ -1066,6 +1074,7 @@ function panel_title(srcname, param) {
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
             } else  {
+              delete progress_html_offset.top;
               display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
             }
           }).complete(function(jqXHR, textStatus) {
@@ -1972,8 +1981,8 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).highlight_result_panel(offset);
   }
 
-  function display_progress_html_output(html_content, afterDiv, offset, errorDisplay = false) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, false);
+  function display_progress_html_output(html_content, afterDiv, offset, errorDisplay = false, draggable = false) {
+    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, draggable);
     $('#' + panel_ids.panel_body_id).append(html_content);
     $(afterDiv).data({
       progress_html_output_panel_id: '#' + panel_ids.panel_id
@@ -1981,13 +1990,12 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).data({
       progress_html_output_panel_id: afterDiv
     });
-    $('#' + panel_ids.panel_id).removeClass('ldraggable');
+    if (!draggable)
+      $('#' + panel_ids.panel_id).removeClass('ldraggable');
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
-    if (errorDisplay) {
+    if (errorDisplay)
       $('#' + panel_ids.panel_id).addClass('mmoda-html-progress-error-display');
-      delete offset.top;
-    }
     offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
     
     $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
