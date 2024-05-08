@@ -1012,10 +1012,22 @@ function panel_title(srcname, param) {
       let formData_return_progress_link = parent_panel.data('formData_return_progress_link');
       let return_progress_html_output = parent_panel.data('return_progress_html_output');
       let return_progress_html_panel_id = parent_panel.data('return_progress_html_output_id');
+      var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
       if (return_progress_html_panel_id) {
-        var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY };
-        $(return_progress_html_panel_id).highlight_result_panel(progress_html_offset);
+        $(return_progress_html_panel_id).highlight_progress_panel(progress_html_offset);
         $('.fa-chevron-down', return_progress_html_panel_id).click();
+        return;
+      }
+      if (return_progress_html_output) {
+        panel_id = display_progress_html_output(return_progress_html_output,
+          '#' + parent_panel.attr('id'),
+          progress_html_offset,
+          false,
+          true);
+        $('.fa-chevron-down', return_progress_html_panel_id).click();
+        parent_panel.data({
+          'return_progress_html_output_id': '#' + panel_id
+        });
         return;
       }
       parent_target_obj.find('.fa-spinner').show();
@@ -1036,13 +1048,12 @@ function panel_title(srcname, param) {
               type: 'POST'
             }).done(function(data, textStatus, jqXHR) {
               console.log(data);
-              var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
               if (data.products.hasOwnProperty('progress_product_html_output')) {
                 output_html = data.products.progress_product_html_output;
                 panel_id = display_progress_html_output(output_html,
                   '#' + parent_panel.attr('id'),
                   progress_html_offset,
-                  false,
+                  true,
                   true);
                 } else  {
                   output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
