@@ -535,6 +535,10 @@ div.ctools-modal-content .modal-content {
   cursor: default;
 }
 
+.btn.return-progress-link {
+  cursor: default;
+}
+
 .return-progress-link-result-panel {
   display: inline;
   padding: 5px;

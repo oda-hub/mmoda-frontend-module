@@ -1001,7 +1001,7 @@ function panel_title(srcname, param) {
       }
     });
 
-    $("body").on('click', ".return-progress-link-tooltip", function(e) {
+    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function(e) {
       e.stopPropagation();
     });
 
@@ -1067,6 +1067,8 @@ function panel_title(srcname, param) {
       );
 
     });
+
+    
 
     $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function(e) {
       waitingDialog.showSpinner();
