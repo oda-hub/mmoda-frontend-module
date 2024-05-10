@@ -1020,7 +1020,7 @@ function panel_title(srcname, param) {
       let return_progress_html_panel_id = parent_panel.data('return_progress_html_output_id');
       var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
       if (return_progress_html_panel_id) {
-        $(return_progress_html_panel_id).highlight_progress_panel(progress_html_offset);
+        $(return_progress_html_panel_id).highlight_progress_panel(progress_html_offset, parent_panel.attr('id'));
         $('.fa-chevron-down', return_progress_html_panel_id).click();
         return;
       }
@@ -2029,9 +2029,10 @@ function panel_title(srcname, param) {
   }
 
   function display_progress_html_output(html_content, afterDiv, offset, errorDisplay = false, draggable = false) {
-    var panel_ids = $(afterDiv).insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, draggable);
+    let afterDiv_obj = $(afterDiv);
+    var panel_ids = afterDiv_obj.insert_new_panel(desktop_panel_counter++, 'html-progress', undefined, undefined, undefined, draggable);
     $('#' + panel_ids.panel_body_id).append(html_content);
-    $(afterDiv).data({
+    afterDiv_obj.data({
       progress_html_output_panel_id: '#' + panel_ids.panel_id
     });
     $('#' + panel_ids.panel_id).data({
@@ -2043,9 +2044,9 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_id).addClass('mmoda-html-progress');
     if (errorDisplay)
       $('#' + panel_ids.panel_id).addClass('mmoda-html-progress-error-display');
-    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + panel_ids.panel_id).width()) / 2;
+    offset.left = afterDiv_obj.offset().left + (afterDiv_obj.width() - $('#' + panel_ids.panel_id).width()) / 2;
     
-    $('#' + panel_ids.panel_id).highlight_progress_panel(offset);
+    $('#' + panel_ids.panel_id).highlight_progress_panel(offset, afterDiv_obj.attr('id') );
 
     $('#' + panel_ids.panel_id).data({
       return_progress_html_output_product_panel_id: afterDiv
