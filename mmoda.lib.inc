@@ -432,6 +432,25 @@ function mmoda_get_users_with_role($role, $active_user = TRUE)
   return $users;
 }
 
+function mmode_get_frontend_version()
+{
+  $version = '';
+  $query = db_select('variable', 'var')
+    ->fields('var', array('value'))
+    ->condition('var.name', 'mmoda_frontend_version');
+  // watchdog('MMODA', 'query to fetch frontend version: ' . $query, WATCHDOG_DEBUG);
+  $query_result = $query->execute()->fetch();
+
+  if (!empty($query_result)) {
+    watchdog('MMODA', 'result query to fetch frontend version: ' . $query_result->value);
+    $version = $query_result->value;
+  }
+  else
+      watchdog('MMODA', 'frontened version not found in the database.');
+  
+  return $version;
+}
+
 function _mmoda_write_log_file($filename, $content)
 {
   $filename = '/tmp/' . $filename;
