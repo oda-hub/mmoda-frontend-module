@@ -535,6 +535,19 @@ div.ctools-modal-content .modal-content {
   cursor: default;
 }
 
+.btn.return-progress-link {
+  cursor: default;
+}
+
+.btn.return-progress-link:hover {
+  color: #007d64;
+}
+
+.return-progress-link-result-panel {
+  display: inline;
+  padding: 5px;
+}
+
 .more-less-details {
   vertical-align: middle;
 } 
@@ -546,6 +559,11 @@ div.ctools-modal-content .modal-content {
   background-position: 5px center;
   padding-left: 28px;
   filter: grayscale(1);
+  opacity: 0.65;
+}
+
+.btn.return-progress-link {
+  padding-left: 5px;
 }
 
 .return-progress-link.enabled,
@@ -569,6 +587,7 @@ div.ctools-modal-content .modal-content {
 
 .return-progress-link.enabled .prompt {
   filter: grayscale(0);
+  opacity: 1;
 }
 
 .modal-footer .buttons-container {
@@ -628,8 +647,8 @@ div.ctools-modal-content .modal-content {
   white-space: nowrap;
 }
 
-.result-renku-publish-link:hover .result-renku-publish-link-tooltip,
-.return-progress-link .prompt:hover .return-progress-link-tooltip,
+.result-renku-publish-link.enabled:hover .result-renku-publish-link-tooltip,
+.return-progress-link.enabled .prompt:hover .return-progress-link-tooltip,
 .more-less-details:hover .more-less-details-tooltip {
   visibility: visible;
 }
@@ -686,6 +705,8 @@ button.renku-publish {
   background-size: 20px 20px;
   background-position: 5px center;
   padding-left: 28px;
+  border-bottom-right-radius: 4px !important;
+  border-top-right-radius: 4px !important;
 }
 
 .tab-title {
