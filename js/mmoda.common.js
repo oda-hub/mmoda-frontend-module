@@ -733,8 +733,8 @@ function get_waitingDialog($modal_dialog) {
     }
   }
 
-  $.fn.highlight_progress_panel = function(offset) {
-    max_zindexes = $('#ldialog-modal-dialog').zIndex();
+  $.fn.highlight_progress_panel = function(offset, parent_panel_id) {
+    max_zindexes = $(`#${parent_panel_id}`).zIndex();
     // $(this).css('z-index', max_zindexes + 1);
     $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
     var thisObject = $(this);
