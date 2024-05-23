@@ -1469,7 +1469,8 @@ function panel_title(srcname, param) {
         // Attach files
         $.each($('input:file:enabled', this), function(i, file) {
           if ($(this).val() !== '') {
-            formData.append($(this).attr('name'), file.files[0]);
+            let file_entry_name = $(this).attr('name').replace(form_id + '_', '');
+            formData.append(file_entry_name, file.files[0]);
           }
         });
       }
