@@ -365,7 +365,7 @@ function mmoda_main_block_content()
   // $mmoda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   // variable_set ( 'mmoda_settings', $mmoda_settings );
 
-  watchdog('MMODA', 'content of mmoda_settings: ' . print_r($mmoda_settings, true));
+  // watchdog('MMODA', 'content of mmoda_settings: ' . var_dump($mmoda_settings));
 
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;

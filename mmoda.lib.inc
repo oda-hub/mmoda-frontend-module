@@ -432,18 +432,23 @@ function mmoda_get_users_with_role($role, $active_user = TRUE)
   return $users;
 }
 
-function mmode_get_frontend_version()
+function mmoda_get_frontend_version()
 {
-  $version = '';
-  $query = db_select('variable', 'var')
-    ->fields('var', array('value'))
-    ->condition('var.name', 'mmoda_frontend_version');
+  $version = 'test';
+  // $query = db_select('variable', 'var')
+  //   ->fields('var', array('value'))
+  //   ->condition('var.name', 'mmoda_frontend_version');
+
+  $query = db_select('system', 'sys');
+  $query->addExpression('CONVERT(sys.info USING utf8)', 'info');
+  $query->condition('sys.name', 'mmoda');
   // watchdog('MMODA', 'query to fetch frontend version: ' . $query, WATCHDOG_DEBUG);
   $query_result = $query->execute()->fetch();
 
   if (!empty($query_result)) {
-    watchdog('MMODA', 'result query to fetch frontend version: ' . $query_result->value);
-    $version = $query_result->value;
+    $unserialized_info = unserialize($query_result->info);
+    $version = "{$unserialized_info['version']}";
+    // watchdog('MMODA', 'result query to fetch frontend, version: ' . $version);
   }
   else
       watchdog('MMODA', 'frontened version not found in the database.');

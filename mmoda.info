@@ -1,6 +1,7 @@
 name = MMODA
 description = Multi-Messenger Online Data Analysis
 core = 7.x
+version = 7.x-1.0
 dependencies[] = libraries:libraries (2.x)
 dependencies[] = drupal:block
 dependencies[] = drupal:book

@@ -91,14 +91,17 @@ function mmoda_add_custom_fields()
     field_create_field($field);
   }
   foreach (mmoda_help_page_field_default_field_instances() as $instance) {
-    field_create_instance($instance);
+    if(!is_null($instance))
+      field_create_instance($instance);
   }
 }
 
 function mmoda_del_custom_fields()
 {
   foreach (mmoda_help_page_field_default_field_instances() as $instance) {
-    field_delete_instance($instance);
+    if (!is_null($instance)) {
+      field_delete_instance($instance);
+    }
   }
 //   foreach (array_keys(mmoda_help_page_field_default_field_bases()) as $field) {
 //      field_delete_field($field);
@@ -133,7 +136,7 @@ function mmoda_install()
   $module_settings['common']['T2'] = '2017-03-06T15:32:27.0';
   $module_settings['common']['T_format'] = 'isot';
   $module_settings[$module_name . '_debug'] = true;
-  $module_settings['frontend_version'] = mmode_get_frontend_version();
+  $module_settings['frontend_version'] = mmoda_get_frontend_version();
   $module_settings['modules'] = array();
 
   // Create role for user managers
@@ -172,7 +175,7 @@ function mmoda_install()
   // variable_set('menu_options_'.$help_page_content_type, array(0));
 
   // Add custom fields to book page content type
-  mmoda_add_custom_fields();
+  // mmoda_add_custom_fields();
 
   $book_allowed_types = variable_get('book_allowed_types', array(
     'book'
