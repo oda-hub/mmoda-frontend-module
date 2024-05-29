@@ -1,5 +1,7 @@
 <?php
 
+use Firebase\JWT\JWT;
+
 /**
  * @file
  * Provides a block displaying prayer times for the visitor's location
@@ -409,8 +411,27 @@ function mmoda_common_validate($form, &$form_state)
 // Define a menu callback that returns JSON data.
 function mmoda_get_token() {
   if (user_is_logged_in()) {
+    global $user;
     $jwt = jwt_link_url();
     $token_data = array('token' => $jwt['jwt_encoded_token']);
+    $user = user_load($user->uid);
+    $is_mxroomid_empty = false;
+    if(property_exists($user, 'field_matrix_room_id'))
+      $is_mxroomid_empty = empty($user->field_matrix_room_id);
+
+    $alg = variable_get('jwt_link_alg', 'HS256');
+    $key = variable_get('jwt_link_key', '');
+    $jwt_encoded_token_updated = $jwt['jwt_encoded_token'];
+    $jwt_encoded_url_updated = $jwt['jwt_encoded_url'];
+    $jwt_decoded_token = JWT::decode($token_data['token'], $key, array(
+      $alg
+    ));
+    
+    if($is_mxroomid_empty) {
+      unset($jwt_decoded_token -> mxroomid);
+      $token_data['token'] = JWT::encode($jwt_decoded_token, $key, $alg);
+    }
+
     return(drupal_json_output($token_data));
     // return ($token_data);
   }
