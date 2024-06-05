@@ -365,11 +365,14 @@ function mmoda_main_block_content()
   // $mmoda_settings ['support_email'] = array('mohamed.meharga@unige.ch');
   // variable_set ( 'mmoda_settings', $mmoda_settings );
 
+  // watchdog('MMODA', 'content of mmoda_settings: ' . var_dump($mmoda_settings));
+
   $items['session_id'] = $session_id;
   $items['session_count'] = $session_count;
   $items['name_resolve_form'] = drupal_get_form('mmoda_name_resolve');
   $items['common_form'] = drupal_get_form('mmoda_common');
   $items['mmoda_debug'] = $mmoda_settings['mmoda_debug'];
+  $items['frontend_version'] = $mmoda_settings['frontend_version'];
   $items['auth_cookie'] = '_oauth2_proxy';
 
   if (empty($mmoda_settings['instruments'])) {
