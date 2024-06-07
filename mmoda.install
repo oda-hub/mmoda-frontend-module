@@ -175,7 +175,7 @@ function mmoda_install()
   // variable_set('menu_options_'.$help_page_content_type, array(0));
 
   // Add custom fields to book page content type
-  // mmoda_add_custom_fields();
+  mmoda_add_custom_fields();
 
   $book_allowed_types = variable_get('book_allowed_types', array(
     'book'
