@@ -642,7 +642,7 @@ function panel_title(srcname, param) {
             if (Number(value) >= Number(E2_keV)) {
               return {
                 valid: false,
-                message: 'Energy min must be lower that energy max'
+                message: 'Energy min must be lower than energy max'
               }
             }
             return true;
@@ -662,7 +662,7 @@ function panel_title(srcname, param) {
             if (Number(value) <= Number(E1_keV)) {
               return {
                 valid: false,
-                message: 'Energy max must be higher that energy min'
+                message: 'Energy max must be higher than energy min'
               }
             }
             return true;
