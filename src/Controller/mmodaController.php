@@ -6,24 +6,37 @@ namespace Drupal\mmoda\Controller;
 // use Drupal\mmoda\Form\NameResolveForm;
 // use Drupal\mmoda\Form\CommonForm;
 // use Drupal\mmoda_isgri\Form\MmodaIsgriForm;
-
+use Drupal\Core\Controller\ControllerBase;
 /**
  * @file
  * Contains \Drupal\mmoda\Controller\mmodaController.
  */
-class mmodaController
+class mmodaController extends ControllerBase
 {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getModuleName()
+  {
+    return 'mmoda';
+  }
 
   public function content()
   {
     $module_handler = \Drupal::moduleHandler();
+    //$module_object = $module_handler->getModule(basename(__FILE__, '.module'));
+
+    $core_module_name = $this->getModuleName();
+
     $enabled_modules = $module_handler->getModuleList();
-//     \Drupal::service('libraries.manager')->load('bootstrap_form_validator');
-//     \Drupal::service('libraries.manager')->load('highlightjs');
+    //     \Drupal::service('libraries.manager')->load('bootstrap_form_validator');
+    //     \Drupal::service('libraries.manager')->load('highlightjs');
     $mmoda_modules = array_filter($enabled_modules, function ($key) {
       return strpos($key, 'mmoda_') === 0;
     }, ARRAY_FILTER_USE_KEY);
-    $module_ependencies = $module_handler->buildModuleDependencies($mmoda_modules);
+    $module_dependencies = $module_handler->buildModuleDependencies($mmoda_modules);
+    $mmoda_settings = \Drupal::config('mmoda.settings');
 
     $instruments_settings = array();
     foreach ($mmoda_modules as $mmoda_module_name => $mmoda_module) {
@@ -36,28 +49,37 @@ class mmodaController
       }
     }
     $instruments = array();
+    $mmoda_js_settings = array();
+
     foreach ($instruments_settings as $mmoda_module_name => $instrument_settings) {
+
       $weight = $instrument_settings->get('weight');
       if (empty($weight))
         $weight = 99999999999;
       $form = '';
       try {
         $form = \Drupal::formBuilder()->getForm('\Drupal\\' . $mmoda_module_name . '\Form\MmodaInstrumentForm');
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         \Drupal::messenger()->addError('Error ' . $e->getCode() . ' : ' . $e->getMessage());
       }
-      if (! empty($form))
+      if (! empty($form)) {
+        $instrument_name = $instrument_settings->get('name');
+        $mmoda_js_settings[$instrument_name] = array();
+
         $instruments[$weight] = [
-          'name' => $instrument_settings->get('name'),
+          'name' => $instrument_name,
           'active' => '',
           'messenger' => $instrument_settings->get('messenger'),
           'title' => $instrument_settings->get('title'),
           'help_page_url' => $instrument_settings->get('help_page_url'),
           'acknowledgement' => $instrument_settings->get('acknowledgement'),
-          'form' => $form,
-          'help_page_url' => 'help/isgri'
+          'form' => $form
         ];
+        $enable_use_catalog = $instrument_settings->get('enable_use_catalog');
+        $js9_ext_id = $instrument_settings->get('js9_ext_id');
+        $mmoda_js_settings[$instrument_name]['enable_use_catalog'] = ! is_null($enable_use_catalog) ? $enable_use_catalog : false;
+        $mmoda_js_settings[$instrument_name]['js9_ext_id'] = ! is_null($js9_ext_id) ? $js9_ext_id : 4;
+      }
     }
     // sort instruments by weight
     ksort($instruments);
@@ -65,14 +87,19 @@ class mmodaController
 
     // set the first instrument as active tab
     $instruments[0]['active'] = 'active';
+    $common_form = \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\CommonForm');
+    $mmoda_data['help_page_url'] = $mmoda_settings->get('help_page_url');
 
     $output = [
       '#region' => 'content',
       '#theme' => 'mmoda',
       '#name_resolve_form' => \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\NameResolveForm'),
-      '#common_form' => \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\CommonForm'),
-      '#instruments' => $instruments
+      '#common_form' => $common_form,
+      '#instruments' => $instruments,
+      '#mmoda_data' => $mmoda_data,
     ];
+    error_log('help_page_url:' . print_r($output['#mmoda_data'], true));
+    $output['#attached']['drupalSettings'][$core_module_name] = $mmoda_js_settings;
 
     // Use the form builder service to retrieve a form by providing the full
     // name of the class that implements the form you want to display. getForm()
@@ -83,10 +110,5 @@ class mmodaController
     // a render array so we add the form to the existing output and return it.
 
     return $output;
-
-    return array(
-      '#type' => 'markup',
-      '#markup' => t('Hello, World!')
-    );
   }
 }

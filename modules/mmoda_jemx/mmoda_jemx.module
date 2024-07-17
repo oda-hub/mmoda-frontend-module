@@ -1,14 +1,14 @@
 <?php
-
 /**
  * Implements hook_theme().
  */
 function mmoda_jemx_theme($existing, $type, $theme, $path)
 {
   return [
-  'mmoda_jemx_form'=> [
-    'render element' => 'form',
-  ]
-];
+    'mmoda_jemx_form'=> [
+      'render element' => 'form',
+    ]
+  ];
 
 }
+

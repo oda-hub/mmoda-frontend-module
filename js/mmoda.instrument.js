@@ -281,7 +281,7 @@ function card_title(srcname, param) {
       timeout: ajax_request_timeout,
       type: 'POST'
     });
-    
+
     mmoda_jqXHR.done(
       function(data, textStatus, jqXHR) {
         last_dataserver_response = data;
@@ -322,7 +322,7 @@ function card_title(srcname, param) {
       mmoda_show_request_error(jqXHR, textStatus, errorThrown);
     });
     mmoda_jqXHR.always(function(jqXHR, textStatus) {
-      $('button[type=submit]', ".instrument-card.active, .common-params").prop('disabled', false);
+      $('input[type=submit]', ".instrument-card.active, #common-params").prop('disabled', false);
     });
 
     // jqxhr
@@ -551,7 +551,9 @@ function card_title(srcname, param) {
     $('.multivalued-field').removeClass('form-group');
     set_multivalued_events();
 
-    $('body').on('click', '#ldialog .close-button', function(e) {
+
+    //$('body').on('click', '#ldialog .close-button', function(e) {
+    $('body').on('hidden.bs.modal', '#ldialog', function(e) {
       e.preventDefault();
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
@@ -561,23 +563,29 @@ function card_title(srcname, param) {
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
       $('#ldialog .job-info .session-id').html('');
-      $('#ldialog .details').html('');
+      waitingDialog.replace();
       $('#ldialog .details').hide();
-      $('#ldialog .summary-content').html('');
-      $('#ldialog .summary-warnings').html('');
-      $('#ldialog .summary-failures').html('');
-      $('#ldialog .summary-results').html('');
       $('#ldialog .more-less-details .fa-info-circle').css('color', '');
-      $('#ldialog .progress-bar').addClass('progress-bar-striped');
+      $('#ldialog .progress').addClass('progress-striped');
       waitingDialog.setProgressBarText('');
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
+      waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
+      waitingDialog.hideLegend();
+
+      // remove any child html-progress modal window
+      $("#ldialog > *").each(function() {
+        var id = $(this).attr('id');
+        if (id !== 'ldialog-modal-dialog')
+          $(this).remove();
+      });
 
       if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
         mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
       }
-      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-card').data("mmoda_gallery_close", 1);
+      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+      if ($('#ldialog-modal-dialog').data("return_progress_jqxhr")) $('#ldialog-modal-dialog').data("return_progress_jqxhr").abort();
 
       $(this).removeData('mmoda_gallery_close');
       $(this).removeData('mmoda_jqxhr_index');
@@ -585,7 +593,7 @@ function card_title(srcname, param) {
     });
 
     $('#ldialog').on('hidden.bs.modal', function() {
-      $('#ldialog button.write-feedback-button').hide();
+      $('#ldialog .write-feedback-button').hide();
       $(".notice-progress-container").hide();
     })
 
@@ -1063,122 +1071,136 @@ function card_title(srcname, param) {
     });
 
     $('.form-submit', '.instrument-card form').on('click', function(e) {
-      e.preventDefault();
-      //      console.log('showing dialog');
       var current_form = $(this).closest('form');
-      var form_id = current_form.attr('id').replace(/-/g, "_");
-      var form_card = current_form.closest('.card');
-      var formData;
-      if (request_draw_spectrum) {
-        formData = request_spectrum_form_element.data('parameters');
-      } else {
-        $('input:not(:file)', current_form).val(function(_, value) {
-          return $.trim(value);
-        });
-
-        // Disable form elements added by Drupal
-        $('[name^=form_]', current_form).prop('disabled', true);
-        $('[name^=form_]', '.common-params').prop('disabled', true);
-        // $('[name=catalog_selected_objects]',this).prop('disabled', true);
-
-        // Collect object name 
-        var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function(item, index) {
-          return (item);
-        });
-
-        // Collect common parameters
-        var commonFormData = $("form#mmoda-common-form").serializeArray().map(function(item, index) {
-          if (item.name == 'T1' || item.name == 'T2') {
-            item.value = item.value.replace(' ', 'T')
-          }
-          return (item);
-        });
-        var instrument_form_serializeJSON = current_form.serializeJSON();
-        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
-        var instrument_form_serializeArray = [];
-        multival_pars = $.unique($.map(current_form.find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
-        $.each(instrument_form_serializeJSON, function(param, value) {
-          if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
-          else instrument_form_serializeArray.push({ 'name': param, 'value': value });
-        });
-
-        // Collect instrument form fields and remove the
-        // form id prefix from
-        // the name
-        var instrumentFormData = instrument_form_serializeArray.map(function(item) {
-          item.name = item.name.replace(form_id, '');
-          return (item);
-        });
-
-        allFormData = allFormData.concat(commonFormData).concat(instrumentFormData);
-        formData = new FormData();
-        for (var lindex = 0; lindex < allFormData.length; lindex++)
-          formData.append(allFormData[lindex].name, allFormData[lindex].value);
-        // Enable form elements added by Drupal
-        $('[name^=form_]', this).prop('disabled', false);
-        $('[name^=form_]', '.common-params').prop('disabled', false);
-        // $('[name=catalog_selected_objects]',this).prop('disabled',
-        // false);
-
-        if (form_card.data('catalog')) {
-          catalog = form_card.data('catalog').initial_catalog;
-          var catalog_selected_objects_string = '';
-          if (form_card.data('dataTable')) {
-            var dataTable = form_card.data('dataTable');
-            catalog.cat_column_list = dataTable.columns().data().toArray();
-            catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
-            catalog_selected_objects = catalog_selected_objects.map(function(x, i) {
-              return i + 1
-            });
-            catalog_selected_objects_string = catalog_selected_objects.join(',');
-            catalog.cat_column_list[0] = catalog_selected_objects;
+      //var formValidator = current_form.data('formValidation');
+      common_form_validator.validate().then(function(status) {
+        // status can be one of the following value
+        // 'NotValidated': The form is not yet validated
+        // 'Valid': The form is valid
+        // 'Invalid': The form is invalid
+        if (status == 'Valid') {
+          console.log('common form  is valid !');
+          //prepare_and_ajax_call(current_form);
+          e.preventDefault();
+          //      console.log('showing dialog');
+          //var current_form = $(this).closest('form');
+          var form_id = current_form.attr('id').replace(/-/g, "_");
+          var form_card = current_form.closest('.card');
+          var formData;
+          if (request_draw_spectrum) {
+            formData = request_spectrum_form_element.data('parameters');
           } else {
-            catalog_selected_objects_string = catalog.cat_column_list[0].join(',');
+            $('input:not(:file)', current_form).val(function(_, value) {
+              return $.trim(value);
+            });
+
+            // Disable form elements added by Drupal
+            $('[name^=form_],[name=op]', current_form).prop('disabled', true);
+            $('[name^=form_],[name=op]', '#common-params').prop('disabled', true);
+            // $('[name=catalog_selected_objects]',this).prop('disabled', true);
+
+            // Collect object name 
+            var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function(item,) {
+              return (item);
+            });
+
+            // Collect common parameters
+            var commonFormData = $("form#mmoda-common-form").serializeArray().map(function(item, index) {
+              if (item.name == 'T1' || item.name == 'T2') {
+                item.value = item.value.replace(' ', 'T')
+              }
+              return (item);
+            });
+            var instrument_form_serializeJSON = current_form.serializeJSON();
+            //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
+            var instrument_form_serializeArray = [];
+            multival_pars = $.unique($.map(current_form.find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
+            $.each(instrument_form_serializeJSON, function(param, value) {
+              if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+              else instrument_form_serializeArray.push({ 'name': param, 'value': value });
+            });
+
+            // Collect instrument form fields and remove the
+            // form id prefix from
+            // the name
+            var instrumentFormData = instrument_form_serializeArray.map(function(item) {
+              item.name = item.name.replace(form_id, '');
+              return (item);
+            });
+
+            allFormData = allFormData.concat(commonFormData).concat(instrumentFormData);
+            formData = new FormData();
+            for (var lindex = 0; lindex < allFormData.length; lindex++)
+              formData.append(allFormData[lindex].name, allFormData[lindex].value);
+            // Enable form elements added by Drupal
+            $('[name^=form_],[name=op]', this).prop('disabled', false);
+            $('[name^=form_],[name=op]', '#common-params').prop('disabled', false);
+            // $('[name=catalog_selected_objects]',this).prop('disabled',
+            // false);
+
+            if (form_card.data('catalog')) {
+              catalog = form_card.data('catalog').initial_catalog;
+              var catalog_selected_objects_string = '';
+              if (form_card.data('dataTable')) {
+                var dataTable = form_card.data('dataTable');
+                catalog.cat_column_list = dataTable.columns().data().toArray();
+                catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
+                catalog_selected_objects = catalog_selected_objects.map(function(x, i) {
+                  return i + 1
+                });
+                catalog_selected_objects_string = catalog_selected_objects.join(',');
+                catalog.cat_column_list[0] = catalog_selected_objects;
+              } else {
+                catalog_selected_objects_string = catalog.cat_column_list[0].join(',');
+              }
+              formData.append('catalog_selected_objects', catalog_selected_objects_string);
+              formData.append('selected_catalog', JSON.stringify(catalog));
+            }
+            // Attach files
+            $.each($('input:file:enabled', this), function(i, file) {
+              if ($(this).val() !== '') {
+                formData.append($(this).attr('name'), file.files[0]);
+              }
+            });
           }
-          formData.append('catalog_selected_objects', catalog_selected_objects_string);
-          formData.append('selected_catalog', JSON.stringify(catalog));
+          $('input[name=xspec_model]', this).prop('disabled', false);
+          $('input.spectrum-fit-param', this).prop('disabled', true);
+
+          request_draw_spectrum = false;
+
+          waitingDialog.show('Processing ...', '', {
+            progressType: 'success',
+            showProgressBar: true,
+            showSpinner: false,
+            showReturnProgressLink: true
+          });
+          waitingDialog.setProgressBarText('processing request');
+          waitingDialog.setProgressBarBackgroundcolor('#8da38f');
+          waitingDialog.setProgressBarWidthPercentage(100);
+          waitingDialog.hideHeaderMessage();
+          $('.write-feedback-button').show();
+          $(".notice-progress-container").hide();
+
+          current_ajax_call_params = {};
+          current_ajax_call_params.initialFormData = formData;
+          current_ajax_call_params.currentFormData = cloneFormData(formData);
+          if (!current_ajax_call_params.currentFormData.has('query_status')) {
+            current_ajax_call_params.currentFormData.append('query_status', 'new');
+            current_ajax_call_params.currentFormData.append('session_id', 'new');
+            current_ajax_call_params.currentFormData.append('job_id', '');
+          }
+          current_ajax_call_params.action = current_form.attr('action');
+          current_ajax_call_params.form = this;
+
+          data_units = new Array();
+          job_status_table = new Array();
+          distinct_nodes = new Array();
+
+          AJAX_submit_call();
+
         }
-        // Attach files
-        $.each($('input:file:enabled', this), function(i, file) {
-          if ($(this).val() !== '') {
-            formData.append($(this).attr('name'), file.files[0]);
-          }
-        });
-      }
-      $('input[name=xspec_model]', this).prop('disabled', false);
-      $('input.spectrum-fit-param', this).prop('disabled', true);
-
-      request_draw_spectrum = false;
-
-      waitingDialog.show('Processing ...', '', {
-        progressType: 'success',
-        showProgressBar: true,
-        showSpinner: false,
-        showReturnProgressLink: true
       });
-      waitingDialog.setProgressBarText('processing request');
-      waitingDialog.setProgressBarBackgroundcolor('#8da38f');
-      waitingDialog.setProgressBarWidthPercentage(100);
-      waitingDialog.hideHeaderMessage();
-      $('.write-feedback-button').show();
-      $(".notice-progress-container").hide();
-
-      current_ajax_call_params = {};
-      current_ajax_call_params.initialFormData = formData;
-      current_ajax_call_params.currentFormData = cloneFormData(formData);
-      if (!current_ajax_call_params.currentFormData.has('query_status')) {
-        current_ajax_call_params.currentFormData.append('query_status', 'new');
-        current_ajax_call_params.currentFormData.append('session_id', 'new');
-        current_ajax_call_params.currentFormData.append('job_id', '');
-      }
-      current_ajax_call_params.action = current_form.attr('action');
-      current_ajax_call_params.form = this;
-
-      data_units = new Array();
-      job_status_table = new Array();
-      distinct_nodes = new Array();
-
-      AJAX_submit_call();
+      //formValidator.validate().then
     });
 
     $('body').on('click', '.open-in-modal', function(e) {
@@ -1200,7 +1222,9 @@ function card_title(srcname, param) {
       $.get($(this).attr('href'), function(data) {
         var html = $.parseHTML(data);
         var help_text = $(".region-content", html);
-        var title = $(".page-header", html).text();
+        var title = $("h1 span.field--name-title", html).text();
+        
+        $("h1 span.field--name-title", html).remove();
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
@@ -1215,11 +1239,14 @@ function card_title(srcname, param) {
           }
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
-        waitingDialog.show(home_link + title, help_text, {
+        message = { 'summary': help_text };
+        waitingDialog.show(home_link + title, message, {
           dialogSize: 'lg',
+          showTitle: true,
           buttonText: 'Close',
           showCloseInHeader: true,
         });
+        $('#ldialog .write-feedback-button').hide();
         $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%" });
         $('#ldialog .modal-body').scrollTop(0);
         $(window).scrollTop(0);
@@ -1350,55 +1377,46 @@ function card_title(srcname, param) {
     }
   }
 
-  function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
-    var buttons = [
-      'selectAll',
-      'selectNone',
+  //  function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
+  function create_catalog_datatable(catalog, catalog_container, enable_use_catalog) {
+    var buttons = {
+      topStart: {
+        buttons: [
+          {
+            text: 'Select all',
+            action: function() {
+              table.rows().select();
+            }
+          },
+          {
+            text: 'Select none',
+            action: function() {
+              table.rows().deselect();
+            }
+          }
+        ]
+      }
+    };
+    var buttons1 = [
       {
-        text: 'New',
+        text: 'Copy',
+        extend: 'copy',
+      },
+      {
+        text: 'Neww',
         className: 'btn-primary',
-        extend: "create",
         formTitle: '<h3>Add new object</h3>',
-        editor: editor,
-        formButtons: [{
-          text: 'Add',
-          className: 'btn-primary save-row',
-          action: function() {
-            this.submit();
-          }
-        }, {
-          text: 'Cancel',
-          className: 'btn-primary',
-          action: function() {
-            this.close();
-          }
-        }]
       },
       {
         text: 'Edit',
         className: 'btn-primary',
-        extend: "editSingle",
         formTitle: '<h3>Edit object</h3>',
-        editor: editor,
-        formButtons: [{
-          label: 'Save',
-          className: 'btn-primary save-row',
-          action: function() {
-            this.submit();
-          }
-        }, {
-          label: 'Cancel',
-          className: 'btn-primary',
-          action: function() {
-            this.close();
-          }
-        }]
       },
       {
-        extend: "remove",
+        text: 'Delete',
         className: 'btn-primary',
         formTitle: '<h3>Delete source(s)</h3>',
-        editor: editor,
+        //        editor: editor,
         formMessage: function(e, dt) {
           var rows = dt.rows(e.modifier()).data().pluck('src_names');
           return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
@@ -1408,20 +1426,20 @@ function card_title(srcname, param) {
         text: 'Add query object',
         className: 'btn-primary',
         action: function(e, dt, button, config) {
-          editor.title('<h3>Add query object</h3>').buttons([{
-            text: 'Add',
-            className: 'btn-primary save-row',
-            action: function() {
-              this.submit();
-            }
-          }, {
-            text: 'Cancel',
-            className: 'btn-primary',
-            action: function() {
-              this.close();
-            }
-          }]).create().set('src_names', $('input[name=src_name]', '.common-params').val()).set('ra', $('input[name=RA]', '.common-params').val()).set('dec',
-            $('input[name=DEC]', '.common-params').val());
+          //          editor.title('<h3>Add query object</h3>').buttons([{
+          //            text: 'Add',
+          //            className: 'btn-primary save-row',
+          //            action: function() {
+          //              this.submit();
+          //            }
+          //          }, {
+          //            text: 'Cancel',
+          //            className: 'btn-primary',
+          //            action: function() {
+          //              this.close();
+          //            }
+          //          }]).create().set('src_names', $('input[name=src_name]', '.common-params').val()).set('ra', $('input[name=RA]', '.common-params').val()).set('dec',
+          //            $('input[name=DEC]', '.common-params').val());
           // Make Editor draggable (movable)
           // $('.DTE_Action_Create').draggable({
           // handle : '.DTE_Header, .DTE_Footer',
@@ -1450,7 +1468,7 @@ function card_title(srcname, param) {
         }
       }];
     if (enable_use_catalog) {
-      buttons = buttons.concat(button_save_as_text);
+      //      buttons = buttons.concat(button_save_as_text);
       select_row = {
         style: 'os',
         selector: 'td:first-child'
@@ -1460,13 +1478,31 @@ function card_title(srcname, param) {
       buttons = button_save_as_text;
       select_row = false;
     }
-
+    var buttons2 = [
+      {
+        text: 'Select all',
+        action: function() {
+          catalog_datatable.rows().select();
+        }
+      },
+      {
+        text: 'Select none',
+        action: function() {
+          catalog_datatable.rows().deselect();
+        }
+      }
+    ];
+    buttons2 = buttons2.concat(buttons1).concat(button_save_as_text);
     var catalog_datatable = catalog_container.DataTable({
       data: catalog.data,
       columns: catalog.column_names,
       // dom : 'Brtflip',
-      dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
-      buttons: buttons,
+      //dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
+      layout: {
+        topStart: {
+          buttons: buttons2
+        }
+      },
       select: select_row,
       order: [[1, 'asc']],
     });
@@ -1499,20 +1535,21 @@ function card_title(srcname, param) {
     });
 
     var instrument = $('input[name=instrument]', ".instrument-card.active").val();
-    var enable_use_catalog = Drupal.settings.mmoda[instrument].enable_use_catalog;
+    var enable_use_catalog = drupalSettings.mmoda[instrument].enable_use_catalog;
     if (enable_use_catalog && showUseCatalog) {
       $('.card-footer', '#' + card_ids.card_id).append(
         '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
 
-    var editor = new $.fn.dataTable.Editor({
-      table: '#' + card_ids.card_id + ' .catalog-wrapper .mmoda',
-      fields: catalog.fields,
-    });
+    //    var editor = new $.fn.dataTable.Editor({
+    //      table: '#' + card_ids.card_id + ' .catalog-wrapper .mmoda',
+    //      fields: catalog.fields,
+    //    });
 
     var catalog_container = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id);
 
-    var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
+    //    var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
+    var dataTable = create_catalog_datatable(catalog, catalog_container, enable_use_catalog)
 
     catalog_card.data({
       dataTable: dataTable,
@@ -1521,95 +1558,95 @@ function card_title(srcname, param) {
 
     // Activate inline edit on click of a table cell
     if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
-      editor.inline(this);
+      // editor.inline(this);
     });
 
-    editor.on('preSubmit', function(e, data, action) {
-      var rowId = Object.keys(data.data)[0];
-      if (action === 'confirm') {
-
-      }
-      if (action !== 'remove') {
-        var ra = this.field('ra');
-        var dec = this.field('dec');
-        //var src_names = this.field('src_names');
-        var ldataTable = $(this.s.table).DataTable();
-        // var lfilter = (action === 'edit')? data.data;
-        var confirmation = ($('.DTE button.save-row').data('confirmation'));
-        if (!confirmation) {
-          ldataTable.rows().every(
-            function(rowIdx, tableLoop, rowLoop) {
-              // ignore compare with
-              // the current row !
-              if (this.id() === rowId)
-                return;
-
-              var d = this.data();
-              var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
-              // var distance_same = d.ERR_RAD * 2;
-              var distance_same = 0.00001;
-              if (distance <= distance_same) {
-                // Highlight the row in the table
-                $(this.node()).addClass('alert alert-danger');
-                $(this).show();
-
-                // Change the editor button to "Save anyway"
-                $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
-                // Fix a bug where the opacity of the error message element is set to 0: not displayed
-                $('.DTE .DTE_Form_Error').css({
-                  'opacity': ''
-                });
-
-                editor.fail('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
-                  + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
-                setTimeout(function() {
-                  var row = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id).DataTable().row(rowIdx).node();
-
-                  $(row).removeClass('alert alert-danger')
-                }, 5000);
-              }
-            });
-        } else {
-          $('.DTE button.save-row').html('Save').removeClass('btn-warning').addClass('btn-primary').removeData('confirmation').removeData('ltext');
-        }
-
-        // validate RA between 0 and 360
-        if (ra.val() < 0 || ra.val() > 360) {
-          ra.fail('Value must be between 0 and 360');
-        }
-
-        // validate RA between 0 and 360
-        if (dec.val() < -90 || dec.val() > 90) {
-          dec.fail('Value must be between -90 and 90');
-        }
-
-        // If any error was reported, cancel the
-        // submission so it can be
-        // corrected
-        if (this.inError() && !confirmation) {
-          return false;
-        }
-
-      }
-    });
+    //    editor.on('preSubmit', function(e, data, action) {
+    //      var rowId = Object.keys(data.data)[0];
+    //      if (action === 'confirm') {
+    //
+    //      }
+    //      if (action !== 'remove') {
+    //        var ra = this.field('ra');
+    //        var dec = this.field('dec');
+    //        //var src_names = this.field('src_names');
+    //        var ldataTable = $(this.s.table).DataTable();
+    //        // var lfilter = (action === 'edit')? data.data;
+    //        var confirmation = ($('.DTE button.save-row').data('confirmation'));
+    //        if (!confirmation) {
+    //          ldataTable.rows().every(
+    //            function(rowIdx, tableLoop, rowLoop) {
+    //              // ignore compare with
+    //              // the current row !
+    //              if (this.id() === rowId)
+    //                return;
+    //
+    //              var d = this.data();
+    //              var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
+    //              // var distance_same = d.ERR_RAD * 2;
+    //              var distance_same = 0.00001;
+    //              if (distance <= distance_same) {
+    //                // Highlight the row in the table
+    //                $(this.node()).addClass('alert alert-danger');
+    //                $(this).show();
+    //
+    //                // Change the editor button to "Save anyway"
+    //                $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
+    //                // Fix a bug where the opacity of the error message element is set to 0: not displayed
+    //                $('.DTE .DTE_Form_Error').css({
+    //                  'opacity': ''
+    //                });
+    //
+    //                editor.fail('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
+    //                  + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
+    //                setTimeout(function() {
+    //                  var row = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id).DataTable().row(rowIdx).node();
+    //
+    //                  $(row).removeClass('alert alert-danger')
+    //                }, 5000);
+    //              }
+    //            });
+    //        } else {
+    //          $('.DTE button.save-row').html('Save').removeClass('btn-warning').addClass('btn-primary').removeData('confirmation').removeData('ltext');
+    //        }
+    //
+    //        // validate RA between 0 and 360
+    //        if (ra.val() < 0 || ra.val() > 360) {
+    //          ra.fail('Value must be between 0 and 360');
+    //        }
+    //
+    //        // validate RA between 0 and 360
+    //        if (dec.val() < -90 || dec.val() > 90) {
+    //          dec.fail('Value must be between -90 and 90');
+    //        }
+    //
+    //        // If any error was reported, cancel the
+    //        // submission so it can be
+    //        // corrected
+    //        if (this.inError() && !confirmation) {
+    //          return false;
+    //        }
+    //
+    //      }
+    //    });
     // Update the catalog within the main window whenever the dataTable is
     // changed
     // create, remove or edit of any cell
-    if (!showUseCatalog) {
-      editor.on('create remove edit', function(e, json, data) {
-        var catalog_parent_card = $(afterDiv);
-        if (catalog_parent_card.hasClass('instrument-params-card')) {
-          var card = $('#' + card_ids.card_id);
-          var dataTable = card.data('dataTable');
-          var catalog = catalog_parent_card.data('catalog');
-          catalog.data = dataTable.data().toArray();
-          catalog_parent_card.data({
-            'catalog': catalog,
-            'dataTable': dataTable
-          });
-        }
-      });
-    }
+    //    if (!showUseCatalog) {
+    //      editor.on('create remove edit', function(e, json, data) {
+    //        var catalog_parent_card = $(afterDiv);
+    //        if (catalog_parent_card.hasClass('instrument-params-card')) {
+    //          var card = $('#' + card_ids.card_id);
+    //          var dataTable = card.data('dataTable');
+    //          var catalog = catalog_parent_card.data('catalog');
+    //          catalog.data = dataTable.data().toArray();
+    //          catalog_parent_card.data({
+    //            'catalog': catalog,
+    //            'dataTable': dataTable
+    //          });
+    //        }
+    //      });
+    //    }
     catalog_card.highlight_result_card(offset);
 
   }
@@ -2253,10 +2290,10 @@ function card_title(srcname, param) {
       name: "spectrum",
       type: "readonly",
     },];
-    var editor = new $.fn.dataTable.Editor({
-      table: '#' + card_ids.card_id + ' .spectrum-table',
-      fields: spectrum_table_fields,
-    });
+    //    var editor = new $.fn.dataTable.Editor({
+    //      table: '#' + card_ids.card_id + ' .spectrum-table',
+    //      fields: spectrum_table_fields,
+    //    });
     var spectrum_table_container = $(".spectrum-table", '#' + card_ids.card_id);
 
     var dataTable = spectrum_table_container.DataTable({
@@ -2274,17 +2311,17 @@ function card_title(srcname, param) {
 
     // Activate inline edit on click of a table cell
     spectrum_table_container.on('click', 'tbody td:nth-child(2)', function() {
-      editor.inline(this);
+      // editor.inline(this);
     });
-    editor.on('initEdit', function(e, json, data) {
-      $(this).data('xspec_model_previous_val', data.xspec_model);
-    });
+    //    editor.on('initEdit', function(e, json, data) {
+    //      $(this).data('xspec_model_previous_val', data.xspec_model);
+    //    });
 
-    editor.on('postEdit', function(e, json, data) {
-      if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
-        $('.instrument-card.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_card_id');
-      }
-    });
+    //    editor.on('postEdit', function(e, json, data) {
+    //      if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
+    //        $('.instrument-card.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_card_id');
+    //      }
+    //    });
 
     // highlight_result_card(card_ids.card_id);
     $('#' + card_ids.card_id).highlight_result_card();
@@ -2579,7 +2616,7 @@ function card_title(srcname, param) {
   }
 
   function activate_modal($element) {
-//    $(once('bind-click-event', '.grid-item', context)
+    //    $(once('bind-click-event', '.grid-item', context)
     $('area.ctools-use-modal, a.ctools-use-modal', $element).each('ctools-use-modal', function() {
       var $this = $(this);
       $this.click(Drupal.CTools.Modal.clickAjaxLink);
@@ -2596,7 +2633,7 @@ function card_title(srcname, param) {
   }
 
   function display_image_js9(image_file_path, data) {
-    var js9_ext_id = Drupal.settings.mmoda[instrument].js9_ext_id;
+    var js9_ext_id = drupalSettings.mmoda[instrument].js9_ext_id;
     var card_ids = $(".instrument-params-card",
       ".instrument-card.active").insert_new_card(desktop_card_counter++, 'js9', data.datetime);
     $('#' + card_ids.card_body_id).addClass('js9-card');

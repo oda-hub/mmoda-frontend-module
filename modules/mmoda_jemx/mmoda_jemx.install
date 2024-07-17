@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_jemx_requirements($phase)
+{
+  $module_name = basename(__FILE__, '.install');
+  $requirements = array();
+  if ('install' == $phase) {
+    $mmoda_settings = \Drupal::config('mmoda.settings');
+    $instrument_settings = \Drupal::config($module_name.'.settings');
+    $form_action = ($instrument_settings->get('data_server_url') != NULL) ? $instrument_settings->get('data_server_url') : $mmoda_settings->get(
+      'default_data_server_url');
+    if ($form_action == NULL) {
+      $requirements[$module_name] = array(
+        'title' => t('Data server url setting'),
+        'description' => t('Neither of the two settings is set : data_server_url in mmoda_jemx.settings.yml nor default_data_server_url in mmoda.settings.yml'),
+        'severity' => REQUIREMENT_WARNING
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+function mmoda_jemx_install($is_syncing)
+{}

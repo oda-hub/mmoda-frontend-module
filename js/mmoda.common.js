@@ -1,4 +1,5 @@
 var instrument_card_margin = 150;
+
 var progress_card_margin = 150;
 var mmoda_ajax_jqxhr = [];
 var waitingDialog = {};
@@ -49,11 +50,13 @@ function get_today_mjd() {
   return (today_mjd);
 }
 
-function HMS2Decimal(hmsVal, decimalVal) {
+const HMS2Decimal = function(hmsVal, decimalVal) {
+  var valid_value = { valid: true }
+
   decimalVal = 0;
   if (hmsVal.match(/^ *$/)) {
     decimalVal = -1;
-    return (true);
+    return (valid_value);
   }
   var sign = '[+-]?';
   var integer = sign + '\\d{1,3}';
@@ -89,7 +92,7 @@ function HMS2Decimal(hmsVal, decimalVal) {
     return (bad_value);
   }
 
-  return (valid_RA(decimalVal) ? true : bad_value);
+  return (valid_RA(decimalVal) ? valid_value : bad_value);
 
 } // end--HMS2Decimal
 
@@ -104,11 +107,11 @@ function valid_RA(decimalVal) {
 } // end--correctRA
 
 function DMS2Decimal(dmsVal, decimalVal) {
-
+  var valid_value = { valid: true }
   decimalVal = 0;
   if (dmsVal.match(/^ *$/)) {
     decimalVal = -1;
-    return (true);
+    return (valid_value);
   }
 
   var sign = '[+-]?';
@@ -139,7 +142,7 @@ function DMS2Decimal(dmsVal, decimalVal) {
   } else {
     return (bad_value);
   }
-  return (valid_DEC(decimalVal) ? true : bad_value);
+  return (valid_DEC(decimalVal) ? valid_value : bad_value);
 
 } // end--DMS2Decimal
 
@@ -198,112 +201,114 @@ function get_current_date_time() {
     + ("0" + currentdate.getSeconds()).slice(-2);
 }
 
-var waitingDialog;
-
 (function($, Drupal) {
-//  $(document).ready(function() {
-//    if (Drupal.settings.hasOwnProperty('mmoda_signed')) {
-//      var mmoda_signed = Drupal.settings.mmoda_signed;
-//      // Sending message to iframe
-//      var iframe = document.getElementById("mmoda-gallery-hidden-iframe");
-//      //iframe.contentWindow.postMessage({ mmoda_signed }, "*");
-//      $(window).on("message", function(e) {
-//        if (e.originalEvent.data.hasOwnProperty('mready'))
-//          iframe.contentWindow.postMessage({ mmoda_signed }, "*");
-//      });
-//    }
-//  });
+  //  $(document).ready(function() {
+  //    if (drupalSettings.hasOwnProperty('mmoda_signed')) {
+  //      var mmoda_signed = drupalSettings.mmoda_signed;
+  //      // Sending message to iframe
+  //      var iframe = document.getElementById("mmoda-gallery-hidden-iframe");
+  //      //iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+  //      $(window).on("message", function(e) {
+  //        if (e.originalEvent.data.hasOwnProperty('mready'))
+  //          iframe.contentWindow.postMessage({ mmoda_signed }, "*");
+  //      });
+  //    }
+  //  });
 
-//  Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
-//    $('input,select,textarea', '#lfeedback').prop('disabled', false);
-//    $('.modal-footer button.cancel-button', '#lfeedback').show();
-//  }
-//
-//  Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
-//    $('#mmoda-bug-report-form').addClass('hidden');
-//    $('textarea#edit-comment', '#mmoda-bug-report-form').val('');
-//    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
-//    $('.modal-footer button#edit-submit', '#lfeedback').hide();
-//  }
-//
-//  Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
-//    $('input,select,textarea', '#ltoken').prop('disabled', false);
-//    $('.modal-footer button.cancel-button', '#ltoken').show();
-//  }
-//
-//  Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
-//    $('input,textarea', '#ltoken').prop('disabled', false);
-//    $('#mmoda-ask-token-form').addClass('hidden');
-//    $('textarea#edit-message', '#mmoda-ask-token-form').val('');
-//    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
-//    $('.modal-footer button#edit-submit--2', '#ltoken').hide();
-//  }
-//  Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
-//    waitingDialog.hide();
-//    html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-//      + response.args.message
-//      + '</small>';
-//    elt = $('.form-item-src-name', '#mmoda-name-resolve-form').parent().after(html);
-//    elt.find('.alert').hide();
-//    if (response.args.status == 0) {
-//      $('.row', '#mmoda-name-resolve-form').removeClass('has-error');
-//      if (response.args.ra) {
-//        common_form_validator.resetField('RA');
-//        $('.form-item-RA input.form-control').val(response.args.ra);
-//      }
-//      if (response.args.dec) {
-//        common_form_validator.resetField('DEC');
-//        $('.form-item-DEC input.form-control').val(response.args.dec);
-//      }
-//      if (response.args.t1) {
-//        if ($('select[name="T_format"]', '#mmoda-common-form').val() == 'isot') {
-//          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.utc).trigger('input');
-//          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.utc).trigger('input');
-//        }
-//        else {
-//          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.mjd).trigger('input');
-//          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.mjd).trigger('input');
-//        }
-//      }
-//      elt.find('.alert').addClass('alert-success').show();
-//    }
-//    else {
-//      $('button#edit-resolve-src-name').prop('disabled', true);
-//      $('.row', '#mmoda-name-resolve-form').removeClass('has-success').addClass('has-error');
-//    }
-//    $('form#mmoda-common-form').bootstrapValidator({ 'live': 'enabled' });
-//  }
-//  Drupal.ajax.prototype.commands.set_object_gallery = function(ajax, response, status) {
-//    if (response.args.status != 0) {
-//      messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
-//      waitingDialog.setTitle('Response from MMODA Gallery');
-//      waitingDialog.hideSpinner();
-//      $('#ldialog').find('.progress').hide()
-//      waitingDialog.replace(messages);
-//      waitingDialog.showClose();
-//      return;
-//    }
-//    $result_card = $('#mmoda-gallery-card-model').clone();
-//    $result_card.attr('id', 'mmoda-gallery-card');
-//    $('#common-params').after($result_card);
-//    $('#mmoda-gallery-card .card-header .card-title').text('MMODA Gallery - Object : ' + response.args.json_response['title']);
-//    $('#mmoda-gallery-card .card-body').append(response.args.htmlResponse);
-//    $('#mmoda-gallery-card iframe#mmoda-gallery-iframe').load(function() {
-//      if ((typeof $('#mmoda-gallery-card').data("mmoda_gallery_close") !== 'undefined') && ($('#mmoda-gallery-card').data("mmoda_gallery_close") == 1)) {
-//        $('#mmoda-gallery-card').remove();
-//      }
-//      else {
-//        $('#mmoda-gallery-card').slideDown(2000);
-//      }
-//      waitingDialog.hide();
-//    })
-//  }
+  //  Drupal.ajax.prototype.commands.enable_feedback_form = function(ajax, response, status) {
+  //    $('input,select,textarea', '#lfeedback').prop('disabled', false);
+  //    $('.modal-footer button.cancel-button', '#lfeedback').show();
+  //  }
+  //
+  //  Drupal.ajax.prototype.commands.hide_feedback_form = function(ajax, response, status) {
+  //    $('#mmoda-bug-report-form').addClass('hidden');
+  //    $('textarea#edit-comment', '#mmoda-bug-report-form').val('');
+  //    $('.modal-footer button.cancel-button', '#lfeedback').text('Close').show();
+  //    $('.modal-footer button#edit-submit', '#lfeedback').hide();
+  //  }
+  //
+  //  Drupal.ajax.prototype.commands.enable_token_form = function(ajax, response, status) {
+  //    $('input,select,textarea', '#ltoken').prop('disabled', false);
+  //    $('.modal-footer button.cancel-button', '#ltoken').show();
+  //  }
+  //
+  //  Drupal.ajax.prototype.commands.hide_ask_token_form = function(ajax, response, status) {
+  //    $('input,textarea', '#ltoken').prop('disabled', false);
+  //    $('#mmoda-ask-token-form').addClass('hidden');
+  //    $('textarea#edit-message', '#mmoda-ask-token-form').val('');
+  //    $('.modal-footer button.cancel-button', '#ltoken').text('Close').show();
+  //    $('.modal-footer button#edit-submit--2', '#ltoken').hide();
+  //  }
+
+  Drupal.AjaxCommands.prototype.setRADec = function(ajax, response, status) {
+    waitingDialog.hide();
+    html = '<small class="mmoda-resolve-message" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
+      + response.args.message
+      + '</small>';
+    elt = $('.actions', '#mmoda-name-resolve-form').after(html);
+    elt.find('.alert').hide();
+    if (response.args.status == 0) {
+      $('.row', '#mmoda-name-resolve-form').removeClass('has-error');
+      if (response.args.ra) {
+        //        common_form_validator.resetField('RA');
+        $("input[name='RA']", '#mmoda-common-form').val(response.args.ra);
+      }
+      if (response.args.dec) {
+        //        common_form_validator.resetField('DEC');
+        $("input[name='DEC']", '#mmoda-common-form').val(response.args.dec);
+      }
+      if (response.args.t1) {
+        if ($('select[name="T_format"]', '#mmoda-common-form').val() == 'isot') {
+          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.utc).trigger('input');
+          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.utc).trigger('input');
+        }
+        else {
+          $('input[name="T1"]', '#mmoda-common-form').val(response.args.t1.mjd).trigger('input');
+          $('input[name="T2"]', '#mmoda-common-form').val(response.args.t2.mjd).trigger('input');
+        }
+      }
+      elt.find('.alert').addClass('alert-success').show();
+    }
+    else {
+      $('input#edit-resolve-src-name').prop('disabled', true);
+      //$('.row', '#mmoda-name-resolve-form').removeClass('has-success').addClass('has-error');
+    }
+  }
+
+  Drupal.AjaxCommands.prototype.exploreMMODAGlleryObject = function(ajax, response, status) {
+    if (response.args.status != 0) {
+      messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
+      waitingDialog.setTitle('Response from MMODA Gallery');
+      waitingDialog.hideSpinner();
+      $('#ldialog').find('.progress').hide()
+      waitingDialog.replace(messages);
+      waitingDialog.showClose();
+      return;
+    }
+    $result_card = $('#mmoda-gallery-card-model').clone();
+    $result_card.attr('id', 'mmoda-gallery-card');
+    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + $result_card.attr('id') + ' .card-body');
+
+    $('#common-params').after($result_card);
+
+    $('#mmoda-gallery-card .card-header .card-title').text('MMODA Gallery - Object : ' + response.args.json_response['title']);
+    $('#mmoda-gallery-card .card-body').append(response.args.htmlResponse);
+    $('#mmoda-gallery-card iframe#mmoda-gallery-iframe').on('load', function() {
+      if ((typeof $('#mmoda-gallery-card').data("mmoda_gallery_close") !== 'undefined') && ($('#mmoda-gallery-card').data("mmoda_gallery_close") == 1)) {
+        $('#mmoda-gallery-card').remove();
+      }
+      else {
+        $('#mmoda-gallery-card').slideDown(2000);
+      }
+      waitingDialog.hide();
+    })
+  }
 })(jQuery, Drupal);
 
 function get_div_spinner() {
   var spinner_div = (function($) {
-    let inner_div = $('<div>').addClass('progress-bar').css("width", '100%');
-    let outer_div = $('<div>').addClass('renku-progress progress progress-bar-striped active').css("width", '100%');
+    let inner_div = $('<div>').addClass('progress-bar progress-bar-striped ').css("width", '100%');
+    let outer_div = $('<div>').addClass('renku-progress progress active').css("width", '100%');
     outer_div.append(inner_div);
 
     return outer_div;
@@ -317,9 +322,7 @@ function get_div_spinner() {
  * 
  * @author Eugene Maslovich <ehpc@em42.ru>
  */
-
 function get_waitingDialog($modal_dialog) {
-  console.log('Creating waiting dialog');
   var waitingDialog = waitingDialog
     || (function($) {
       'use strict';
@@ -344,8 +347,11 @@ function get_waitingDialog($modal_dialog) {
           if (typeof options === 'undefined') {
             options = {};
           }
+          // if (typeof title === 'undefined') {
+          //   title = 'Loading ...';
+          // }
           if (typeof message === 'undefined') {
-            message = {'summary': ''};
+            message = { 'summary': '' };
           }
           var settings = $.extend({
             dialogSize: 'xl',
@@ -359,10 +365,12 @@ function get_waitingDialog($modal_dialog) {
             showButton: true,
             buttonText: 'Close',
             showReturnProgressLink: false,
+            // This callback runs after the dialog was hidden
           }, options);
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
-          //$dialog.find('.modal-dialog').addClass('modal-' + settings.dialogSize);
+          $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
+            .addClass('modal-' + settings.dialogSize);
 
           if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
@@ -409,6 +417,7 @@ function get_waitingDialog($modal_dialog) {
           if (typeof settings.onHide === 'function') {
             $dialog.off('hidden.bs.modal').on('hidden.bs.modal',
               function(e) {
+                console.log('In hidden.bs.modal ');
                 settings.onHide.call($dialog);
               });
           }
@@ -426,8 +435,11 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.legend').show();
           }
           // Opening dialog
-//          $dialog.modal({ keyboard: true });
+          //$dialog.modal({ keyboard: true });
           $dialog.modal('show');
+          $dialog.find('.close-card').on("click", function() {
+
+          });
           // sleep(5);
 
         },
@@ -446,16 +458,16 @@ function get_waitingDialog($modal_dialog) {
             this.setProgressBarBackgroundcolor('#d0d69e');
           }
           else if (status == 'progress') {
-            if(enable_progress) {
-              if(progress !== undefined && progress_max !== undefined)
-                this.setProgressBarWidthPercentage(Math.floor((progress/progress_max) * 100));
+            if (enable_progress) {
+              if (progress !== undefined && progress_max !== undefined)
+                this.setProgressBarWidthPercentage(Math.floor((progress / progress_max) * 100));
               else {
                 // let progressBarWidthPercentage = ($dialog.find('.progress-bar').width()/$dialog.find('.progress-bar').parent().width() ) * 100;
                 // if (!(progressBarWidthPercentage !== undefined && progressBarWidthPercentage > 0 && progressBarWidthPercentage < 100))
                 this.setProgressBarWidthPercentage(0);
               }
             }
-            else 
+            else
               this.setProgressBarWidthPercentage(100);
             this.setProgressBarBackgroundcolor('lightgreen');
           }
@@ -501,36 +513,35 @@ function get_waitingDialog($modal_dialog) {
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          // $('.summary', $dialog).append($('<div>' + message + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('summary'))
+          if (message.hasOwnProperty('summary'))
             $('.summary .summary-message', $dialog).append($(message.summary).addClass(message_class));
-          if(message.hasOwnProperty('details'))
+          if (message.hasOwnProperty('details'))
             $('.summary .details', $dialog).append(message.details);
-          if(message.hasOwnProperty('warnings'))
+          if (message.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).append($('<div>' + message.warnings + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('failures'))
-              $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
-          if(message.hasOwnProperty('results'))
+          if (message.hasOwnProperty('failures'))
+            $('.summary .summary-failures', $dialog).append($('<div>' + message.failures + '</div>').addClass(message_class));
+          if (message.hasOwnProperty('results'))
             $('.summary .summary-results', $dialog).append($('<div>' + message.results + '</div>').addClass(message_class));
-          // $('.message', $dialog).animate({scrollTop: $('.message',
-          // $dialog).prop("scrollHeight")}, 500);
         },
         replace: function(message, alert_type) {
           if (typeof message === 'undefined') {
-            message = {'summary': '', 'details': '', 'warnings': '', 'failures': ''};
+            message = { 'summary': '', 'details': '', 'warnings': '', 'failures': '', 'results': '' };
           }
           var message_class = '';
           if (typeof alert_type !== 'undefined') {
             message_class += 'alert alert-' + alert_type;
           }
-          if(message.hasOwnProperty('summary'))
+          if (message.hasOwnProperty('summary'))
             $('.summary .summary-message', $dialog).html($(message.summary).addClass(message_class));
-          if(message.hasOwnProperty('details'))
+          if (message.hasOwnProperty('details'))
             $('.summary .details', $dialog).html(message.details);
-          if(message.hasOwnProperty('warnings'))
+          if (message.hasOwnProperty('warnings'))
             $('.summary .summary-warnings', $dialog).html(message.warnings);
-          if(message.hasOwnProperty('failures'))
+          if (message.hasOwnProperty('failures'))
             $('.summary .summary-failures', $dialog).html(message.failures);
+          if (message.hasOwnProperty('results'))
+            $('.summary .summary-results', $dialog).html(message.results);
 
           if (message.details !== undefined && message.details !== '') {
             this.enableMoreLessLink();
@@ -608,7 +619,13 @@ function get_waitingDialog($modal_dialog) {
         },
         disableMoreLessLink: function() {
           $dialog.find('.more-less-details').removeClass("enabled");
-        }
+        },
+        hideMoreLessLink: function() {
+          $dialog.find('.more-less-details').hide();
+        },
+        showMoreLessLink: function() {
+          $dialog.find('.more-less-details').show();
+        },
       };
 
     })(jQuery);
@@ -652,7 +669,7 @@ function get_waitingDialog($modal_dialog) {
     if (datetime) $result_card.find('.date').text('[' + datetime + ']');
     $result_card.find('.card-body').attr('id', card_body_id);
 
-    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#'+card_id +' .card-body');
+    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + card_id + ' .card-body');
 
     $(this).after($result_card);
     if (left) {
@@ -663,13 +680,17 @@ function get_waitingDialog($modal_dialog) {
     }
     if (typeof draggable === 'undefined')
       draggable = true;
-    if(draggable)
+    if (draggable)
       $('#' + card_id).set_card_draggable();
     return ({ 'card_id': card_id, 'card_body_id': card_body_id });
   }
 
   $.fn.highlight_result_card = function(offset) {
-    max_zindexes = Math.max.apply(Math, $('.ldraggable').map(function() { return parseInt($(this).css('z-index')); }).get());
+    var all_ldraggable_zindexes = $('.ldraggable').map(function() {
+      zindex= isNaN($(this).css('z-index')) ? 0 : parseInt($(this).css('z-index'));
+      return zindex;
+    });
+    max_zindexes = Math.max.apply(Math, all_ldraggable_zindexes.get());
     $(this).css('z-index', max_zindexes + 1);
     var thisObject = $(this);
     instrument_card = $(this).closest('.instrument-card');
@@ -702,7 +723,7 @@ function get_waitingDialog($modal_dialog) {
 
   $.fn.highlight_progress_card = function(offset) {
     max_zindexes = $('#ldialog-modal-dialog').css('z-index');
-    $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
+    $(this).attr('style', 'z-index: ${max_zindexes + 1} !important');
     var thisObject = $(this);
     thisObject.offset(offset);
     thisObject.show('highlight', { color: '#adebad' }, 1000);
@@ -711,7 +732,10 @@ function get_waitingDialog($modal_dialog) {
   $(document).ready(commonReady);
 
 
+
   function commonReady() {
+    console.log('Drupal settings');
+    console.log(drupalSettings);
 
     autoHeight();
     // Ignore carriage return in common parameters
@@ -723,7 +747,7 @@ function get_waitingDialog($modal_dialog) {
     });
     $('#edit-src-name', '#mmoda-name-resolve-form').on('keyup', function(event) {
       $('.row', '#mmoda-name-resolve-form').removeClass('has-success').removeClass('has-error');
-      $('small.help-block', '#mmoda-name-resolve-form').remove();
+      $('small.mmoda-resolve-message', '#mmoda-name-resolve-form').remove();
       //$('button#edit-resolve-src-name').prop('disabled', !$(this).val());
     });
 
@@ -742,25 +766,26 @@ function get_waitingDialog($modal_dialog) {
     });
     */
 
-//    if (Drupal.settings.user_uid == 0) {
-//      $('.main-toolbar .login-link').show();
-//      $('.main-toolbar .logout-link').hide();
-//    }
-//    else {
-//      $('.main-toolbar .login-link').hide();
-//      $('.main-toolbar .logout-link').show();
-//    }
+    //    if (drupalSettings.user_uid == 0) {
+    //      $('.main-toolbar .login-link').show();
+    //      $('.main-toolbar .logout-link').hide();
+    //    }
+    //    else {
+    //      $('.main-toolbar .login-link').hide();
+    //      $('.main-toolbar .logout-link').show();
+    //    }
 
     $(document).on('show.bs.modal', '.modal', function() {
       console.log('in show bs modal');
-//      var zIndex = 1040 + (10 * $('.modal:visible').length);
-//      $(this).css('z-index', zIndex);
-//      setTimeout(function() {
-//        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-//      }, 0);
+      //      var zIndex = 1040 + (10 * $('.modal:visible').length);
+      //      $(this).css('z-index', zIndex);
+      //      setTimeout(function() {
+      //        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+      //      }, 0);
     });
 
     $('#mmoda-common-form').submit(function(event) {
+      console.log('mmoda-common-form submitted !');
       var $target = $(event.target);
       if ($target.is('input[type=submit]')) {
         return true;
@@ -809,33 +834,33 @@ function get_waitingDialog($modal_dialog) {
     $('.form-item .description').each(function() {
       $(this).html(add3Dots($(this).parent().find('label:first').html(), $(this).html(), 240));
     });
-    $('.popover-help').on('click', function(e) { e.preventDefault(); return true; }).popover({
-      container: 'body',
-      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
-      html: true,
-      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
-    });
+//    $('.popover-help').on('click', function(e) { e.preventDefault(); return true; }).popover({
+//      container: 'body',
+//      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
+//      html: true,
+//      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+//    });
+//
+//    $('.popover-error').on('click', function(e) { e.preventDefault(); return true; }).popover({
+//      container: 'body',
+//      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
+//      html: true,
+//      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+//    });
 
-    $('.popover-error').on('click', function(e) { e.preventDefault(); return true; }).popover({
-      container: 'body',
-      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
-      html: true,
-      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
-    });
-
-    $(document).on('click', function(e) {
-      $('[data-toggle="popover"],[data-original-title]').each(function() {
-        // the 'is' for buttons that trigger popups
-        // the 'has' for icons within a button that triggers a popup
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false  // fix
-          // for
-          // BS
-          // 3.3.6
-        }
-
-      });
-    });
+//    $(document).on('click', function(e) {
+//      $('[data-toggle="popover"],[data-original-title]').each(function() {
+//        // the 'is' for buttons that trigger popups
+//        // the 'has' for icons within a button that triggers a popup
+//        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+//          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false  // fix
+//          // for
+//          // BS
+//          // 3.3.6
+//        }
+//
+//      });
+//    });
 
     waitingDialog = get_waitingDialog();
 
@@ -855,9 +880,9 @@ function get_waitingDialog($modal_dialog) {
 
     $('.eu-cookie-compliance-more-button').off('click').on('click', function(e) {
       ;
-      if (Drupal.settings.eu_cookie_compliance.disagree_do_not_show_popup) {
+      if (drupalSettings.eu_cookie_compliance.disagree_do_not_show_popup) {
         Drupal.eu_cookie_compliance.setStatus(0);
-        if (Drupal.settings.eu_cookie_compliance.withdraw_enabled && Drupal.settings.eu_cookie_compliance.withdraw_button_on_info_popup) {
+        if (drupalSettings.eu_cookie_compliance.withdraw_enabled && drupalSettings.eu_cookie_compliance.withdraw_button_on_info_popup) {
           $('#sliding-popup .eu-cookie-compliance-banner').trigger('eu_cookie_compliance_popup_close').hide();
           $('body').removeClass('eu-cookie-compliance-popup-open');
         }
@@ -867,7 +892,7 @@ function get_waitingDialog($modal_dialog) {
         }
       }
       else {
-        openPageInModal(Drupal.settings.eu_cookie_compliance.popup_link);
+        openPageInModal(drupalSettings.eu_cookie_compliance.popup_link);
       }
     });
 
@@ -881,17 +906,57 @@ function get_waitingDialog($modal_dialog) {
         (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
         if (request.statusText == 'abort') {
           if (settings.extraData._triggering_element_name == 'resolve_name')
-          var mbutton = 'button#edit-resolve-src-name';
-          else if (settings.extraData._triggering_element_name == 'explore_name') 
-          var mbutton = 'button#edit-explore-src-name';
+            var mbutton = 'button#edit-resolve-src-name';
+          else if (settings.extraData._triggering_element_name == 'explore_name')
+            var mbutton = 'button#edit-explore-src-name';
 
           $(mbutton).prop('disabled', false);
           $('.ajax-progress', mbutton).remove();
         }
+
+        if (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name') {
+          waitingDialog.showMoreLessLink();
+          waitingDialog.disableMoreLessLink();
+        }
+
       }
     });
 
     $(document).on('ajaxSend', function(event, jqxhr, settings) {
+      if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') &&
+        (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
+        console.log('on ajaxSend Command:' + settings.extraData._triggering_element_name);
+        var message = '';
+        if (settings.extraData._triggering_element_name == 'resolve_name') {
+          message = 'Resolving object name ...';
+          waitingDialog.hideMoreLessLink();
+        }
+        else if (settings.extraData._triggering_element_name == 'explore_name') {
+          $('#mmoda-gallery-card').remove();
+          message = 'Requesting data from MMODA Gallery ...';
+          waitingDialog.hideMoreLessLink();
+        }
+
+        waitingDialog.show(message, { 'summary': '' }, {
+          progressType: 'success',
+          showProgressBar: true,
+          showSpinner: false,
+          showTitle: true
+        });
+        waitingDialog.setProgressBarBackgroundcolor('#5cb85c');
+
+        var index = mmoda_ajax_jqxhr.push(jqxhr);
+        $('#ldialog .close-button').data("mmoda_jqxhr_index", index - 1);
+        $('#ldialog .close-button').data("mmoda_gallery_close", 1);
+
+        $('.mmoda-resolve-message', '#mmoda-name-resolve-form').remove();
+        $('input:not(:file)', '#mmoda-common-form').val(function(_, value) {
+          return $.trim(value.replace(/\s+/g, " "));
+        });
+      }
+    });
+
+    $(document).on('ajaxSendOLD', function(event, jqxhr, settings) {
       if (settings.hasOwnProperty('extraData') && settings.extraData.hasOwnProperty('_triggering_element_name') &&
         (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
         var message = '';
@@ -920,20 +985,6 @@ function get_waitingDialog($modal_dialog) {
       }
     });
 
-    // Disable main submit if error in common parameters
-    $('input, select, textarea', '#mmoda-common-form').on('error.field.bv', function() {
-      // Disabling submit
-      $('[type="submit"]', '.instrument-card').prop('disabled', true);
-    }).on('success.field.bv', function() {
-      // Enabling submit
-      $('[type="submit"]', '.instrument-card').prop('disabled', false);
-
-    });
-
-    $('select[name="T_format"]', '#mmoda-common-form').on('change', function() {
-      $('input[name="T1"]', '#mmoda-common-form').trigger('input');
-      $('input[name="T2"]', '#mmoda-common-form').trigger('input');
-    });
 
     $('.instrument-card').resizable({
       handles: 's'

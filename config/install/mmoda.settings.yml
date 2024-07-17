@@ -6,8 +6,7 @@ support_email:
 gallery_data_request_url: 'https://www.astro.unige.ch/mmoda/dispatch-data/get_astro_entity_info_by_source_name'
 gallery_base_url: 'https://www.astro.unige.ch'
 
-# dispatcher_path renamed to default_data_server_url
-default_data_server_url: '/dispatcher-data'
+default_data_server_url: dispatch-data/run_analysis
 src_name: '1E 1740.7-2942'
 RA: '265.97845833'
 DEC: '-29.74516667'
@@ -15,6 +14,6 @@ T1: '2017-03-06T13:26:48.0'
 T2: '2017-03-06T15:32:27.0'
 T_format: 'isot'
 mmoda_debug: true
-
+help_page_url: help/mmoda
 # role name of user managers
 user_managers_role_name: 'user manager'

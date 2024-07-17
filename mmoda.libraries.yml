@@ -7,9 +7,10 @@ mmoda_libs:
       css/mmoda-theme.css: {}
   js:
     js/mmoda.common.js: {}
-#    js/mmoda.form_validation.js: {}
+    js/mmoda.form_validation.js: {}
     js/mmoda.instrument.js: {}
   dependencies:
+     - core/drupal
      - core/drupalSettings
      - core/jquery
      - core/once
@@ -17,13 +18,13 @@ mmoda_libs:
      - jquery_ui_draggable/draggable
      - jquery_ui_resizable/resizable
      - jquery_ui_effects/highlight
-     - core/drupal
 
      
-bootstrap_form_validator:
-  version: 0.5.3
+bootstrap5_form_validator:
+  version: 2.4.0
   js:
-    /sites/all/libraries/bootstrap_form_validator/js/bootstrapValidator.js: {}
+    /sites/all/libraries/@form-validation/umd/bundle/popular.js: {}
+    /sites/all/libraries/@form-validation/umd/plugin-bootstrap5/index.js: {}
   dependencies:
      - core/jquery
    
@@ -48,18 +49,21 @@ datatables:
   version: 1.10.12
   css:
     theme:
-      /sites/all/libraries/datatables/dataTables.bootstrap.min.css: { minified: true }
-      /sites/all/libraries/datatables/Buttons/css/buttons.dataTables.min.css: { minified: true }
-      /sites/all/libraries/datatables/Responsive/css/responsive.dataTables.min.css: { minified: true }
-      /sites/all/libraries/datatables/Select/css/select.dataTables.min.css: { minified: true }
-      /sites/all/libraries/datatables/Editor/css/editor.bootstrap.css: { minified: true }
+      /sites/all/libraries/datatables/datatables.min.css: { minified: true }
   js:
     /sites/all/libraries/datatables/datatables.min.js: { minified: true }
-    /sites/all/libraries/datatables/Select/js/dataTables.select.min.js: { minified: true }
-    /sites/all/libraries/datatables/Buttons/js/dataTables.buttons.min.js: { minified: true }
-    /sites/all/libraries/datatables/Responsive/js/dataTables.responsive.min.js: { minified: true }
-    /sites/all/libraries/datatables/Editor/js/dataTables.editor.min.js: { minified: true }
-    /sites/all/libraries/datatables/Editor/js/editor.bootstrap.min.js: { minified: true }
+
+  dependencies:
+    - core/jquery
+    
+colorbox:
+  version: 1.6.4
+  css:
+    theme:
+      /libraries/colorbox/colorbox.css: { }
+  js:
+    /libraries/colorbox/jquery.colorbox-min.js: { minified: true }
+
   dependencies:
     - core/jquery
     

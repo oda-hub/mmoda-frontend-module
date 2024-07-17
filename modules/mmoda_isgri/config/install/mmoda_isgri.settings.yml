@@ -23,6 +23,7 @@ product_type: isgri_image
 time_bin: 1000
 time_bin_format: sec
 weight: 10
+enable_use_catalog: true
 data_server_url: dispatch-data/run_analysis
 acknowledgement: >
   If you use results or material from this instrument in our application, MMODA, do not forget to quote our paper:

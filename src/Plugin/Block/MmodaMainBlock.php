@@ -82,7 +82,7 @@ class MmodaMainBlock extends BlockBase implements ContainerFactoryPluginInterfac
         'label' => 'Execute PHP'
       ),
       // The machine name of the theme.
-      'theme' => 'mmoda_bootstrap5',
+      'theme' => 'mmoda_bootstrap',
       'visibility' => array(),
       'weight' => 100
     );
@@ -95,50 +95,7 @@ class MmodaMainBlock extends BlockBase implements ContainerFactoryPluginInterfac
    */
   public function build()
   {
-    $instrument_settings = \Drupal::config('mmoda_isgri.settings');
-    $isgri1 = [
-      'name' => $instrument_settings->get('name'),
-      'active' => 'active',
-      'messenger' => $instrument_settings->get('messenger'),
-      'title' => $instrument_settings->get('title'),
-      'help_page_url' => $instrument_settings->get('help_page_url'),
-      'acknowledgement' => $instrument_settings->get('acknowledgement'),
-     // 'form' => $this->formBuilder->getForm(MmodaIsgriForm::class),
-      'form' => $this->formBuilder->getForm('\Drupal\mmoda_isgri\Form\MmodaIsgriForm'),
-      // 'form' => 'Coucou ISGRI',
-      'help_page_url' => 'help/isgri'
-    ];
-    $isgri2 = [
-      'name' => 'jemx',
-      'active' => $instrument_settings->get('active'),
-      'messenger' => $instrument_settings->get('messenger'),
-      'title' => 'Jem-X1',
-      'help_page_url' => $instrument_settings->get('help_page_url'),
-      'acknowledgement' => $instrument_settings->get('acknowledgement'),
-      // 'form' => $this->formBuilder->getForm(MmodaIsgriForm::class)
-      'form' => 'Coucou JEM-X',
-      'help_page_url' => 'help/jemx'
-    ];
-
-    $output = [
-      '#region' => 'content',
-      '#theme' => 'mmoda',
-     # '#name_resolve_form' => $this->formBuilder->getForm(NameResolveForm::class),
-      '#name_resolve_form' => $this->formBuilder->getForm('\Drupal\mmoda\Form\NameResolveForm'),
-
-//       '#common_form' => $this->formBuilder->getForm(CommonForm::class),
-      '#common_form' => $this->formBuilder->getForm('\Drupal\mmoda\Form\CommonForm'),
-
-      '#instruments' => [
-        $isgri1,
-       // $isgri2
-      ],
-      'description' => [
-        '#markup' => $this->t('Using form provided by @classname', [
-          '@classname' => CommonForm::class
-        ])
-      ]
-    ];
+    $output = [];
 
     // Use the form builder service to retrieve a form by providing the full
     // name of the class that implements the form you want to display. getForm()

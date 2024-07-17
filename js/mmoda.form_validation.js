@@ -19,12 +19,11 @@ function validate_scws(value, nb_scws) {
       message: 'Please enter a valid list of ScWs, maximum ' + nb_scws
     }
   }
-  return true;
+  return ({ valid: true });
 }
 
-function validate_date(value, validator) {
+function validate_date(value, time_format_type) {
   max_mjd_date = get_today_mjd();
-  var time_format_type = validator.getFieldElements('T_format').val();
   if (time_format_type == 'isot' && !valid_iso_date(value)) {
     return {
       valid: false,
@@ -37,69 +36,77 @@ function validate_date(value, validator) {
       message: 'Please enter a valid MJD date <span style="white-space: nowrap;">[0, ' + max_mjd_date + ']</span>'
     }
   }
-  return true;
+  return ({ valid: true });
 }
 
-// Validate paste
-function validate_paste($thefield) {
-  var maxlength = parseInt($thefield.attr('maxlength'));
-  var pastedValueLength = $thefield.data('pastedValueLength');
-  if ($thefield.data('truncatedPaste')) {
-    $thefield.removeData('truncatedPaste pastedValueLength');
-    return {
-      valid: false,
-      message: 'Pasted value too large (' + pastedValueLength + '), maximum allowed length is ' + maxlength
-    }
-  };
-  return true;
-}
-
-function validate_timebin(value, validator, $thefield) {
-  var time_bin_format = validator.getFieldElements('time_bin_format').val();
-  if ($thefield.data('mmodaTimeBinMin')) {
-    var time_bin_min_seconds = $thefield.data('mmodaTimeBinMin');
-    var time_bin_format_message = time_bin_min_seconds + ' seconds';
-    if (time_bin_format == 'jd') {
-      time_bin_min_days = (time_bin_min_seconds / 86400).toFixed(6);
-      var time_bin_format_message = time_bin_min_days + ' day (' + time_bin_min_seconds + ' seconds)';
-    }
-    if (value < time_bin_min) {
-      return {
-        valid: false,
-        message: 'Please enter a time bin higher than ' + time_bin_format_message
-      }
-    }
-  }
-
-  if ($thefield.data('mmodaTimeBinMultiple')) {
-    var time_bin_min = $thefield.data('mmodaTimeBinMin');
-    var time_bin_format_message = time_bin_min + ' seconds';
-    value *= 1000;
-    if (time_bin_format == 'jd') {
-      value = value * 86400;
-    }
-    if (value % 50 != 0) {
-      value_inf = (value - (value % 50));
-      value_sup = value_inf + 50;
-      if (time_bin_format == 'jd') {
-        million = Math.pow(10, 6);
-        value_inf *= million;
-        value_sup *= million;
-        value_inf = ((value_inf - (value_inf % 86400))) / (86400 * million);
-        value_sup = ((value_sup - (value_sup % 86400))) / (86400 * million);
-      }
-      value_inf /= 1000;
-      value_sup /= 1000;
-      return {
-        valid: false,
-        message: 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
-      }
-    }
-  }
-  return true;
-}
 
 (function($) {
+
+  // Validate paste
+  function validate_paste(input) {
+    var maxlength = parseInt($(input).attr('maxlength'));
+    var pastedValueLength = $(input).data('pastedValueLength');
+    if ($(input).data('truncatedPaste')) {
+      $(input).removeData('truncatedPaste pastedValueLength');
+      return {
+        valid: false,
+        message: 'Pasted value too large (' + pastedValueLength + '), maximum allowed length is ' + maxlength
+      }
+    };
+    return ({ valid: true });
+  }
+
+  function validate_timebin(input) {
+    lelement = input.element;
+    value = Number(input.value);
+    var current_form = lelement.closest('form');
+    var time_bin_format = $('select[name="time_bin_format"]', current_form).val();
+
+    if ($(lelement).data('mmodaTimeBinMin')) {
+
+      var time_bin_min_seconds = $(lelement).data('mmodaTimeBinMin');
+      var time_bin_format_message = time_bin_min_seconds + ' seconds';
+      if (time_bin_format == 'jd') {
+        time_bin_min_days = (time_bin_min_seconds / 86400).toFixed(6);
+        value = value * 86400;
+        var time_bin_format_message = time_bin_min_days + ' day (' + time_bin_min_seconds + ' seconds)';
+      }
+      if (value < time_bin_min_seconds) {
+        return {
+          valid: false,
+          message: 'Please enter a time bin higher than ' + time_bin_format_message
+        }
+      }
+    }
+
+    if ($(lelement).data('mmodaTimeBinMultiple')) {
+      var time_bin_min = $(lelement).data('mmodaTimeBinMin');
+      var time_bin_format_message = time_bin_min + ' seconds';
+      value *= 1000;
+      if (time_bin_format == 'jd') {
+        value = value * 86400;
+      }
+      if (value % 50 != 0) {
+        value_inf = (value - (value % 50));
+        value_sup = value_inf + 50;
+        if (time_bin_format == 'jd') {
+          million = Math.pow(10, 6);
+          value_inf *= million;
+          value_sup *= million;
+          value_inf = ((value_inf - (value_inf % 86400))) / (86400 * million);
+          value_sup = ((value_sup - (value_sup % 86400))) / (86400 * million);
+        }
+        value_inf /= 1000;
+        value_sup /= 1000;
+        return {
+          valid: false,
+          message: 'Please enter a time bin multiple of 50 ms (' + value_inf + ' or ' + value_sup + ')'
+        }
+      }
+    }
+    return ({ valid: true });
+  }
+
   function showErrorWhenTruncatedPaste() {
     $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function(e) {
       var pastedDataLength = e.originalEvent.clipboardData.getData('text').length;
@@ -114,7 +121,7 @@ function validate_timebin(value, validator, $thefield) {
           e.preventDefault();
           var current_form = $(this).closest('form');
           var elt_name = $(this).attr('name');
-          current_form.data('bootstrapValidator').updateStatus(elt_name, 'NOT_VALIDATED').validateField(elt_name);
+          current_form.data('bootstrapValidator').updateFieldStatus(elt_name, 'NotValidated').validateField(elt_name);
         }
       }
     });
@@ -126,180 +133,251 @@ function validate_timebin(value, validator, $thefield) {
   }
 
   function common_form_set_bootstrapValidator() {
-    var validator_fields = {};
-    
-    validator_fields['RA'] = {
-      validators: {
-        callback: {
-          callback: function(value, validator, $field) {
-            var decimalRA;
-            return (HMS2Decimal(value, decimalRA));
-          }
-        }
-      }
+    const checkRa = function() {
+      return {
+        validate: function(input) {
+          const value = input.value;
+          var decimalRA;
+          return (HMS2Decimal(value, decimalRA));
+        },
+      };
     };
-    validator_fields['DEC'] = {
-      validators: {
-        callback: {
-          callback: function(value, validator, $field) {
-            var decimalDEC;
-            return (DMS2Decimal(value, decimalDEC));
-          }
-        }
-      }
+    const checkDec = function() {
+      return {
+        validate: function(input) {
+          const value = input.value;
+          var decimalDEC;
+          return (DMS2Decimal(value, decimalDEC));
+        },
+      };
     };
-    validator_fields['T1'] = {
-      validators: {
-        callback: {
-          callback: function(value, cbvalidator, $field) {
-            return (validate_date(value, cbvalidator, $field));
-          }
-        }
-      }
+    const checkDate = function() {
+      return {
+        validate: function(input) {
+          const value = input.value;
+          var time_format_type = $('select[name="T_format"]', '#mmoda-common-form').val();
+          return (validate_date(value, time_format_type));
+        },
+      };
     };
-    validator_fields['T2'] = {
-      validators: {
-        callback: {
-          callback: function(value, cbvalidator, $field) {
-            return (validate_date(value, cbvalidator, $field));
-          }
-        }
-      }
-    };
-    
-    common_form_validator = $('form#mmoda-common').bootstrapValidator({
-      fields: validator_fields,
-      feedbackIcons: {
-        valid: 'glyphicon glyphicon-ok',
-        invalid: 'glyphicon glyphicon-remove',
-        validating: 'glyphicon glyphicon-refresh'
-      },
-    }).data('bootstrapValidator'); // .validate();
+    // Register the validator
+    FormValidation.validators.vcheckRa = checkRa;
+    FormValidation.validators.vcheckDec = checkDec;
+    FormValidation.validators.vcheckDate = checkDate;
+
+    //var validator_fields = {};
+
+    common_form_validator = FormValidation.formValidation(document.getElementById('mmoda-common-form'),
+      {
+        //fields: validator_fields,
+        plugins: {
+          trigger: new FormValidation.plugins.Trigger(),
+          bootstrap: new FormValidation.plugins.Bootstrap5(),
+          submitButton: new FormValidation.plugins.SubmitButton(),
+          fieldStatus: new FormValidation.plugins.FieldStatus({
+            onStatusChanged: function(areFieldsValid) {
+              $('input.form-submit', '.instrument-card form').each(function() {
+                var submitButton = $(this)[0];
+                areFieldsValid
+                  // Enable the submit button
+                  // so user has a chance to submit the form again
+                  ? submitButton.removeAttribute('disabled')
+                  // Disable the submit button
+                  : submitButton.setAttribute('disabled', 'disabled');
+              })
+            }
+          }),
+          declarative: new FormValidation.plugins.Declarative({
+          }),
+          icon: new FormValidation.plugins.Icon({
+            valid: 'fa fa-check',
+            invalid: 'fa fa-times',
+            validating: 'fa fa-refresh',
+          }),
+        },
+      });
+    $('mmoda-common-form').data({ formValidation: common_form_validator });
+
+    //    $('input, select, textarea', '#mmoda-common-form').on('focusout', function() {
+    //      common_form_validator.validate();
+    //    })
+
+    //    $('input, select, textarea', '#mmoda-common-form').on('error.field.bv', function() {
+    common_form_validator.on('core.field.invalid', function() {
+      // Disable main submit if error in common parameters
+      //      $('[type="submit"]', '.instrument-card').prop('disabled', true);
+
+    }).on('core.form.valid', function() {
+      // Enable main submit if error in common parameters
+      //      $('[type="submit"]', '.instrument-card').prop('disabled', false);
+
+    });
+
   }
-  
+
   function all_instruments_forms_set_bootstrapValidator() {
+    const checkPaste = function() {
+      return {
+        validate: function(input) {
+          return (validate_paste(input));
+        },
+      };
+    };
+
+    const checkScws = function() {
+      return {
+        validate: function(input) {
+          const value = input.value;
+          return (validate_scws(value, 500));
+        },
+      };
+    };
+    const checkTimebin = function() {
+      return {
+        validate: function(input) {
+          return (validate_timebin(input));
+        },
+      };
+    };
+    const checkE1kev = function() {
+      return {
+        validate: function(input) {
+          var value = input.value;
+          var current_form = $(input.element).closest('form');
+          var E2_keV = $('input[name="E2_keV"]', current_form).val();
+          if (Number(value) >= Number(E2_keV)) {
+            return {
+              valid: false,
+              message: 'Energy min must be lower that energy max'
+            }
+          }
+          return ({
+            valid: true
+          });
+        }
+      }
+    }
+    const checkE2kev = function() {
+      return {
+        validate: function(input) {
+          var value = input.value;
+          var current_form = $(input.element).closest('form');
+          var E1_keV = $('input[name="E1_keV"]', current_form).val();
+          if (Number(value) <= Number(E1_keV)) {
+            return {
+              valid: false,
+              message: 'Energy max must be higher that energy min'
+            }
+          }
+          return ({
+            valid: true
+          });
+        }
+      }
+    }
+    // Register the validator
+    FormValidation.validators.vcheckPaste = checkPaste;
+    FormValidation.validators.vcheckScws = checkScws;
+    FormValidation.validators.vcheckTimebin = checkTimebin;
+    FormValidation.validators.vcheckE1kev = checkE1kev;
+    FormValidation.validators.vcheckE2kev = checkE2kev;
+
+
     var validator_fields = {};
-    
-   // Validate truncated paste
+
+    // Validate truncated paste
     $("input[type=text][maxlength], textarea[maxlength]").each(function() {
       var name = $(this).attr('name');
       validator_fields[name] = {
         validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_paste($field));
-            }
+          vcheckPaste: {
           }
         }
       }
     });
-    validator_fields['scw_list'] = {
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_scws(value, 500));
-            }
-        }
-      }
-    };
-    validator_fields['time_bin'] = {
-      validators: {
-        callback: {
-          callback: function(value, validator, $field) {
-            return (validate_timebin(value, validator, $field));
-          }
-        }
-      }
-    };
 
-    validator_fields['E1_keV'] = {
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        },
-        callback: {
-          callback: function(value, validator, $field) {
-            var E2_keV = validator.getFieldElements('E2_keV').val();
-            if (Number(value) >= Number(E2_keV)) {
-              return {
-                valid: false,
-                message: 'Energy min must be lower that energy max'
+    //    euclid_multi_fields = $('.euclid-instruments-filters .form-control');
+    //
+    //    for (let fld of euclid_multi_fields) {
+    //      validator_fields[fld.name] = {
+    //        validators: {
+    //          notEmpty: {
+    //            message: (fld.type == 'select-one') ? 'Please select filter' : 'Please enter a value'
+    //          }
+    //        }
+    //      }
+    //    };
+    $('.instrument-card form').each(function() {
+      var submit_button = $('input.form-submit', $(this));
+      var submitButton = submit_button[0];
+      var formValid = FormValidation.formValidation($(this).get(0),
+        {
+          plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap: new FormValidation.plugins.Bootstrap5(),
+            submitButton: new FormValidation.plugins.SubmitButton({
+              livemode: false,
+              buttons: function(form) {
+                var submit_button = $('input.form-submit', $(form));
+                return [submit_button[0]];
               }
-            }
-            return true;
-          }
-        }
-      }
-    };
-    validator_fields['E2_keV'] = {
-      validators: {
-        notEmpty: {
-          message: 'Please enter a value'
-        },
-        callback: {
-          callback: function(value, validator, $field) {
-            var E1_keV = validator.getFieldElements('E1_keV').val();
-            if (Number(value) <= Number(E1_keV)) {
-              return {
-                valid: false,
-                message: 'Energy max must be higher that energy min'
+            }),
+            fieldStatus: new FormValidation.plugins.FieldStatus({
+              onStatusChanged: function(areFieldsValid) {
+                areFieldsValid
+                  // Enable the submit button
+                  // so user has a chance to submit the form again
+                  ? submitButton.removeAttribute('disabled')
+                  // Disable the submit button
+                  : submitButton.setAttribute('disabled', 'disabled');
               }
-            }
-            return true;
-          }
-        }
-      }
-    };
-    euclid_multi_fields = $('.euclid-instruments-filters .form-control');
+            }),
+            declarative: new FormValidation.plugins.Declarative({
+            }),
+            icon: new FormValidation.plugins.Icon({
+              valid: 'fa fa-check',
+              invalid: 'fa fa-times',
+              validating: 'fa fa-refresh',
+            }),
+          },
+          //fields: validator_fields,
 
-    for (let fld of euclid_multi_fields) {
-      validator_fields[fld.name] = {
-        validators: {
-          notEmpty: {
-            message: (fld.type == 'select-one') ? 'Please select filter' : 'Please enter a value'
-          }
-        }
-      }
-    };
+        });
+      $(this).data({ formValidation: formValid });
+    })
 
-//    $('.instrument-card form').bootstrapValidator({
-//      fields: validator_fields,
-//      feedbackIcons: {
-//        valid: 'glyphicon glyphicon-ok',
-//        invalid: 'glyphicon glyphicon-remove',
-//        validating: 'glyphicon glyphicon-refresh'
-//      }
-//    });
   }
-  
+
   $(document).ready(function() {
     common_form_set_bootstrapValidator();
     all_instruments_forms_set_bootstrapValidator();
 
-    // Create validator and validate a frist time :
-    // This is important in Firefox when the page is refreshed
-    // where indeed the old values are still in the form
-
     $('[name^=time_bin_format]', '.instrument-params-card form').on('change', function() {
       var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('time_bin', 'NOT_VALIDATED').validateField('time_bin');
+      form.data('formValidation').updateFieldStatus('time_bin', 'NotValidated').validateField('time_bin');
     });
 
     $('[name=E1_keV]', '.instrument-params-card form').on('change', function() {
       var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('E2_keV', 'NOT_VALIDATED').validateField('E2_keV');
+      form.data('formValidation').updateFieldStatus('E2_keV', 'NotValidated').validateField('E2_keV');
     });
 
     $('[name=E2_keV]', '.instrument-params-card form').on('change', function() {
       var form = $(this).parents('form');
-      form.data('bootstrapValidator').updateStatus('E1_keV', 'NOT_VALIDATED').validateField('E1_keV');
+      form.data('formValidation').updateFieldStatus('E1_keV', 'NotValidated').validateField('E1_keV');
     });
 
     $('.instrument-card form').on('error.form.bv', function(e) {
       e.preventDefault();
     });
     showErrorWhenTruncatedPaste();
-
   });
+
+
+  $('select[name="T_format"]', '#mmoda-common-form').on('change', function() {
+    common_form_validator.updateFieldStatus('T1', 'NotValidated').validateField('T1');
+    common_form_validator.updateFieldStatus('T2', 'NotValidated').validateField('T2');
+  });
+
 
 })(jQuery);

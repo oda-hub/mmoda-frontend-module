@@ -35,7 +35,6 @@ class MmodaInstrumentForm extends FormBase
     $mmoda_settings = \Drupal::config('mmoda.settings');
     $instrument_settings = \Drupal::config('mmoda_isgri.settings');
     $form['#action'] = $instrument_settings->get('data_server_url', $mmoda_settings->get('default_data_server_url'));
-    error_log('Form action:'.$form['#action']);
     $module_handler = \Drupal::service('module_handler');
     $module_path = $module_handler->getModule('mmoda_isgri')->getPath();
 
@@ -51,7 +50,7 @@ class MmodaInstrumentForm extends FormBase
         'OSA10.2' => 'OSA10.2',
         'OSA11.2' => 'OSA11.2'
       ),
-      '#default_value' => $instrument_settings->get('osa_version'),
+      '#default_value' => $instrument_settings->get('osa_version')
     );
 
     $form['radius'] = array(
@@ -61,9 +60,10 @@ class MmodaInstrumentForm extends FormBase
       '#size' => 10,
       '#attributes' => array(
         'name' => $mform_id . 'radius',
-        'data-bv-numeric' => 'true'
+        'data-fv-numeric' => 'true'
+        // 'data-fv-numeric___message' => 'Please enter a valid float number'
       ),
-      '#field_suffix' => t('deg'),
+      '#field_suffix' => t('deg')
     );
 
     $form['use_scws'] = array(
@@ -77,7 +77,7 @@ class MmodaInstrumentForm extends FormBase
         'form_list' => t('Custom list'),
         'user_file' => t('Custom list in file')
       ),
-      '#default_value' => 'no',
+      '#default_value' => 'no'
     );
 
     $form['max_pointings'] = array(
@@ -87,7 +87,7 @@ class MmodaInstrumentForm extends FormBase
       '#size' => 10,
       '#default_value' => $instrument_settings->get('max_pointings'),
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
+        'data-fv-integer' => 'true'
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -102,7 +102,7 @@ class MmodaInstrumentForm extends FormBase
             )
           )
         )
-      ),
+      )
     );
 
     $form['scw_list'] = array(
@@ -110,7 +110,7 @@ class MmodaInstrumentForm extends FormBase
       '#title' => t("ScWs List"),
       '#default_value' => $instrument_settings->get('scw_list'),
       '#attributes' => array(
-        'pattern' => "^([1|2]\\d\\d\\d)(?:-?(10|11|12|0\\d)(?:-?(30|31|[0-2]\\d)(?:[T ](2[0-3]|[0-1]\\d)(?::?([0-5]\\d)(?::?([0-5]\\d)(?:\\.(\\d+))?)?)?)?)?)?$"
+        'data-fv-vcheck-scws' => 'true'
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -125,7 +125,7 @@ class MmodaInstrumentForm extends FormBase
             )
           )
         )
-      ),
+      )
     );
 
     $form['user_scw_list_file'] = array(
@@ -151,7 +151,7 @@ class MmodaInstrumentForm extends FormBase
             )
           )
         )
-      ),
+      )
     );
 
     $form['integral_data_rights'] = array(
@@ -164,7 +164,7 @@ class MmodaInstrumentForm extends FormBase
       '#options' => array(
         'public' => 'Public',
         'all-private' => 'All Private'
-      ),
+      )
     );
 
     $form['E1_keV'] = array(
@@ -175,8 +175,9 @@ class MmodaInstrumentForm extends FormBase
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
-      ),
+        'data-fv-numeric' => 'true',
+        'data-fv-vcheck-e1kev' => 'true'
+      )
     );
 
     $form['E2_keV'] = array(
@@ -187,8 +188,9 @@ class MmodaInstrumentForm extends FormBase
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
-      ),
+        'data-fv-numeric' => 'true',
+        'data-fv-vcheck-e2kev' => 'true'
+      )
     );
 
     $form['query_type'] = array(
@@ -199,7 +201,7 @@ class MmodaInstrumentForm extends FormBase
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
-      ),
+      )
     );
 
     $form['detection_threshold'] = array(
@@ -208,10 +210,9 @@ class MmodaInstrumentForm extends FormBase
       '#description' => t("Output catalog significance threshold"),
       '#default_value' => 7.0,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
-      ),
+        'data-fv-numeric' => 'true'
+      )
     );
-
 
     $form['product_type'] = array(
       '#type' => 'radios',
@@ -225,7 +226,7 @@ class MmodaInstrumentForm extends FormBase
         'isgri_image' => 'Image',
         'isgri_spectrum' => 'Spectrum',
         'isgri_lc' => 'Light curve'
-      ),
+      )
     );
 
     $form['time_bin'] = array(
@@ -248,9 +249,11 @@ class MmodaInstrumentForm extends FormBase
         )
       ),
       '#attributes' => array(
-        'data-bv-numeric' => 'true',
+        'data-fv-numeric' => 'true',
+        'data-fv-numeric___message' => 'Please enter a valid float number',
+        'data-fv-vcheck-timebin' => 'true',
         'data-mmoda-time-bin-min' => 20
-      ),
+      )
     );
 
     $form['time_bin_format'] = array(
@@ -279,17 +282,18 @@ class MmodaInstrumentForm extends FormBase
         'class' => array(
           'time_bin_format'
         )
-      ),
+      )
     );
 
     $form['user_catalog_file'] = array(
       '#type' => 'file',
       '#title' => t("User catalog"),
-      '#description' => t('If needed, create a custom catalog following one of the templates : <a href="' .
-        $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' . $module_path . '/data/catalog.fits" download>FITS</a>.'),
+      '#description' => t(
+        'If needed, create a custom catalog following one of the templates : <a href="' . $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' .
+        $module_path . '/data/catalog.fits" download>FITS</a>.'),
       '#attributes' => array(
         'name' => 'user_catalog_file'
-      ),
+      )
     );
     $form['#theme'] = 'mmoda_isgri_form';
 
@@ -297,8 +301,6 @@ class MmodaInstrumentForm extends FormBase
       '#type' => 'submit',
       '#value' => t('Submit')
     );
-
-
 
     return $form;
   }
@@ -330,11 +332,11 @@ class MmodaInstrumentForm extends FormBase
    */
   public function validateForm(array &$form, FormStateInterface $form_state)
   {
-//     $title = $form_state->getValue('title');
-//     if (strlen($title) < 5) {
-//       // Set an error for the form element with a key of "title".
-//       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
-//     }
+    //     $title = $form_state->getValue('title');
+    //     if (strlen($title) < 5) {
+    //       // Set an error for the form element with a key of "title".
+    //       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
+    //     }
   }
 
   /**

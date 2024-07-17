@@ -1,6 +1,6 @@
 # use the default data server url provided by the MMODA module
 # or uncomment the following to set a specific data server url
-#data_server_url: /dispatcher-data
+#data_server_url: /dispatch-data/run_analysis
 
 name: jemx
 messenger: X-rays
@@ -19,7 +19,7 @@ product_type: jemx_image
 time_bin: 1000
 time_bin_format: sec
 weight: 20
-#data_server_local_url: dispatch-data/run_analysis
+# data_server_url: dispatch-data/run_analysis
 acknowledgement: >
   If you use results or material from this instrument in our application, MMODA, do not forget to quote our paper:
   <br> <a href="https://arxiv.org/abs/2002.12895" target="_blank">A. Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno, S.Paltani

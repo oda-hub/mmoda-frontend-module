@@ -37,20 +37,10 @@ class CommonForm extends FormBase
       '#title' => t("RA"),
       '#description' => t("The right ascension."),
       '#default_value' => $mmoda_settings->get('RA'),
-      '#required' => TRUE
-      // '#size' => 10,
-      // '#parent_classes' => array(
-      // 'form-group',
-      // 'col-md-6'
-      // ),
-      // '#label_classes' => array(
-      // 'control-label'
-      // ),
-      // '#attributes' => array(
-      // 'class' => array(
-      // 'form-control'
-      // )
-      // )
+      '#required' => TRUE,
+      '#attributes' => array(
+        'data-fv-vcheck-ra' => 'true',
+      ),
     );
 
     $form['DEC'] = array(
@@ -58,46 +48,21 @@ class CommonForm extends FormBase
       '#title' => t("Dec"),
       '#description' => t("The declination."),
       '#default_value' => $mmoda_settings->get('DEC'),
-      '#required' => TRUE
-      // '#size' => 10,
-      // '#parent_classes' => array(
-      // 'form-group',
-      // 'col-md-6'
-      // ),
-      // '#label_classes' => array(
-      // 'control-label'
-      // ),
-      // '#attributes' => array(
-      // 'class' => array(
-      // 'form-control'
-      // )
-      // )
+      '#required' => TRUE,
+      '#attributes' => array(
+        'data-fv-vcheck-dec' => 'true',
+      ),
     );
 
-    // $form['time'] = array(
-    // '#type' => 'item',
-    // '#prefix' => '<div class="row">',
-    // '#suffix' => '</div>'
-    // );
-    // $form['time']['T1'] = array(
     $form['T1'] = array(
       '#type' => 'textfield',
       '#title' => t("Start time"),
       '#default_value' => $mmoda_settings->get('T1'),
       '#required' => TRUE,
       '#size' => 10,
-      // '#parent_classes' => array(
-      // 'form-group',
-      // 'col-md-5'
-      // ),
-      // '#label_classes' => array(
-      // 'control-label'
-      // ),
-      // '#attributes' => array(
-      // 'class' => array(
-      // 'form-control'
-      // )
-      // ),
+      '#attributes' => array(
+        'data-fv-vcheck-date' => 'true',
+      ),
       '#states' => array(
         'enabled' => array(
           ':input[name="use_scws"]' => array(
@@ -109,25 +74,15 @@ class CommonForm extends FormBase
       )
     );
 
-    // $form['time']['T2'] = array(
     $form['T2'] = array(
       '#type' => 'textfield',
       '#title' => t("End time"),
       '#default_value' => $mmoda_settings->get('T2'),
       '#required' => TRUE,
       '#size' => 10,
-      // '#parent_classes' => array(
-      // 'form-group',
-      // 'col-md-5'
-      // ),
-      // '#label_classes' => array(
-      // 'control-label'
-      // ),
-      // '#attributes' => array(
-      // 'class' => array(
-      // 'form-control'
-      // )
-      // ),
+      '#attributes' => array(
+        'data-fv-vcheck-date' => 'true',
+      ),
       '#states' => array(
         'enabled' => array(
           ':input[name="use_scws"]' => array(
@@ -148,18 +103,6 @@ class CommonForm extends FormBase
         'mjd' => 'MJD'
       ),
       '#default_value' => $mmoda_settings->get('T_format'),
-//       '#parent_classes' => array(
-//         'form-group',
-//         'col-md-2'
-//       ),
-//       '#label_classes' => array(
-//         'control-label'
-//       ),
-//       '#attributes' => array(
-//         'class' => array(
-//           'form-control'
-//         )
-//       ),
       '#states' => array(
         'enabled' => array(
           ':input[name="use_scws"]' => array(
@@ -170,6 +113,7 @@ class CommonForm extends FormBase
         )
       )
     );
+
     $form['#theme'] = 'mmoda_common_form';
 
     return $form;

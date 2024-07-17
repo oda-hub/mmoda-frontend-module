@@ -1,31 +1,42 @@
-{# /** * @file * Theme override to display a block. * * Available
-variables: * - plugin_id: The ID of the block implementation. * - label:
-The configured label of the block if visible. * - configuration: A list
-of the block's configuration values. * - label: The configured label for
-the block. * - label_display: The display settings for the label. * -
-provider: The module or other provider that provided this block plugin.
-* - Block plugin specific settings will also be stored here. * -
-in_preview: Whether the plugin is being rendered in preview mode. * -
-content: The content of this block. * - attributes: array of HTML
-attributes populated by modules, intended to * be added to the main
-container tag of this template. * - id: A valid HTML ID and guaranteed
-unique. * - title_attributes: Same as attributes, except applied to the
-main title * tag that appears in the template. * - title_prefix:
-Additional output populated by modules, intended to be * displayed in
-front of the main title tag that appears in the template. * -
-title_suffix: Additional output populated by modules, intended to be *
-displayed after the main title tag that appears in the template. * *
-@see template_preprocess_block() */ #}
-{{ attach_library('mmoda/mmoda_libs') }}
+{#
+/**
+* @file
+* Theme override to display a block.
+* * Available variables:
+* - plugin_id: The ID of the block implementation.
+* - label:
+The configured label of the block if visible.
+* - configuration: A list of the block's configuration values.
+* - label: The configured label for the block.
+* - label_display: The display settings for the label.
+* - provider: The module or other provider that provided this block plugin.
+* - Block plugin specific settings will also be stored here.
+* - in_preview: Whether the plugin is being rendered in preview mode.
+* - content: The content of this block.
+* - attributes: array of HTML attributes populated by modules, intended to
+*   be added to the main container tag of this template.
+* - id: A valid HTML ID and guaranteed unique.
+* - title_attributes: Same as attributes, except applied to the main title
+*   tag that appears in the template.
+* - title_prefix: Additional output populated by modules, intended to be
+*   displayed in front of the main title tag that appears in the template.
+* - title_suffix: Additional output populated by modules, intended to be
+*   displayed after the main title tag that appears in the template. * *
+@see template_preprocess_block()
+*/ #}
+
+{{ attach_library('core/drupalSettings') }}
 {{ attach_library('mmoda/datatables') }}
 {{ attach_library('mmoda/highlight_js') }}
+{{ attach_library('mmoda/bootstrap5_form_validator') }}
 {{ attach_library('mmoda/jquery_serialize_json') }}
 {{ attach_library('mmoda/bokeh') }}
+{{ attach_library('mmoda/colorbox') }}
+{{ attach_library('mmoda/mmoda_libs') }}
 {%
   set classes = [
     'block',
-    'block-' ~ configuration.provider|clean_class,
-    'block-' ~ plugin_id|clean_class,
+    'block-' ~ theme_hook_original|clean_class,
   ]
 %}
 <div {{ attributes.addClass(classes) }}>
@@ -47,19 +58,19 @@ displayed after the main title tag that appears in the template. * *
             {% if logged_in %}
             <a data-toggle="tooltip" title=""
               data-original-title="Show API token, copy it or request it by email"
-              class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary btn-sm"
+              class="webform-dialog webform-dialog-wide btn btn-primary btn-sm"
               href="modal_forms/nojs/webform/384"><span
               class="oda-icon-label">API token</span><span
               class="ms-1 bi bi-key-fill"> </span> </a>
             {% endif %}
             <a title="Contact us"
-              class="ctools-use-modal ctools-modal-modal-popup-large btn btn-primary btn-sm"
-              href="modal_forms/nojs/webform/383"> <span
+              class="webform-dialog webform-dialog-wide btn btn-primary btn-sm"
+              href="form/contact"> <span
               class="oda-icon-label">Contact us</span> <span
               class="ms-1 bi bi-envelope-fill"> </span>
             </a> <a id="help-home" title="{{ site_name }} Help"
               class="btn btn-primary btn-sm open-in-modal help-home"
-              href="{{ help_page_url }}"><span
+              href="help/mmoda"><span
               class="oda-icon-label">Help</span><i
               class="ms-1 bi bi-info-circle-fill"></i></a>
           </div>
@@ -147,11 +158,12 @@ displayed after the main title tag that appears in the template. * *
 </div>
 
 {# Modal Dialog #}
-<div id="ldialog" class="modal fade mmoda-log mmoda-dialog-modal" aria-hidden="true"  aria-labelledby="MMODA dialog box" data-bs-backdrop="static" data-bs-keyboard="false">
+<div id="ldialog" class="modal fade mmoda-log mmoda-dialog-modal" aria-hidden="true"  aria-labelledby="MMODA dialog box" data-bs-backdrop="static" data-bs-keyboard="true">
   <div id="ldialog-modal-dialog" class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title"></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="modal-controls">
@@ -224,7 +236,7 @@ displayed after the main title tag that appears in the template. * *
               class="oda-icon-label">Write a feedback</span><span
               class="glyphicon glyphicon-envelope"> </span> </a>
             <button type="button"
-              class="btn btn-primary"
+              class="btn btn-primary form-button submit-button close-button"
               data-bs-dismiss="modal">Close</button>
           </div>
         </div>
@@ -240,9 +252,9 @@ displayed after the main title tag that appears in the template. * *
     <span class="card-title"></span>
     <span class="card-header-toolbox float-end">
        <span class="date"></span>
-       <button class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="true" aria-controls="">
+       <a class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="true" aria-controls="">
          <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
-      </button>
+      </a>
        <button type="button" class="btn-close close-card" aria-label="Close"></button>
     </span> 
     </span>
@@ -253,12 +265,14 @@ displayed after the main title tag that appears in the template. * *
 
 {# MMODA Gallery card #}
 <div id="mmoda-gallery-card-model" class="card card-primary">
-  <div class="card-header">
+  <div class="card-header bg-primary">
     <div class="collapsible">
-      <span class="card-title">MMODA Gallery</span> <span
-        class="card-header-toolbox float-end"> <span class="date"></span> <span><i
-          class="fa fa-chevron-up"></i></span> <span
-        class="fa fa-times close-card"></span>
+      <span class="card-title">MMODA Gallery</span>
+      <span class="card-header-toolbox float-end">
+       <a class="bg-primary collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="false" aria-controls="">
+         <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
+      </a>
+       <button type="button" class="btn-close btn-close-white close-card" aria-label="Close"></button>
       </span>
     </div>
   </div>

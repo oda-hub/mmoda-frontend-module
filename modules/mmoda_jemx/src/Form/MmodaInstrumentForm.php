@@ -34,8 +34,12 @@ class MmodaInstrumentForm extends FormBase
 
     $mmoda_settings = \Drupal::config('mmoda.settings');
     $instrument_settings = \Drupal::config('mmoda_jemx.settings');
-    $form['#action'] = $instrument_settings->get('data_server_url', $mmoda_settings->get('default_data_server_url'));
-
+    $form_action = ($instrument_settings->get('data_server_url') != NULL ) ? $instrument_settings->get('data_server_url') : $mmoda_settings->get('default_data_server_url');
+    if ($form_action == NULL) {
+      $messenger = \Drupal::Messenger();
+      $messenger->addMessage('Error in module '.$instrument_settings->get('title').' : Neither of the two settings is set : data_server_url in mmoda_jemx.settings.yml nor default_data_server_url in mmoda.settings.yml',$messenger::TYPE_ERROR,true);
+    }
+    $form['#action'] = $form_action;
     $module_handler = \Drupal::service('module_handler');
     $module_path = $module_handler->getModule('mmoda_jemx')->getPath();
 
@@ -65,7 +69,7 @@ class MmodaInstrumentForm extends FormBase
       '#size' => 10,
       '#attributes' => array(
         'name' => $mform_id . 'radius',
-        'data-bv-numeric' => 'true'
+        'data-fv-numeric' => 'true'
       ),
       '#field_suffix' => t('deg'),
     );
@@ -91,7 +95,7 @@ class MmodaInstrumentForm extends FormBase
       '#size' => 10,
       '#default_value' => $instrument_settings->get('max_pointings'),
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
+        'data-fv-integer' => 'true'
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -191,7 +195,8 @@ class MmodaInstrumentForm extends FormBase
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
+        'data-fv-numeric' => 'true',
+        'data-fv-vcheck-e1kev' => 'true'
       ),
     );
 
@@ -203,7 +208,8 @@ class MmodaInstrumentForm extends FormBase
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
+        'data-fv-numeric' => 'true',
+        'data-fv-vcheck-e2kev' => 'true'
       ),
     );
 
@@ -224,7 +230,7 @@ class MmodaInstrumentForm extends FormBase
       '#description' => t("Output catalog significance threshold"),
       '#default_value' => 7.0,
       '#attributes' => array(
-        'data-bv-numeric' => 'true'
+        'data-fv-numeric' => 'true'
       ),
     );
 
@@ -264,7 +270,9 @@ class MmodaInstrumentForm extends FormBase
         )
       ),
       '#attributes' => array(
-        'data-bv-numeric' => 'true',
+        'data-fv-numeric' => 'true',
+        'data-fv-numeric___message' => 'Please enter a valid float number',
+        'data-fv-vcheck-timebin' => 'true',
         'data-mmoda-time-bin-min' => 20
       ),
     );
