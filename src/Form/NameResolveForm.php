@@ -171,8 +171,8 @@ class NameResolveForm extends FormBase
    */
   public function exploreMMODAGallery($form, FormStateInterface $form_state)
   {
-    $form['radec']['RA']['#value'] = 50;
-    $form['radec']['DEC']['#value'] = 80;
+    $form['radec']['RA']['#value'] = 0;
+    $form['radec']['DEC']['#value'] = 0;
 
     $args = $this->exploreMMODAGlleryObject($form_state->getValue('src_name'));
     $ajax_response = new AjaxResponse();
@@ -187,8 +187,10 @@ class NameResolveForm extends FormBase
    */
   public function resolveObjectName($source_name)
   {
-    $local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";
-    $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
+    $mmoda_settings = \Drupal::config('mmoda.settings');
+
+    $local_name_resolver_url = $mmoda_settings->get('local_name_resolver_url');
+    $name_resolver_url = $mmoda_settings->get('name_resolver_url');
     // sleep ( 2 );
 
     $data = array();
@@ -251,10 +253,8 @@ class NameResolveForm extends FormBase
   {
     $mmoda_settings = \Drupal::config('mmoda.settings');
 
-    //$mmoda_settings = variable_get('mmoda_settings');
     $gallery_data_request = $mmoda_settings->get('gallery_data_request_url') . '?src_name=' . UrlHelper::encodePath($source_name);
 
-    //$request = drupal_http_request($gallery_data_request);
     try {
       $response = \Drupal::httpClient()->get($gallery_data_request, array(
         'headers' => array(
@@ -277,7 +277,6 @@ class NameResolveForm extends FormBase
           );
         } else {
           $url = $json_response['url_preview'];
-          //$url = str_replace( 'www.astro.unige.ch', 'cdcidev.mtmco.net', $json_response['url_preview']);
           $url_complete = $json_response['url'];
 
           $data = array(

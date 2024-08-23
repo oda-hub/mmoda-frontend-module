@@ -3,6 +3,8 @@ support_email:
   - no-reply@unige.ch
   - cdci-oda-feedback@listes.unige.ch
 
+local_name_resolver_url: 'https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/'
+name_resolver_url: 'http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?'
 gallery_data_request_url: 'https://www.astro.unige.ch/mmoda/dispatch-data/get_astro_entity_info_by_source_name'
 gallery_base_url: 'https://www.astro.unige.ch'
 

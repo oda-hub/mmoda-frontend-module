@@ -270,7 +270,7 @@ function get_current_date_time() {
       elt.find('.alert').addClass('alert-success').show();
     }
     else {
-      $('input#edit-resolve-src-name').prop('disabled', true);
+//      $('input#edit-resolve-src-name').prop('disabled', true);
       //$('.row', '#mmoda-name-resolve-form').removeClass('has-success').addClass('has-error');
     }
   }
@@ -734,8 +734,16 @@ function get_waitingDialog($modal_dialog) {
 
 
   function commonReady() {
-    console.log('Drupal settings');
-    console.log(drupalSettings);
+    
+    $( "body" ).on( "dialogopen", function( event, ui ) {
+      $('#ldialog .buttons-container').css('visibility', 'hidden');
+    } );
+    $( "body" ).on( "dialogclose", function( event, ui ) {
+      $('#ldialog .buttons-container').css('visibility', 'visible');
+    } );
+
+//    console.log('Drupal settings');
+//    console.log(drupalSettings);
 
     autoHeight();
     // Ignore carriage return in common parameters

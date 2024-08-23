@@ -1,4 +1,5 @@
 <?php
+use Drupal\Core\Form\FormStateInterface;
 
 function mmoda_node_update($node)
 {
@@ -43,6 +44,113 @@ function mmoda_theme($existing, $type, $theme, $path)
 }
 
 /**
+ * Implements hook_token_info().
+ */
+function mmoda_token_info() {
+  $types['site-logo-url'] = [
+    'name' => t('Site logo'),
+    'description' => t('Current theme site logo.'),
+  ];
+  return [
+    'types' => $types,
+    'tokens' => ['site' => $tokens],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mmoda_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  if ($type === 'jwt') {
+    //global $user;
+    $user = \Drupal::currentUser();
+
+    $is_mxroomid_empty = false;
+    if(property_exists($user, 'field_matrix_room_id'))
+      $is_mxroomid_empty = empty($user->field_matrix_room_id);
+
+      foreach ($tokens as $name => $original) {
+        switch ($name) {
+          case 'jwt-link':
+            if (\Drupal::currentUser()->isAuthenticated()) {
+
+              $jwt = jwt_link_url();
+              $alg = variable_get('jwt_link_alg', 'HS256');
+              $key = variable_get('jwt_link_key', '');
+              $jwt_encoded_token_updated = $jwt['jwt_encoded_token'];
+              $jwt_encoded_url_updated = $jwt['jwt_encoded_url'];
+              $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
+                $alg
+              ));
+
+              if($is_mxroomid_empty) {
+                unset($jwt_decoded_token -> mxroomid);
+                $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+                $url_parsed = parse_url($jwt_encoded_url_updated);
+                parse_str($url_parsed['query'], $query_params);
+                $query_params['token'] = $jwt_encoded_token_updated;
+                $new_query_string = http_build_query($query_params);
+                $url_parsed['query'] = $new_query_string;
+                $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
+              }
+
+              $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+              $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
+            }
+            $replacements[$original . '_updated'] = $jwt_encoded_url;
+            break;
+
+          case 'jwt-token':
+            if (\Drupal::currentUser()->isAuthenticated()) {
+              $jwt = jwt_link_url();
+              $alg = variable_get('jwt_link_alg', 'HS256');
+              $key = variable_get('jwt_link_key', '');
+              $jwt_encoded_token_updated = $jwt['jwt_encoded_token'];
+              $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
+                $alg
+              ));
+              $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+
+              if($is_mxroomid_empty) {
+                unset($jwt_decoded_token -> mxroomid);
+                $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+              }
+
+              watchdog('MMODA', 'Original token: ' . $jwt['jwt_encoded_token'] . ', updated token: ' . $jwt_encoded_token_updated);
+
+            }
+            $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
+            break;
+          default:
+        }
+      }
+  }
+  foreach ($tokens as $name => $original) {
+    switch ($name) {
+      case 'site-logo-url':
+        $theme = \Drupal::theme()->getActiveTheme();
+        $replacements[$original] = $theme->getLogo();
+        error_log('Logo:'.$theme->getLogo());
+        break;
+    }
+  }
+
+  return $replacements;
+}
+
+function mmoda_tokens_alter(array &$replacements, array $context) {
+  if (array_key_exists('[jwt:jwt-token]_updated', $replacements)) {
+    $replacements['[jwt:jwt-token]'] = $replacements['[jwt:jwt-token]_updated'];
+    unset($replacements['[jwt:jwt-token]_updated']);
+  }
+  if (array_key_exists('[jwt:jwt-link]_updated', $replacements)) {
+    $replacements['[jwt:jwt-link]'] = $replacements['[jwt:jwt-link]_updated'];
+    unset($replacements['[jwt:jwt-link]_updated']);
+  }
+}
+
+/**
  * Implements hook_page_attachments().
  */
 function mmoda_page_attachments(array &$attachments)
@@ -50,4 +158,12 @@ function mmoda_page_attachments(array &$attachments)
   // Unconditionally attach an asset to the page.
 //   dpm('attaching lib');
 //   $attachments['#attached']['library'][] = 'mmoda/bootstrap_form_validatorrrr';
+}
+
+function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $open_id_form_id = 'openid-connect-login-form';
+  if(str_starts_with($form['#id'], $open_id_form_id)) {
+    //$form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
+    $form['openid_connect_client_github_login']['#attributes']['class'] = array("nav-item", "btn", "btn-secondary", "btn-sm", "rounded-0");
+  }
 }

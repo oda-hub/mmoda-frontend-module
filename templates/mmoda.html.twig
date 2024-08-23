@@ -59,20 +59,20 @@ The configured label of the block if visible.
             <a data-toggle="tooltip" title=""
               data-original-title="Show API token, copy it or request it by email"
               class="webform-dialog webform-dialog-wide btn btn-primary btn-sm"
-              href="modal_forms/nojs/webform/384"><span
+              href="form/your-api-token"><span
               class="oda-icon-label">API token</span><span
-              class="ms-1 bi bi-key-fill"> </span> </a>
+              class="bi bi-key-fill"> </span> </a>
             {% endif %}
             <a title="Contact us"
               class="webform-dialog webform-dialog-wide btn btn-primary btn-sm"
               href="form/contact"> <span
               class="oda-icon-label">Contact us</span> <span
-              class="ms-1 bi bi-envelope-fill"> </span>
+              class="bi bi-envelope-fill"> </span>
             </a> <a id="help-home" title="{{ site_name }} Help"
               class="btn btn-primary btn-sm open-in-modal help-home"
               href="help/mmoda"><span
               class="oda-icon-label">Help</span><i
-              class="ms-1 bi bi-info-circle-fill"></i></a>
+              class="bi bi-info-circle-fill"></i></a>
           </div>
         </div>
       </div>
@@ -112,9 +112,9 @@ The configured label of the block if visible.
                       
                       <div class="card-header-toolbox float-end">
                         {% if instrument.help_page_url %}
-                        <button type="button" class="btn btn-primary btn-sm btn-help open-in-modal" aria-label="Help" data-toggle="tooltip" data-placement="left" title="Help" data-mmoda-href="{{ instrument.help_page_url }}">
+                        <a type="button" class="btn btn-primary btn-sm btn-help open-in-modal" aria-label="Help" data-toggle="tooltip" data-placement="left" title="Help" href="{{ instrument.help_page_url }}">
                           <i class="bi bi-info-circle-fill"></i></a>
-                        </button>
+                        </a>
                          {% endif %}
                         <div class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="#{{ instrument.name }}-params-card-body" aria-expanded="true" aria-controls="{{ instrument.name }}-params-card-body">
                            <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
@@ -166,6 +166,10 @@ The configured label of the block if visible.
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="mmoda-loader">
+          <div class="mmoda-loader-text loader-position">Loading ...</div>
+          <div class="loader mmoda-loader-pic loader-position"></div>
+        </div>
         <div class="modal-controls">
           <div class="progress active">
             <div class="progress-bar progress-bar-striped "></div>
@@ -229,12 +233,12 @@ The configured label of the block if visible.
             </div>
           </div>
           <div class="buttons-container">
-            <a data-toggle="tooltip" title=""
+            <a  title=""
               data-original-title="Report a bug or write us a feedback"
-              class="write-feedback-button ctools-use-modal ctools-modal-modal-popup-large btn btn-primary collapse"
-              href="modal_forms/nojs/webform/392"><span
+              class="webform-dialog webform-dialog-wide btn btn-primary"
+              href="form/user-feedback"><span
               class="oda-icon-label">Write a feedback</span><span
-              class="glyphicon glyphicon-envelope"> </span> </a>
+              class="bi bi-envelope-fill"> </span> </a>
             <button type="button"
               class="btn btn-primary form-button submit-button close-button"
               data-bs-dismiss="modal">Close</button>

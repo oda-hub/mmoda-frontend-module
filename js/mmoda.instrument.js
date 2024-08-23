@@ -1215,15 +1215,29 @@ function card_title(srcname, param) {
       }
 
       var open_in_modal_base_path = $(this).attr('href');
+      //      var open_in_modal_base_path = $(this).data(' mmoda-href');
       let path_items = open_in_modal_base_path.split("/");
       path_items.pop(); // remove the last
       open_in_modal_base_path = path_items.join("/");
+
+      $('#ldialog .mmoda-loader').show();
+
+      waitingDialog.show(home_link, '', {
+        dialogSize: 'lg',
+        showTitle: true,
+        buttonText: 'Close',
+        showCloseInHeader: true,
+      });
+      $('#ldialog .write-feedback-button').hide();
+      $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%" });
+      $('#ldialog .modal-body').scrollTop(0);
+      $(window).scrollTop(0);
 
       $.get($(this).attr('href'), function(data) {
         var html = $.parseHTML(data);
         var help_text = $(".region-content", html);
         var title = $("h1 span.field--name-title", html).text();
-        
+
         $("h1 span.field--name-title", html).remove();
         help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
@@ -1240,6 +1254,7 @@ function card_title(srcname, param) {
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
         message = { 'summary': help_text };
+        $('#ldialog .mmoda-loader').hide();
         waitingDialog.show(home_link + title, message, {
           dialogSize: 'lg',
           showTitle: true,
@@ -2637,8 +2652,8 @@ function card_title(srcname, param) {
     var card_ids = $(".instrument-params-card",
       ".instrument-card.active").insert_new_card(desktop_card_counter++, 'js9', data.datetime);
     $('#' + card_ids.card_body_id).addClass('js9-card');
-    $('#' + card_ids.card_body_id).append($('<div>').addClass('js9-loader-text loader-position').text('Loading ...'));
-    $('#' + card_ids.card_body_id).append($('<div>').addClass('loader js9-loader loader-position'));
+    $('#' + card_ids.card_body_id).append($('<div>').addClass('mmoda-loader-text loader-position').text('Loading ...'));
+    $('#' + card_ids.card_body_id).append($('<div>').addClass('loader mmoda-loader-pic loader-position'));
     $('#' + card_ids.card_body_id).append($('<div>').addClass('js9-iframe'));
     $('#' + card_ids.card_body_id + ' div.js9-iframe').append($('<iframe>', {
       src: 'dispatch-data/api/v1.0/oda/get_js9_plot?file_path=' + image_file_path + '&ext_id=' + js9_ext_id,
