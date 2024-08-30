@@ -39,11 +39,11 @@
 
 .result-card {
   display: none;
-  position: absolute;
+  position: absolute !important;
   vertical-align: top;
   float: left;
   width: auto;
-  
+  max-width: 95%;
 }
 
 .block-mmoda {
@@ -554,11 +554,6 @@ div.ctools-modal-content .modal-content {
   float: left;
   text-align: left;
   font-size: 13px;
-}
-
-.result-card {
-  display: none;
-  max-width: 95%;
 }
 
 .has-error .help-block {
