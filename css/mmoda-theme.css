@@ -12,14 +12,6 @@
    margin-bottom: 0.8em;
 }
 
-/**
- * @file
- * Style sheet for the iPrayTimes block.
- */
-.block-mmoda {
-  font-size: 12px !important;
-}
-
 .form-item-E1-keV .form-control, .form-item-E2-keV .form-control,
   .form-item-radius .form-control {
   display: inline-block !important;
@@ -134,8 +126,13 @@ table.message-table tr td {
 }
 
 .form-item, .form-actions {
-  margin-top: 0.2em;
-  margin-bottom: 0.2em;
+  margin-top: 0.2em !important;
+  margin-bottom: 0.2em !important;
+}
+
+.form-item, .form-actions input {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }
 
 table.mmoda tr td, table.mmoda tr th {
