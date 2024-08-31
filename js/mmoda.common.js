@@ -390,7 +390,7 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.progress').show();
             $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
             if (settings.progressType) {
-              $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+              $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType + ' progress-bar-striped');
             }
           }
 

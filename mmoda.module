@@ -1,6 +1,8 @@
 <?php
 use Drupal\Core\Form\FormStateInterface;
 
+use Drupal\Core\Render\BubbleableMetadata;
+
 function mmoda_node_update($node)
 {
   error_log("updated node\n" . print_r($node->id(), true));
@@ -46,15 +48,16 @@ function mmoda_theme($existing, $type, $theme, $path)
 /**
  * Implements hook_token_info().
  */
-function mmoda_token_info() {
-  $types['site-logo-url'] = [
-    'name' => t('Site logo'),
-    'description' => t('Current theme site logo.'),
+
+function mmoda_token_info() : array {
+  $info = [];
+
+  $info['tokens']['site']['logo-url'] = [
+    'name' => 'Site logo',
+    'description' => t('Current theme site logo')
   ];
-  return [
-    'types' => $types,
-    'tokens' => ['site' => $tokens],
-  ];
+
+  return $info;
 }
 
 /**
@@ -62,6 +65,28 @@ function mmoda_token_info() {
  */
 function mmoda_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $replacements = array();
+  if ($type == 'site') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'logo-url':
+          $theme = \Drupal::config('system.theme')->get('default');
+          $host = \Drupal::request()->getSchemeAndHttpHost();
+
+          $logo_url= $host.theme_get_setting('logo', $theme)['url'];
+          //$theme = \Drupal::theme()->getDefault();
+          //global $base_url;
+          //$logo_url= $base_url.'/'.$theme->getLogo();
+
+          $replacements[$original] = $logo_url;
+          error_log('Logo:'.$logo_url);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
   if ($type === 'jwt') {
     //global $user;
     $user = \Drupal::currentUser();
@@ -125,15 +150,6 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
           default:
         }
       }
-  }
-  foreach ($tokens as $name => $original) {
-    switch ($name) {
-      case 'site-logo-url':
-        $theme = \Drupal::theme()->getActiveTheme();
-        $replacements[$original] = $theme->getLogo();
-        error_log('Logo:'.$theme->getLogo());
-        break;
-    }
   }
 
   return $replacements;
