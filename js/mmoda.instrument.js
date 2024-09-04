@@ -979,9 +979,20 @@ function card_title(srcname, param) {
 
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
-      token_text = $("#edit-submitted-copy-button p")[0].textContent;
-      if (token_text !== undefined)
-        copyToClipboard(token_text);
+      let token_container = $(e.target).siblings('p');
+      if(token_container.length > 0) {
+        let token_text = token_container[0].innerText;
+        if (token_text !== undefined)
+          copyToClipboard(token_text);
+      }
+    });
+
+    $("body").on('click', 'input.close-copy-api-token-form', function(e) {
+      e.preventDefault();
+      let drupal_modal_window = document.querySelector('input.close-copy-api-token-form').closest('#drupal-modal');
+      if (drupal_modal_window !== null) {
+        Drupal.dialog(drupal_modal_window).close();
+      }
     });
 
     // --------------- Catalog Toolbar start

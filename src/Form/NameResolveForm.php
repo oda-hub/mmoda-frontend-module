@@ -160,18 +160,6 @@ class NameResolveForm extends FormBase
 
     $args = $this->resolveObjectName($form_state->getValue('src_name'));
     $ajax_response = new AjaxResponse();
-    //$form_build = $this->formBuilder->getForm($form);
-
-
-    // Render the form using the renderer service, with the renderRoot method
-    //$rendered_form = \Drupal::service('renderer')->renderRoot($form_build);
-
-    // Add any attachments for the form to the response
-    //$response->addAttachments($form_build['#attached']);
-
-    // Add the ajax command to the response
-    //$response->addCommand(new PrependCommand('.modal-body', $rendered_form));
-
     $ajax_response->addCommand(new setRADecCommand($args));
 
     // Finally return the AjaxResponse object.

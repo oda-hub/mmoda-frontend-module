@@ -166,6 +166,19 @@ function clone(old_obj) {
 }
 
 function copyToClipboard(text) {
+  if (!navigator.clipboard) {
+    copyToClipboardFallback(text);
+    return;
+  }
+  navigator.clipboard.writeText(text).then(function() {
+    console.log('Async: Copying to clipboard was successful!');
+  }, function(err) {
+    console.log('Async: Could not copy text: ', err);
+    copyToClipboardFallback(text);
+  });
+}
+
+function copyToClipboardFallback(text) {
 
   var textArea = document.createElement("textarea");
   textArea.value = text;
@@ -174,8 +187,12 @@ function copyToClipboard(text) {
   textArea.select();
 
   try {
+    // Copy the text
     var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
   } catch (err) {
+    console.error('Oops, unable to copy', err);
   }
 
   document.body.removeChild(textArea);
