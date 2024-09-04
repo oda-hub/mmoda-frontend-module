@@ -93,59 +93,71 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
 
   if ($type === 'jwt') {
     //global $user;
-    $user = \Drupal::currentUser();
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    $maxroomid_field = $user->get('field_matrix_room_id');
+    $is_mxroomid_empty = $maxroomid_field->isEmpty();
+    if($is_mxroomid_empty)
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is empty');
+    else  
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is not empty');
 
-    $is_mxroomid_empty = false;
-    if(property_exists($user, 'field_matrix_room_id'))
-      $is_mxroomid_empty = empty($user->field_matrix_room_id);
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'jwt-link':
+          if (\Drupal::currentUser()->isAuthenticated()) {
+            $jwt_service = \Drupal::service('jwt.transcoder');
+            $alg = variable_get('jwt_link_alg', 'HS256');
+            $key = variable_get('jwt_link_key', '');
+            $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
+              $alg
+            ));
 
-      foreach ($tokens as $name => $original) {
-        switch ($name) {
-          case 'jwt-link':
-            if (\Drupal::currentUser()->isAuthenticated()) {
-              $jwt_service = \Drupal::service('jwt.transcoder');
-              $alg = variable_get('jwt_link_alg', 'HS256');
-              $key = variable_get('jwt_link_key', '');
-              $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
-                $alg
-              ));
-
-              if($is_mxroomid_empty) {
-                unset($jwt_decoded_token -> mxroomid);
-                $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
-                $url_parsed = parse_url($jwt_encoded_url_updated);
-                parse_str($url_parsed['query'], $query_params);
-                $query_params['token'] = $jwt_encoded_token_updated;
-                $new_query_string = http_build_query($query_params);
-                $url_parsed['query'] = $new_query_string;
-                $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
-              }
-
-              $link_text = variable_get('jwt_link_text', t('Visit Site...'));
-              $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
-              $replacements[$original . '_updated'] = $jwt_encoded_url;
+            if($is_mxroomid_empty) {
+              unset($jwt_decoded_token -> mxroomid);
+              $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
+              $url_parsed = parse_url($jwt_encoded_url_updated);
+              parse_str($url_parsed['query'], $query_params);
+              $query_params['token'] = $jwt_encoded_token_updated;
+              $new_query_string = http_build_query($query_params);
+              $url_parsed['query'] = $new_query_string;
+              $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
             }
-            break;
 
-          case 'jwt-token':
-            if (\Drupal::currentUser()->isAuthenticated()) {
-              $jwt_auth_service = \Drupal::service('jwt.authentication.jwt'); 
+            $link_text = variable_get('jwt_link_text', t('Visit Site...'));
+            $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
+            $replacements[$original . '_updated'] = $jwt_encoded_url;
+          }
+          break;
 
-              $jwt_encoded_token = $jwt_auth_service->generateToken();
+        case 'jwt-token':
+          if (\Drupal::currentUser()->isAuthenticated()) {
+            $jwt_auth_service = \Drupal::service('jwt.authentication.jwt'); 
 
-              $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
-              $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
+            $jwt_encoded_token = $jwt_auth_service->generateToken();
+            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_encoded_token: @jwt_encoded_token', ['@jwt_encoded_token' => print_r($jwt_encoded_token, TRUE)]);
 
-              if($is_mxroomid_empty)
-                unset($jwt_decoded_token -> mxroomid);
+            $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
+            $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
+            
+            $jwt_decoded_token -> setClaim('sub', $user->get('mail')->value);
+            $jwt_decoded_token -> setClaim('email', $user->get('mail')->value);
+            $jwt_decoded_token -> setClaim('name', $user->get('name')->value);
+            $jwt_decoded_token -> setClaim('roles', $user->getRoles());
 
-              $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
-              $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
-            }
-            break;
-          default:
-        }
+            if($is_mxroomid_empty)
+              unset($jwt_decoded_token -> mxroomid);
+            else
+              $jwt_decoded_token -> setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
+
+            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token', ['@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)]);
+
+            $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
+            $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
+          }
+          break;
+        default:
       }
+    }
   }
 
   return $replacements;
