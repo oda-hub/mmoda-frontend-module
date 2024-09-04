@@ -1,7 +1,9 @@
 <?php
 use Drupal\Core\Form\FormStateInterface;
-
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
 function mmoda_node_update($node)
 {
@@ -12,14 +14,14 @@ function mmoda_node_update($node)
 function mmoda_install($is_syncing)
 {
   \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/mmoda')
+    ->set('page.front', '/home')
     ->save();
 }
 
 function mmoda_uninstall($is_syncing)
 {
   \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/node')
+    ->set('page.front', '/')
     ->save();
 }
 
@@ -166,6 +168,20 @@ function mmoda_tokens_alter(array &$replacements, array $context) {
   }
 }
 
+
+/**
+ * Implements hook_preprocess_status_messages()
+ */
+function mmoda_preprocess_status_messages(&$variables)
+{
+  $matches = array();
+  $openid_connect_email_taken_meessage_pattern = '/^The e-mail address <em class="placeholder">(.+)<\/em> is already taken\.$/';
+  if (isset($_SESSION['messages']['error'][0]) and preg_match($openid_connect_email_taken_meessage_pattern, $_SESSION['messages']['error'][0], $matches)) {
+    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] . '</em> is already taken by an existing local account which is not connected to Github.';
+    $_SESSION['messages']['error'][1] = 'Login with this account and edit it to connect it to GitHub (<a class="open-in-modal" href="help/mmoda/connect-my-mmoda-account-github">How to ?</a>)';
+  }
+}
+
 /**
  * Implements hook_page_attachments().
  */
@@ -182,4 +198,36 @@ function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     //$form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
     $form['openid_connect_client_github_login']['#attributes']['class'] = array("nav-item", "btn", "btn-secondary", "btn-sm", "rounded-0");
   }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function mmoda_user_login($account) {
+  $current_route = Drupal::routeMatch()->getRouteName();
+  $request = Drupal::request();
+  if ($request->getRequestFormat() !== 'html') {
+    return;
+  }
+  $destination = $request->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+
+  // Accessing the site in maintenance mode.
+  if (\Drupal::state()->get('system.maintenance_mode') &&
+    !$account->hasPermission('access site in maintenance mode')) {
+      // The site is in maintenance mode and the user is not allowed in.
+      // Step out and let Drupal handle it.
+      \Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', URL::fromUserInput('/')
+        ->toString());
+    }
+
+    if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
+      // Redirect user on login.
+      $url =  '/';
+      \Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', URL::fromUserInput($url)->toString());
+    }
 }

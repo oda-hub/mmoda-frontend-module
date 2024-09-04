@@ -59,7 +59,7 @@ class NameResolveForm extends FormBase
         'callback' => '::resolveObjectNameCallback',
         'progress' => array(
           'type' => 'throbber',
-          'message' => '...'
+          'message' => ''
         )
       ),
       '#states' => array(
@@ -80,7 +80,7 @@ class NameResolveForm extends FormBase
         'callback' => '::exploreMMODAGallery',
         'progress' => array(
           'type' => 'throbber',
-          'message' => '...'
+          'message' => ''
         )
       ),
       '#states' => array(
@@ -91,7 +91,7 @@ class NameResolveForm extends FormBase
         )
       )
     );
-
+    $form['#token'] = FALSE;
     $form['#theme'] = 'mmoda_name_resolve_form';
 
     return $form;
@@ -124,11 +124,11 @@ class NameResolveForm extends FormBase
    */
   public function validateForm(array &$form, FormStateInterface $form_state)
   {
-    $title = $form_state->getValue('title');
-    if (strlen($title) < 5) {
+//     $title = $form_state->getValue('title');
+//     if (strlen($title ?? '') < 5) {
       // Set an error for the form element with a key of "title".
-      $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
-    }
+//       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
+//     }
   }
 
   /**
@@ -154,12 +154,24 @@ class NameResolveForm extends FormBase
    */
   public function resolveObjectNameCallback($form, FormStateInterface $form_state)
   {
-    error_log('Resolving name');
+//     $form_state->setRebuild(TRUE);
     $form['radec']['RA']['#value'] = 50;
     $form['radec']['DEC']['#value'] = 80;
 
     $args = $this->resolveObjectName($form_state->getValue('src_name'));
     $ajax_response = new AjaxResponse();
+    //$form_build = $this->formBuilder->getForm($form);
+
+
+    // Render the form using the renderer service, with the renderRoot method
+    //$rendered_form = \Drupal::service('renderer')->renderRoot($form_build);
+
+    // Add any attachments for the form to the response
+    //$response->addAttachments($form_build['#attached']);
+
+    // Add the ajax command to the response
+    //$response->addCommand(new PrependCommand('.modal-body', $rendered_form));
+
     $ajax_response->addCommand(new setRADecCommand($args));
 
     // Finally return the AjaxResponse object.
@@ -191,7 +203,7 @@ class NameResolveForm extends FormBase
 
     $local_name_resolver_url = $mmoda_settings->get('local_name_resolver_url');
     $name_resolver_url = $mmoda_settings->get('name_resolver_url');
-    // sleep ( 2 );
+    //sleep ( 20 );
 
     $data = array();
 
@@ -252,6 +264,7 @@ class NameResolveForm extends FormBase
   public function exploreMMODAGlleryObject($source_name)
   {
     $mmoda_settings = \Drupal::config('mmoda.settings');
+//     sleep ( 200 );
 
     $gallery_data_request = $mmoda_settings->get('gallery_data_request_url') . '?src_name=' . UrlHelper::encodePath($source_name);
 

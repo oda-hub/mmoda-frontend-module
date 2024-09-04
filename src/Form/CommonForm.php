@@ -146,11 +146,13 @@ class CommonForm extends FormBase
    */
   public function validateForm(array &$form, FormStateInterface $form_state)
   {
-    $title = $form_state->getValue('title');
-    if (strlen($title) < 5) {
-      // Set an error for the form element with a key of "title".
-      $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
-    }
+    error_log('Validating the form common ');
+
+//     $title = $form_state->getValue('title');
+//     if (strlen($title) < 5) {
+//       // Set an error for the form element with a key of "title".
+//       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
+//     }
   }
 
   /**

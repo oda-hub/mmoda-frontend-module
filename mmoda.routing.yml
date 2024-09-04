@@ -1,5 +1,5 @@
 mmoda.content:
-  path: '/mmoda'
+  path: '/home'
   defaults:
     _controller: '\Drupal\mmoda\Controller\mmodaController::content'
   requirements:

@@ -566,29 +566,30 @@ function card_title(srcname, param) {
       waitingDialog.replace();
       $('#ldialog .details').hide();
       $('#ldialog .more-less-details .fa-info-circle').css('color', '');
-      $('#ldialog .progress').addClass('progress-striped');
+      //$('#ldialog .progress').addClass('progress-striped');
       waitingDialog.setProgressBarText('');
       waitingDialog.setProgressBarTextColor('black');
       waitingDialog.disableReturnProgressLink();
       waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
       waitingDialog.hideLegend();
-
+      
       // remove any child html-progress modal window
       $("#ldialog > *").each(function() {
         var id = $(this).attr('id');
         if (id !== 'ldialog-modal-dialog')
           $(this).remove();
       });
+      var ldialog_close_button = $('#ldialog .close-button');
 
-      if (typeof mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')] !== 'undefined') {
-        mmoda_ajax_jqxhr[$(this).data('mmoda_jqxhr_index')].abort();
+      if (typeof mmoda_ajax_jqxhr[ldialog_close_button.data('mmoda_jqxhr_index')] !== 'undefined') {
+        mmoda_ajax_jqxhr[ldialog_close_button.data('mmoda_jqxhr_index')].abort();
       }
-      if ($(this).data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
+      if (ldialog_close_button.data("mmoda_gallery_close") == 1) $('#mmoda-gallery-panel').data("mmoda_gallery_close", 1);
       if ($('#ldialog-modal-dialog').data("return_progress_jqxhr")) $('#ldialog-modal-dialog').data("return_progress_jqxhr").abort();
 
-      $(this).removeData('mmoda_gallery_close');
-      $(this).removeData('mmoda_jqxhr_index');
+      ldialog_close_button.removeData('mmoda_gallery_close');
+      ldialog_close_button.removeData('mmoda_jqxhr_index');
 
     });
 
