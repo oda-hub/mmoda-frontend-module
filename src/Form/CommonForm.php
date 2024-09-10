@@ -115,6 +115,7 @@ class CommonForm extends FormBase
     );
 
     $form['#theme'] = 'mmoda_common_form';
+    $form['#attributes']['class'][] = 'mmoda-common-form';
 
     return $form;
   }

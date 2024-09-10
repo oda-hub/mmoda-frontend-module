@@ -43,13 +43,14 @@ class NameResolveForm extends FormBase
       '#required' => TRUE
     );
 
+    
     // Group submit handlers in an actions element with a key of "actions" so
     // that it gets styled correctly, and so that other modules may add actions
     // to the form. This is not required, but is convention.
     $form['actions'] = [
       '#type' => 'actions',
     ];
-
+    
     $form['actions']['resolve_src_name'] = array(
       '#type' => 'button',
       '#button_type' => 'button',
@@ -60,43 +61,44 @@ class NameResolveForm extends FormBase
         'progress' => array(
           'type' => 'throbber',
           'message' => '...'
-        )
-      ),
-      '#states' => array(
-        'enabled' => array(
-          ':input[name="src_name"]' => [
-            'filled' => TRUE
-          ]
-        )
-      )
-    );
-
-    $form['actions']['explore_src_name'] = array(
-      '#type' => 'button',
-      '#button_type' => 'button',
-      '#name' => 'explore_name',
-      '#value' => $this->t("Explore"),
-      '#ajax' => array(
-        'callback' => '::exploreMMODAGallery',
+          )
+        ),
+        '#states' => array(
+          'enabled' => array(
+            ':input[name="src_name"]' => [
+              'filled' => TRUE
+              ]
+              )
+              )
+            );
+            
+            $form['actions']['explore_src_name'] = array(
+              '#type' => 'button',
+              '#button_type' => 'button',
+              '#name' => 'explore_name',
+              '#value' => $this->t("Explore"),
+              '#ajax' => array(
+                'callback' => '::exploreMMODAGallery',
         'progress' => array(
           'type' => 'throbber',
           'message' => '...'
-        )
-      ),
+          )
+        ),
       '#states' => array(
         'enabled' => array(
           ':input[name="src_name"]' => [
             'filled' => TRUE
-          ]
-        )
-      )
-    );
-
+            ]
+            )
+            )
+          );
+          
     $form['#theme'] = 'mmoda_name_resolve_form';
-
+    $form['#attributes']['class'][] = 'name-resolver-form';
+          
     return $form;
   }
-
+  
   /**
    * Getter method for Form ID.
    *

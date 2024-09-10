@@ -811,3 +811,8 @@ input.btn:disabled {
 .modal-lg, .modal-xl {
   --bs-modal-width: 60%;
 }
+
+.name-resolver-form label,
+.mmoda-common-form label {
+  font-weight: bold
+;}
