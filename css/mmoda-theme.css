@@ -552,7 +552,7 @@ button.send-email-token-form {
 
 .modal-footer .notice-progress-container {
   display: none;
-  width: 70%;
+  width: 100%;
   float: left;
   text-align: left;
   font-size: 13px;
