@@ -39,21 +39,20 @@ function card_title(srcname, param) {
   }
 
   function AJAX_submit_call() {
-    //    AJAX_call_get_token().done(
-    //      function(data, textStatus, jqXHR) {
-    //        if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
-    //          current_ajax_call_params.currentFormData.append('token', data.token);
-    //        }
-
-    AJAX_call();
-    //      }).fail(function(jqXHR, textStatus, errorThrown) {
-    //        console.log('Error in requesting the user token:');
-    //        console.log('textStatus : ' + textStatus);
-    //        console.log('errorThrown :' + errorThrown);
-    //        console.log('jqXHR');
-    //        console.log(jqXHR);
-    //        AJAX_call();
-    //      });
+    AJAX_call_get_token().done(
+      function(data, textStatus, jqXHR) {
+        if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
+          current_ajax_call_params.currentFormData.append('token', data.token);
+        }
+        AJAX_call();
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('Error in requesting the user token:');
+        console.log('textStatus : ' + textStatus);
+        console.log('errorThrown :' + errorThrown);
+        console.log('jqXHR');
+        console.log(jqXHR);
+        AJAX_call();
+      });
   }
 
   function response_card_mismatch(data) {

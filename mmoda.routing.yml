@@ -4,3 +4,9 @@ mmoda.content:
     _controller: '\Drupal\mmoda\Controller\mmodaController::content'
   requirements:
     _permission: 'access content'
+mmoda.get_token:
+  path: '/get_token'
+  defaults:
+    _controller: '\Drupal\mmoda\Controller\mmodaController::getToken'
+  requirements:
+    _permission: 'access content'

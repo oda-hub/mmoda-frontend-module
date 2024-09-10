@@ -7,6 +7,9 @@ namespace Drupal\mmoda\Controller;
 // use Drupal\mmoda\Form\CommonForm;
 // use Drupal\mmoda_isgri\Form\MmodaIsgriForm;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\RfcLogLevel;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 /**
  * @file
  * Contains \Drupal\mmoda\Controller\mmodaController.
@@ -20,6 +23,40 @@ class mmodaController extends ControllerBase
   protected function getModuleName()
   {
     return 'mmoda';
+  }
+
+  public function getToken()
+  {
+    $output = [];
+    if (\Drupal::currentUser()->isAuthenticated()) {
+      $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+      $maxroomid_field = $user->get('field_matrix_room_id');
+      $is_mxroomid_empty = $maxroomid_field->isEmpty();
+      $jwt_auth_service = \Drupal::service('jwt.authentication.jwt');
+
+      $jwt_encoded_token = $jwt_auth_service->generateToken();
+
+      $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
+      $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
+
+      $jwt_decoded_token -> setClaim('sub', $user->get('mail')->value);
+      $jwt_decoded_token -> setClaim('email', $user->get('mail')->value);
+      $jwt_decoded_token -> setClaim('name', $user->get('name')->value);
+      $jwt_decoded_token -> setClaim('roles', $user->getRoles());
+
+      if($is_mxroomid_empty)
+        unset($jwt_decoded_token -> mxroomid);
+      else
+        $jwt_decoded_token -> setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
+
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token', ['@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)]);
+
+      $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
+  
+      return new JsonResponse(array('token' => $jwt_encoded_token_updated));
+    }
+    else
+      return (drupal_json_output(array('error' => 'User not authenticated')));
   }
 
   public function content()
