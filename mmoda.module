@@ -3,26 +3,26 @@ use Drupal\Core\Form\FormStateInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Drupal\Core\Logger\RfcLogLevel;
-
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 function mmoda_node_update($node)
 {
   error_log("updated node\n" . print_r($node->id(), true));
-  //   error_log("updated node\n");
 }
 
 function mmoda_install($is_syncing)
 {
   \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/mmoda')
+    ->set('page.front', '/home')
     ->save();
 }
 
 function mmoda_uninstall($is_syncing)
 {
   \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/node')
+    ->set('page.front', '/')
     ->save();
 }
 
@@ -75,14 +75,8 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
         case 'logo-url':
           $theme = \Drupal::config('system.theme')->get('default');
           $host = \Drupal::request()->getSchemeAndHttpHost();
-
           $logo_url= $host.theme_get_setting('logo', $theme)['url'];
-          //$theme = \Drupal::theme()->getDefault();
-          //global $base_url;
-          //$logo_url= $base_url.'/'.$theme->getLogo();
-
           $replacements[$original] = $logo_url;
-          error_log('Logo:'.$logo_url);
           break;
 
         default:
@@ -98,7 +92,7 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
     $is_mxroomid_empty = $maxroomid_field->isEmpty();
     if($is_mxroomid_empty)
       \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is empty');
-    else  
+    else
       \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is not empty');
 
     foreach ($tokens as $name => $original) {
@@ -131,14 +125,14 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
 
         case 'jwt-token':
           if (\Drupal::currentUser()->isAuthenticated()) {
-            $jwt_auth_service = \Drupal::service('jwt.authentication.jwt'); 
+            $jwt_auth_service = \Drupal::service('jwt.authentication.jwt');
 
             $jwt_encoded_token = $jwt_auth_service->generateToken();
             \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_encoded_token: @jwt_encoded_token', ['@jwt_encoded_token' => print_r($jwt_encoded_token, TRUE)]);
 
             $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
             $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
-            
+
             $jwt_decoded_token -> setClaim('sub', $user->get('mail')->value);
             $jwt_decoded_token -> setClaim('email', $user->get('mail')->value);
             $jwt_decoded_token -> setClaim('name', $user->get('name')->value);
@@ -174,6 +168,20 @@ function mmoda_tokens_alter(array &$replacements, array $context) {
   }
 }
 
+
+/**
+ * Implements hook_preprocess_status_messages()
+ */
+function mmoda_preprocess_status_messages(&$variables)
+{
+  $matches = array();
+  $openid_connect_email_taken_meessage_pattern = '/^The e-mail address <em class="placeholder">(.+)<\/em> is already taken\.$/';
+  if (isset($_SESSION['messages']['error'][0]) and preg_match($openid_connect_email_taken_meessage_pattern, $_SESSION['messages']['error'][0], $matches)) {
+    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] . '</em> is already taken by an existing local account which is not connected to Github.';
+    $_SESSION['messages']['error'][1] = 'Login with this account and edit it to connect it to GitHub (<a class="open-in-modal" href="help/mmoda/connect-my-mmoda-account-github">How to ?</a>)';
+  }
+}
+
 /**
  * Implements hook_page_attachments().
  */
@@ -187,24 +195,55 @@ function mmoda_page_attachments(array &$attachments)
 function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $open_id_form_id = 'openid-connect-login-form';
   if(str_starts_with($form['#id'], $open_id_form_id)) {
-    //$form['openid_connect_client_github_login']['#value'] = 'Sign in with GitHub';
     $form['openid_connect_client_github_login']['#attributes']['class'] = array("nav-item", "btn", "btn-secondary", "btn-sm", "rounded-0");
   }
   switch ($form_id) {
     case 'webform_submission_your_api_token_add_form':
       $form['actions']['close'] = array(
-        '#type' => 'submit',
-        '#access' => TRUE,
-        '#value' => t('Close'),
-        '#weight' => 60,
-        '#attributes' => array(
-          'class' => array(
-            'btn',
-            'btn-primary',
-            'close-copy-api-token-form'
-          )
+      '#type' => 'submit',
+      '#access' => TRUE,
+      '#value' => t('Close'),
+      '#weight' => 60,
+      '#attributes' => array(
+      'class' => array(
+      'btn',
+      'btn-primary',
+      'close-copy-api-token-form'
         )
+      )
       );
       break;
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function mmoda_user_login($account) {
+  $current_route = Drupal::routeMatch()->getRouteName();
+  $request = Drupal::request();
+  if ($request->getRequestFormat() !== 'html') {
+    return;
+  }
+  $destination = $request->query->get('destination');
+  if ($destination && $destination != '/user/login') {
+    return;
+  }
+
+  // Accessing the site in maintenance mode.
+  if (\Drupal::state()->get('system.maintenance_mode') &&
+    !$account->hasPermission('access site in maintenance mode')) {
+      // The site is in maintenance mode and the user is not allowed in.
+      // Step out and let Drupal handle it.
+      \Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', URL::fromUserInput('/')
+        ->toString());
+    }
+
+    if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
+      // Redirect user on login.
+      $url =  '/';
+      \Drupal::service('request_stack')
+      ->getCurrentRequest()->query->set('destination', URL::fromUserInput($url)->toString());
     }
 }

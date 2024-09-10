@@ -324,7 +324,7 @@ function get_current_date_time() {
 
 function get_div_spinner() {
   var spinner_div = (function($) {
-    let inner_div = $('<div>').addClass('progress-bar progress-bar-striped ').css("width", '100%');
+    let inner_div = $('<div>').addClass('progress-bar progress-bar-striped progress-bar-animated ').css("width", '100%');
     let outer_div = $('<div>').addClass('renku-progress progress active').css("width", '100%');
     outer_div.append(inner_div);
 
@@ -407,7 +407,7 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.progress').show();
             $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
             if (settings.progressType) {
-              $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType + ' progress-bar-striped');
+              $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType + ' progress-bar-striped progress-bar-animated');
             }
           }
 
@@ -503,7 +503,7 @@ function get_waitingDialog($modal_dialog) {
             this.setProgressBarBackgroundcolor('green');
             this.setProgressBarTextColor('white');
             $dialog.find('.more-less-details.enabled .fa-info-circle').css('color', 'white');
-            $dialog.find('.progress-bar').removeClass('progress-bar-striped');
+            $dialog.find('.progress-bar').removeClass('progress-bar-striped progress-bar-animated');
           }
         },
         setProgressBarWidthPercentage: function(width) {
@@ -931,12 +931,11 @@ function get_waitingDialog($modal_dialog) {
         (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name')) {
         if (request.statusText == 'abort') {
           if (settings.extraData._triggering_element_name == 'resolve_name')
-            var mbutton = 'button#edit-resolve-src-name';
+            var mbutton = 'input#edit-resolve-src-name';
           else if (settings.extraData._triggering_element_name == 'explore_name')
-            var mbutton = 'button#edit-explore-src-name';
-
+            var mbutton = 'input#edit-explore-src-name';
           $(mbutton).prop('disabled', false);
-          $('.ajax-progress', mbutton).remove();
+          $('.ajax-progress', $(mbutton).parent()).remove();
         }
 
         if (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name') {
