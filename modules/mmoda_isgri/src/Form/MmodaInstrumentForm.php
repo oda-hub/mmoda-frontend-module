@@ -83,11 +83,11 @@ class MmodaInstrumentForm extends FormBase
     $form['max_pointings'] = array(
       '#type' => 'textfield',
       '#title' => t("Maximum number of ScWs"),
-      '#description' => t("randomly selected in the time range"),
       '#size' => 10,
       '#default_value' => $instrument_settings->get('max_pointings'),
       '#attributes' => array(
-        'data-fv-integer' => 'true'
+        'data-fv-integer' => 'true',
+        'title' => t('Randomly selected in the time range')
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -131,12 +131,13 @@ class MmodaInstrumentForm extends FormBase
     $form['user_scw_list_file'] = array(
       '#type' => 'file',
       '#title' => t("ScWs file"),
-      '#description' => t('An ASCII file, one ScW per line.'),
+      // '#description' => t('An ASCII file, one ScW per line.'),
       '#attributes' => array(
         'name' => 'user_scw_list_file',
         'class' => array(
           'user_scw_list_file'
-        )
+        ),
+        'title' => t('An ASCII file, one ScW per line.'),
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -170,34 +171,38 @@ class MmodaInstrumentForm extends FormBase
     $form['E1_keV'] = array(
       '#type' => 'textfield',
       '#title' => t("Energy Min"),
-      '#description' => t("The minimum of the energy band."),
+      '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E1_keV'),
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'data-fv-vcheck-e1kev' => 'true'
+        'data-fv-vcheck-e1kev' => 'true',
+        'title' => t('The minimum of the energy band.'),
       )
     );
 
     $form['E2_keV'] = array(
       '#type' => 'textfield',
       '#title' => t("Energy Max"),
-      '#description' => t("The maximum of the energy band."),
+      '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E2_keV'),
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'data-fv-vcheck-e2kev' => 'true'
+        'data-fv-vcheck-e2kev' => 'true',
+        'title' => t('The maximum of the energy band.'),
       )
     );
 
     $form['query_type'] = array(
       '#type' => 'select',
       '#title' => t("Query Type"),
-      '#description' => t("Select query type"),
       '#default_value' => $instrument_settings->get('query_type'),
+      '#attributes' => array(
+        'title' => t("Select query type"),
+      ),
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
@@ -207,19 +212,19 @@ class MmodaInstrumentForm extends FormBase
     $form['detection_threshold'] = array(
       '#type' => 'textfield',
       '#title' => t("Detection Threshold"),
-      '#description' => t("Output catalog significance threshold"),
       '#default_value' => 7.0,
       '#attributes' => array(
-        'data-fv-numeric' => 'true'
+        'data-fv-numeric' => 'true',
+        'title' => t("Select query type"),
       )
     );
 
     $form['product_type'] = array(
       '#type' => 'radios',
       '#title' => t("Product Type"),
-      '#description' => t("Select product type"),
       '#attributes' => array(
-        'name' => $mform_id . 'product_type'
+        'name' => $mform_id . 'product_type',
+        'title' => t("Select product type"),
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
@@ -232,7 +237,6 @@ class MmodaInstrumentForm extends FormBase
     $form['time_bin'] = array(
       '#type' => 'textfield',
       '#title' => t("Time bin"),
-      '#description' => t("Minimum value is 20 seconds."),
       '#default_value' => $instrument_settings->get('time_bin'),
       '#states' => array(
         'visible' => array(
@@ -252,7 +256,8 @@ class MmodaInstrumentForm extends FormBase
         'data-fv-numeric' => 'true',
         'data-fv-numeric___message' => 'Please enter a valid float number',
         'data-fv-vcheck-timebin' => 'true',
-        'data-mmoda-time-bin-min' => 20
+        'data-mmoda-time-bin-min' => 20,
+        'title' => t('Minimum value is 20 seconds.')
       )
     );
 
@@ -288,12 +293,11 @@ class MmodaInstrumentForm extends FormBase
     $form['user_catalog_file'] = array(
       '#type' => 'file',
       '#title' => t("User catalog"),
-      '#description' => t(
-        'If needed, create a custom catalog following one of the templates : <a href="' . $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' .
-        $module_path . '/data/catalog.fits" download>FITS</a>.'),
       '#attributes' => array(
         'name' => 'user_catalog_file'
-      )
+      ),
+      '#suffix' => t('<div>If needed, create a custom catalog following one of the templates : <a href="' .
+                  $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' . $module_path . '/data/catalog.fits" download>FITS</a>.</div>'),
     );
     $form['#theme'] = 'mmoda_isgri_form';
 

@@ -46,9 +46,9 @@ class MmodaInstrumentForm extends FormBase
     $form['product_type'] = array(
       '#type' => 'radios',
       '#title' => t("Product Type"),
-      '#description' => t("Select product type"),
       '#attributes' => array(
-        'name' => $mform_id . 'product_type'
+        'name' => $mform_id . 'product_type',
+        'title' => t("Select product type")
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
@@ -59,44 +59,47 @@ class MmodaInstrumentForm extends FormBase
     $form['E1_keV'] = array(
       '#type' => 'textfield',
       '#title' => t("Energy Min"),
-      '#description' => t("The minimum of the energy band."),
+      '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E1_keV'),
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'data-fv-vcheck-e1kev' => 'true'
+        'data-fv-vcheck-e1kev' => 'true',
+        'title' => t("The minimum of the energy band")
       )
     );
 
     $form['E2_keV'] = array(
       '#type' => 'textfield',
       '#title' => t("Energy Max"),
-      '#description' => t("The maximum of the energy band."),
+      '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E2_keV'),
       '#required' => TRUE,
       '#size' => 10,
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'data-fv-vcheck-e2kev' => 'true'
+        'data-fv-vcheck-e2kev' => 'true',
+        'title' => t("The maximum of the energy band")
       )
     );
 
     $form['query_type'] = array(
       '#type' => 'select',
       '#title' => t("Query Type"),
-      '#description' => t("Select query type"),
       '#default_value' => $instrument_settings->get('query_type'),
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
+      ),
+      '#attributes' => array(
+        'title' => t("Select query type"),
       )
     );
 
     $form['time_bin'] = array(
       '#type' => 'textfield',
       '#title' => t("Time bin"),
-      '#description' => t("Minimum value is 20 seconds."),
       '#default_value' => $instrument_settings->get('time_bin'),
       '#states' => array(
         'visible' => array(
@@ -113,7 +116,8 @@ class MmodaInstrumentForm extends FormBase
         )
       ),
       '#attributes' => array(
-        'data-fv-numeric' => 'true'
+        'data-fv-numeric' => 'true',
+        'title' => t("Minimum value is 20 seconds."),
       )
     );
 
