@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_polar_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_polar_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}

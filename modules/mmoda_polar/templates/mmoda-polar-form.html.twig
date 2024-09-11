@@ -1,0 +1,41 @@
+<div class="block-rows-sep">
+{{ form.instrument }}
+<div class="row mmoda-form-ids">
+    {{ form.form_build_id }}
+    {{ form.form_id }}
+</div>
+
+<div class="row underline pb-2">
+  <div class="row">
+    {{ form.product_type }}
+  </div>
+</div>
+
+<div class="row underline pb-2">
+  <div class="col-md-6">
+    {{ form.E1_keV }}
+  </div>
+  <div class="col-md-6">
+    {{ form.E2_keV }}
+  </div>
+</div>
+
+<div class="row underline pb-2">
+  <div class="col-md-6">
+    {{ form.query_type }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-5">
+    {{ form.time_bin }}
+  </div>
+  <div class="col-md-4">
+    {{ form.time_bin_format }}
+  </div>
+</div>
+
+<div class="actions mt-3">
+  {{ form.submit }}
+</div>
+</div>

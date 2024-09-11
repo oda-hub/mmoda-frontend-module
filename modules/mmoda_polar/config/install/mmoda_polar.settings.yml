@@ -1,0 +1,25 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: polar
+messenger: Gamma-rays
+title: Polar
+
+
+enabled: true
+product_type: polar_lc
+E1_keV: 20.0
+E2_keV: 100.0
+query_type: Real
+time_bin: 2
+time_bin_format: sec
+weight: 40
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/polar
+acknowledgement: >
+  If you use results or material from this instrument in our application, MMODA, do not forget to quote our paper:
+  <br> <a href="https://arxiv.org/abs/2002.12895" target="_blank">A. Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno, S.Paltani
+  <br> An online data analysis system of INTEGRAL telescope</a>
