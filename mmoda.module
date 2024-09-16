@@ -54,12 +54,26 @@ function mmoda_theme($existing, $type, $theme, $path)
 
 function mmoda_token_info() : array {
   $info = [];
-
-  $info['tokens']['site']['logo-url'] = [
+  $types['jwt'] = [
+    'name' => t("JWT token type"),
+    'description' => t("JWT token"),
+  ];
+  $jwt_token['jwt-token'] = [
+    'name' => t("JWT token"),
+    'description' => t("Current JWT token."),
+  ];
+  $logo_token['logo-url'] = [
     'name' => 'Site logo',
     'description' => t('Current theme site logo')
   ];
 
+  $info = [
+    'types' => $types,
+    'tokens' => [
+      'jwt' => $jwt_token,
+      'site' => $logo_token,
+    ],
+  ];
   return $info;
 }
 
