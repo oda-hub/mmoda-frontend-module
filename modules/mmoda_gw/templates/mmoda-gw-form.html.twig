@@ -1,0 +1,64 @@
+<div class="block-rows-sep">
+{{ form.instrument }}
+<div class="row mmoda-form-ids">
+    {{ form.form_build_id }}
+    {{ form.form_id }}
+</div>
+
+<div class="row underline pb-2">
+  <div class="row">
+    {{ form.detector }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-6">
+    {{ form.query_type }}
+  </div>
+</div>
+
+<div class="row underline pb-2">
+  <div class="col-md-6">
+    {{ form.product_type }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-6">
+    {{ form.do_cone_search }}
+  </div>
+  <div class="col-md-6">
+    {{ form.contour_levels }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-6">
+    {{ form.whiten }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-6">
+    {{ form.fmin }}
+  </div>
+  <div class="col-md-6">
+    {{ form.fmax }}
+  </div>
+</div>
+
+<div class="row pb-2">
+  <div class="col-md-6">
+    {{ form.qmin }}
+  </div>
+  <div class="col-md-6">
+    {{ form.qmax }}
+  </div>
+</div>
+
+<div class="row underline pb-2"></div>
+
+<div class="actions mt-3">
+  {{ form.submit }}
+</div>
+</div>

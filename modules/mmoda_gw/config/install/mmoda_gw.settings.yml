@@ -1,0 +1,31 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: gw
+messenger: Gravitational waves
+title: Ligo/VIRGO
+
+
+enabled: true
+product_type: gw_skymap_image
+query_type: Real
+whiten: 1
+qmin: 4
+qmax: 64
+fmin: 30
+fmax: 400
+do_cone_search: 0
+detector: H1
+radius: 10
+level_threshold: 10
+contour_levels: 50,90
+weight: 70
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/gw
+acknowledgement: >
+  If you use results or material from this instrument in our application, MMODA, do not forget to quote our paper:
+  <br> <a href="https://arxiv.org/abs/2002.12895" target="_blank">A. Neronov, V. Savchenko, A. Tramacere, M. Meharga, C. Ferrigno, S.Paltani
+  <br> An online data analysis system of INTEGRAL telescope</a>
