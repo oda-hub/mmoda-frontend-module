@@ -117,7 +117,6 @@ class MmodaInstrumentForm extends FormBase
     $form['contour_levels'] = array(
       '#type' => 'textfield',
       '#title' => t("Contour levels"),
-      '#description' => t("Comma-separated list of levels"),
       '#default_value' => $instrument_settings->get('contour_levels'),
       '#states' => array(
         'visible' => array(
@@ -132,6 +131,7 @@ class MmodaInstrumentForm extends FormBase
         )
       ),
       '#attributes' => array(
+        'title' => t("Comma-separated list of levels"),
         'data-bv-notempty' => 'true',
         'data-bv-regexp' => 'true',
         'data-bv-regexp-regexp' => '^[0-9]{1,2}(,[0-9]{1,2})*$',
@@ -207,7 +207,6 @@ class MmodaInstrumentForm extends FormBase
     $form['whiten'] = array(
       '#type' => 'radios',
       '#title' => t("Whiten?"),
-      '#description' => t("Should the strain data be whiten?"),
       '#attributes' => array(
         'name' => $mform_id . 'whiten'
       ),
@@ -228,12 +227,14 @@ class MmodaInstrumentForm extends FormBase
            )
           )
       ),
+      '#attributes' => array(
+        'title' => t("Should the strain data be whiten?"),
+      )
     );
   
     $form['qmin'] = array(
       '#type' => 'textfield',
       '#title' => t("Lower Q"),
-      '#description' => t("Lower bound of Qs interval"),
       '#default_value' => $instrument_settings->get('qmin'),
       '#states' => array(
         'visible' => array(
@@ -251,13 +252,13 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
+        'title' => t("Lower bound of Qs interval"),
       )
     );
   
     $form['qmax'] = array(
       '#type' => 'textfield',
       '#title' => t("Upper Q"),
-      '#description' => t("Upper bound of Qs interval"),
       '#default_value' => $instrument_settings->get('qmax'),
       '#states' => array(
         'visible' => array(
@@ -275,13 +276,13 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
+        'title' => t("Upper bound of Qs interval"),
       )
     );
   
     $form['fmin'] = array(
       '#type' => 'textfield',
       '#title' => t("Lower frequency"),
-      '#description' => t("Lower frequency to bandpass"),
       '#default_value' => $instrument_settings->get('fmin'),
       '#states' => array(
         'visible' => array(
@@ -299,6 +300,7 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
+        'title' => t("Lower frequency to bandpass"),
       ),
       '#field_suffix' => t('Hz'),
     );
@@ -306,7 +308,6 @@ class MmodaInstrumentForm extends FormBase
     $form['fmax'] = array(
       '#type' => 'textfield',
       '#title' => t("Upper frequency"),
-      '#description' => t("Upper frequency to bandpass"),
       '#default_value' => $instrument_settings->get('fmax'),
       '#states' => array(
         'visible' => array(
@@ -324,6 +325,7 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
+        'title' => t("Upper frequency to bandpass"),
       ),
       '#field_suffix' => t('Hz'),
     );
