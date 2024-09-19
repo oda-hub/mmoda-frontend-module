@@ -750,8 +750,8 @@ function card_title(srcname, param) {
       } else {
         // Show catalog
         var catalog = clone(catalog_parent_card.data('catalog'));
-        catalog_offset.top -= parent_catalog_offset.top;
-        catalog_offset.left -= parent_catalog_offset.left;
+        catalog_offset.top = parent_catalog_offset.top;
+        catalog_offset.left = e.pageX - parent_catalog_offset.left;
         display_catalog(catalog, '#' + catalog_parent_card.attr('id'), catalog_offset, showUseCatalog);
       }
     });
@@ -776,8 +776,8 @@ function card_title(srcname, param) {
       } else {
         // Show log
         var datetime = $(this).attr('data-datetime');
-        log_offset.top -= parent_log_offset.top;
-        log_offset.left -= parent_log_offset.left;
+        log_offset.top = parent_log_offset.top;
+        log_offset.left = e.pageX - parent_log_offset.left;
 
         display_log(log, '#' + log_parent_card.attr('id'), datetime, log_offset);
       }
@@ -797,8 +797,8 @@ function card_title(srcname, param) {
       } else {
         // Show api_code
         var datetime = $(this).attr('data-datetime');
-        api_code_offset.top -= parent_api_code_offset.top;
-        api_code_offset.left -= parent_api_code_offset.left;
+        api_code_offset.top = parent_api_code_offset.top;
+        api_code_offset.left = e.pageX - parent_api_code_offset.left;
 
         display_api_code(api_code_parent_card.data('api_code'), '#' + api_code_parent_card.attr('id'), datetime, api_code_offset);
       }
