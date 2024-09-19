@@ -765,7 +765,7 @@ function card_title(srcname, param) {
       e.preventDefault();
       var log_parent_card = $(this).closest('.card');
       var log = log_parent_card.data('log');
-      var parent_log_offset = $(this).closest(".instrument-card").offset();
+      var instrument_card_offset = $(this).closest(".instrument-card").offset();
 
       var log_offset = {};
       log_offset.top = e.pageY;
@@ -776,8 +776,8 @@ function card_title(srcname, param) {
       } else {
         // Show log
         var datetime = $(this).attr('data-datetime');
-        log_offset.top = parent_log_offset.top;
-        log_offset.left = e.pageX - parent_log_offset.left;
+        log_offset.top = instrument_card_offset.top;
+        log_offset.left = e.pageX - instrument_card_offset.left;
 
         display_log(log, '#' + log_parent_card.attr('id'), datetime, log_offset);
       }
@@ -798,7 +798,7 @@ function card_title(srcname, param) {
         // Show api_code
         var datetime = $(this).attr('data-datetime');
         api_code_offset.top = api_code_parent_card_offest.top;
-        api_code_offset.left = api_code_parent_card_offest.left;
+        api_code_offset.left = e.pageX - api_code_parent_card_offest.left;
 
         display_api_code(api_code_parent_card.data('api_code'), '#' + api_code_parent_card.attr('id'), datetime, api_code_offset);
       }
@@ -949,9 +949,9 @@ function card_title(srcname, param) {
 
     $("body").on('click', '.result-card .show-query-parameters', function(e) {
       e.preventDefault();
+      var instrument_card_offset = $(this).closest(".instrument-card").offset();
       var query_parameters_parent_card = $(this).closest('.result-card');
       var query_parameters = query_parameters_parent_card.data('analysis_parameters');
-      var parent_query_parameters_offset = $(".instrument-card.active").offset();
       var query_parameters_offset = {};
       query_parameters_offset.top = e.pageY;
       query_parameters_offset.left = e.pageX;
@@ -961,8 +961,8 @@ function card_title(srcname, param) {
       } else {
         // Show query_parameters
         var datetime = $(this).attr('data-datetime');
-        query_parameters_offset.top -= parent_query_parameters_offset.top;
-        query_parameters_offset.left -= parent_query_parameters_offset.left;
+        query_parameters_offset.top = instrument_card_offset.top;
+        query_parameters_offset.left = e.pageX - instrument_card_offset.left;
 
         display_query_parameters(query_parameters, '#' + query_parameters_parent_card.attr('id'), datetime, query_parameters_offset);
       }
@@ -1543,8 +1543,11 @@ function card_title(srcname, param) {
 
     var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-catalog', datetime);
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Image catalog');
 
+    if (typeof(source_name) === 'undefined')
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Image catalog');
+    else
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Image catalog');
 
     var catalog_card = $('#' + card_ids.card_id);
     var catalog_help_text = '<div class="help-text">To select multiple rows :<ol>' +
@@ -1758,8 +1761,13 @@ function card_title(srcname, param) {
       log_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Log');
+    if (typeof(source_name) === 'undefined')
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Log');
+    else
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Log');
     $('#' + card_ids.card_id).addClass('mmoda-log');
+    $('#' + card_ids.card_id).find('.return-progress-link').hide();
+    $('#' + card_ids.card_id).find('.modal-controls').hide();
     $('#' + card_ids.card_id).highlight_result_card(offset);
   }
 
@@ -1799,7 +1807,10 @@ function card_title(srcname, param) {
     });
 
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' -  Query parameters');
+    if (typeof(source_name) === 'undefined')
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Query parameters');
+    else
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Query parameters');
     $('#' + card_ids.card_id).addClass('mmoda-query_parameters');
     $('#' + card_ids.card_id).highlight_result_card(offset);
 
