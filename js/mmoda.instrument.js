@@ -786,7 +786,7 @@ function card_title(srcname, param) {
     $("body").on('click', '.result-card .api-code', function(e) {
       e.preventDefault();
       var api_code_parent_card = $(this).closest('.card');
-      var parent_api_code_offset = $(this).closest(".instrument-card").offset();
+      var api_code_parent_card_offest = api_code_parent_card.offset();
 
       var api_code_offset = {};
       api_code_offset.top = e.pageY;
@@ -797,8 +797,8 @@ function card_title(srcname, param) {
       } else {
         // Show api_code
         var datetime = $(this).attr('data-datetime');
-        api_code_offset.top = parent_api_code_offset.top;
-        api_code_offset.left = e.pageX - parent_api_code_offset.left;
+        api_code_offset.top = api_code_parent_card_offest.top;
+        api_code_offset.left = api_code_parent_card_offest.left;
 
         display_api_code(api_code_parent_card.data('api_code'), '#' + api_code_parent_card.attr('id'), datetime, api_code_offset);
       }
@@ -1702,7 +1702,10 @@ function card_title(srcname, param) {
       api_code_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - API code');
+    if (typeof(source_name) === 'undefined')
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('API code');
+    else
+      $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - API code');
     $('#' + card_ids.card_id).addClass('mmoda-api-code');
     $('#' + card_ids.card_id).highlight_result_card(offset);
     hljs.highlightAll();

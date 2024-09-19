@@ -814,5 +814,9 @@ input.btn:disabled {
 
 .name-resolver-form label,
 .mmoda-common-form label {
-  font-weight: bold
-;}
+  font-weight: bold;
+}
+
+.mmoda-api-code {
+  max-width: 55% !important;
+}
