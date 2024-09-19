@@ -739,7 +739,7 @@ function card_title(srcname, param) {
       if (catalog_parent_card.hasClass('result-card')) {
         showUseCatalog = true;
       }
-      var parent_catalog_offset = $(".instrument-card.active").offset();
+      var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
       var catalog_offset = {};
       catalog_offset.top = e.pageY;
       catalog_offset.left = e.pageX;
@@ -750,8 +750,8 @@ function card_title(srcname, param) {
       } else {
         // Show catalog
         var catalog = clone(catalog_parent_card.data('catalog'));
-        catalog_offset.top = parent_catalog_offset.top;
-        catalog_offset.left = e.pageX - parent_catalog_offset.left;
+        catalog_offset.top = instrument_card_offset.top;
+        catalog_offset.left = e.pageX - instrument_card_offset.left;
         display_catalog(catalog, '#' + catalog_parent_card.attr('id'), catalog_offset, showUseCatalog);
       }
     });
@@ -765,7 +765,7 @@ function card_title(srcname, param) {
       e.preventDefault();
       var log_parent_card = $(this).closest('.card');
       var log = log_parent_card.data('log');
-      var instrument_card_offset = $(this).closest(".instrument-card").offset();
+      var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
 
       var log_offset = {};
       log_offset.top = e.pageY;
@@ -949,7 +949,7 @@ function card_title(srcname, param) {
 
     $("body").on('click', '.result-card .show-query-parameters', function(e) {
       e.preventDefault();
-      var instrument_card_offset = $(this).closest(".instrument-card").offset();
+      var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
       var query_parameters_parent_card = $(this).closest('.result-card');
       var query_parameters = query_parameters_parent_card.data('analysis_parameters');
       var query_parameters_offset = {};
