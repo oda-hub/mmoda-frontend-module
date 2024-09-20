@@ -715,7 +715,8 @@ button.renku-publish {
 .mmoda-loader-text {
   width: 100px;
   height: 20px;
-  padding-left: 2em;
+  padding-left: 1.5em;
+  font-size: smaller;
 }
 
 .js9-iframe {
