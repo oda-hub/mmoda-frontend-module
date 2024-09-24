@@ -1,0 +1,7 @@
+name: MMODA LegacySurvey
+description: Astro Online Data Analysis module for LegacySurvey
+type: module
+version: '1.0'
+core_version_requirement: '>=8'
+dependencies:
+  - mmoda:mmoda_integral
