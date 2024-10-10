@@ -99,6 +99,15 @@ function panel_title(srcname, param) {
     });
   }
 
+  function isValidURL(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+  }
+
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
@@ -1607,22 +1616,34 @@ function panel_title(srcname, param) {
         all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
+          // if the form element type is file, we should check if it is part of file input/url element:
+          // it has to be checked if it exists an element with the same name in the form and "_type" appended to it
+          let type_selector = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"]`);
           if ($(this).attr('type') == 'file') {
-            make_request_error = true;
-            make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
+            if (type_selector.length == 0) {
+              make_request_error = true;
+              make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
+            }
           } else if ($(this).attr('type') == 'radio') {
-            let url_request_value = request_parameters[field_name];
-            if($(this).val() == 0 || $(this).val() == 1) {
-              if(request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
-                url_request_value = 1;
-              } else if(request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
-                url_request_value = 0;
+            if (type_selector.length == 0) {
+              let url_request_value = request_parameters[field_name];
+              if($(this).val() == 0 || $(this).val() == 1) {
+                if(request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
+                  url_request_value = 1;
+                } else if(request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
+                  url_request_value = 0;
+                }
+              }
+              if ($(this).val() == url_request_value) {
+                $(this).click();
               }
             }
-            if ($(this).val() == url_request_value) {
-              $(this).click();
-            }
           } else {
+            if (type_selector.length > 0) {
+              let type_selector_url = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"][value="url"]`);
+              if (type_selector_url.length > 0)
+                type_selector_url.click();
+            }
             try {
               $(this).val(request_parameters[field_name]);
             }
