@@ -1637,12 +1637,6 @@ function panel_title(srcname, param) {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
 
-        // check if it's part of a multivalued-value input to select
-        if ($(this).parent().parent().hasClass('multivalued-value')) {
-          var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
-          field_name = $(this).attr('name').replace(re_multivalued_field, '');
-        }
-
         // all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
