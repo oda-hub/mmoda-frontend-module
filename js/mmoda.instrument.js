@@ -1601,9 +1601,38 @@ function panel_title(srcname, param) {
       make_request_error = false;
       var make_request_error_messages = [];
       // var all_form_inputs = [];
+
+      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form') .each(function() {
+        // get name of the first select element
+        var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
+        var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
+        if (request_parameters.hasOwnProperty(field_name)) {
+          var field_values = request_parameters[field_name];
+          let parsed_field_obj = JSON.parse(field_values);
+          let first_key = Object.keys(JSON.parse(request_parameters[field_name]))[0];
+          if(parsed_field_obj[first_key].length > 0) {
+            // add as many multivalued fields as needed
+            let add_multivalued_button = $(this).find('.add-multivalued-element');
+            if (add_multivalued_button.length > 0) {
+              // for (let i = 0; i < parsed_field_obj[first_key].length - 1; i++)
+              //   insert_new_multivalued_field(this);
+              for (let i = 0; i < parsed_field_obj[first_key].length - 1; i++)
+                add_multivalued_button.click();
+            }
+          }
+        }
+      });
+
       $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
+
+        // check if it's part of a multivalued-value input to select
+        if ($(this).parent().parent().hasClass('multivalued-value')) {
+          var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
+          field_name = $(this).attr('name').replace(re_multivalued_field, '');
+        }
+
         // all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
