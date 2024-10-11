@@ -99,15 +99,6 @@ function panel_title(srcname, param) {
     });
   }
 
-  function isValidURL(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (_) {
-        return false;
-    }
-  }
-
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
       function(data, textStatus, jqXHR) {
