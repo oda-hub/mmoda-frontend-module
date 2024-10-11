@@ -1613,12 +1613,9 @@ function panel_title(srcname, param) {
           if(parsed_field_obj[first_key].length > 0) {
             // add as many multivalued fields as needed
             let add_multivalued_button = $(this).find('.add-multivalued-element');
-            if (add_multivalued_button.length > 0) {
-              // for (let i = 0; i < parsed_field_obj[first_key].length - 1; i++)
-              //   insert_new_multivalued_field(this);
+            if (add_multivalued_button.length > 0)
               for (let i = 0; i < parsed_field_obj[first_key].length - 1; i++)
-                add_multivalued_button.click();
-            }
+                insert_new_multivalued_field(add_multivalued_button[0]);
           }
         }
       });
