@@ -1606,16 +1606,29 @@ function panel_title(srcname, param) {
         // get name of the first select element
         var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
         var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
+        let add_multivalued_button = $(this).find('.add-multivalued-element');
         if (request_parameters.hasOwnProperty(field_name)) {
           var field_values = request_parameters[field_name];
           let parsed_field_obj = JSON.parse(field_values);
-          let first_key = Object.keys(JSON.parse(request_parameters[field_name]))[0];
-          if(parsed_field_obj[first_key].length > 0) {
-            // add as many multivalued fields as needed
-            let add_multivalued_button = $(this).find('.add-multivalued-element');
-            if (add_multivalued_button.length > 0)
-              for (let i = 0; i < parsed_field_obj[first_key].length - 1; i++)
-                insert_new_multivalued_field(add_multivalued_button[0]);
+          // for each key in the object, add a new multivalued field
+          let parsed_field_obj_keys = Object.keys(parsed_field_obj);
+          let num_multivalued_field = parsed_field_obj[parsed_field_obj_keys[0]].length;
+          for (let i = 0; i < num_multivalued_field ; i++) {
+            for(key of parsed_field_obj_keys) {
+              var select_list = $('select', this).filter(function() {
+                return $(this).attr('name') === `${field_name}[${key}][]`;
+              });
+              // check if the select has the value amongst its options
+              let select_element = $(select_list[select_list.length - 1]);
+              let hasOption = select_element.find('option').filter(function() {
+                return $(this).val() === parsed_field_obj[key][i];
+              }).length > 0;
+              if (!hasOption)
+                select_element.append(new Option(parsed_field_obj[key][i], parsed_field_obj[key][i]));
+              select_element.val(parsed_field_obj[key][i]);
+            }
+            if($('.multivalued-value', this).length < num_multivalued_field)
+              insert_new_multivalued_field(add_multivalued_button[0]);
           }
         }
       });
