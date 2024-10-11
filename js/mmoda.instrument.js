@@ -1609,11 +1609,11 @@ function panel_title(srcname, param) {
       }
       make_request_error = false;
       var make_request_error_messages = [];
-      var all_form_inputs = [];
+      // var all_form_inputs = [];
       $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-        all_form_inputs.push(field_name);
+        // all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           // if the form element type is file, we should check if it is part of file input/url element:
@@ -1655,9 +1655,9 @@ function panel_title(srcname, param) {
           }
         }
       });
-      all_form_inputs = all_form_inputs.filter(function(itm, i, a) {
-        return i == a.indexOf(itm);
-      });
+      // all_form_inputs = all_form_inputs.filter(function(itm, i, a) {
+      //   return i == a.indexOf(itm);
+      // });
       // based on the black-listed parameters within the dispatcher, there used for the generation of the job_id, to be kept synchronized
       //      let accepted_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run', 'selected_catalog'];
       //      for (parameter in request_parameters) {
