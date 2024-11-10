@@ -27,6 +27,7 @@ The configured label of the block if visible.
 
 {{ attach_library('core/drupalSettings') }}
 {{ attach_library('mmoda/datatables') }}
+{{ attach_library('mmoda/datatables_editor') }}
 {{ attach_library('mmoda/highlight_js') }}
 {{ attach_library('mmoda/bootstrap5_form_validator') }}
 {{ attach_library('mmoda/jquery_serialize_json') }}
@@ -39,6 +40,7 @@ The configured label of the block if visible.
     'block-' ~ theme_hook_original|clean_class,
   ]
 %}
+
 <div {{ attributes.addClass(classes) }}>
   {{ title_prefix }}
   {% if label %}
@@ -70,7 +72,7 @@ The configured label of the block if visible.
               class="bi bi-envelope-fill"> </span>
             </a> <a id="help-home" title="{{ site_name }} Help"
               class="btn btn-primary btn-sm open-in-modal help-home"
-              href="help/mmoda"><span
+              href="{{ mmoda_data.help_page_url }}"><span
               class="oda-icon-label">Help</span><i
               class="bi bi-info-circle-fill"></i></a>
           </div>

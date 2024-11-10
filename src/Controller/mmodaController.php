@@ -52,7 +52,7 @@ class mmodaController extends ControllerBase
       \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token', ['@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)]);
 
       $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
-  
+
       return new JsonResponse(array('token' => $jwt_encoded_token_updated));
     }
     else
@@ -132,8 +132,8 @@ class mmodaController extends ControllerBase
       '#theme' => 'mmoda',
       '#name_resolve_form' => \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\NameResolveForm'),
       '#common_form' => $common_form,
-      '#instruments' => $instruments,
       '#mmoda_data' => $mmoda_data,
+      '#instruments' => $instruments,
     ];
     error_log('help_page_url:' . print_r($output['#mmoda_data'], true));
     $output['#attached']['drupalSettings'][$core_module_name] = $mmoda_js_settings;

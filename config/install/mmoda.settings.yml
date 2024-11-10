@@ -16,6 +16,6 @@ T1: '2017-03-06T13:26:48.0'
 T2: '2017-03-06T15:32:27.0'
 T_format: 'isot'
 mmoda_debug: true
-help_page_url: help/mmoda
+help_page_url: help/mmoda/mmoda
 # role name of user managers
 user_managers_role_name: 'user manager'

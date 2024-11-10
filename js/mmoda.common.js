@@ -287,7 +287,7 @@ function get_current_date_time() {
       elt.find('.alert').addClass('alert-success').show();
     }
     else {
-//      $('input#edit-resolve-src-name').prop('disabled', true);
+      //      $('input#edit-resolve-src-name').prop('disabled', true);
       //$('.row', '#mmoda-name-resolve-form').removeClass('has-success').addClass('has-error');
     }
   }
@@ -704,7 +704,7 @@ function get_waitingDialog($modal_dialog) {
 
   $.fn.highlight_result_card = function(offset) {
     var all_ldraggable_zindexes = $('.ldraggable').map(function() {
-      zindex= isNaN($(this).css('z-index')) ? 0 : parseInt($(this).css('z-index'));
+      zindex = isNaN($(this).css('z-index')) ? 0 : parseInt($(this).css('z-index'));
       return zindex;
     });
     max_zindexes = Math.max.apply(Math, all_ldraggable_zindexes.get());
@@ -751,16 +751,16 @@ function get_waitingDialog($modal_dialog) {
 
 
   function commonReady() {
-    
-    $( "body" ).on( "dialogopen", function( event, ui ) {
-      $('#ldialog .buttons-container').css('visibility', 'hidden');
-    } );
-    $( "body" ).on( "dialogclose", function( event, ui ) {
-      $('#ldialog .buttons-container').css('visibility', 'visible');
-    } );
 
-//    console.log('Drupal settings');
-//    console.log(drupalSettings);
+    $("body").on("dialogopen", function(event, ui) {
+      $('#ldialog .buttons-container').css('visibility', 'hidden');
+    });
+    $("body").on("dialogclose", function(event, ui) {
+      $('#ldialog .buttons-container').css('visibility', 'visible');
+    });
+
+    //    console.log('Drupal settings');
+    //    console.log(drupalSettings);
 
     autoHeight();
     // Ignore carriage return in common parameters
@@ -801,7 +801,17 @@ function get_waitingDialog($modal_dialog) {
     //    }
 
     $(document).on('show.bs.modal', '.modal', function() {
-      console.log('in show bs modal');
+      //      console.log('in show bs modal');
+      //      var zIndex = 1040 + (10 * $('.modal:visible').length);
+      //      $(this).css('z-index', zIndex);
+      //      setTimeout(function() {
+      //        $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+      //      }, 0);
+    });
+
+    $(document).on('hide.bs.modal', '.modal', function() {
+      $('.mmoda-loader', this).hide();
+      //      console.log('in hide bs modal');
       //      var zIndex = 1040 + (10 * $('.modal:visible').length);
       //      $(this).css('z-index', zIndex);
       //      setTimeout(function() {
@@ -859,33 +869,33 @@ function get_waitingDialog($modal_dialog) {
     $('.form-item .description').each(function() {
       $(this).html(add3Dots($(this).parent().find('label:first').html(), $(this).html(), 240));
     });
-//    $('.popover-help').on('click', function(e) { e.preventDefault(); return true; }).popover({
-//      container: 'body',
-//      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
-//      html: true,
-//      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
-//    });
-//
-//    $('.popover-error').on('click', function(e) { e.preventDefault(); return true; }).popover({
-//      container: 'body',
-//      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
-//      html: true,
-//      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
-//    });
+    //    $('.popover-help').on('click', function(e) { e.preventDefault(); return true; }).popover({
+    //      container: 'body',
+    //      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
+    //      html: true,
+    //      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+    //    });
+    //
+    //    $('.popover-error').on('click', function(e) { e.preventDefault(); return true; }).popover({
+    //      container: 'body',
+    //      content: function() { return $(this).parent().find('.mmoda-popover-content').html(); },
+    //      html: true,
+    //      template: '<div class="popover" role="tooltip"><div class="popover-arrow"></div><h4 class="popover-title"></h4><div class="popover-content"></div></div>'
+    //    });
 
-//    $(document).on('click', function(e) {
-//      $('[data-toggle="popover"],[data-original-title]').each(function() {
-//        // the 'is' for buttons that trigger popups
-//        // the 'has' for icons within a button that triggers a popup
-//        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-//          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false  // fix
-//          // for
-//          // BS
-//          // 3.3.6
-//        }
-//
-//      });
-//    });
+    //    $(document).on('click', function(e) {
+    //      $('[data-toggle="popover"],[data-original-title]').each(function() {
+    //        // the 'is' for buttons that trigger popups
+    //        // the 'has' for icons within a button that triggers a popup
+    //        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+    //          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false  // fix
+    //          // for
+    //          // BS
+    //          // 3.3.6
+    //        }
+    //
+    //      });
+    //    });
 
     waitingDialog = get_waitingDialog();
 

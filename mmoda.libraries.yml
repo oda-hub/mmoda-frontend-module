@@ -22,8 +22,8 @@ mmoda_libs:
 bootstrap5_form_validator:
   version: 2.4.0
   js:
-    /sites/all/libraries/@form-validation/umd/bundle/popular.js: {}
-    /sites/all/libraries/@form-validation/umd/plugin-bootstrap5/index.js: {}
+    /libraries/form-validation/umd/bundle/popular.js: {}
+    /libraries/form-validation/umd/plugin-bootstrap5/index.js: {}
   dependencies:
      - core/jquery
    
@@ -31,16 +31,16 @@ highlight_js:
   version: 11.0.1
   css:
     theme:
-      /sites/all/libraries/highlightjs/default.min.css: { minified: true }
+      /libraries/highlightjs/default.min.css: { minified: true }
   js:
-    /sites/all/libraries/highlightjs/highlight.min.js: { minified: true }
+    /libraries/highlightjs/highlight.min.js: { minified: true }
   dependencies:
     - core/jquery
     
 jquery_serialize_json:
   version: 3.2.1
   js:
-    /sites/all/libraries/jquery_serializejson/jquery.serializejson.min.js: { minified: true }
+    /libraries/jquery_serializejson/jquery.serializejson.min.js: { minified: true }
   dependencies:
     - core/jquery
     
@@ -48,12 +48,22 @@ datatables:
   version: 1.10.12
   css:
     theme:
-      /sites/all/libraries/datatables/datatables.min.css: {}
+      /libraries/datatables/datatables.min.css: {}
   js:
-    /sites/all/libraries/datatables/datatables.min.js: { minified: true }
+    /libraries/datatables/datatables.min.js: { minified: true }
 
   dependencies:
     - core/jquery
+    
+datatables_editor:
+  version: 2.3.2
+  js:
+    /libraries/datatables_editor/js/dataTables.editor.min.js: { minified: true }
+    /libraries/datatables_editor/js/editor.bootstrap5.min.js: { minified: true }
+
+  dependencies:
+    - core/jquery
+    - mmoda/datatables
     
 colorbox:
   version: 1.6.4

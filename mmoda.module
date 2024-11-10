@@ -41,6 +41,7 @@ function mmoda_theme($existing, $type, $theme, $path)
     'mmoda' => [
       'variables' => [
         'instruments' => [],
+        'mmoda_data' => [],
         'name_resolve_form' => 'Name resolver form',
         'common_form' => 'Common form'
       ]
