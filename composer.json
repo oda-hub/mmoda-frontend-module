@@ -1,25 +1,21 @@
 {
-  "name": "oda-hub/mmoda",
-  "description": "Multi-Messenger Online Data Analysis",
-  "type": "drupal-custom-module",
-  "authors": [
-    {
-      "name": "Mohamed Meharga",
-      "email": "mtm@mtmco.net"
-    },
-    {
-      "name": "Gabriele Barni",
-      "email": "Gabriele.Barni@unige.ch"
-    },
-    {
-      "name": "Denys Savchenko",
-      "email": "savchenko@apc.in2p3.fr"
-    },
-    {
-      "name": "Volodymyr Savchenko",
-      "email": "Volodymyr.Savchenko@unige.ch"
-    }
-  ],
-  "homepage" : "https://www.astro.unige.ch/mmoda",
-  "minimum-stability": "dev"
+	"name" : "oda/mmoda",
+	"description" : "Multi-Messenger Online Data Analysis",
+	"type" : "drupal-custom-module",
+	"authors" : [{
+			"name" : "Mohamed Meharga",
+			"email" : "mtm@mtmco.net"
+		}, {
+			"name" : "Gabriele Barni",
+			"email" : "Gabriele.Barni@unige.ch"
+		}, {
+			"name" : "Denys Savchenko",
+			"email" : "savchenko@apc.in2p3.fr"
+		}, {
+			"name" : "Volodymyr Savchenko",
+			"email" : "Volodymyr.Savchenko@unige.ch"
+		}
+	],
+	"homepage" : "https://www.astro.unige.ch/mmoda",
+	"minimum-stability" : "dev"
 }
