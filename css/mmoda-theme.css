@@ -1,6 +1,10 @@
 .mmoda-loader {
   display: none;
-  min-height: 200px;
+  min-height: 400px;
+}
+
+.modal-body {
+  height: 80vh;
 }
 
 .block-mmoda {

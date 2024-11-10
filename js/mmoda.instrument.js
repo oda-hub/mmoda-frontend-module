@@ -1231,7 +1231,9 @@ function card_title(srcname, param) {
       path_items.pop(); // remove the last
       open_in_modal_base_path = path_items.join("/");
 
-      $('#ldialog .mmoda-loader').show();
+      $('#ldialog .mmoda-loader').css({'display':'inline'});
+      $('#ldialog .summary-container').css({'visibility':'hidden'});
+      //$('#ldialog .summary-container').hide();
 
       waitingDialog.show(home_link, '', {
         dialogSize: 'lg',
@@ -1265,7 +1267,9 @@ function card_title(srcname, param) {
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
         message = { 'summary': help_text };
-        $('#ldialog .mmoda-loader').hide();
+        $('#ldialog .summary-container').show();
+        $('#ldialog .summary-container').css({'visibility':'visible'});
+         $('#ldialog .mmoda-loader').hide();
         waitingDialog.show(home_link + title, message, {
           dialogSize: 'lg',
           showTitle: true,
