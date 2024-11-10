@@ -558,6 +558,7 @@ function card_title(srcname, param) {
         window.clearTimeout(requestTimer);
       }
       // clean-up modal window
+      $('#ldialog .modal-body').removeClass('help-page');
       $('#ldialog .header-message .job-id').html('');
       $('#ldialog .header-message .session-id').html('');
       $('#ldialog .job-info .job-id').html('');
@@ -572,7 +573,7 @@ function card_title(srcname, param) {
       waitingDialog.showMoreLessLink();
       waitingDialog.disableMoreLessLink();
       waitingDialog.hideLegend();
-      
+
       // remove any child html-progress modal window
       $("#ldialog > *").each(function() {
         var id = $(this).attr('id');
@@ -979,7 +980,7 @@ function card_title(srcname, param) {
     $("body").on('click', '.copy-api-token', function(e) {
       e.preventDefault();
       let token_container = $(e.target).siblings('p');
-      if(token_container.length > 0) {
+      if (token_container.length > 0) {
         let token_text = token_container[0].innerText;
         if (token_text !== undefined)
           copyToClipboard(token_text);
@@ -1219,6 +1220,9 @@ function card_title(srcname, param) {
 
       // var current_modal = $(this).closest('.modal');
       var home_link = '';
+      if ($(this).is('.btn-help, .help-home')) {
+        $('#ldialog .modal-body').addClass('help-page');
+      }
       if (!$(this).hasClass('help-home')) {
         home_link_elt = $("<span>")
           .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
@@ -1231,8 +1235,8 @@ function card_title(srcname, param) {
       path_items.pop(); // remove the last
       open_in_modal_base_path = path_items.join("/");
 
-      $('#ldialog .mmoda-loader').css({'display':'inline'});
-      $('#ldialog .summary-container').css({'visibility':'hidden'});
+      $('#ldialog .mmoda-loader').css({ 'display': 'inline' });
+      $('#ldialog .summary-container').css({ 'visibility': 'hidden' });
       //$('#ldialog .summary-container').hide();
 
       waitingDialog.show(home_link, '', {
@@ -1267,9 +1271,8 @@ function card_title(srcname, param) {
           else if (!$(this).attr('href').startsWith("#")) $(this).attr('target', '_blank');
         });
         message = { 'summary': help_text };
-        $('#ldialog .summary-container').show();
-        $('#ldialog .summary-container').css({'visibility':'visible'});
-         $('#ldialog .mmoda-loader').hide();
+        $('#ldialog .summary-container').css({ 'visibility': 'visible' });
+        $('#ldialog .mmoda-loader').hide();
         waitingDialog.show(home_link + title, message, {
           dialogSize: 'lg',
           showTitle: true,
@@ -1548,7 +1551,7 @@ function card_title(srcname, param) {
     var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-catalog', datetime);
     source_name = $('input[name=src_name]', '.common-params').val();
 
-    if (typeof(source_name) === 'undefined')
+    if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Image catalog');
     else
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Image catalog');
@@ -1709,7 +1712,7 @@ function card_title(srcname, param) {
       api_code_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    if (typeof(source_name) === 'undefined')
+    if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('API code');
     else
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - API code');
@@ -1765,7 +1768,7 @@ function card_title(srcname, param) {
       log_product_card_id: afterDiv
     });
     source_name = $('input[name=src_name]', '.common-params').val();
-    if (typeof(source_name) === 'undefined')
+    if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Log');
     else
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Log');
@@ -1811,7 +1814,7 @@ function card_title(srcname, param) {
     });
 
     source_name = $('input[name=src_name]', '.common-params').val();
-    if (typeof(source_name) === 'undefined')
+    if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Query parameters');
     else
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Query parameters');

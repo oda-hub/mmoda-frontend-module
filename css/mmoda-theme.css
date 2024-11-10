@@ -1,9 +1,9 @@
 .mmoda-loader {
   display: none;
-  min-height: 400px;
+  height: 80vh;
 }
 
-.modal-body {
+.modal-body.help-page {
   height: 80vh;
 }
 
