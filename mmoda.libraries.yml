@@ -34,16 +34,40 @@ jquery_serialize_json:
   dependencies:
     - core/jquery
     
-datatables:
-  version: 1.10.12
+datatables_bs5:
+  version: 2.1.8
   css:
     theme:
-      /libraries/datatables/datatables.min.css: {}
+      vendor://datatables.net/datatables.net-bs5/css/dataTables.bootstrap5.min.css: {}
   js:
-    /libraries/datatables/datatables.min.js: { minified: true }
-
+    vendor://datatables.net/datatables.net/js/dataTables.min.js: { minified: true }
+    vendor://datatables.net/datatables.net-bs5/js/dataTables.bootstrap5.min.js: { minified: true }
   dependencies:
     - core/jquery
+    
+datatables_buttons_bs5:
+  version: 3.2.0
+  css:
+    theme:
+      vendor://datatables.net/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css : {}
+  js:
+    vendor://datatables.net/datatables.net-buttons/js/dataTables.buttons.min.js: { minified: true }
+    vendor://datatables.net/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+    - mmoda/datatables_bs5
+    
+datatables_select_bs5:
+  version: 2.1.0
+  css:
+    theme:
+      vendor://datatables.net/datatables.net-select-bs5/css/select.bootstrap5.min.css: {}
+  js:
+    vendor://datatables.net/datatables.net-select/js/dataTables.select.min.js: { minified: true }
+    vendor://datatables.net/datatables.net-select-bs5/js/select.bootstrap5.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+    - mmoda/datatables_bs5
     
 datatables_editor:
   version: 2.3.2
@@ -53,7 +77,7 @@ datatables_editor:
 
   dependencies:
     - core/jquery
-    - mmoda/datatables    
+    - mmoda/datatables_bs5
 
 bokeh:
   remote: https://bokeh.org/
