@@ -1422,11 +1422,14 @@ function panel_title(srcname, param) {
           return (item);
         });
         var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
-        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
         multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
         $.each(instrument_form_serializeJSON, function(param, value) {
-          if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+          if (multival_pars.includes(param)) {
+            let multivalued_param_element = $(`.multivalued-value .form-control[name^="${param}"]`);
+            let multivalued_param_name = multivalued_param_element.attr('multivalued_field_param_name') || multivalued_param_element.attr('name');
+            instrument_form_serializeArray.push({ 'name': multivalued_param_name, 'value': JSON.stringify(value) });
+          }
           else instrument_form_serializeArray.push({ 'name': param, 'value': value });
         });
 
