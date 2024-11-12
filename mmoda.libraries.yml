@@ -26,21 +26,11 @@ bootstrap5_form_validator:
     /libraries/form-validation/umd/plugin-bootstrap5/index.js: {}
   dependencies:
      - core/jquery
-   
-highlight_js:
-  version: 11.0.1
-  css:
-    theme:
-      /libraries/highlightjs/default.min.css: { minified: true }
-  js:
-    /libraries/highlightjs/highlight.min.js: { minified: true }
-  dependencies:
-    - core/jquery
-    
+       
 jquery_serialize_json:
   version: 3.2.1
   js:
-    /libraries/jquery_serializejson/jquery.serializejson.min.js: { minified: true }
+    https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/3.2.1/jquery.serializejson.min.js: { type: external, minified: true }
   dependencies:
     - core/jquery
     
@@ -63,19 +53,8 @@ datatables_editor:
 
   dependencies:
     - core/jquery
-    - mmoda/datatables
-    
-colorbox:
-  version: 1.6.4
-  css:
-    theme:
-      /libraries/colorbox/colorbox.css: { }
-  js:
-    /libraries/colorbox/jquery.colorbox-min.js: { minified: true }
+    - mmoda/datatables    
 
-  dependencies:
-    - core/jquery
-    
 bokeh:
   remote: https://bokeh.org/
   version: 2.4.2

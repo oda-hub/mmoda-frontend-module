@@ -1115,6 +1115,9 @@ function card_title(srcname, param) {
             var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function(item,) {
               return (item);
             });
+            var allFormData1 = $("form#mmoda-name-resolve-form").serializeArray().map(function(item,) {
+              return (item);
+            });
 
             // Collect common parameters
             var commonFormData = $("form#mmoda-common-form").serializeArray().map(function(item, index) {
@@ -1237,7 +1240,6 @@ function card_title(srcname, param) {
 
       $('#ldialog .mmoda-loader').css({ 'display': 'inline' });
       $('#ldialog .summary-container').css({ 'visibility': 'hidden' });
-      //$('#ldialog .summary-container').hide();
 
       waitingDialog.show(home_link, '', {
         dialogSize: 'lg',
