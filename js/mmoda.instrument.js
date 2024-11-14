@@ -1608,7 +1608,8 @@ function panel_title(srcname, param) {
       $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form') .each(function() {
         // get name of the first select element
         var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
-        var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
+        let multivalued_field_name = $('input', this).attr('multivalued_field_param_name') ? $('input', this).attr('multivalued_field_param_name') : $('input', this).attr('name');
+        var field_name = multivalued_field_name.replace(re_multivalued_field, '');
         let add_multivalued_button = $(this).find('.add-multivalued-element');
         if (request_parameters.hasOwnProperty(field_name)) {
           var field_values = request_parameters[field_name];
