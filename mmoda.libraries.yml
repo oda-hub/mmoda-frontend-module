@@ -95,8 +95,8 @@ datatables_select_bs5:
 datatables_editor:
   version: 2.3.2
   js:
-    /libraries/datatables_editor/js/dataTables.editor.min.js: { minified: true }
-    /libraries/datatables_editor/js/editor.bootstrap5.min.js: { minified: true }
+    /libraries/datatables-editor/js/dataTables.editor.min.js: { minified: true }
+    /libraries/datatables-editor/js/editor.bootstrap5.min.js: { minified: true }
 
   dependencies:
     - core/jquery
