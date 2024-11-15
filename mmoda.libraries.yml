@@ -22,8 +22,8 @@ mmoda_libs:
 bootstrap5_form_validator:
   version: 2.4.0
   js:
-    /libraries/form-validation/bundle/popular.js: {}
-    /libraries/form-validation/plugin-bootstrap5/index.js: {}
+    /libraries/form-validation/umd/bundle/popular.js: {}
+    /libraries/form-validation/umd/plugin-bootstrap5/index.js: {}
   dependencies:
      - core/jquery
        
