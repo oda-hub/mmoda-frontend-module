@@ -2408,9 +2408,16 @@ function panel_title(srcname, param) {
 
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
+      let source_name = data.name[i];
+      if(data.hasOwnProperty('extra_metadata')) {
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+          source_name = data.extra_metadata[source_name].label;
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+          source_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + source_name + "</span>";
+      }
       image_table_data[i] = {
         DT_RowId: 'row_' + i,
-        source_name: data.name[i],
+        source_name: source_name,
         index: i,
       }
     }
@@ -2419,7 +2426,7 @@ function panel_title(srcname, param) {
     var image_table_column_names = [{
       title: "Source Name",
       name: "source_name",
-      data: "source_name",
+      data: "source_name"
     }, {
       data: null,
       title: "Image",
