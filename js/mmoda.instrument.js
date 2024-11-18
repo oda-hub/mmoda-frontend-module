@@ -2621,9 +2621,16 @@ function panel_title(srcname, param) {
 
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
+      let source_name = data.spectrum_name[i];
+      if(data.hasOwnProperty('extra_metadata')) {
+        if(data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
+          source_name = data.spectrum_name[source_name].label;
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+          source_name = "<span title='" + data.extra_metadata[data.spectrum_name[i]].description + "'>" + source_name + "</span>";
+      }
       spectrum_table_data[i] = {
         DT_RowId: 'row_' + i,
-        source_name: data.spectrum_name[i],
+        source_name: source_name,
         xspec_model: 'powerlaw',
         arf_file_name: data.arf_file_name[i],
         ph_file_name: data.ph_file_name[i],
