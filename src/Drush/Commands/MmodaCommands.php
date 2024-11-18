@@ -6,6 +6,7 @@ use Drupal\Core\Utility\Token;
 use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Site\Settings;
 
 /**
  * A Drush commandfile.
@@ -29,14 +30,41 @@ final class MmodaCommands extends DrushCommands {
       $container->get('token'),
     );
   }
-
   /**
+   * Returns the path + file name of books CSV file.
+   *
+   * It's configured using $settings['mmoda_export_import_book_csv_file'] in
+   * settings.php.
+   *
+   * @param string $type
+   *   The type of the file to return.
+   *
+   * @return string
+   *   The path + file name .
+   *
+   */
+  private function mmoda_export_import_book_csv_filename($filename=NULL) {
+    if (empty($filename)) {
+      $filename = Settings::get('mmoda_export_import_book_csv_file', '') ;
+      if (empty($filename)) {
+        $this->io()->error('Not enough arguments (missing: "filename").');
+      }
+    }
+    return $filename;
+  }
+
+/**
    * Command description here.
    */
-  #[CLI\Command(name: 'mmoda:export-book-csv', aliases: ['mmodaebcsv'])]
+  #[CLI\Command(name: 'mmoda:export-book-csv', aliases: ['mmoda:ebcsv'])]
   #[CLI\Argument(name: 'filename', description: 'Argument description.')]
   #[CLI\Usage(name: 'mmoda:export-book-csv content/book.csv', description: 'Export the whole book table in a CSV file')]
-  public function exportBookCsv($filename) {
+  public function exportBookCsv($filename=NULL) {
+    $filename = $this->mmoda_export_import_book_csv_filename($filename);
+    if (empty($filename)) {
+      return;
+    }
+
     $query = \Drupal::database()->select('node', 'n');
     $query->addField('n', 'nid');
     $query->addField('n', 'uuid');
@@ -61,16 +89,21 @@ final class MmodaCommands extends DrushCommands {
     foreach ($book as $row) {
       $csv_file->fputcsv(array_values((array)$row));
     }
-    $this->logger()->success(dt('File exported successfully.'));
+    $this->logger()->success(dt('File exported successfully to '.$filename));
   }
 
   /**
    * Command description here.
    */
-  #[CLI\Command(name: 'mmoda:import-book-csv', aliases: ['mmodaibcsv'])]
+  #[CLI\Command(name: 'mmoda:import-book-csv', aliases: ['mmoda:ibcsv'])]
   #[CLI\Argument(name: 'filename', description: 'Book CSV file name')]
   #[CLI\Usage(name: 'mmoda:import-book-csv content/book.csv', description: 'Import the whole book table from a CSV file')]
-  public function importBookCsv($filename) {
+  public function importBookCsv($filename=NULL) {
+    $filename = $this->mmoda_export_import_book_csv_filename($filename);
+    if (empty($filename)) {
+      return;
+    }
+
     /* Map Rows and Loop Through Them */
     $rows   = array_map('str_getcsv', file($filename));
     $book_table_col_names = array_shift($rows);
@@ -115,32 +148,6 @@ final class MmodaCommands extends DrushCommands {
 
     // Commit the transaction by unsetting the $transaction variable.
     unset($transaction);
-       $this->logger()->success(dt('File imported successfully.'));
+    $this->logger()->success(dt('File imported successfully from '.$filename));
   }
-
-  /**
-   * An example of the table output format.
-  #[CLI\Command(name: 'mmoda:token', aliases: ['token'])]
-  #[CLI\FieldLabels(labels: [
-    'group' => 'Group',
-    'token' => 'Token',
-    'name' => 'Name'
-  ])]
-  #[CLI\DefaultTableFields(fields: ['group', 'token', 'name'])]
-  #[CLI\FilterDefaultField(field: 'name')]
-  public function token($options = ['format' => 'table']): RowsOfFields {
-    $all = $this->token->getInfo();
-    foreach ($all['tokens'] as $group => $tokens) {
-      foreach ($tokens as $key => $token) {
-        $rows[] = [
-          'group' => $group,
-          'token' => $key,
-          'name' => $token['name'],
-        ];
-      }
-    }
-    return new RowsOfFields($rows);
-  }
-   */
-
 }
