@@ -800,11 +800,6 @@ button.renku-publish {
   color: white;
 }
 
-/** Very important **/
-.invalid-feedback {
-  display: inline-block;
-}
-
 input.btn:disabled {
   color: var(--bs-btn-disabled-color);
   pointer-events: none;
