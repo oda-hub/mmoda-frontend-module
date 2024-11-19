@@ -1,0 +1,131 @@
+
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mmoda module.
+ */
+$module_name = basename(__FILE__, '.install');
+$current_dir = drupal_get_path('module', $module_name);
+list ($core_module_name) = explode('_', $module_name);
+include_once drupal_get_path('module', $core_module_name) . '/' . $core_module_name . '.lib.inc';
+
+function mmoda_crbeam_instrument_info()
+{
+  $info = array(
+    'name' => 'crbeam',
+    'messenger' => ' ',
+    'title' => 'Crbeam'
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function mmoda_crbeam_requirements($phase)
+{
+  $requirements = array();
+  $conflicts = array();
+  if ('install' == $phase) {
+    
+  }
+
+  if ($phase == 'runtime') {}
+
+  return $requirements;
+}
+
+function mmoda_crbeam_install()
+{
+  $instrument_info = mmoda_crbeam_instrument_info();
+
+  $module_settings = array(
+    'enabled' => TRUE,
+    'query_type' => 'Real',
+    'weight' => 1,
+    'product_type' => 'compute_new_column',
+    
+    'fn' => "testfile.tsv",
+    
+    'z_start' => 0.0,
+    
+    'new_column' => "sum",
+    
+    'expression' => "c1 \u003e 1e3",
+    
+    'Npart' => 5000,
+    
+    'sep' => "comma",
+    
+    'particle_type' => "gamma",
+    
+    'column' => "c0",
+    
+    'Emax' => 30.0,
+    
+    'weights' => "c1",
+    
+    'Emin' => 0.1,
+    
+    'binning' => "logarithmic",
+    
+    'EminSource' => 1.0,
+    
+    'minval' => 10000000000.0,
+    
+    'Gamma' => 2.0,
+    
+    'maxval' => 10000000000000.0,
+    
+    'EGMF_fG' => 10.0,
+    
+    'nbins' => 15,
+    
+    'lmaxEGMF_Mpc' => 5.0,
+    
+    'xlabel' => "Energy, eV",
+    
+    'jet_half_size' => 5.0,
+    
+    'ylabel' => "Ncounts",
+    
+    'jet_direction' => 0.0,
+    
+    'window_size_RA' => 2.0,
+    
+    'psf' => 1.0,
+    
+    'window_size_DEC' => 1.0,
+    
+    'livetime' => 0.1,
+    
+    'EBL' => "Franceschini 2017",
+    
+    
+    'instrument_version' => '<a target="_blank" href="test">1.0.0</a>',
+    
+    'acknowledgement' => 'Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>',
+    'enable_use_catalog' => FALSE, 
+    'allowed_roles' => 'developer',
+  );
+  $module_settings= array_merge($instrument_info, $module_settings);
+
+  
+
+  $module_name = basename(__FILE__, '.install');
+  _mmoda_common_install($module_name, $instrument_info['name'], $module_settings);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mmoda_crbeam_uninstall()
+{
+  $module_name = basename(__FILE__, '.install');
+  $instrument = mmoda_crbeam_instrument_info()['name'];
+  _mmoda_common_uninstall($module_name, $instrument);
+}
+
+  

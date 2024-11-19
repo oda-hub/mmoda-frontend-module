@@ -1,0 +1,7 @@
+name = MMODA Crbeam
+description = MMODA module for Crbeam
+core = 7.x
+dependencies[] = mmoda
+
+files[] = mmoda_crbeam.inc
+configure = admin/config/mmoda/crbeam
