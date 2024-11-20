@@ -2479,37 +2479,38 @@ function panel_title(srcname, param) {
     var image = data.image[lc_index];
     var job_id = current_panel.data('job_id');
 
-    var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
-
-    var files_list = data.file_name[lc_index];
-    if (data.root_file_name) {
-      file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
-      files_list += ',' + data.root_file_name;
-    } else {
-      file_name += '.gz';
-    }
-
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
-
-    // Add button "Download" : download light curve in FITS format
-    var url_params = {
-      session_id: data.session_id,
-      download_file_name: file_name,
-      file_list: files_list,
-      query_status: 'ready',
-      job_id: job_id,
-      instrument: instrument
-    };
-    var download_url = get_download_url(url_params);
-    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-    link.addClass('btn btn-default');
-    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Light curve in FITS format" });
-    link.append(glyphicon);
-    toolbar.append(link);
+    
+    if (data.file_name.length > lc_index) {
+      var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
+      var files_list = data.file_name[lc_index];
+    
+      if (data.root_file_name) {
+        file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
+        files_list += ',' + data.root_file_name;
+      } else {
+        file_name += '.gz';
+      }
+      // Add button "Download" : download light curve in FITS format
+      var url_params = {
+        session_id: data.session_id,
+        download_file_name: file_name,
+        file_list: files_list,
+        query_status: 'ready',
+        job_id: job_id,
+        instrument: instrument
+      };
+      var download_url = get_download_url(url_params);
+      var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
+      link.addClass('btn btn-default');
+      var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+      glyphicon.attr({ title: "Light curve in FITS format" });
+      link.append(glyphicon);
+      toolbar.append(link);
+    }
 
     // Install toolbar 
     $('#' + panel_ids.panel_body_id).append(toolbar);
@@ -2536,8 +2537,6 @@ function panel_title(srcname, param) {
 
     $('#' + panel_ids.panel_id).highlight_result_panel(catalog_offset);
     return ($('#' + panel_ids.panel_body_id));
-
-
   }
 
   function display_spectrum_table(job_id, query_status, data) {
