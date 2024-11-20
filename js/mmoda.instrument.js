@@ -2522,7 +2522,12 @@ function panel_title(srcname, param) {
     panel_body_append_header_footer(panel_ids, data);
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.name[lc_index], data.analysis_parameters));
+    let panel_title_text = data.name[lc_index];
+    if(data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
+      panel_title_text = data.extra_metadata[data.name[lc_index]].label;
+    }
+
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(panel_title_text, data.analysis_parameters));
 
     // set_draggable();
     $('#' + panel_ids.panel_id).css({
