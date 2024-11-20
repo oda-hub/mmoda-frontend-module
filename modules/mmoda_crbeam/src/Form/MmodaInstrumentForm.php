@@ -50,10 +50,10 @@ class MmodaInstrumentForm extends FormBase
 
     $form['product_type'] = array(
       '#type' => 'radios',
-      '#title' => t("Product Type"),
+      '#title' => "Product Type",
       '#attributes' => array(
         'name' => $mform_id . 'product_type',
-        'title' => t("Select product type")
+        'title' => "Select product type"
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
@@ -71,7 +71,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['fn_type'] = array(
       '#type' => 'radios',
-      '#title' => t("fn"),
+      '#title' => "fn",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -102,15 +102,15 @@ class MmodaInstrumentForm extends FormBase
         'control-label'
       ),
       '#options' => array(
-        'file' => t('Upload a file'),
-        'url' => t('Provide a URL')
+        'file' => 'Upload a file',
+        'url' => 'Provide a URL'
       ),
       '#default_value' => 'file'
     );
 
     $form['fn_url'] = array(
       '#type' => 'textfield',
-      '#title' => t('File URL'),
+      '#title' => 'File URL',
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -153,7 +153,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['fn_file'] = array(
       '#type' => 'file',
-      '#title' => t('Upload a file'),
+      '#title' => 'Upload a file',
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -195,7 +195,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['z_start'] = array(
       '#type' => 'textfield',
-      '#title' => t("z_start"),
+      '#title' => "z_start",
       '#default_value' => $instrument_settings->get('z_start'),
       '#states' => array(
         'visible' => array(
@@ -227,7 +227,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['new_column'] = array(
       '#type' => 'textfield',
-      '#title' => t("new_column"),
+      '#title' => "new_column",
       '#default_value' => $instrument_settings->get('new_column'),
       '#states' => array(
         'visible' => array(
@@ -241,20 +241,17 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'new_column',
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
+      )
     );
 
     $form['expression'] = array(
       '#type' => 'textfield',
-      '#title' => t("expression"),
+      '#title' => "expression",
       '#default_value' => $instrument_settings->get('expression'),
       '#states' => array(
         'visible' => array(
@@ -272,20 +269,17 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'expression',
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
+      )
     );
 
     $form['Npart'] = array(
       '#type' => 'textfield',
-      '#title' => t("Npart"),
+      '#title' => "Npart",
       '#default_value' => $instrument_settings->get('Npart'),
       '#states' => array(
         'visible' => array(
@@ -323,7 +317,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['sep'] = array(
       '#type' => 'textfield',
-      '#title' => t("sep"),
+      '#title' => "sep",
       '#default_value' => $instrument_settings->get('sep'),
       '#states' => array(
         'visible' => array(
@@ -360,7 +354,7 @@ class MmodaInstrumentForm extends FormBase
         'gamma' => 'gamma',
         'proton' => 'proton',
       ),
-      '#title' => t("particle_type"),
+      '#title' => "particle_type",
       '#default_value' => $instrument_settings->get('particle_type'),
       '#states' => array(
         'visible' => array(
@@ -382,7 +376,6 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'particle_type',
       ),
@@ -393,7 +386,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['column'] = array(
       '#type' => 'textfield',
-      '#title' => t("column"),
+      '#title' => "column",
       '#default_value' => $instrument_settings->get('column'),
       '#states' => array(
         'visible' => array(
@@ -417,9 +410,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['Emax'] = array(
       '#type' => 'textfield',
-      '#title' => t("Emax"),
+      '#title' => "Emax",
       '#default_value' => $instrument_settings->get('Emax'),
-      '#field_suffix' => t("TeV"),
+      '#field_suffix' => "TeV",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -450,7 +443,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['weights'] = array(
       '#type' => 'textfield',
-      '#title' => t("weights"),
+      '#title' => "weights",
       '#default_value' => $instrument_settings->get('weights'),
       '#states' => array(
 
@@ -465,7 +458,6 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'weights',
       ),
@@ -476,9 +468,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['Emin'] = array(
       '#type' => 'textfield',
-      '#title' => t("Emin"),
+      '#title' => "Emin",
       '#default_value' => $instrument_settings->get('Emin'),
-      '#field_suffix' => t("TeV"),
+      '#field_suffix' => "TeV",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -513,7 +505,7 @@ class MmodaInstrumentForm extends FormBase
         'linear' => 'linear',
         'logarithmic' => 'logarithmic',
       ),
-      '#title' => t("binning"),
+      '#title' => "binning",
       '#default_value' => $instrument_settings->get('binning'),
       '#states' => array(
 
@@ -538,9 +530,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['EminSource'] = array(
       '#type' => 'textfield',
-      '#title' => t("EminSource"),
+      '#title' => "EminSource",
       '#default_value' => $instrument_settings->get('EminSource'),
-      '#field_suffix' => t("TeV"),
+      '#field_suffix' => "TeV",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -571,7 +563,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['minval'] = array(
       '#type' => 'textfield',
-      '#title' => t("minval"),
+      '#title' => "minval",
       '#default_value' => $instrument_settings->get('minval'),
       '#states' => array(
         'visible' => array(
@@ -595,9 +587,8 @@ class MmodaInstrumentForm extends FormBase
 
     $form['Gamma'] = array(
       '#type' => 'textfield',
-      '#title' => t("Gamma"),
+      '#title' => "Gamma",
       '#default_value' => $instrument_settings->get('Gamma'),
-
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -618,45 +609,19 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'Gamma',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
-
-
-
-
-
-
-
 
     $form['maxval'] = array(
-
-
       '#type' => 'textfield',
-
-
-      '#title' => t("maxval"),
-
+      '#title' => "maxval",
       '#default_value' => $instrument_settings->get('maxval'),
-
-
       '#states' => array(
-
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
             array('value' => 'histogram_column')
@@ -668,43 +633,18 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'maxval',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
-
-
-
-
-
-
-
 
     $form['EGMF_fG'] = array(
-
-
       '#type' => 'textfield',
-
-
-      '#title' => t("EGMF_fG"),
-
+      '#title' => "EGMF_fG",
       '#default_value' => $instrument_settings->get('EGMF_fG'),
-
-
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -725,45 +665,19 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
-        'name' => $mform_id . 'EGMF_fG',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
+        'name' => $mform_id . 'EGMF_fG'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
-
-
-
-
-
-
-
 
     $form['nbins'] = array(
-
-
       '#type' => 'textfield',
-
-
-      '#title' => t("nbins"),
-
+      '#title' => "nbins",
       '#default_value' => $instrument_settings->get('nbins'),
-
-
       '#states' => array(
-
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
             array('value' => 'histogram_column')
@@ -775,43 +689,18 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'nbins',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
-
-
-
-
-
-
-
 
     $form['lmaxEGMF_Mpc'] = array(
-
-
       '#type' => 'textfield',
-
-
-      '#title' => t("lmaxEGMF_Mpc"),
-
+      '#title' => "lmaxEGMF_Mpc",
       '#default_value' => $instrument_settings->get('lmaxEGMF_Mpc'),
-
-
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -832,45 +721,19 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
-        'name' => $mform_id . 'lmaxEGMF_Mpc',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
+        'name' => $mform_id . 'lmaxEGMF_Mpc'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
 
-
-
-
-
-
-
-
     $form['xlabel'] = array(
-
-
       '#type' => 'textfield',
-
-
-      '#title' => t("xlabel"),
-
+      '#title' => "xlabel",
       '#default_value' => $instrument_settings->get('xlabel'),
-
-
       '#states' => array(
-
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
             array('value' => 'histogram_column')
@@ -882,30 +745,19 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'xlabel',
-
-
-      ),
-      '#parent_classes' => array(
-        'form-group',
-
-        'col-md-6'
       ),
       '#label_classes' => array(
         'control-label'
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
-
+      )
     );
 
     $form['jet_half_size'] = array(
       '#type' => 'textfield',
-      '#title' => t("jet_half_size"),
+      '#title' => "jet_half_size",
       '#default_value' => $instrument_settings->get('jet_half_size'),
-      '#field_suffix' => t("deg"),
+      '#field_suffix' => "deg",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -936,7 +788,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['ylabel'] = array(
       '#type' => 'textfield',
-      '#title' => t("ylabel"),
+      '#title' => "ylabel",
       '#default_value' => $instrument_settings->get('ylabel'),
       '#states' => array(
         'visible' => array(
@@ -960,9 +812,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['jet_direction'] = array(
       '#type' => 'textfield',
-      '#title' => t("jet_direction"),
+      '#title' => "jet_direction",
       '#default_value' => $instrument_settings->get('jet_direction'),
-      '#field_suffix' => t("deg"),
+      '#field_suffix' => "deg",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -993,9 +845,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['window_size_RA'] = array(
       '#type' => 'textfield',
-      '#title' => t("window_size_RA"),
+      '#title' => "window_size_RA",
       '#default_value' => $instrument_settings->get('window_size_RA'),
-      '#field_suffix' => t("deg"),
+      '#field_suffix' => "deg",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -1026,9 +878,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['psf'] = array(
       '#type' => 'textfield',
-      '#title' => t("psf"),
+      '#title' => "psf",
       '#default_value' => $instrument_settings->get('psf'),
-      '#field_suffix' => t("deg"),
+      '#field_suffix' => "deg",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -1055,9 +907,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['window_size_DEC'] = array(
       '#type' => 'textfield',
-      '#title' => t("window_size_DEC"),
+      '#title' => "window_size_DEC",
       '#default_value' => $instrument_settings->get('window_size_DEC'),
-      '#field_suffix' => t("deg"),
+      '#field_suffix' => "deg",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -1078,7 +930,6 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
       '#attributes' => array(
         'name' => $mform_id . 'window_size_DEC',
       ),
@@ -1089,9 +940,9 @@ class MmodaInstrumentForm extends FormBase
 
     $form['livetime'] = array(
       '#type' => 'textfield',
-      '#title' => t("livetime"),
+      '#title' => "livetime",
       '#default_value' => $instrument_settings->get('livetime'),
-      '#field_suffix' => t("day"),
+      '#field_suffix' => "day",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -1122,7 +973,7 @@ class MmodaInstrumentForm extends FormBase
         'Stecker 2016 lower limit' => 'Stecker 2016 lower limit',
         'Stecker 2016 upper limit' => 'Stecker 2016 upper limit',
       ),
-      '#title' => t("EBL"),
+      '#title' => "EBL",
       '#default_value' => $instrument_settings->get('EBL'),
       '#states' => array(
         'visible' => array(
@@ -1156,7 +1007,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit')
+      '#value' => 'Submit'
     );
 
     return $form;
