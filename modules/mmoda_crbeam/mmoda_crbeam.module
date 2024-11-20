@@ -1,73 +1,14 @@
 <?php
 
 /**
- * @file
- * Provides a block displaying prayer times for the visitor's location
+ * Implements hook_theme().
  */
-function mmoda_crbeam_enable() {
-  $instrument = mmoda_crbeam_instrument_info()['name'];
-  _mmodaa_instrument_enable($instrument);
-}
+function mmoda_crbeam_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_crbeam_form'=> [
+    'render element' => 'form',
+  ]
+];
 
-function mmoda_crbeam_disable() {
-  $instrument = mmoda_crbeam_instrument_info()['name'];
-  _mmodaa_instrument_disable($instrument);
-}
-
-function mmoda_crbeam_init() {
-}
-
-/**
- * Implements hook_help().
- */
-function mmoda_crbeam_help($path, $arg) {
-  $output = '';
-  switch ($path) {
-    case 'admin/help#mmoda_crbeam' :
-      $output = '<p>';
-      $output .= t ( "MMODA Crbeam." );
-      $output .= '</p>';
-      break;
-  }
-  return $output;
-}
-
-/**
- * Implementation of hook_permission().
- */
-
-function mmoda_crbeam_permission() {
-  return array (
-      'administer mmoda crbeam' => array (
-          'description' => t ( 'Administer MMODA Crbeam' ),
-          'title' => t ( 'Administer MMODA Crbeam' ),
-          'restrict access' => TRUE
-      ),
-      'access mmoda crbeam' => array (
-          'description' => t ( 'Access MMODA Crbeam' ),
-          'title' => t ( 'Access MMODA Crbeam' ),
-          'restrict access' => TRUE
-      )
-  );
-}
-
-/**
- * Menu callback.
- * Prints a listing of active nodes on the site.
- */
-function mmoda_crbeam_menu() {
-  $items = array ();
-  
-  $items ['admin/config/mmoda/crbeam'] = array (
-      'title' => 'Administer MMODA Crbeam',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array (
-          'mmoda_crbeam_admin_settings'
-      ),
-      'description' => 'Edit MMODA Crbeam settings.',
-      'file' => 'mmoda_crbeam.admin.inc'
-  );
-  // 'weight' => -10,
-  
-  return $items;
 }

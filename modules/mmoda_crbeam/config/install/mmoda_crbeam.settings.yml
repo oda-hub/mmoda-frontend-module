@@ -1,0 +1,20 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: crbeam
+messenger: 
+title: Crbeam
+
+
+enabled: true
+product_type: compute_new_column
+query_type: Real
+radius: 2
+weight: 80
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/crbeam
+acknowledgement: >
+  Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>

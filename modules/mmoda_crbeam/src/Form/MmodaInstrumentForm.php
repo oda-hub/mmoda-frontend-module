@@ -1,0 +1,1220 @@
+<?php
+namespace Drupal\mmoda_crbeam\Form;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements the MmodaCrbeamForm form controller.
+ *
+ * This example demonstrates a simple form with a single text input element. We
+ * extend FormBase which is the simplest form base class used in Drupal.
+ *
+ * @see \Drupal\Core\Form\FormBase
+ */
+class MmodaInstrumentForm extends FormBase
+{
+
+  /**
+   * Build the simple form.
+   *
+   * A build form method constructs an array that defines how markup and
+   * other form elements are included in an HTML form.
+   *
+   * @param array $form
+   *          Default form array structure.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *          Object containing current form state.
+   *
+   * @return array The render array defining the elements of the form.
+   */
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
+    $mform_id = $this->getFormId();
+
+    $mmoda_settings = \Drupal::config('mmoda.settings');
+    $instrument_settings = \Drupal::config('mmoda_crbeam.settings');
+    $form['#action'] = $instrument_settings->get('data_server_url', $mmoda_settings->get('default_data_server_url'));
+    $module_handler = \Drupal::service('module_handler');
+    $module_path = $module_handler->getModule('mmoda_crbeam')->getPath();
+
+    $form['instrument'] = array(
+      '#type' => 'hidden',
+      '#value' => 'crbeam'
+    );
+
+    $form['query_type'] = array(
+      '#type' => 'hidden',
+      '#value' => $instrument_settings->get('query_type'),
+    );
+
+    $form['product_type'] = array(
+      '#type' => 'radios',
+      '#title' => t("Product Type"),
+      '#attributes' => array(
+        'name' => $mform_id . 'product_type',
+        'title' => t("Select product type")
+      ),
+      '#default_value' => $instrument_settings->get('product_type'),
+      '#options' => array(
+        'compute_new_column' => 'Compute new column',
+        'filter_table' => 'Filter table',
+        'model_CTA_events' => 'Model cta events',
+        'histogram_column' => 'Histogram column',
+        'CRbeam' => 'Crbeam',
+        'Generate_events' => 'Generate events',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['fn_type'] = array(
+      '#type' => 'radios',
+      '#title' => t("fn"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          )
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          )
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'fn_type',
+        'class' => array(
+          'file-url-text-padding'
+        )
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#options' => array(
+        'file' => t('Upload a file'),
+        'url' => t('Provide a URL')
+      ),
+      '#default_value' => 'file'
+    );
+
+    $form['fn_url'] = array(
+      '#type' => 'textfield',
+      '#title' => t('File URL'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          ),
+          'and',
+          ':input[name="' . $mform_id . 'fn_type"]' => array(
+            array('value' => 'url')
+          )
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          )
+          ,
+          'and',
+          ':input[name="' . $mform_id . 'fn_type"]' => array(
+            array('value' => 'url')
+          )
+        )
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'fn',
+        'class' => array(
+          'file-url-text-padding'
+        )
+      )
+    );
+
+    $form['fn_file'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload a file'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          ),
+          'and',
+          ':input[name="' . $mform_id . 'fn_type"]' => array(
+            array('value' => 'file')
+          )
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'histogram_column')
+          ),
+          'and',
+          ':input[name="' . $mform_id . 'fn_type"]' => array(
+            array('value' => 'file')
+          )
+        )
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'fn',
+        'class' => array(
+          'file-url-text-padding'
+        )
+      )
+    );
+
+    $form['z_start'] = array(
+      '#type' => 'textfield',
+      '#title' => t("z_start"),
+      '#default_value' => $instrument_settings->get('z_start'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'z_start',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['new_column'] = array(
+      '#type' => 'textfield',
+      '#title' => t("new_column"),
+      '#default_value' => $instrument_settings->get('new_column'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'compute_new_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'new_column',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+    );
+
+    $form['expression'] = array(
+      '#type' => 'textfield',
+      '#title' => t("expression"),
+      '#default_value' => $instrument_settings->get('expression'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'compute_new_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'compute_new_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'expression',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+    );
+
+    $form['Npart'] = array(
+      '#type' => 'textfield',
+      '#title' => t("Npart"),
+      '#default_value' => $instrument_settings->get('Npart'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'Npart',
+        'data-bv-between-max' => '100000',
+        'data-bv-between-min' => '1',
+        'data-bv-between' => 'true',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+    );
+
+    $form['sep'] = array(
+      '#type' => 'textfield',
+      '#title' => t("sep"),
+      '#default_value' => $instrument_settings->get('sep'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'compute_new_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column'),
+            'or',
+            array('value' => 'filter_table'),
+            'or',
+            array('value' => 'compute_new_column')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'sep',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['particle_type'] = array(
+      '#type' => 'select',
+      '#options' => array(
+        'electron' => 'electron',
+        'gamma' => 'gamma',
+        'proton' => 'proton',
+      ),
+      '#title' => t("particle_type"),
+      '#default_value' => $instrument_settings->get('particle_type'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'particle_type',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['column'] = array(
+      '#type' => 'textfield',
+      '#title' => t("column"),
+      '#default_value' => $instrument_settings->get('column'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'column',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['Emax'] = array(
+      '#type' => 'textfield',
+      '#title' => t("Emax"),
+      '#default_value' => $instrument_settings->get('Emax'),
+      '#field_suffix' => t("TeV"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'Emax',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['weights'] = array(
+      '#type' => 'textfield',
+      '#title' => t("weights"),
+      '#default_value' => $instrument_settings->get('weights'),
+      '#states' => array(
+
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'weights',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['Emin'] = array(
+      '#type' => 'textfield',
+      '#title' => t("Emin"),
+      '#default_value' => $instrument_settings->get('Emin'),
+      '#field_suffix' => t("TeV"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'Emin',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+    );
+
+    $form['binning'] = array(
+      '#type' => 'select',
+      '#options' => array(
+        'linear' => 'linear',
+        'logarithmic' => 'logarithmic',
+      ),
+      '#title' => t("binning"),
+      '#default_value' => $instrument_settings->get('binning'),
+      '#states' => array(
+
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'binning',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+    );
+
+    $form['EminSource'] = array(
+      '#type' => 'textfield',
+      '#title' => t("EminSource"),
+      '#default_value' => $instrument_settings->get('EminSource'),
+      '#field_suffix' => t("TeV"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'EminSource',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['minval'] = array(
+      '#type' => 'textfield',
+      '#title' => t("minval"),
+      '#default_value' => $instrument_settings->get('minval'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'minval',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['Gamma'] = array(
+      '#type' => 'textfield',
+      '#title' => t("Gamma"),
+      '#default_value' => $instrument_settings->get('Gamma'),
+
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'Gamma',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+
+
+
+
+
+
+
+    $form['maxval'] = array(
+
+
+      '#type' => 'textfield',
+
+
+      '#title' => t("maxval"),
+
+      '#default_value' => $instrument_settings->get('maxval'),
+
+
+      '#states' => array(
+
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'maxval',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+
+
+
+
+
+
+
+    $form['EGMF_fG'] = array(
+
+
+      '#type' => 'textfield',
+
+
+      '#title' => t("EGMF_fG"),
+
+      '#default_value' => $instrument_settings->get('EGMF_fG'),
+
+
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'EGMF_fG',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+
+
+
+
+
+
+
+    $form['nbins'] = array(
+
+
+      '#type' => 'textfield',
+
+
+      '#title' => t("nbins"),
+
+      '#default_value' => $instrument_settings->get('nbins'),
+
+
+      '#states' => array(
+
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'nbins',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+
+
+
+
+
+
+
+    $form['lmaxEGMF_Mpc'] = array(
+
+
+      '#type' => 'textfield',
+
+
+      '#title' => t("lmaxEGMF_Mpc"),
+
+      '#default_value' => $instrument_settings->get('lmaxEGMF_Mpc'),
+
+
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'lmaxEGMF_Mpc',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+
+
+
+
+
+
+
+    $form['xlabel'] = array(
+
+
+      '#type' => 'textfield',
+
+
+      '#title' => t("xlabel"),
+
+      '#default_value' => $instrument_settings->get('xlabel'),
+
+
+      '#states' => array(
+
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'xlabel',
+
+
+      ),
+      '#parent_classes' => array(
+        'form-group',
+
+        'col-md-6'
+      ),
+      '#label_classes' => array(
+        'control-label'
+      ),
+      '#prefix' => '<div class="row">',
+      '#suffix' => '</div>'
+
+    );
+
+    $form['jet_half_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t("jet_half_size"),
+      '#default_value' => $instrument_settings->get('jet_half_size'),
+      '#field_suffix' => t("deg"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'jet_half_size',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['ylabel'] = array(
+      '#type' => 'textfield',
+      '#title' => t("ylabel"),
+      '#default_value' => $instrument_settings->get('ylabel'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'histogram_column')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'ylabel',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['jet_direction'] = array(
+      '#type' => 'textfield',
+      '#title' => t("jet_direction"),
+      '#default_value' => $instrument_settings->get('jet_direction'),
+      '#field_suffix' => t("deg"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'jet_direction',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['window_size_RA'] = array(
+      '#type' => 'textfield',
+      '#title' => t("window_size_RA"),
+      '#default_value' => $instrument_settings->get('window_size_RA'),
+      '#field_suffix' => t("deg"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'window_size_RA',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['psf'] = array(
+      '#type' => 'textfield',
+      '#title' => t("psf"),
+      '#default_value' => $instrument_settings->get('psf'),
+      '#field_suffix' => t("deg"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'psf',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['window_size_DEC'] = array(
+      '#type' => 'textfield',
+      '#title' => t("window_size_DEC"),
+      '#default_value' => $instrument_settings->get('window_size_DEC'),
+      '#field_suffix' => t("deg"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+
+      '#attributes' => array(
+        'name' => $mform_id . 'window_size_DEC',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['livetime'] = array(
+      '#type' => 'textfield',
+      '#title' => t("livetime"),
+      '#default_value' => $instrument_settings->get('livetime'),
+      '#field_suffix' => t("day"),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'livetime',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['EBL'] = array(
+      '#type' => 'select',
+      '#options' => array(
+        'Franceschini 2017' => 'Franceschini 2017',
+        'Inoue 2012 Baseline' => 'Inoue 2012 Baseline',
+        'Inoue 2012 lower limit' => 'Inoue 2012 lower limit',
+        'Inoue 2012 upper limit' => 'Inoue 2012 upper limit',
+        'Stecker 2016 lower limit' => 'Stecker 2016 lower limit',
+        'Stecker 2016 upper limit' => 'Stecker 2016 upper limit',
+      ),
+      '#title' => t("EBL"),
+      '#default_value' => $instrument_settings->get('EBL'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'model_CTA_events'),
+            'or',
+            array('value' => 'CRbeam'),
+            'or',
+            array('value' => 'Generate_events')
+          ),
+        )
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'EBL',
+      ),
+      '#label_classes' => array(
+        'control-label'
+      )
+    );
+
+    $form['#theme'] = 'mmoda_crbeam_form';
+
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Submit')
+    );
+
+    return $form;
+  }
+
+  /**
+   * Getter method for Form ID.
+   *
+   * The form ID is used in implementations of hook_form_alter() to allow other
+   * modules to alter the render array built by this form controller. It must be
+   * unique site wide. It normally starts with the providing module's name.
+   *
+   * @return string The unique ID of the form defined by this class.
+   */
+  public function getFormId()
+  {
+    return 'mmoda_crbeam_form';
+  }
+
+  /**
+   * Implements form validation.
+   *
+   * The validateForm method is the default method called to validate input on
+   * a form.
+   *
+   * @param array $form
+   *          The render array of the currently built form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *          Object describing the current state of the form.
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state)
+  {
+    //     $title = $form_state->getValue('title');
+    //     if (strlen($title) < 5) {
+    //       // Set an error for the form element with a key of "title".
+    //       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
+    //     }
+  }
+
+  /**
+   * Implements a form submit handler.
+   *
+   * The submitForm method is the default method called for any submit elements.
+   *
+   * @param array $form
+   *          The render array of the currently built form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *          Object describing the current state of the form.
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
+    /*
+     * This would normally be replaced by code that actually does something
+     * with the title.
+     */
+    $title = $form_state->getValue('title');
+    $this->messenger()->addMessage($this->t('You specified a title of %title.', [
+      '%title' => $title
+    ]));
+  }
+}
