@@ -13,7 +13,7 @@ enabled: true
 product_type: spi_acs_lc
 query_type: Real
 time_bin: 2
-weight: 30
+weight: 50
 data_server_url: dispatch-data/run_analysis
 help_page_url: help/mmoda/integral-spi-acs
 acknowledgement: >

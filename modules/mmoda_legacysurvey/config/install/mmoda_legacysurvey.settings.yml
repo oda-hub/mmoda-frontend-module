@@ -17,7 +17,7 @@ image_band: g
 image_size: 3.
 pixel_size: 1
 query_type: Real
-weight: 100
+weight: 30
 data_server_url: dispatch-data/run_analysis
 help_page_url: help/mmoda/legacy-survey
 acknowledgement: >

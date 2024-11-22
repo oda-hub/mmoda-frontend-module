@@ -2,8 +2,8 @@
 # or uncomment the following to set a specific data server url
 #data_server_url: /dispatcher-data
 name: cta
-messenger: 
-title: Cta
+messenger: Gamma-Rays
+title: CTA
 enabled: true
 product_type: pre-defined_model
 query_type: Real
