@@ -1412,8 +1412,8 @@ function card_title(srcname, param) {
     }
   }
 
-  //  function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
-  function create_catalog_datatable(catalog, catalog_container, enable_use_catalog) {
+  function create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog) {
+    //  function create_catalog_datatable(catalog, catalog_container, enable_use_catalog) {
     var buttons = {
       topStart: {
         buttons: [
@@ -1438,20 +1438,24 @@ function card_title(srcname, param) {
         extend: 'copy',
       },
       {
-        text: 'Neww',
+        extend: 'create',
+        editor: editor,
+        text: 'New',
         className: 'btn-primary',
         formTitle: '<h3>Add new object</h3>',
       },
       {
+        extend: 'edit', editor: editor,
         text: 'Edit',
         className: 'btn-primary',
         formTitle: '<h3>Edit object</h3>',
       },
       {
+        extend: 'remove',
+        editor: editor,
         text: 'Delete',
         className: 'btn-primary',
         formTitle: '<h3>Delete source(s)</h3>',
-        //        editor: editor,
         formMessage: function(e, dt) {
           var rows = dt.rows(e.modifier()).data().pluck('src_names');
           return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
@@ -1461,26 +1465,26 @@ function card_title(srcname, param) {
         text: 'Add query object',
         className: 'btn-primary',
         action: function(e, dt, button, config) {
-          //          editor.title('<h3>Add query object</h3>').buttons([{
-          //            text: 'Add',
-          //            className: 'btn-primary save-row',
-          //            action: function() {
-          //              this.submit();
-          //            }
-          //          }, {
-          //            text: 'Cancel',
-          //            className: 'btn-primary',
-          //            action: function() {
-          //              this.close();
-          //            }
-          //          }]).create().set('src_names', $('input[name=src_name]', '.common-params').val()).set('ra', $('input[name=RA]', '.common-params').val()).set('dec',
-          //            $('input[name=DEC]', '.common-params').val());
-          // Make Editor draggable (movable)
-          // $('.DTE_Action_Create').draggable({
-          // handle : '.DTE_Header, .DTE_Footer',
-          // stack : '.ldraggable',
-          // containment : "parent"
-          // });
+          editor.title('<h3>Add query object</h3>').buttons([{
+            text: 'Add',
+            className: 'btn-primary save-row',
+            action: function() {
+              this.submit();
+            }
+          }, {
+            text: 'Cancel',
+            className: 'btn-primary',
+            action: function() {
+              this.close();
+            }
+          }]).create().set('src_names', $('input[name=src_name]', '#common-params').val()).set('ra', $('input[name=RA]', '#common-params').val()).set('dec',
+            $('input[name=DEC]', '#common-params').val());
+          //Make Editor draggable(movable)
+          //          $('.DTE_Action_Create').draggable({
+          //            handle: '.DTE_Header, .DTE_Footer',
+          //            stack: '.ldraggable',
+          //            containment: "parent"
+          //          });
         }
       }];
     var button_save_as_text = [
@@ -1499,7 +1503,7 @@ function card_title(srcname, param) {
             data.body[i][0] = i;
             file_content += data.body[i].join(' ') + "\n";
           }
-          $.fn.dataTable.fileSave(new Blob([file_content]), 'catalog.txt');
+          DataTable.fileSave(new Blob([file_content]), 'catalog.txt');
         }
       }];
     if (enable_use_catalog) {
@@ -1531,14 +1535,15 @@ function card_title(srcname, param) {
     var catalog_datatable = catalog_container.DataTable({
       data: catalog.data,
       columns: catalog.column_names,
-      // dom : 'Brtflip',
-      //dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
-      layout: {
+//      dom : 'Brtflip',
+//       dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
+     layout: {
         topStart: {
           buttons: buttons2
         }
       },
-      select: select_row,
+      select: true,
+      searching: false,
       order: [[1, 'asc']],
     });
     if (!enable_use_catalog)
@@ -1551,7 +1556,7 @@ function card_title(srcname, param) {
     var datetime = catalog.datetime;
 
     var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-catalog', datetime);
-    source_name = $('input[name=src_name]', '.common-params').val();
+    source_name = $('input[name=src_name]', '#common-params').val();
 
     if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Image catalog');
@@ -1579,15 +1584,15 @@ function card_title(srcname, param) {
         '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
 
-    //    var editor = new $.fn.dataTable.Editor({
-    //      table: '#' + card_ids.card_id + ' .catalog-wrapper .mmoda',
-    //      fields: catalog.fields,
-    //    });
+    var editor = new $.fn.dataTable.Editor({
+      table: '#' + card_ids.card_id + ' .catalog-wrapper .mmoda',
+      fields: catalog.fields,
+    });
 
     var catalog_container = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id);
 
-    //    var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
-    var dataTable = create_catalog_datatable(catalog, catalog_container, enable_use_catalog)
+    var dataTable = create_catalog_datatable(editor, catalog, catalog_container, enable_use_catalog)
+    //    var dataTable = create_catalog_datatable(catalog, catalog_container, enable_use_catalog)
 
     catalog_card.data({
       dataTable: dataTable,
@@ -1596,7 +1601,7 @@ function card_title(srcname, param) {
 
     // Activate inline edit on click of a table cell
     if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
-      // editor.inline(this);
+      editor.inline(this);
     });
 
     //    editor.on('preSubmit', function(e, data, action) {
@@ -1713,7 +1718,7 @@ function card_title(srcname, param) {
     $('#' + card_ids.card_id).data({
       api_code_product_card_id: afterDiv
     });
-    source_name = $('input[name=src_name]', '.common-params').val();
+    source_name = $('input[name=src_name]', '#common-params').val();
     if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('API code');
     else
@@ -1769,7 +1774,7 @@ function card_title(srcname, param) {
     $('#' + card_ids.card_id).data({
       log_product_card_id: afterDiv
     });
-    source_name = $('input[name=src_name]', '.common-params').val();
+    source_name = $('input[name=src_name]', '#common-params').val();
     if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Log');
     else
@@ -1815,7 +1820,7 @@ function card_title(srcname, param) {
       query_parameters_product_card_id: afterDiv
     });
 
-    source_name = $('input[name=src_name]', '.common-params').val();
+    source_name = $('input[name=src_name]', '#common-params').val();
     if (typeof (source_name) === 'undefined')
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Query parameters');
     else
