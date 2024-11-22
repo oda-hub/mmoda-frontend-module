@@ -40,7 +40,11 @@ class MmodaInstrumentForm extends FormBase
 
     $form['instrument'] = array(
       '#type' => 'hidden',
-      '#value' => 'crbeam'
+      '#value' => 'crbeam',
+      '#attributes' => array(
+        'integral_instrument' => 'false',
+        'support_return_progress' => 'true'
+      )
     );
 
     $form['query_type'] = array(
