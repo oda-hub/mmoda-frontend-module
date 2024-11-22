@@ -67,9 +67,6 @@ class MmodaInstrumentForm extends FormBase
         'histogram_column' => 'Histogram column',
         'CRbeam' => 'Crbeam',
         'Generate_events' => 'Generate events',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -101,9 +98,6 @@ class MmodaInstrumentForm extends FormBase
         'class' => array(
           'file-url-text-padding'
         )
-      ),
-      '#label_classes' => array(
-        'control-label'
       ),
       '#options' => array(
         'file' => 'Upload a file',
@@ -144,9 +138,6 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
-      '#label_classes' => array(
-        'control-label'
-      ),
       '#attributes' => array(
         'name' => $mform_id . 'fn',
         'class' => array(
@@ -186,9 +177,6 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
-      '#label_classes' => array(
-        'control-label'
-      ),
       '#attributes' => array(
         'name' => $mform_id . 'fn',
         'class' => array(
@@ -223,9 +211,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'z_start',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -247,9 +232,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'new_column',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -275,9 +257,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'expression',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -312,9 +291,6 @@ class MmodaInstrumentForm extends FormBase
         'data-bv-between-min' => '1',
         'data-bv-between' => 'true',
       ),
-      '#label_classes' => array(
-        'control-label'
-      ),
       '#prefix' => '<div class="row">',
       '#suffix' => '</div>'
     );
@@ -345,9 +321,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'sep',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -382,9 +355,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'particle_type',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -406,9 +376,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'column',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -439,9 +406,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'Emax',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -464,9 +428,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'weights',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -498,9 +459,6 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'name' => $mform_id . 'Emin',
       ),
-      '#label_classes' => array(
-        'control-label'
-      ),
     );
 
     $form['binning'] = array(
@@ -526,9 +484,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'binning',
-      ),
-      '#label_classes' => array(
-        'control-label'
       ),
     );
 
@@ -559,9 +514,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'EminSource',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -583,9 +535,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'minval',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -615,9 +564,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'Gamma',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -639,9 +585,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'maxval',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -671,9 +614,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'EGMF_fG'
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -695,9 +635,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'nbins',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -727,9 +664,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'lmaxEGMF_Mpc'
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -751,9 +685,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'xlabel',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -784,9 +715,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'jet_half_size',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -808,9 +736,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'ylabel',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -841,9 +766,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'jet_direction',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -874,9 +796,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'window_size_RA',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -903,9 +822,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'psf',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -936,9 +852,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'window_size_DEC',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -961,9 +874,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'livetime',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
@@ -1001,9 +911,6 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'EBL',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
 
