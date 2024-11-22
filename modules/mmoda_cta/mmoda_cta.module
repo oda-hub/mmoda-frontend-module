@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_cta_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_cta_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}

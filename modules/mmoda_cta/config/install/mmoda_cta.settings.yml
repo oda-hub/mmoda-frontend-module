@@ -1,0 +1,38 @@
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+name: cta
+messenger: 
+title: Cta
+enabled: true
+product_type: pre-defined_model
+query_type: Real
+OffAxis_angle: 0.78
+cut_efficiency: 0.7
+data_cube: "3d.fits"
+Texp: 1.0
+Zd: 20.0
+F0: 1e-11
+z: 0.03
+N_backgr_regions: 3
+E0: 1.0
+Exposure_time: 33.0
+source_extension: 0.0
+Radius_spectal_extraction: 0.2
+Gamma: 2.0
+Norm: 8.7e-10
+Radius_sky_image: 2.5
+index: -2.03
+Site: "North"
+Telescopes_LST: 1
+Telescopes_MST: 1
+Telescope_LST: 1
+Telescopes_SST: 0
+Telescope_MST: 1
+Telescope_SST: 0
+instrument_version: '<a target="_blank" href="test">1.0.0</a>'
+weight: 80
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/cta
+acknowledgement: >
+  Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>
