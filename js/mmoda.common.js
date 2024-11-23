@@ -387,7 +387,7 @@ function get_waitingDialog($modal_dialog) {
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
-            .addClass('modal-' + settings.dialogSize);
+            .addClass('modal-dialog-centered modal-' + settings.dialogSize);
 
           if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
