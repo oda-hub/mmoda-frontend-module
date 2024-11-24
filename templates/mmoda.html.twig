@@ -117,11 +117,11 @@ The configured label of the block if visible.
                       <div class="card-header-toolbox float-end">
                         {% if instrument.help_page_url %}
                         <a type="button" class="btn btn-primary btn-sm btn-help open-in-modal" aria-label="Help" data-toggle="tooltip" data-placement="left" title="Help" href="{{ instrument.help_page_url }}">
-                          <i class="bi bi-info-circle-fill"></i></a>
+                          <i class="bi bi-info-circle-fill float-end"></i></a>
                         </a>
                          {% endif %}
-                        <div class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="#{{ instrument.name }}-params-card-body" aria-expanded="true" aria-controls="{{ instrument.name }}-params-card-body">
-                           <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
+                        <div class="collapse-indicator-chevron float-end" type="button" data-bs-toggle="collapse" data-bs-target="#{{ instrument.name }}-params-card-body" aria-expanded="true" aria-controls="{{ instrument.name }}-params-card-body">
+                           <i class="btn btn-default btn-sm bi bi-chevron-down"></i>
                         </div>
                         
                       </div>
@@ -260,31 +260,26 @@ The configured label of the block if visible.
     <span class="card-title"></span>
     <span class="card-header-toolbox float-end">
        <span class="date"></span>
-       <a class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="true" aria-controls="">
-         <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
+       <a class="collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="#mmoda-card-body-footer" aria-expanded="true" aria-controls="mmoda-card-body-footer">
+         <i class="btn btn-default btn-sm bi bi-chevron-down"></i>
       </a>
        <button type="button" class="btn-close close-card" aria-label="Close"></button>
     </span> 
     </span>
   </div>
+  <div class="card-body-footer show">
   <div class="card-body"></div>
   <div class="card-footer"></div>
+  </div>
 </div>
 
 {# MMODA Gallery card #}
 <div id="mmoda-gallery-card-model" class="card card-primary">
-  <div class="card-header bg-primary">
-    <div class="collapsible">
+<div class="card-header bg-primary" data-bs-toggle="collapse" href="#mmoda-gallery-card-body" role="button" aria-expanded="false" aria-controls="mmoda-gallery-card-body">
       <span class="card-title">MMODA Gallery</span>
-      <span class="card-header-toolbox float-end">
-       <a class="bg-primary collapse-indicator-chevron" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="false" aria-controls="">
-         <i class="bi bi-chevron-up"></i><i class="bi bi-chevron-down"></i>
-      </a>
-       <button type="button" class="btn-close btn-close-white close-card" aria-label="Close"></button>
-      </span>
-    </div>
+       <button type="button" class="btn-close btn-close-white close-card float-end" aria-label="Close"></button><i class="btn btn-primary bi bi-chevron-down float-end"></i>
   </div>
-  <div class="card-body">
+  <div id="mmoda-gallery-card-body" class="show card-body">
   <div class="progress progress-bar progress-bar-success"></div>
   </div>
 </div>
