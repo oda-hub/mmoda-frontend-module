@@ -1,11 +1,9 @@
 <?php
-namespace Drupal\mmoda_icecube\Form;
-
+namespace Drupal\mmoda_sgwb\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-
 /**
- * Implements the MmodaicecubeForm form controller.
+ * Implements the MmodasgwbForm form controller.
  *
  * This example demonstrates a simple form with a single text input element. We
  * extend FormBase which is the simplest form base class used in Drupal.
@@ -14,7 +12,6 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class MmodaInstrumentForm extends FormBase
 {
-
   /**
    * Build the simple form.
    *
@@ -31,16 +28,15 @@ class MmodaInstrumentForm extends FormBase
   public function buildForm(array $form, FormStateInterface $form_state)
   {
     $mform_id = $this->getFormId();
-
     $mmoda_settings = \Drupal::config('mmoda.settings');
-    $instrument_settings = \Drupal::config('mmoda_icecube.settings');
+    $instrument_settings = \Drupal::config('mmoda_sgwb.settings');
     $form['#action'] = $instrument_settings->get('data_server_url', $mmoda_settings->get('default_data_server_url'));
     $module_handler = \Drupal::service('module_handler');
-    $module_path = $module_handler->getModule('mmoda_icecube')->getPath();
+    $module_path = $module_handler->getModule('mmoda_sgwb')->getPath();
 
     $form['instrument'] = array(
       '#type' => 'hidden',
-      '#value' => 'icecube',
+      '#value' => 'sgwb',
       '#attributes' => array(
         'integral_instrument' => 'false',
         'support_return_progress' => 'true'
@@ -56,64 +52,28 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
-        'Spectrum' => 'Spectrum',
-        'Lightcurve' => 'Lightcurve',
-        'Image' => 'Image'
-      ),
-    );
-
-    $form['IC40'] = array(
-      '#type' => 'radios',
-      '#options' => array(
-        1 => 'True',
-        0 => 'False'
-      ),
-      '#title' => "IC40",
-
-      '#default_value' => $instrument_settings->get('IC40'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        )
-      ),
-
-      '#attributes' => array(
-        'name' => $mform_id . 'IC40',
+        'Phase_transition_parameters' => 'Phase transition parameters',
+        'Model_spectrum' => 'Model spectrum',
       )
     );
-    
-    $form['Slope'] = array(
+
+    $form['epsilon_turb'] = array(
       '#type' => 'textfield',
-      '#title' => "Slope",
-      '#default_value' => $instrument_settings->get('Slope'),
+      '#title' => "epsilon_turb",
+      '#default_value' => $instrument_settings->get('epsilon_turb'),
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Lightcurve'),
+            array('value' => 'Phase_transition_parameters'),
             'or',
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         ),
         'enabled' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Lightcurve'),
+            array('value' => 'Phase_transition_parameters'),
             'or',
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         )
       ),
@@ -121,185 +81,24 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
-        'name' => $mform_id . 'Slope',
+        'name' => $mform_id . 'epsilon_turb',
       )
     );
 
-    $form['IC59'] = array(
-      '#type' => 'radios',
-      '#options' => array(
-        1 => 'True',
-        0 => 'False'
-      ),
-      '#title' => "IC59",
-      '#default_value' => $instrument_settings->get('IC59'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        )
-      ),
-      '#label_attributes' => array(
-        'class' => array('label')
-      ),
-      '#attributes' => array(
-        'name' => $mform_id . 'IC59',
-      )
-    );
-
-    $form['IC79'] = array(
-      '#type' => 'radios',
-      '#options' => array(
-        1 => 'True',
-        0 => 'False'
-      ),
-      '#title' => "IC79",
-      '#default_value' => $instrument_settings->get('IC79'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        )
-      ),
-      '#label_attributes' => array(
-        'class' => array('label')
-      ),
-      '#attributes' => array(
-        'name' => $mform_id . 'IC79',
-      )
-    );
-
-    $form['IC86_I'] = array(
-      '#type' => 'radios',
-      '#options' => array(
-        1 => 'True',
-        0 => 'False'
-      ),
-      '#title' => "IC86_I",
-
-      '#default_value' => $instrument_settings->get('IC86_I'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        )
-      ),
-      '#label_attributes' => array(
-        'class' => array('label')
-      ),
-      '#attributes' => array(
-        'name' => $mform_id . 'IC86_I',
-      )
-    );
-
-    $form['IC86_II_VII'] = array(
-      '#type' => 'radios',
-      '#options' => array(
-        1 => 'True',
-        0 => 'False'
-      ),
-      '#title' => "IC86_II_VII",
-      '#default_value' => $instrument_settings->get('IC86_II_VII'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum'),
-            'or',
-            array('value' => 'Image')
-          ),
-        )
-      ),
-      '#label_attributes' => array(
-        'class' => array('label')
-      ),
-      '#attributes' => array(
-        'name' => $mform_id . 'IC86_II_VII',
-      )
-    );
-
-    $form['Spectrum_type'] = array(
-      '#type' => 'select',
-      '#options' => array(
-
-        'Fixed_slope' => 'Fixed_slope',
-
-        'Free_slope' => 'Free_slope',
-
-      ),
-      '#title' => "Spectrum_type",
-
-      '#default_value' => $instrument_settings->get('Spectrum_type'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum')
-          ),
-        ),
-        'enabled' => array(
-          ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Spectrum')
-          ),
-        )
-      ),
-      '#label_attributes' => array(
-        'class' => array('label')
-      ),
-      '#attributes' => array(
-        'name' => $mform_id . 'Spectrum_type',
-      )
-    );
-
-    $form['Radius'] = array(
+    $form['T_star'] = array(
       '#type' => 'textfield',
-      '#title' => "Radius",
-      '#default_value' => $instrument_settings->get('Radius'),
-      '#field_suffix' => "deg",
+      '#title' => "T_star",
+      '#default_value' => $instrument_settings->get('T_star'),
+      '#field_suffix' => "GeV",
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         ),
         'enabled' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         )
       ),
@@ -307,24 +106,23 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
-        'name' => $mform_id . 'Radius'
+        'name' => $mform_id . 'T_star',
       )
     );
 
-    $form['pixel_size'] = array(
+    $form['g_star'] = array(
       '#type' => 'textfield',
-      '#title' => "pixel_size",
-      '#default_value' => $instrument_settings->get('pixel_size'),
-      '#field_suffix' => "deg",
+      '#title' => "g_star",
+      '#default_value' => $instrument_settings->get('g_star'),
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         ),
         'enabled' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         )
       ),
@@ -332,27 +130,23 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
-        'name' => $mform_id . 'pixel_size'
+        'name' => $mform_id . 'g_star',
       )
     );
 
-    $form['TSmap_type'] = array(
-      '#type' => 'select',
-      '#options' => array(
-        'Fixed_slope' => 'Fixed_slope',
-        'Free_slope' => 'Free_slope',
-      ),
-      '#title' => "TSmap_type",
-      '#default_value' => $instrument_settings->get('TSmap_type'),
+    $form['alpha'] = array(
+      '#type' => 'textfield',
+      '#title' => "alpha",
+      '#default_value' => $instrument_settings->get('alpha'),
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         ),
         'enabled' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
-            array('value' => 'Image')
+            array('value' => 'Model_spectrum')
           ),
         )
       ),
@@ -360,20 +154,89 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
-        'name' => $mform_id . 'TSmap_type',
+        'name' => $mform_id . 'alpha',
       )
     );
 
-    $form['#theme'] = 'mmoda_icecube_form';
+    $form['beta_H'] = array(
+      '#type' => 'textfield',
+      '#title' => "beta_H",
+      '#default_value' => $instrument_settings->get('beta_H'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'beta_H',
+      )
+    );
 
+    $form['v_w'] = array(
+      '#type' => 'textfield',
+      '#title' => "v_w",
+      '#default_value' => $instrument_settings->get('v_w'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'v_w',
+      )
+    );
+
+    $form['h'] = array(
+      '#type' => 'textfield',
+      '#title' => "h",
+      '#default_value' => $instrument_settings->get('h'),
+      '#states' => array(
+        'visible' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        ),
+        'enabled' => array(
+          ':input[name="' . $mform_id . 'product_type"]' => array(
+            array('value' => 'Model_spectrum')
+          ),
+        )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
+      '#attributes' => array(
+        'name' => $mform_id . 'h',
+      )
+    );
+
+    $form['#theme'] = 'mmoda_sgwb_form';
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => 'Submit'
     );
-
     return $form;
   }
-
   /**
    * Getter method for Form ID.
    *
@@ -385,9 +248,8 @@ class MmodaInstrumentForm extends FormBase
    */
   public function getFormId()
   {
-    return 'mmoda_icecube_form';
+    return 'mmoda_sgwb_form';
   }
-
   /**
    * Implements form validation.
    *
@@ -407,7 +269,6 @@ class MmodaInstrumentForm extends FormBase
     //       $form_state->setErrorByName('title', $this->t('The title must be at least 5 characters long.'));
     //     }
   }
-
   /**
    * Implements a form submit handler.
    *
