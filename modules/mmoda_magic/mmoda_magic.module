@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_magic_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_magic_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}

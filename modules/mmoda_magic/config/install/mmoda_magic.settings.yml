@@ -1,0 +1,22 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: magic
+messenger: Gamma-rays
+title: Magic
+
+
+enabled: true
+E1_keV: 20.0
+E2_keV: 100.0
+radius: 15
+product_type: 'magic_table'
+time_bin: '2'
+time_bin_format: 'sec'
+query_type: Real
+weight: 100
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/magic
