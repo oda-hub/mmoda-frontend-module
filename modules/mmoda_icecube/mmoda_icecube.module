@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_icecube_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_icecube_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}
