@@ -57,9 +57,6 @@ class MmodaInstrumentForm extends FormBase
         'pre-defined_model' => 'Pre-defined model',
         'LST1_observation_simulator' => 'Lst1 observation simulator',
         'model_cube_file' => 'Model cube file'
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
     $form['OffAxis_angle'] = array(
@@ -83,12 +80,11 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'OffAxis_angle',
-      ),
-      '#parent_classes' => array(
-        'form-group',
-        'col-md-6'
       )
     );
     $form['cut_efficiency'] = array(
@@ -106,6 +102,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'LST1_observation_simulator')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'cut_efficiency',
@@ -125,6 +124,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'model_cube_file')
           )
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'data_cube_type',
@@ -163,6 +165,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'data_cube',
         'class' => array(
@@ -195,6 +200,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'data_cube',
         'class' => array(
@@ -223,6 +231,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Texp',
       )
@@ -242,6 +253,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'LST1_observation_simulator')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'Zd',
@@ -267,6 +281,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'F0',
       )
@@ -287,6 +304,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'z',
       )
@@ -306,6 +326,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'LST1_observation_simulator')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'N_backgr_regions',
@@ -332,6 +355,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'E0',
       )
@@ -352,6 +378,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Exposure_time',
       )
@@ -371,6 +400,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'LST1_observation_simulator')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'source_extension',
@@ -397,6 +429,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Radius_spectal_extraction',
       )
@@ -417,11 +452,11 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Gamma',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
     $form['Norm'] = array(
@@ -439,6 +474,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'LST1_observation_simulator')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'Norm',
@@ -465,6 +503,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Radius_sky_image',
       )
@@ -485,11 +526,11 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'index',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
     $form['Site'] = array(
@@ -516,6 +557,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Site',
       )
@@ -539,6 +583,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'model_cube_file')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescopes_LST',
@@ -565,6 +612,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescopes_MST',
       )
@@ -590,6 +640,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescope_LST',
       )
@@ -614,12 +667,11 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescopes_SST',
-      ),
-      '#parent_classes' => array(
-        'form-group',
-        'col-md-6'
       )
     );
     $form['Telescope_MST'] = array(
@@ -642,11 +694,11 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescope_MST',
-      ),
-      '#label_classes' => array(
-        'control-label'
       )
     );
     $form['Telescope_SST'] = array(
@@ -669,10 +721,14 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Telescope_SST',
       )
     );
+    
     $form['#theme'] = 'mmoda_cta_form';
     $form['submit'] = array(
       '#type' => 'submit',

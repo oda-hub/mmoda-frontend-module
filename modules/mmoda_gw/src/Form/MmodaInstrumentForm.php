@@ -71,8 +71,8 @@ class MmodaInstrumentForm extends FormBase
         'form-group',
         'col-md-6'
       ),
-      '#label_classes' => array(
-        'control-label'
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'detector',
@@ -92,6 +92,9 @@ class MmodaInstrumentForm extends FormBase
       '#title' => t("Search mode"),
       '#attributes' => array(
         'name' => $mform_id . 'do_cone_search'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#options' => array(
         1 => 'Cone search',
@@ -130,6 +133,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'title' => t("Comma-separated list of levels"),
         'data-bv-notempty' => 'true',
@@ -140,7 +146,7 @@ class MmodaInstrumentForm extends FormBase
   
     $form['level_threshold'] = array(
       '#type' => 'textfield',
-      '#title' => t("Level threshold"),
+      '#title' => "Level threshold",
       '#default_value' => $instrument_settings->get('level_threshold'),
       '#states' => array(
         'visible' => array(
@@ -162,18 +168,21 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-notempty' => 'true',
         'data-bv-integer' => 'true',
         'data-bv-between' => 'true',
         'data-bv-between-min' => '0',
         'data-bv-between-max' => '100',
-      ),
+      )
     );
   
     $form['radius'] = array(
       '#type' => 'textfield',
-      '#title' => t("Radius"),
+      '#title' => "Radius",
       '#default_value' => $instrument_settings->get('radius'),
       '#states' => array(
         'visible' => array(
@@ -195,6 +204,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-notempty' => 'true',
         'data-bv-numeric' => 'true',
@@ -206,9 +218,13 @@ class MmodaInstrumentForm extends FormBase
   
     $form['whiten'] = array(
       '#type' => 'radios',
-      '#title' => t("Whiten?"),
+      '#title' => "Whiten?",
       '#attributes' => array(
+        'title' => "Should the strain data be whiten?",
         'name' => $mform_id . 'whiten'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#options' => array(
         1 => 'Yes',
@@ -226,15 +242,12 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'gw_spectrogram'), 'or', array('value' => 'gw_strain')
            )
           )
-      ),
-      '#attributes' => array(
-        'title' => t("Should the strain data be whiten?"),
       )
     );
   
     $form['qmin'] = array(
       '#type' => 'textfield',
-      '#title' => t("Lower Q"),
+      '#title' => "Lower Q",
       '#default_value' => $instrument_settings->get('qmin'),
       '#states' => array(
         'visible' => array(
@@ -250,6 +263,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
         'title' => t("Lower bound of Qs interval"),
@@ -258,7 +274,7 @@ class MmodaInstrumentForm extends FormBase
   
     $form['qmax'] = array(
       '#type' => 'textfield',
-      '#title' => t("Upper Q"),
+      '#title' => "Upper Q",
       '#default_value' => $instrument_settings->get('qmax'),
       '#states' => array(
         'visible' => array(
@@ -274,6 +290,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
         'title' => t("Upper bound of Qs interval"),
@@ -282,7 +301,7 @@ class MmodaInstrumentForm extends FormBase
   
     $form['fmin'] = array(
       '#type' => 'textfield',
-      '#title' => t("Lower frequency"),
+      '#title' => "Lower frequency",
       '#default_value' => $instrument_settings->get('fmin'),
       '#states' => array(
         'visible' => array(
@@ -298,16 +317,19 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
-        'title' => t("Lower frequency to bandpass"),
+        'title' => "Lower frequency to bandpass",
       ),
-      '#field_suffix' => t('Hz'),
+      '#field_suffix' => 'Hz'
     );
   
     $form['fmax'] = array(
       '#type' => 'textfield',
-      '#title' => t("Upper frequency"),
+      '#title' => "Upper frequency",
       '#default_value' => $instrument_settings->get('fmax'),
       '#states' => array(
         'visible' => array(
@@ -323,11 +345,14 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-bv-integer' => 'true',
-        'title' => t("Upper frequency to bandpass"),
+        'title' => "Upper frequency to bandpass"
       ),
-      '#field_suffix' => t('Hz'),
+      '#field_suffix' => 'Hz'
     );
 
     $form['#theme'] = 'mmoda_gw_form';

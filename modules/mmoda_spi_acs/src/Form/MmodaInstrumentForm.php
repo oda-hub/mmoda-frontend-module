@@ -64,6 +64,9 @@ class MmodaInstrumentForm extends FormBase
         'Real' => 'Real',
         'Dummy' => 'Dummy'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'title' => "Select query type",
       )
@@ -86,6 +89,9 @@ class MmodaInstrumentForm extends FormBase
             )
           )
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',

@@ -59,6 +59,9 @@ class MmodaInstrumentForm extends FormBase
         'OSA10.2' => 'OSA10.2',
         'OSA11.2' => 'OSA11.2'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#default_value' => $instrument_settings->get('osa_version'),
     );
 
@@ -70,6 +73,9 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'name' => $mform_id . 'radius',
         'data-fv-numeric' => 'true'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#field_suffix' => t('deg'),
     );
@@ -93,6 +99,9 @@ class MmodaInstrumentForm extends FormBase
       '#title' => t("Maximum number of ScWs"),
       '#size' => 10,
       '#default_value' => $instrument_settings->get('max_pointings'),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-integer' => 'true',
         'title' => t("randomly selected in the time range"),
@@ -117,6 +126,9 @@ class MmodaInstrumentForm extends FormBase
       '#type' => 'textarea',
       '#title' => t("ScWs List"),
       '#default_value' => $instrument_settings->get('scw_list'),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#states' => array(
         'visible' => array( // action to take.
           ':input[name="' . $mform_id . 'use_scws"]' => array(
@@ -136,6 +148,9 @@ class MmodaInstrumentForm extends FormBase
     $form['user_scw_list_file'] = array(
       '#type' => 'file',
       '#title' => t("ScWs file"),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => 'user_scw_list_file',
         'class' => array(
@@ -162,6 +177,9 @@ class MmodaInstrumentForm extends FormBase
     $form['integral_data_rights'] = array(
       '#type' => 'radios',
       '#title' => t("INTEGRAL data access priviledge"),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'integral_data_rights'
       ),
@@ -175,6 +193,9 @@ class MmodaInstrumentForm extends FormBase
     $form['jemx_num'] = array(
       '#type' => 'radios',
       '#title' => t("JEMX module number"),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'jemx_num'
       ),
@@ -192,6 +213,9 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('E1_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e1kev' => 'true',
@@ -205,6 +229,9 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('E2_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e2kev' => 'true',
@@ -220,6 +247,9 @@ class MmodaInstrumentForm extends FormBase
         'Real' => 'Real',
         'Dummy' => 'Dummy'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'title' => t("Select query type"),
       ),
@@ -229,6 +259,9 @@ class MmodaInstrumentForm extends FormBase
       '#type' => 'textfield',
       '#title' => t("Detection Threshold"),
       '#default_value' => 7.0,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'title' => t("Output catalog significance threshold"),
@@ -239,6 +272,9 @@ class MmodaInstrumentForm extends FormBase
     $form['product_type'] = array(
       '#type' => 'radios',
       '#title' => t("Product Type"),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'product_type',
         'title' => t("Select product type"),
@@ -268,6 +304,9 @@ class MmodaInstrumentForm extends FormBase
             )
           )
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
@@ -300,16 +339,22 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'class' => array(
           'time_bin_format'
         )
-      ),
+      )
     );
 
     $form['user_catalog_file'] = array(
       '#type' => 'file',
       '#title' => t("User catalog"),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => 'user_catalog_file'
       ),

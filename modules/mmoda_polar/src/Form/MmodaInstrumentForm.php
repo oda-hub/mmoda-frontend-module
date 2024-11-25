@@ -45,10 +45,10 @@ class MmodaInstrumentForm extends FormBase
 
     $form['product_type'] = array(
       '#type' => 'radios',
-      '#title' => t("Product Type"),
+      '#title' => "Product Type",
       '#attributes' => array(
         'name' => $mform_id . 'product_type',
-        'title' => t("Select product type")
+        'title' => "Select product type"
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
@@ -58,11 +58,14 @@ class MmodaInstrumentForm extends FormBase
 
     $form['E1_keV'] = array(
       '#type' => 'textfield',
-      '#title' => t("Energy Min"),
-      '#field_suffix' => t("keV"),
+      '#title' => "Energy Min",
+      '#field_suffix' => "keV",
       '#default_value' => $instrument_settings->get('E1_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e1kev' => 'true',
@@ -72,11 +75,14 @@ class MmodaInstrumentForm extends FormBase
 
     $form['E2_keV'] = array(
       '#type' => 'textfield',
-      '#title' => t("Energy Max"),
-      '#field_suffix' => t("keV"),
+      '#title' => "Energy Max",
+      '#field_suffix' => "keV",
       '#default_value' => $instrument_settings->get('E2_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e2kev' => 'true',
@@ -86,11 +92,14 @@ class MmodaInstrumentForm extends FormBase
 
     $form['query_type'] = array(
       '#type' => 'select',
-      '#title' => t("Query Type"),
+      '#title' => "Query Type",
       '#default_value' => $instrument_settings->get('query_type'),
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'title' => "Select query type",
@@ -99,7 +108,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['time_bin'] = array(
       '#type' => 'textfield',
-      '#title' => t("Time bin"),
+      '#title' => "Time bin",
       '#default_value' => $instrument_settings->get('time_bin'),
       '#states' => array(
         'visible' => array(
@@ -115,15 +124,18 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'title' => t("Minimum value is 20 seconds."),
+        'title' => "Minimum value is 20 seconds.",
       )
     );
 
     $form['time_bin_format'] = array(
       '#type' => 'select',
-      '#title' => t("Unit"),
+      '#title' => "Unit",
       '#options' => array(
         'sec' => 'Seconds',
         'jd' => 'Days'
@@ -143,6 +155,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'class' => array(
           'time_bin_format'
@@ -154,7 +169,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit')
+      '#value' => 'Submit'
     );
 
     return $form;

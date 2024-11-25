@@ -50,14 +50,20 @@ class MmodaInstrumentForm extends FormBase
         'OSA10.2' => 'OSA10.2',
         'OSA11.2' => 'OSA11.2'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#default_value' => $instrument_settings->get('osa_version')
     );
 
     $form['radius'] = array(
       '#type' => 'textfield',
-      '#title' => t("Radius"),
+      '#title' => "Radius",
       '#default_value' => $instrument_settings->get('radius'),
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'radius',
         'data-fv-numeric' => 'true'
@@ -71,6 +77,9 @@ class MmodaInstrumentForm extends FormBase
       '#title' => t("Use INTEGRAL pointing Science Windows (ScWs)"),
       '#attributes' => array(
         'name' => $mform_id . 'use_scws'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#options' => array(
         'no' => t('Select for time range'),
@@ -88,6 +97,9 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'data-fv-integer' => 'true',
         'title' => t('Randomly selected in the time range')
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -111,6 +123,9 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('scw_list'),
       '#attributes' => array(
         'data-fv-vcheck-scws' => 'true'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#states' => array(
         'visible' => array( // action to take.
@@ -139,6 +154,9 @@ class MmodaInstrumentForm extends FormBase
         ),
         'title' => t('An ASCII file, one ScW per line.'),
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#states' => array(
         'visible' => array( // action to take.
           ':input[name="' . $mform_id . 'use_scws"]' => array(
@@ -161,6 +179,9 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'name' => $mform_id . 'integral_data_rights'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#default_value' => 'public',
       '#options' => array(
         'public' => 'Public',
@@ -175,6 +196,9 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('E1_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e1kev' => 'true',
@@ -189,6 +213,9 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('E2_keV'),
       '#required' => TRUE,
       '#size' => 10,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e2kev' => 'true',
@@ -203,6 +230,9 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'title' => t("Select query type"),
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
@@ -213,6 +243,9 @@ class MmodaInstrumentForm extends FormBase
       '#type' => 'textfield',
       '#title' => t("Detection Threshold"),
       '#default_value' => 7.0,
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'title' => t("Select query type"),
@@ -252,6 +285,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'data-fv-numeric___message' => 'Please enter a valid float number',
@@ -283,6 +319,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'class' => array(
           'time_bin_format'
@@ -295,6 +334,9 @@ class MmodaInstrumentForm extends FormBase
       '#title' => t("User catalog"),
       '#attributes' => array(
         'name' => 'user_catalog_file'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#suffix' => t('<div>If needed, create a custom catalog following one of the templates : <a href="' .
                   $module_path . '/data/catalog.txt" download>ASCII</a> or <a href="' . $module_path . '/data/catalog.fits" download>FITS</a>.</div>'),

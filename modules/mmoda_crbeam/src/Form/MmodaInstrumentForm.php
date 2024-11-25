@@ -93,6 +93,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'fn_type',
         'class' => array(
@@ -138,6 +141,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'fn',
         'class' => array(
@@ -177,6 +183,9 @@ class MmodaInstrumentForm extends FormBase
           )
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'fn',
         'class' => array(
@@ -209,6 +218,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'z_start',
       )
@@ -229,6 +241,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'compute_new_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'new_column',
@@ -254,6 +269,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'compute_new_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'expression',
@@ -284,15 +302,15 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
-
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Npart',
         'data-bv-between-max' => '100000',
         'data-bv-between-min' => '1',
         'data-bv-between' => 'true',
-      ),
-      '#prefix' => '<div class="row">',
-      '#suffix' => '</div>'
+      )
     );
 
     $form['sep'] = array(
@@ -318,6 +336,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'compute_new_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'sep',
@@ -353,6 +374,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'particle_type',
       )
@@ -373,6 +397,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'column',
@@ -404,6 +431,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Emax',
       )
@@ -425,6 +455,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'weights',
@@ -456,6 +489,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Emin',
       ),
@@ -481,6 +517,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'binning',
@@ -512,6 +551,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'EminSource',
       )
@@ -532,6 +574,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'minval',
@@ -562,6 +607,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'Gamma',
       )
@@ -582,6 +630,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'maxval',
@@ -612,6 +663,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'EGMF_fG'
       )
@@ -632,6 +686,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'nbins',
@@ -662,6 +719,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'lmaxEGMF_Mpc'
       )
@@ -682,6 +742,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'xlabel',
@@ -713,6 +776,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'jet_half_size',
       )
@@ -733,6 +799,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'histogram_column')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'ylabel',
@@ -764,6 +833,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'jet_direction',
       )
@@ -794,6 +866,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'window_size_RA',
       )
@@ -819,6 +894,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'Generate_events')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'psf',
@@ -850,6 +928,9 @@ class MmodaInstrumentForm extends FormBase
           ),
         )
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'window_size_DEC',
       )
@@ -871,6 +952,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'model_CTA_events')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'livetime',
@@ -908,6 +992,9 @@ class MmodaInstrumentForm extends FormBase
             array('value' => 'Generate_events')
           ),
         )
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#attributes' => array(
         'name' => $mform_id . 'EBL',

@@ -66,6 +66,9 @@ class MmodaInstrumentForm extends FormBase
       '#type' => 'select',
       '#title' => t("Data Release"),
       '#default_value' => $instrument_settings->get('data_release'),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array(
         'name' => $mform_id . 'data_release'
       ),
@@ -92,9 +95,10 @@ class MmodaInstrumentForm extends FormBase
         'data-bv-notempty' => 'true',
         'title' => t("All sources in this radius from center will be used to obtain photometry."),
       ),
-      '#prefix' => '<div class="row">',
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#field_suffix' => t('arcsec'),
-      '#suffix' => '</div>',
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -113,14 +117,17 @@ class MmodaInstrumentForm extends FormBase
   
     $form['image_size'] = array(
       '#type' => 'textfield',
-      '#title' => t("Image size"),
+      '#title' => "Image size",
       '#default_value' => $instrument_settings->get('image_size'),
       '#attributes' => array(
         'name' => $mform_id . 'image_size',
         'data-bv-numeric' => 'true',
         'data-bv-notempty' => 'true'
       ),
-      '#field_suffix' => t('arcmin'),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
+      '#field_suffix' => 'arcmin',
       '#states' => array(
         'visible' => array(
           ':input[name="' . $mform_id . 'product_type"]' => array(
@@ -139,7 +146,7 @@ class MmodaInstrumentForm extends FormBase
   
     $form['pixel_size'] = array(
       '#type' => 'textfield',
-      '#title' => t("Pixel size"),
+      '#title' => "Pixel size",
       '#default_value' => $instrument_settings->get('pixel_size'),
       '#parent_classes' => array(
         'form-group',
@@ -149,6 +156,9 @@ class MmodaInstrumentForm extends FormBase
         'name' => $mform_id . 'pixel_size',
         'data-bv-numeric' => 'true',
         'data-bv-notempty' => 'true'
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#field_suffix' => t('arcsec per pixel'),
       '#states' => array(
@@ -169,10 +179,13 @@ class MmodaInstrumentForm extends FormBase
   
     $form['image_band'] = array(
       '#type' => 'radios',
-      '#title' => t("Image Band"),
+      '#title' => "Image Band",
       '#attributes' => array(
         'name' => $mform_id . 'image_band',
-        'title' => t("Select image band")
+        'title' => "Select image band"
+      ),
+      '#label_attributes' => array(
+        'class' => array('label')
       ),
       '#default_value' => $instrument_settings->get('image_band'),
       '#options' => array(
