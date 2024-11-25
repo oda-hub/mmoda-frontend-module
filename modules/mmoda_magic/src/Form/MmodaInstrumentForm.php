@@ -51,6 +51,9 @@ class MmodaInstrumentForm extends FormBase
         'Real' => 'Real',
         'Dummy' => 'Dummy'
       ),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
       '#attributes' => array (
         'title' => "Select query type",
         'class' => array (
@@ -60,35 +63,36 @@ class MmodaInstrumentForm extends FormBase
    );
 
     $form ['radius'] = array (
-        '#type' => 'textfield',
-        '#title' => "Radius",
-        '#default_value' => $instrument_settings->get('radius'),
-        '#attributes' => array (
-          'name' => $mform_id . 'radius',
-          'class' => array (
-                'form-control'
-            ),
-            'data-bv-numeric' => 'true'
-        )
+      '#type' => 'textfield',
+      '#title' => "Radius",
+      '#default_value' => $instrument_settings->get('radius'),
+      '#label_attributes' => array(
+        'class' => array('label')
+      ),
+      '#attributes' => array (
+        'name' => $mform_id . 'radius',
+        'class' => array (
+              'form-control'
+          ),
+          'data-bv-numeric' => 'true'
+      )
     );
 
 
     $form ['product_type'] = array (
-        '#type' => 'radios',
-        '#title' => "Product Type",
+      '#type' => 'radios',
+      '#title' => "Product Type",
+      '#attributes' => array (
         '#description' => "Select product type",
-        '#attributes' => array ('name' => $mform_id.'product_type'),
-        '#default_value' => $instrument_settings->get('product_type'),
-        '#options' => array (
-            'magic_image' => 'Image',
-            'magic_spectrum' => 'Spectrum',
-            'magic_lc' => 'Light curve',
-            'magic_table' => 'Table'
-        ),
-        '#parent_classes' => array (
-            'form-group',
-            'col-md-6'
-        )
+        'name' => $mform_id.'product_type'
+      ),
+      '#default_value' => $instrument_settings->get('product_type'),
+      '#options' => array (
+          'magic_image' => 'Image',
+          'magic_spectrum' => 'Spectrum',
+          'magic_lc' => 'Light curve',
+          'magic_table' => 'Table'
+      )
     );
 
     $form['#theme'] = 'mmoda_magic_form';
