@@ -22,7 +22,7 @@ detector: H1
 radius: 10
 level_threshold: 10
 contour_levels: 50,90
-weight: 70
+weight: 60
 data_server_url: dispatch-data/run_analysis
 help_page_url: help/mmoda/gravitational-wave-analysis
 acknowledgement: >
