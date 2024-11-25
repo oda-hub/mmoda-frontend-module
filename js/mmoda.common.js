@@ -304,7 +304,7 @@ function get_current_date_time() {
     }
     $result_card = $('#mmoda-gallery-card-model').clone();
     $result_card.attr('id', 'mmoda-gallery-card');
-    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + $result_card.attr('id') + ' .card-body');
+    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + $result_card.attr('id') + ' .card-body-footer');
 
     $('#common-params').after($result_card);
 
@@ -387,7 +387,7 @@ function get_waitingDialog($modal_dialog) {
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
-            .addClass('modal-' + settings.dialogSize);
+            .addClass('modal-dialog-centered modal-' + settings.dialogSize);
 
           if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
@@ -686,7 +686,7 @@ function get_waitingDialog($modal_dialog) {
     if (datetime) $result_card.find('.date').text('[' + datetime + ']');
     $result_card.find('.card-body').attr('id', card_body_id);
 
-    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + card_id + ' .card-body');
+    $result_card.find('.collapse-indicator-chevron').attr('data-bs-target', '#' + card_id + ' .card-body-footer');
 
     $(this).after($result_card);
     if (left) {
@@ -775,21 +775,6 @@ function get_waitingDialog($modal_dialog) {
       $('small.mmoda-resolve-message', '#mmoda-name-resolve-form').remove();
       //$('button#edit-resolve-src-name').prop('disabled', !$(this).val());
     });
-
-    /* No more needed, provided by Bootstrap 5
-    $('body').on('click', '.card-header .collapsible', function() {
-      var $this = $(this);
-      if (!$this.hasClass('card-collapsed')) {
-        $this.closest('.card').find('.card-body').slideUp();
-        $this.addClass('card-collapsed');
-        $this.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-      }
-      else {
-        $this.closest('.card').find('.card-body').slideDown();
-        $this.removeClass('card-collapsed'); $this.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-      }
-    });
-    */
 
     //    if (drupalSettings.user_uid == 0) {
     //      $('.main-toolbar .login-link').show();

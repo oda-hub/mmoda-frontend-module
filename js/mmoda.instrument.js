@@ -699,6 +699,12 @@ function card_title(srcname, param) {
       }
 
       // update the catalog only if it is in the parameters card
+      if (card.data('js9_parent_card_id')) {
+        catalog_parent_card_id = $(card.data('js9_parent_card_id'));
+        catalog_parent_card_id.removeData('js9_card_id');
+      }
+
+      // update the catalog only if it is in the parameters card
       if (card.data('catalog_parent_card_id')) {
         catalog_parent_card_id = $(card.data('catalog_parent_card_id'));
         catalog_parent_card_id.removeData('catalog_card_id');
@@ -751,15 +757,31 @@ function card_title(srcname, param) {
       } else {
         // Show catalog
         var catalog = clone(catalog_parent_card.data('catalog'));
-        catalog_offset.top = instrument_card_offset.top;
-        catalog_offset.left = e.pageX - instrument_card_offset.left;
+        catalog_offset.top -= instrument_card_offset.top;
+        catalog_offset.left -= instrument_card_offset.left;
         display_catalog(catalog, '#' + catalog_parent_card.attr('id'), catalog_offset, showUseCatalog);
       }
     });
 
     $("body").on('click', '.result-card .show-js9', function(e) {
       e.preventDefault();
-      display_image_js9($(this).data("image_file_path"), $(this).data());
+      var js9_parent_card = $(this).closest('.card');
+      var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
+
+      var js9_offset = {};
+      js9_offset.top = e.pageY;
+      js9_offset.left = e.pageX;
+      if (js9_card_id = js9_parent_card.data('js9_card_id')) {
+        $(js9_card_id).highlight_result_card(js9_offset);
+        $('.fa-chevron-down', js9_card_id).click();
+      } else {
+        // Show js9
+        var datetime = $(this).attr('data-datetime');
+        js9_offset.top -= instrument_card_offset.top;
+        js9_offset.left -= instrument_card_offset.left;
+        display_image_js9($(this).data("image_file_path"), '#' + js9_parent_card.attr('id'), $(this).data(), js9_offset);
+
+      }
     });
 
     $("body").on('click', '.result-card .show-log', function(e) {
@@ -777,8 +799,8 @@ function card_title(srcname, param) {
       } else {
         // Show log
         var datetime = $(this).attr('data-datetime');
-        log_offset.top = instrument_card_offset.top;
-        log_offset.left = e.pageX - instrument_card_offset.left;
+        log_offset.top -= instrument_card_offset.top;
+        log_offset.left -= instrument_card_offset.left;
 
         display_log(log, '#' + log_parent_card.attr('id'), datetime, log_offset);
       }
@@ -787,7 +809,7 @@ function card_title(srcname, param) {
     $("body").on('click', '.result-card .api-code', function(e) {
       e.preventDefault();
       var api_code_parent_card = $(this).closest('.card');
-      var api_code_parent_card_offest = api_code_parent_card.offset();
+      var api_code_parent_card_offest = $(this).closest(".instrument-card").offset();
 
       var api_code_offset = {};
       api_code_offset.top = e.pageY;
@@ -797,9 +819,9 @@ function card_title(srcname, param) {
         $('.fa-chevron-down', api_code_card_id).click();
       } else {
         // Show api_code
-        var datetime = $(this).attr('data-datetime');
-        api_code_offset.top = api_code_parent_card_offest.top;
-        api_code_offset.left = e.pageX - api_code_parent_card_offest.left;
+        var datetime = api_code_parent_card.data('datetime');
+        api_code_offset.top -= api_code_parent_card_offest.top;
+        api_code_offset.left -= api_code_parent_card_offest.left;
 
         display_api_code(api_code_parent_card.data('api_code'), '#' + api_code_parent_card.attr('id'), datetime, api_code_offset);
       }
@@ -962,8 +984,8 @@ function card_title(srcname, param) {
       } else {
         // Show query_parameters
         var datetime = $(this).attr('data-datetime');
-        query_parameters_offset.top = instrument_card_offset.top;
-        query_parameters_offset.left = e.pageX - instrument_card_offset.left;
+        query_parameters_offset.top -= instrument_card_offset.top;
+        query_parameters_offset.left -= instrument_card_offset.left;
 
         display_query_parameters(query_parameters, '#' + query_parameters_parent_card.attr('id'), datetime, query_parameters_offset);
       }
@@ -996,7 +1018,7 @@ function card_title(srcname, param) {
     });
 
     // --------------- Catalog Toolbar start
-    var toolbar = $('<div>').addClass('inline-user-catalog btn-group').attr('role', 'group');
+    var toolbar = $('<div>').addClass('inline-user-catalog btn-group bg-secondary').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-secondary');
 
     // Add button : Show inline catalogue
@@ -1004,10 +1026,7 @@ function card_title(srcname, param) {
     toolbar.append(button);
 
     // Add button : Remove inline catalogue
-    button = dbutton.clone().addClass('remove-catalog');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-remove");
-    glyphicon.attr({ title: "Remove inline catalogue" });
-    button.append(glyphicon);
+    button = dbutton.clone().addClass('remove-catalog btn-close btn-close-white');
     toolbar.append(button);
     $('.form-item-files-user-catalog-file').after(toolbar);
     // --------------- Catalog Toolbar end
@@ -1506,17 +1525,6 @@ function card_title(srcname, param) {
           DataTable.fileSave(new Blob([file_content]), 'catalog.txt');
         }
       }];
-    if (enable_use_catalog) {
-      //      buttons = buttons.concat(button_save_as_text);
-      select_row = {
-        style: 'os',
-        selector: 'td:first-child'
-      };
-    }
-    else {
-      buttons = button_save_as_text;
-      select_row = false;
-    }
     var buttons2 = [
       {
         text: 'Select all',
@@ -1531,29 +1539,40 @@ function card_title(srcname, param) {
         }
       }
     ];
-    buttons2 = buttons2.concat(buttons1).concat(button_save_as_text);
+
+    if (enable_use_catalog) {
+      buttons = buttons2.concat(buttons1).concat(button_save_as_text);
+      select_row = {
+        style: 'os',
+        selector: 'td:first-child'
+      };
+    }
+    else {
+      buttons = button_save_as_text;
+      select_row = false;
+    }
     var catalog_datatable = catalog_container.DataTable({
       data: catalog.data,
       columns: catalog.column_names,
-//      dom : 'Brtflip',
-//       dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
-     layout: {
+      //      dom : 'Brtflip',
+      //       dom: '<"container-fluid"<"top"<"row"B>if>rt<"bottom"<l>p><"clear">>',
+      layout: {
         topStart: {
-          buttons: buttons2
+          buttons: buttons
         }
       },
       select: true,
       searching: false,
       order: [[1, 'asc']],
     });
-    if (!enable_use_catalog)
-      // Disable row selection by removing the css class select-checkbox from the first column
-      catalog_datatable.column(0).nodes().toJQuery().removeClass('select-checkbox');
+
     return (catalog_datatable);
   }
 
   function display_catalog(catalog, afterDiv, offset, showUseCatalog) {
     var datetime = catalog.datetime;
+    var instrument = $('input[name=instrument]', ".instrument-card.active").val();
+    var enable_use_catalog = drupalSettings.mmoda[instrument].enable_use_catalog;
 
     var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'image-catalog', datetime);
     source_name = $('input[name=src_name]', '#common-params').val();
@@ -1564,11 +1583,14 @@ function card_title(srcname, param) {
       $('#' + card_ids.card_id + ' .card-header .card-title').html('Source : ' + source_name + ' - Image catalog');
 
     var catalog_card = $('#' + card_ids.card_id);
-    var catalog_help_text = '<div class="help-text">To select multiple rows :<ol>' +
-      '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>' +
-      '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
+    $('#' + card_ids.card_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>');
+    if (enable_use_catalog) {
+      var catalog_help_text = '<div class="help-text">To select multiple rows :<ol>' +
+        '<li>To select the rows individually, click the first row, hold down the Ctrl key, and click additional rows.</li>' +
+        '<li>To select adjacent rows, click the first row, hold down the Shift key, and click the last row.</li></ol></div>';
+      $('#' + card_ids.card_body_id).append(catalog_help_text);
 
-    $('#' + card_ids.card_body_id).append('<div class="catalog-wrapper"><table class="mmoda"></table></div>' + catalog_help_text);
+    }
 
     $(afterDiv).data({
       catalog_card_id: '#' + card_ids.card_id
@@ -1577,11 +1599,9 @@ function card_title(srcname, param) {
       catalog_parent_card_id: afterDiv
     });
 
-    var instrument = $('input[name=instrument]', ".instrument-card.active").val();
-    var enable_use_catalog = drupalSettings.mmoda[instrument].enable_use_catalog;
     if (enable_use_catalog && showUseCatalog) {
       $('.card-footer', '#' + card_ids.card_id).append(
-        '<button type="button" class="btn btn-primary pull-right use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
+        '<button type="button" class="btn btn-primary float-end use-catalog" data-datetime="' + datetime + '" >Use catalog</button><div class="clearfix"></div>');
     }
 
     var editor = new $.fn.dataTable.Editor({
@@ -2686,7 +2706,7 @@ function card_title(srcname, param) {
     });
   }
 
-  function display_image_js9(image_file_path, data) {
+  function display_image_js9(image_file_path, afterDiv, data, offset) {
     var js9_ext_id = drupalSettings.mmoda[instrument].js9_ext_id;
     var card_ids = $(".instrument-params-card",
       ".instrument-card.active").insert_new_card(desktop_card_counter++, 'js9', data.datetime);
@@ -2703,8 +2723,17 @@ function card_title(srcname, param) {
       scrolling: 'no'
     })
     );
-    $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title('', data));
-    $('#' + card_ids.card_id).highlight_result_card();
+    var js9_card = $('#' + card_ids.card_id);
+    $(afterDiv).data({
+      js9_card_id: js9_card
+    });
+
+    js9_card.data({
+      js9_parent_card_id: afterDiv
+    });
+
+    $('.card-header .card-title', js9_card).html(card_title('', data));
+    js9_card.highlight_result_card(offset);
   }
 
 })(jQuery);
