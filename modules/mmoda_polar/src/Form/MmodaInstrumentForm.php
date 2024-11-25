@@ -93,7 +93,7 @@ class MmodaInstrumentForm extends FormBase
         'Dummy' => 'Dummy'
       ),
       '#attributes' => array(
-        'title' => t("Select query type"),
+        'title' => "Select query type",
       )
     );
 

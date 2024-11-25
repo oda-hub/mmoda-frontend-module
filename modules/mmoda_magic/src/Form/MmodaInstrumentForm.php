@@ -45,32 +45,24 @@ class MmodaInstrumentForm extends FormBase
 
     $form ['query_type'] = array (
       '#type' => 'select',
-      '#title' => t ( "Query Type" ),
-      '#description' => t ( "Select query type" ),
+      '#title' => "Query Type",
       '#default_value' => $instrument_settings->get('query_type'),
       '#options' => array (
-          'Real' => 'Real',
-          'Dummy' => 'Dummy'
-      ),
-      '#parent_classes' => array (
-          'form-group',
-          'col-md-6'
+        'Real' => 'Real',
+        'Dummy' => 'Dummy'
       ),
       '#attributes' => array (
-          'class' => array (
-              'form-control'
-          )
+        'title' => "Select query type",
+        'class' => array (
+            'form-control'
+        )
       )
    );
 
     $form ['radius'] = array (
         '#type' => 'textfield',
-        '#title' => t ( "Radius" ),
+        '#title' => "Radius",
         '#default_value' => $instrument_settings->get('radius'),
-        '#parent_classes' => array (
-            'form-group',
-            'col-md-6'
-        ),
         '#attributes' => array (
           'name' => $mform_id . 'radius',
           'class' => array (
@@ -83,8 +75,8 @@ class MmodaInstrumentForm extends FormBase
 
     $form ['product_type'] = array (
         '#type' => 'radios',
-        '#title' => t ( "Product Type" ),
-        '#description' => t ( "Select product type" ),
+        '#title' => "Product Type",
+        '#description' => "Select product type",
         '#attributes' => array ('name' => $mform_id.'product_type'),
         '#default_value' => $instrument_settings->get('product_type'),
         '#options' => array (
@@ -103,7 +95,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit')
+      '#value' => 'Submit'
     );
 
     return $form;

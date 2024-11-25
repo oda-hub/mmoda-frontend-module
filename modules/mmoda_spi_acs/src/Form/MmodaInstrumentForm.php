@@ -45,10 +45,10 @@ class MmodaInstrumentForm extends FormBase
 
     $form['product_type'] = array(
       '#type' => 'radios',
-      '#title' => t("Product Type"),
+      '#title' => "Product Type",
       '#attributes' => array(
         'name' => $mform_id . 'product_type',
-        'title' => t("Select product type")
+        'title' => "Select product type"
       ),
       '#default_value' => $instrument_settings->get('product_type'),
       '#options' => array(
@@ -58,20 +58,20 @@ class MmodaInstrumentForm extends FormBase
 
     $form['query_type'] = array(
       '#type' => 'select',
-      '#title' => t("Query Type"),
+      '#title' => "Query Type",
       '#default_value' => $instrument_settings->get('query_type'),
       '#options' => array(
         'Real' => 'Real',
         'Dummy' => 'Dummy'
       ),
       '#attributes' => array(
-        'title' => t("Select query type"),
+        'title' => "Select query type",
       )
     );
 
     $form['time_bin'] = array(
       '#type' => 'textfield',
-      '#title' => t("Time bin"),
+      '#title' => "Time bin",
       '#default_value' => $instrument_settings->get('time_bin'),
       '#states' => array(
         'visible' => array(
@@ -89,7 +89,7 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'data-fv-numeric' => 'true',
-        'title' => t("Minimum value is 20 seconds."),
+        'title' => "Minimum value is 20 seconds.",
       )
     );
 
@@ -97,7 +97,7 @@ class MmodaInstrumentForm extends FormBase
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit')
+      '#value' => 'Submit'
     );
 
     return $form;
