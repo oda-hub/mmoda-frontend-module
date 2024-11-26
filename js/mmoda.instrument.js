@@ -60,9 +60,9 @@ function validate_timebin(value, validator, $thefield) {
   return true;
 }
 
-function panel_title(srcname, param) {
+function panel_title(outputname, param) {
   var title_items = [];
-  if (srcname !== undefined && srcname !== '') title_items.push('Source: ' + srcname);
+  if (outputname !== undefined && outputname !== '') title_items.push('Output: ' + outputname);
   if (param.hasOwnProperty('E1_keV')) title_items.push(param.E1_keV + ' - ' + param.E2_keV + ' keV');
   var time_bin_format = 'sec';
   if (param.hasOwnProperty('time_bin_format')) time_bin_format = param.time_bin_format;
@@ -2264,18 +2264,25 @@ function panel_title(srcname, param) {
 
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
+      let output_name = data.name[i];
+      if(data.hasOwnProperty('extra_metadata')) {
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+          output_name = data.extra_metadata[output_name].label;
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+          output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
+      }
       lightcurve_table_data[i] = {
         DT_RowId: 'row_' + i,
-        source_name: data.name[i],
+        output_name: output_name,
         index: i,
       }
     }
 
     $('#' + panel_ids.panel_body_id).append('<div class="lightcurve-table-wrapper"><table class="lightcurve-table table-striped"></table></div>');
     var lightcurve_table_column_names = [{
-      title: "Source Name",
-      name: "source_name",
-      data: "source_name",
+      title: "Ouput Name",
+      name: "output_name",
+      data: "output_name",
     }, {
       data: null,
       title: "Light Curve",
@@ -2408,18 +2415,25 @@ function panel_title(srcname, param) {
 
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
+      let output_name = data.name[i];
+      if(data.hasOwnProperty('extra_metadata')) {
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+          output_name = data.extra_metadata[output_name].label;
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+          output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
+      }
       image_table_data[i] = {
         DT_RowId: 'row_' + i,
-        source_name: data.name[i],
+        output_name: output_name,
         index: i,
       }
     }
 
     $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
     var image_table_column_names = [{
-      title: "Source Name",
-      name: "source_name",
-      data: "source_name",
+      title: "Output Name",
+      name: "output_name",
+      data: "output_name"
     }, {
       data: null,
       title: "Image",
@@ -2509,7 +2523,12 @@ function panel_title(srcname, param) {
     panel_body_append_header_footer(panel_ids, data);
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
-    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.name[lc_index], data.analysis_parameters));
+    let panel_title_text = data.name[lc_index];
+    if(data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
+      panel_title_text = data.extra_metadata[data.name[lc_index]].label;
+    }
+
+    $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(panel_title_text, data.analysis_parameters));
 
     // set_draggable();
     $('#' + panel_ids.panel_id).css({
@@ -2606,9 +2625,16 @@ function panel_title(srcname, param) {
 
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
+      let output_name = data.spectrum_name[i];
+      if(data.hasOwnProperty('extra_metadata')) {
+        if(data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
+          output_name = data.spectrum_name[output_name].label;
+        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+          output_name = "<span title='" + data.extra_metadata[data.spectrum_name[i]].description + "'>" + output_name + "</span>";
+      }
       spectrum_table_data[i] = {
         DT_RowId: 'row_' + i,
-        source_name: data.spectrum_name[i],
+        output_name: output_name,
         xspec_model: 'powerlaw',
         arf_file_name: data.arf_file_name[i],
         ph_file_name: data.ph_file_name[i],
@@ -2627,9 +2653,9 @@ function panel_title(srcname, param) {
     $('#' + panel_ids.panel_body_id).append('<div class="spectrum-table-wrapper"><table class="spectrum-table table-striped"></table></div>');
     var spectrum_table_column_names = [
       {
-        title: "Source Name",
-        name: "source_name",
-        data: "source_name",
+        title: "Output Name",
+        name: "output_name",
+        data: "output_name",
       },
       {
         title: "Xspec Model",
@@ -2668,7 +2694,7 @@ function panel_title(srcname, param) {
       },];
 
     var spectrum_table_fields = [{
-      name: "source_name",
+      name: "output_name",
       type: "readonly",
     }, {
       name: "xspec_model",
