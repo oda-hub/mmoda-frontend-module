@@ -1,0 +1,24 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: desi
+messenger: 
+title: DESI Legacy Survey
+
+enabled: true
+query_type: Real
+weight: 140
+product_type: Catalog
+Radius: 1.0
+data_release: 9
+pixsize: 1.0
+band: g
+acknowledgement: 'Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>'
+enable_use_catalog: FALSE
+allowed_roles: 'developer'
+
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/desi
