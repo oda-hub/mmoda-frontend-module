@@ -59,6 +59,22 @@ class mmodaController extends ControllerBase
       return (drupal_json_output(array('error' => 'User not authenticated')));
   }
 
+  private function _mmoda_user_has_roles($instrument_roles)
+  {
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    if (empty($instrument_roles))
+      return true;
+    $user_roles = $user->getRoles();
+    $instrument_roles_ar = explode(',', $instrument_roles);
+    $instrument_roles_ar = array_map('trim', $instrument_roles_ar);
+    \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user has roles @user_roles and the isntrument requires roles @instrument_roles', 
+    ['@user_roles' => print_r($user_roles, TRUE), '@instrument_roles' => print_r($instrument_roles_ar, TRUE)]);
+    foreach ($instrument_roles_ar as $instrument_role)
+      if (!in_array($instrument_role, $user_roles))
+        return false;
+    return true;
+  }
+
   public function content()
   {
     $module_handler = \Drupal::moduleHandler();
@@ -102,16 +118,22 @@ class mmodaController extends ControllerBase
       if (! empty($form)) {
         $instrument_name = $instrument_settings->get('name');
         $mmoda_js_settings[$instrument_name] = array();
-
-        $instruments[$weight] = [
-          'name' => $instrument_name,
-          'active' => '',
-          'messenger' => $instrument_settings->get('messenger'),
-          'title' => $instrument_settings->get('title'),
-          'help_page_url' => $instrument_settings->get('help_page_url'),
-          'acknowledgement' => $instrument_settings->get('acknowledgement'),
-          'form' => $form
-        ];
+        $enabled = $instrument_settings->get('enabled');
+        $is_virtual = $instrument_settings->get('virtual');
+        $allowed_roles = $instrument_settings->get('allowed_roles');
+        // \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'instrument @name enabled: @enabled , is_virtual: @is_virtual , allowed_roles: @allowed_roles',
+        //    ['@enabled' => print_r($enabled, TRUE), '@name' => $instrument_name, '@is_virtual' => print_r($is_virtual, TRUE), '@allowed_roles' => print_r($allowed_roles, TRUE)]);
+        if ($enabled and !$is_virtual and ($allowed_roles == null or empty($allowed_roles) or $this->_mmoda_user_has_roles($allowed_roles))) {
+          $instruments[$weight] = [
+            'name' => $instrument_name,
+            'active' => '',
+            'messenger' => $instrument_settings->get('messenger'),
+            'title' => $instrument_settings->get('title'),
+            'help_page_url' => $instrument_settings->get('help_page_url'),
+            'acknowledgement' => $instrument_settings->get('acknowledgement'),
+            'form' => $form
+          ];
+        }
         $enable_use_catalog = $instrument_settings->get('enable_use_catalog');
         $js9_ext_id = $instrument_settings->get('js9_ext_id');
         $mmoda_js_settings[$instrument_name]['enable_use_catalog'] = ! is_null($enable_use_catalog) ? $enable_use_catalog : false;
