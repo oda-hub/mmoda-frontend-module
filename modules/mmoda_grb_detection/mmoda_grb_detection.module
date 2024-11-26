@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function mmoda_grb_detection_theme($existing, $type, $theme, $path)
+{
+  return [
+  'mmoda_grb_detection_form'=> [
+    'render element' => 'form',
+  ]
+];
+
+}

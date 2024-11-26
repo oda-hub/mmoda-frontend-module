@@ -1,0 +1,25 @@
+  
+
+# use the default data server url provided by the MMODA module
+# or uncomment the following to set a specific data server url
+#data_server_url: /dispatcher-data
+
+name: grb_detection
+messenger: 
+title: GRB detection
+
+
+enabled: true
+query_type: Real
+weight: 150
+product_type: 'detectgrb'
+background_age: 10.0
+detection_time_scales: "1,10"
+lc_time_scale: 0.1    
+min_sn: 5     
+acknowledgement: 'Service generated from <a href="https://gitlab.renkulab.io/astronomy/mmoda/grb-detection.git" target="_blank">the repository</a>'
+enable_use_catalog: FALSE
+allowed_roles: 'oda workflow developer'
+
+data_server_url: dispatch-data/run_analysis
+help_page_url: help/mmoda/icecube
