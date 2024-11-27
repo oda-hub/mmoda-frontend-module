@@ -1,5 +1,5 @@
 name: MMODA LegacySurvey
-description: Astro Online Data Analysis module for LegacySurvey
+description: Astro Online Data Analysis module for DESI Legacy Survey
 type: module
 version: '1.0'
 core_version_requirement: '>=8'

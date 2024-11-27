@@ -21,4 +21,4 @@ enable_use_catalog: FALSE
 allowed_roles: 'developer'
 
 data_server_url: dispatch-data/run_analysis
-help_page_url: help/mmoda/desi
+help_page_url: help/mmoda/desi-legacy-survey
