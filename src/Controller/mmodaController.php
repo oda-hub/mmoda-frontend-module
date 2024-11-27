@@ -59,20 +59,25 @@ class mmodaController extends ControllerBase
       return (drupal_json_output(array('error' => 'User not authenticated')));
   }
 
-  private function _mmoda_user_has_roles($instrument_roles)
-  {
-    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-    if (empty($instrument_roles))
+  private function _mmoda_user_has_roles($instrument_roles) {
+    if (empty($instrument_roles)) {
       return true;
+    }
+
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $user_roles = $user->getRoles();
-    $instrument_roles_ar = explode(',', $instrument_roles);
-    $instrument_roles_ar = array_map('trim', $instrument_roles_ar);
-    \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user has roles @user_roles and the isntrument requires roles @instrument_roles', 
-    ['@user_roles' => print_r($user_roles, TRUE), '@instrument_roles' => print_r($instrument_roles_ar, TRUE)]);
-    foreach ($instrument_roles_ar as $instrument_role)
-      if (!in_array($instrument_role, $user_roles))
-        return false;
-    return true;
+    $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+
+    $user_role_labels = array_map(function($role_id) use ($role_storage) {
+      $role = $role_storage->load($role_id);
+      return $role ? $role->label() : null;
+    }, $user_roles);
+
+    $user_role_labels = array_filter($user_role_labels);
+
+    $instrument_roles_ar = array_map('trim', explode(',', $instrument_roles));
+
+    return !empty(array_intersect($instrument_roles_ar, $user_role_labels));
   }
 
   public function content()
@@ -119,10 +124,8 @@ class mmodaController extends ControllerBase
         $instrument_name = $instrument_settings->get('name');
         $mmoda_js_settings[$instrument_name] = array();
         $enabled = $instrument_settings->get('enabled');
-        $is_virtual = $instrument_settings->get('virtual');
+        $is_virtual = $instrument_settings->get('virtual') ?? 0;
         $allowed_roles = $instrument_settings->get('allowed_roles');
-        // \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'instrument @name enabled: @enabled , is_virtual: @is_virtual , allowed_roles: @allowed_roles',
-        //    ['@enabled' => print_r($enabled, TRUE), '@name' => $instrument_name, '@is_virtual' => print_r($is_virtual, TRUE), '@allowed_roles' => print_r($allowed_roles, TRUE)]);
         if ($enabled and !$is_virtual and ($allowed_roles == null or empty($allowed_roles) or $this->_mmoda_user_has_roles($allowed_roles))) {
           $instruments[$weight] = [
             'name' => $instrument_name,
