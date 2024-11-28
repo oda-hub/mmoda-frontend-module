@@ -636,7 +636,7 @@ function card_title(outputname, param) {
         var current_card = $(this).closest('.card');
         var parent_catalog_offset = $(".instrument-card.active").offset();
         var catalog_offset = {};
-        catalog_offset.top = parent_catalog_offset.top;
+        catalog_offset.top = e.pageY - parent_catalog_offset.top;
         catalog_offset.left = e.pageX - parent_catalog_offset.left;
         display_lc_image(current_card, lc_index, datetime, catalog_offset);
       }
