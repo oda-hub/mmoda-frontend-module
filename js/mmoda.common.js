@@ -439,10 +439,10 @@ function get_waitingDialog($modal_dialog) {
               });
           }
           if (!settings.showSpinner) {
-            $dialog.find('.spinner-border').addClass('d-none');
+            $dialog.find('.spinner-border').css('display', 'none');
           }
           else {
-            $dialog.find('.spinner-border').removeClass('d-none');
+            $dialog.find('.spinner-border').css('display', '');
           }
 
           if (!settings.showLegend) {
@@ -563,10 +563,10 @@ function get_waitingDialog($modal_dialog) {
           }
         },
         hideSpinner: function() {
-          $dialog.find('.spinner-border').addClass('d-none');
+          $dialog.find('.spinner-border').css('display', 'none');
         },
         showSpinner: function() {
-          $dialog.find('.spinner-border').removeClass('d-none');
+          $dialog.find('.spinner-border').css('display', '');
         },
         setTitle: function(title) {
           $dialog.find('h4').html(title);
