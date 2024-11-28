@@ -439,10 +439,10 @@ function get_waitingDialog($modal_dialog) {
               });
           }
           if (!settings.showSpinner) {
-            $dialog.find('.fa-spinner').addClass('hidden');
+            $dialog.find('.spinner-border').addClass('d-none');
           }
           else {
-            $dialog.find('.fa-spinner').removeClass('hidden');
+            $dialog.find('.spinner-border').removeClass('d-none');
           }
 
           if (!settings.showLegend) {
@@ -452,12 +452,10 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.legend').show();
           }
           // Opening dialog
-          //$dialog.modal({ keyboard: true });
           $dialog.modal('show');
           $dialog.find('.close-card').on("click", function() {
 
           });
-          // sleep(5);
 
         },
         resetSummaryControlsMoreLessDetails: function() {
@@ -565,10 +563,10 @@ function get_waitingDialog($modal_dialog) {
           }
         },
         hideSpinner: function() {
-          $dialog.find('.fa-spinner').addClass('hidden');
+          $dialog.find('.spinner-border').addClass('d-none');
         },
         showSpinner: function() {
-          $dialog.find('.fa-spinner').removeClass('hidden');
+          $dialog.find('.spinner-border').removeClass('d-none');
         },
         setTitle: function(title) {
           $dialog.find('h4').html(title);
