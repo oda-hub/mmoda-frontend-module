@@ -57,6 +57,11 @@ class MmodaInstrumentForm extends FormBase
       )
     );
 
+    $form['query_type'] = array(
+      '#type' => 'hidden',
+      '#value' => $instrument_settings->get('query_type'),
+    );
+
     $form['epsilon_turb'] = array(
       '#type' => 'textfield',
       '#title' => "epsilon_turb",

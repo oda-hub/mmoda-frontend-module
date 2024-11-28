@@ -47,6 +47,11 @@ class MmodaInstrumentForm extends FormBase
       )
     );
 
+    $form['query_type'] = array(
+      '#type' => 'hidden',
+      '#value' => $instrument_settings->get('query_type'),
+    );
+    
     $form['product_type'] = array(
       '#type' => 'radios',
       '#title' => "Product Type",

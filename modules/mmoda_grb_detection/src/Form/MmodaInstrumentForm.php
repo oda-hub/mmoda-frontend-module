@@ -33,6 +33,7 @@ class MmodaInstrumentForm extends FormBase
     $form['#action'] = $instrument_settings->get('data_server_url', $mmoda_settings->get('default_data_server_url'));
     $module_handler = \Drupal::service('module_handler');
     $module_path = $module_handler->getModule('mmoda_grb_detection')->getPath();
+    
     $form['instrument'] = array(
       '#type' => 'hidden',
       '#value' => 'grb_detection',
@@ -40,6 +41,11 @@ class MmodaInstrumentForm extends FormBase
         'integral_instrument' => 'false',
         'support_return_progress' => 'true'
       )
+    );
+
+    $form['query_type'] = array(
+      '#type' => 'hidden',
+      '#value' => $instrument_settings->get('query_type'),
     );
     
     $form['product_type'] = array(
