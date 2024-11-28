@@ -736,17 +736,15 @@ function get_waitingDialog($modal_dialog) {
     }
   }
 
-  $.fn.highlight_progress_card = function(offset) {
-    max_zindexes = $('#ldialog-modal-dialog').css('z-index');
-    $(this).attr('style', 'z-index: ${max_zindexes + 1} !important');
+  $.fn.highlight_progress_card = function(offset, parent_panel_id) {
+    max_zindexes = $(`#${parent_panel_id}`).css("z-index");
+    $(this).attr('style', `z-index: ${max_zindexes + 1} !important`);
     var thisObject = $(this);
     thisObject.offset(offset);
     thisObject.show('highlight', { color: '#adebad' }, 1000);
   }
 
   $(document).ready(commonReady);
-
-
 
   function commonReady() {
 
@@ -756,9 +754,6 @@ function get_waitingDialog($modal_dialog) {
     $("body").on("dialogclose", function(event, ui) {
       $('#ldialog .buttons-container').css('visibility', 'visible');
     });
-
-    //    console.log('Drupal settings');
-    //    console.log(drupalSettings);
 
     autoHeight();
     // Ignore carriage return in common parameters

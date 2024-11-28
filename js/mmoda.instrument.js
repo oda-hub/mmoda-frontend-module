@@ -736,6 +736,16 @@ function card_title(outputname, param) {
         query_parameters_product_card_id = card.data('query_parameters_product_card_id');
         $(query_parameters_product_card_id).removeData('query_parameters_card_id');
       }
+
+      if (card.data('return_progress_html_output_product_card_id')) {
+        query_parameters_product_card_id = card.data('return_progress_html_output_product_card_id');
+        $(query_parameters_product_card_id).removeData('return_progress_html_output_id');
+      }
+
+      if (card.data('return_progress_jqxhr')) {
+        return_progress_jqxhr = card.data('return_progress_jqxhr');
+        return_progress_jqxhr.abort();
+      }
       card.remove();
     });
 
@@ -827,7 +837,88 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.return-progress-link.enabled .prompt', function(e) {
+    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function(e) {
+      e.stopPropagation();
+    });
+
+    $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function(e) {
+      let target_obj = $(e.target);
+      let parent_target_obj = target_obj.parent();
+      let parent_panel = $(this).closest('.card');
+      let formData_return_progress_link = parent_panel.data('formData_return_progress_link');
+      let return_progress_html_output = parent_panel.data('return_progress_html_output');
+      let return_progress_html_panel_id = parent_panel.data('return_progress_html_output_id');
+      var progress_html_offset = { left: parent_panel.offset().left, top: e.pageY - parent_panel.offset().top };
+      if (return_progress_html_panel_id) {
+        $(return_progress_html_panel_id).highlight_progress_card(progress_html_offset, parent_panel.attr('id'));
+        $('.fa-chevron-down', return_progress_html_panel_id).click();
+        return;
+      }
+      if (return_progress_html_output) {
+        card_id = display_progress_html_output(return_progress_html_output,
+          '#' + parent_panel.attr('id'),
+          progress_html_offset,
+          false,
+          true);
+        $('.fa-chevron-down', return_progress_html_panel_id).click();
+        parent_panel.data({
+          'return_progress_html_output_id': '#' + card_id
+        });
+        return;
+      }
+      parent_target_obj.find('.spinner-border').css('display', '');
+      target_obj.hide();
+      AJAX_call_get_token().done(
+        function(data, textStatus, jqXHR) {
+          formData_return_progress_link.set('return_progress', 'True');
+          formData_return_progress_link.set('query_status', 'new');
+          if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
+            formData_return_progress_link.set('token', data.token);
+            var return_progress_jqXHR = $.ajax({
+              url: current_ajax_call_params.action,
+              data: formData_return_progress_link,
+              dataType: 'json',
+              processData: false,
+              contentType: false,
+              timeout: ajax_request_timeout,
+              type: 'POST'
+            }).done(function(data, textStatus, jqXHR) {
+              console.log(data);
+              let error_display = false;
+              if (data.products.hasOwnProperty('progress_product_html_output'))
+                output_html = data.products.progress_product_html_output;
+              else
+              {
+                error_display = true;
+                output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
+              }
+              
+              card_id = display_progress_html_output(output_html,
+                '#' + parent_panel.attr('id'), 
+                progress_html_offset, 
+                error_display, 
+                true);
+              parent_panel.data({
+                'return_progress_html_output': output_html,
+                'return_progress_html_output_id': '#' + card_id
+              });
+            }).always(function(jqXHR, textStatus) {
+              parent_target_obj.find('.spinner-border').css('display', 'none');
+              target_obj.show();
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+              parent_target_obj.find('.spinner-border').css('display', 'none');
+              target_obj.show();
+            });
+            
+            // jqxhr
+            parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
+
+        }
+      );
+
+    });
+
+    $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function(e) {
       // e.stopPropagation();
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
@@ -852,12 +943,13 @@ function card_title(outputname, param) {
             type: 'POST'
           }).done(function(data, textStatus, jqXHR) {
             console.log(data);
+            var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
-              var parent_card = $('#ldialog-modal-dialog');
-              var progress_html_offset = { left: parent_card.offset().left, top: 50 };
-              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_card.attr('id'), progress_html_offset);
+              display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
+            } else  {
+              delete progress_html_offset.top;
+              display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
             }
-
           }).always(function(jqXHR, textStatus) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
@@ -1642,95 +1734,7 @@ function card_title(outputname, param) {
     if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
       editor.inline(this);
     });
-
-    //    editor.on('preSubmit', function(e, data, action) {
-    //      var rowId = Object.keys(data.data)[0];
-    //      if (action === 'confirm') {
-    //
-    //      }
-    //      if (action !== 'remove') {
-    //        var ra = this.field('ra');
-    //        var dec = this.field('dec');
-    //        //var src_names = this.field('src_names');
-    //        var ldataTable = $(this.s.table).DataTable();
-    //        // var lfilter = (action === 'edit')? data.data;
-    //        var confirmation = ($('.DTE button.save-row').data('confirmation'));
-    //        if (!confirmation) {
-    //          ldataTable.rows().every(
-    //            function(rowIdx, tableLoop, rowLoop) {
-    //              // ignore compare with
-    //              // the current row !
-    //              if (this.id() === rowId)
-    //                return;
-    //
-    //              var d = this.data();
-    //              var distance = getDistanceFromLatLonInKm(dec.val(), ra.val(), d.dec, d.ra);
-    //              // var distance_same = d.ERR_RAD * 2;
-    //              var distance_same = 0.00001;
-    //              if (distance <= distance_same) {
-    //                // Highlight the row in the table
-    //                $(this.node()).addClass('alert alert-danger');
-    //                $(this).show();
-    //
-    //                // Change the editor button to "Save anyway"
-    //                $('.DTE button.save-row').html('Save anyway !').removeClass('btn-primary').addClass('btn-warning').data('confirmation', true);
-    //                // Fix a bug where the opacity of the error message element is set to 0: not displayed
-    //                $('.DTE .DTE_Form_Error').css({
-    //                  'opacity': ''
-    //                });
-    //
-    //                editor.fail('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
-    //                  + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
-    //                setTimeout(function() {
-    //                  var row = $(".catalog-wrapper .mmoda", '#' + card_ids.card_id).DataTable().row(rowIdx).node();
-    //
-    //                  $(row).removeClass('alert alert-danger')
-    //                }, 5000);
-    //              }
-    //            });
-    //        } else {
-    //          $('.DTE button.save-row').html('Save').removeClass('btn-warning').addClass('btn-primary').removeData('confirmation').removeData('ltext');
-    //        }
-    //
-    //        // validate RA between 0 and 360
-    //        if (ra.val() < 0 || ra.val() > 360) {
-    //          ra.fail('Value must be between 0 and 360');
-    //        }
-    //
-    //        // validate RA between 0 and 360
-    //        if (dec.val() < -90 || dec.val() > 90) {
-    //          dec.fail('Value must be between -90 and 90');
-    //        }
-    //
-    //        // If any error was reported, cancel the
-    //        // submission so it can be
-    //        // corrected
-    //        if (this.inError() && !confirmation) {
-    //          return false;
-    //        }
-    //
-    //      }
-    //    });
-    // Update the catalog within the main window whenever the dataTable is
-    // changed
-    // create, remove or edit of any cell
-    //    if (!showUseCatalog) {
-    //      editor.on('create remove edit', function(e, json, data) {
-    //        var catalog_parent_card = $(afterDiv);
-    //        if (catalog_parent_card.hasClass('instrument-params-card')) {
-    //          var card = $('#' + card_ids.card_id);
-    //          var dataTable = card.data('dataTable');
-    //          var catalog = catalog_parent_card.data('catalog');
-    //          catalog.data = dataTable.data().toArray();
-    //          catalog_parent_card.data({
-    //            'catalog': catalog,
-    //            'dataTable': dataTable
-    //          });
-    //        }
-    //      });
-    //    }
     catalog_card.highlight_result_card(offset);
-
   }
 
   function getDistanceFromLatLonInKm(dec1, ra1, dec2, ra2) {
@@ -1824,19 +1828,31 @@ function card_title(outputname, param) {
     $('#' + card_ids.card_id).highlight_result_card(offset);
   }
 
-  function display_progress_html_output(html_content, afterDiv, offset) {
-    var card_ids = $(afterDiv).insert_new_card(desktop_card_counter++, 'html-progress', undefined, undefined, undefined, false);
+  function display_progress_html_output(html_content, afterDiv, offset, errorDisplay = false, draggable = false) {
+    let afterDiv_obj = $(afterDiv);
+    var card_ids = afterDiv_obj.insert_new_card(desktop_card_counter++, 'html-progress', undefined, undefined, undefined, draggable);
     $('#' + card_ids.card_body_id).append(html_content);
-    $(afterDiv).data({
-      progress_html_output_card_id: '#' + card_ids.card_id
+    afterDiv_obj.data({
+      progress_html_output_panel_id: '#' + card_ids.card_id
     });
     $('#' + card_ids.card_id).data({
-      progress_html_output_card_id: afterDiv
+      progress_html_output_panel_id: afterDiv
     });
-    $('#' + card_ids.card_id + ' .card-header .card-title').html('Current progress');
+    if (!draggable)
+      $('#' + card_ids.card_id).removeClass('ldraggable');
+    $('#' + card_ids.card_id + ' .panel-heading .panel-title').html('Current progress');
     $('#' + card_ids.card_id).addClass('mmoda-html-progress');
-    offset.left = $(afterDiv).offset().left + ($(afterDiv).width() - $('#' + card_ids.card_id).width()) / 2;
-    $('#' + card_ids.card_id).highlight_progress_card(offset);
+    if (errorDisplay)
+      $('#' + card_ids.card_id).addClass('mmoda-html-progress-error-display');
+    offset.left = afterDiv_obj.offset().left + (afterDiv_obj.width() - $('#' + card_ids.card_id).width()) / 2;
+    
+    $('#' + card_ids.card_id).highlight_progress_card(offset, afterDiv_obj.attr('id') );
+
+    $('#' + card_ids.card_id).data({
+      return_progress_html_output_product_card_id: afterDiv
+    });
+
+    return card_ids.card_id;
   }
 
   function display_query_parameters(query_parameters, afterDiv, datetime, offset) {
@@ -1940,6 +1956,14 @@ function card_title(outputname, param) {
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
+
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument_query !== undefined && $(`input[value='${instrument_query}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument_query}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
 
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
@@ -2087,6 +2111,14 @@ function card_title(outputname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
+
     // Install toolbar 
     $('#' + card_ids.card_body_id).append(toolbar);
     // Activate modal for API token form
@@ -2114,16 +2146,11 @@ function card_title(outputname, param) {
       });
     }
     $('#' + card_ids.card_id).data({
-      'job_id': job_id
-    });
-
-    $('#' + card_ids.card_id).data({
-      'products': data
-    });
-
-    $('#' + card_ids.card_id).data({
+      'job_id': job_id,
+      'products': data,
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
+      formData_return_progress_link: current_ajax_call_params.currentFormData
     });
 
     $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title(data.analysis_parameters.src_name, data.analysis_parameters));
@@ -2318,6 +2345,14 @@ function card_title(outputname, param) {
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
 
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
+
     // Add button "API token" : copy API token to clipboard if connected
     // otherwise show a form to request it
     toolbar.append(get_token_button());
@@ -2431,17 +2466,7 @@ function card_title(outputname, param) {
 
     // Activate inline edit on click of a table cell
     spectrum_table_container.on('click', 'tbody td:nth-child(2)', function() {
-      // editor.inline(this);
     });
-    //    editor.on('initEdit', function(e, json, data) {
-    //      $(this).data('xspec_model_previous_val', data.xspec_model);
-    //    });
-
-    //    editor.on('postEdit', function(e, json, data) {
-    //      if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
-    //        $('.instrument-card.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_card_id');
-    //      }
-    //    });
 
     // highlight_result_card(card_ids.card_id);
     $('#' + card_ids.card_id).highlight_result_card();
@@ -2577,6 +2602,20 @@ function card_title(outputname, param) {
     return button;
   }
 
+  function get_return_progress_link_button(enable = true) {
+    let inner_html = $(`<div class="btn return-progress-link return-progress-link-result-panel">
+    <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+    `);
+    inner_html.find('.spinner-border').css('display', 'none');
+    if (enable)
+      inner_html.addClass('enabled');
+    else
+      inner_html.addClass('disabled');
+    return inner_html;
+  }
+
   function card_body_append_header_footer(card_ids, data) {
     if (data.image.hasOwnProperty('header_text'))
       $('#' + card_ids.card_body_id).append(data.image.header_text.replace(/\n/g, "<br />"));
@@ -2671,6 +2710,14 @@ function card_title(outputname, param) {
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
     toolbar.append(get_renku_publish_button(dbutton, job_id));
+
+    // Add button "Return progress"
+    let enabled = false;
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
+      enabled = true;
+    }
+    toolbar.append(get_return_progress_link_button(enabled));
 
     // Install toolbar 
     $('#' + card_ids.card_body_id).append(toolbar);
