@@ -39,27 +39,34 @@ class mmodaController extends ControllerBase
       $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
       $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
 
-      $jwt_decoded_token -> setClaim('sub', $user->get('mail')->value);
-      $jwt_decoded_token -> setClaim('email', $user->get('mail')->value);
-      $jwt_decoded_token -> setClaim('name', $user->get('name')->value);
-      $jwt_decoded_token -> setClaim('roles', $user->getRoles());
+      $jwt_decoded_token->setClaim('sub', $user->get('mail')->value);
+      $jwt_decoded_token->setClaim('email', $user->get('mail')->value);
+      $jwt_decoded_token->setClaim('name', $user->get('name')->value);
+      $jwt_decoded_token->setClaim('roles', $user->getRoles());
 
-      if($is_mxroomid_empty)
-        unset($jwt_decoded_token -> mxroomid);
+      if ($is_mxroomid_empty)
+        unset($jwt_decoded_token->mxroomid);
       else
-        $jwt_decoded_token -> setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
+        $jwt_decoded_token->setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
 
-      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token', ['@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)]);
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token',
+        [
+          '@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)
+        ]);
 
       $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
 
-      return new JsonResponse(array('token' => $jwt_encoded_token_updated));
-    }
-    else
-      return (drupal_json_output(array('error' => 'User not authenticated')));
+      return new JsonResponse(array(
+        'token' => $jwt_encoded_token_updated
+      ));
+    } else
+      return (drupal_json_output(array(
+        'error' => 'User not authenticated'
+      )));
   }
 
-  private function _mmoda_user_has_roles($instrument_roles) {
+  private function _mmoda_user_has_roles($instrument_roles)
+  {
     if (empty($instrument_roles)) {
       return true;
     }
@@ -68,7 +75,7 @@ class mmodaController extends ControllerBase
     $user_roles = $user->getRoles();
     $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
 
-    $user_role_labels = array_map(function($role_id) use ($role_storage) {
+    $user_role_labels = array_map(function ($role_id) use ($role_storage) {
       $role = $role_storage->load($role_id);
       return $role ? $role->label() : null;
     }, $user_roles);
@@ -77,7 +84,7 @@ class mmodaController extends ControllerBase
 
     $instrument_roles_ar = array_map('trim', explode(',', $instrument_roles));
 
-    return !empty(array_intersect($instrument_roles_ar, $user_role_labels));
+    return ! empty(array_intersect($instrument_roles_ar, $user_role_labels));
   }
 
   public function content()
@@ -109,11 +116,17 @@ class mmodaController extends ControllerBase
     $instruments = array();
     $mmoda_js_settings = array();
 
+    $default_weight = 10000;
+    $instruments_weights = array();
+
     foreach ($instruments_settings as $mmoda_module_name => $instrument_settings) {
 
       $weight = $instrument_settings->get('weight');
-      if (empty($weight))
-        $weight = 99999999999;
+      if (empty($weight) or in_array($weight, $instruments_weights)) {
+        $weight = $default_weight;
+        $default_weight += 10;
+      }
+      array_push($instruments_weights, $weight);
       $form = '';
       try {
         $form = \Drupal::formBuilder()->getForm('\Drupal\\' . $mmoda_module_name . '\Form\MmodaInstrumentForm');
@@ -126,7 +139,8 @@ class mmodaController extends ControllerBase
         $enabled = $instrument_settings->get('enabled');
         $is_virtual = $instrument_settings->get('virtual') ?? 0;
         $allowed_roles = $instrument_settings->get('allowed_roles');
-        if ($enabled and !$is_virtual and ($allowed_roles == null or empty($allowed_roles) or $this->_mmoda_user_has_roles($allowed_roles))) {
+
+        if ($enabled and ! $is_virtual and ($allowed_roles == null or empty($allowed_roles) or $this->_mmoda_user_has_roles($allowed_roles))) {
           $instruments[$weight] = [
             'name' => $instrument_name,
             'active' => '',
@@ -158,9 +172,8 @@ class mmodaController extends ControllerBase
       '#name_resolve_form' => \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\NameResolveForm'),
       '#common_form' => $common_form,
       '#mmoda_data' => $mmoda_data,
-      '#instruments' => $instruments,
+      '#instruments' => $instruments
     ];
-    error_log('help_page_url:' . print_r($output['#mmoda_data'], true));
     $output['#attached']['drupalSettings'][$core_module_name] = $mmoda_js_settings;
 
     // Use the form builder service to retrieve a form by providing the full
