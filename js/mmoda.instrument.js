@@ -1349,11 +1349,41 @@ function card_title(outputname, param) {
       }
       make_request_error = false;
       var make_request_error_messages = [];
-      var all_form_inputs = [];
+
+      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form') .each(function() {
+        // get name of the first select element
+        var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
+        var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
+        let add_multivalued_button = $(this).find('.add-multivalued-element');
+        if (request_parameters.hasOwnProperty(field_name)) {
+          var field_values = request_parameters[field_name];
+          let parsed_field_obj = JSON.parse(field_values);
+          // for each key in the object, add a new multivalued field
+          let parsed_field_obj_keys = Object.keys(parsed_field_obj);
+          let num_multivalued_field = parsed_field_obj[parsed_field_obj_keys[0]].length;
+          for (let i = 0; i < num_multivalued_field ; i++) {
+            for(key of parsed_field_obj_keys) {
+              var select_list = $('select', this).filter(function() {
+                return $(this).attr('name') === `${field_name}[${key}][]`;
+              });
+              // check if the select has the value amongst its options
+              let select_element = $(select_list[select_list.length - 1]);
+              let hasOption = select_element.find('option').filter(function() {
+                return $(this).val() === parsed_field_obj[key][i];
+              }).length > 0;
+              if (!hasOption)
+                select_element.append(new Option(parsed_field_obj[key][i], parsed_field_obj[key][i]));
+              select_element.val(parsed_field_obj[key][i]);
+            }
+            if($('.multivalued-value', this).length < num_multivalued_field)
+              insert_new_multivalued_field(add_multivalued_button[0]);
+          }
+        }
+      });
+
       $('input, textarea, select', 'form#mmoda-name-resolve-form, form#mmoda-common-form, form.' + request_parameters.instrument + '-form').each(function() {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
-        all_form_inputs.push(field_name);
         // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
         if (request_parameters.hasOwnProperty(field_name)) {
           if ($(this).attr('type') == 'file') {
@@ -1375,17 +1405,6 @@ function card_title(outputname, param) {
           }
         }
       });
-      all_form_inputs = all_form_inputs.filter(function(itm, i, a) {
-        return i == a.indexOf(itm);
-      });
-      // based on the black-listed parameters within the dispatcher, there used for the generation of the job_id, to be kept synchronized
-      //      let accepted_params_url = ['query_status', 'oda_api_version', 'api', 'off_line', 'async_dispatcher', 'dry_run', 'selected_catalog'];
-      //      for (parameter in request_parameters) {
-      //        if (all_form_inputs.indexOf(parameter) == -1 && accepted_params_url.indexOf(parameter) == -1) {
-      //          make_request_error_messages.push('Unknown parameter in the url:' + parameter);
-      //          make_request_error = true;
-      //        }
-      //      }
 
       if (!make_request_error) {
         both_forms_valid = true;
