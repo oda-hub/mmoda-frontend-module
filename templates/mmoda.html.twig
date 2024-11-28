@@ -169,51 +169,53 @@ The configured label of the block if visible.
         <h4 class="modal-title"></h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <div class="mmoda-loader">
-          <div class="mmoda-loader-text loader-position">Loading ...</div>
-          <div class="loader mmoda-loader-pic loader-position"></div>
-        </div>
-        <div class="modal-controls">
-          <div class="progress active">
-            <div class="progress-bar"></div>
-            <div class="progress-bar-text-container">
-              <span class="progress-bar-text"></span> 
-              <span class="more-less-details">
-                <i class="bi bi-info-circle-fill" aria-hidden="true">
-                  <span class="more-less-details-tooltip">View messages</span>
-                </i>
-              </span>
-            </div>
+      <div class="modal-body d-flex">
+        <div class="w-100">
+          <div class="mmoda-loader">
+            <div class="mmoda-loader-text loader-position">Loading ...</div>
+            <div class="loader mmoda-loader-pic loader-position"></div>
           </div>
-          <div class="return-progress-link">
-            <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
-            <i class="fa fa-spinner hidden fa-spin"></i>
-          </div>
-        </div>
-        <div class="summary-container" >
-          <div class="summary">
-            <div class="summary-legend">
-              <div class="legend">
-                <div class="legend-element preparing"></div>
-                Preparing
-                <div class="legend-element calculating"></div>
-                Calculating
-                <div class="legend-element calculated"></div>
-                Done
-                <div class="legend-element from-cache"></div>
-                Restored from cache
-                <div class="legend-element analysis-exception"></div>
-                Analysis exception
+          <div class="modal-controls">
+            <div class="progress active">
+              <div class="progress-bar"></div>
+              <div class="progress-bar-text-container">
+                <span class="progress-bar-text"></span> 
+                <span class="more-less-details">
+                  <i class="bi bi-info-circle-fill" aria-hidden="true">
+                    <span class="more-less-details-tooltip">View messages</span>
+                  </i>
+                </span>
               </div>
             </div>
-            <div class="summary-message"></div>
-            <div class="summary-controls"></div>
-            <div class="details"></div>
-            <div class="summary-failures"></div>
-            <div class="summary-warnings"></div>
-            <div class="summary-results"></div>
           </div>
+          <div class="summary-container" >
+            <div class="summary">
+              <div class="summary-legend">
+                <div class="legend">
+                  <div class="legend-element preparing"></div>
+                  Preparing
+                  <div class="legend-element calculating"></div>
+                  Calculating
+                  <div class="legend-element calculated"></div>
+                  Done
+                  <div class="legend-element from-cache"></div>
+                  Restored from cache
+                  <div class="legend-element analysis-exception"></div>
+                  Analysis exception
+                </div>
+              </div>
+              <div class="summary-message"></div>
+              <div class="summary-controls"></div>
+              <div class="details"></div>
+              <div class="summary-failures"></div>
+              <div class="summary-warnings"></div>
+              <div class="summary-results"></div>
+            </div>
+          </div>
+        </div>
+        <div class="return-progress-link">
+          <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
+          <i class="fa fa-spinner hidden fa-spin"></i>
         </div>
       </div>
       <div class="modal-footer">
