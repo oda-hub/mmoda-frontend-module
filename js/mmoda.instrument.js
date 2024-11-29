@@ -1943,6 +1943,7 @@ function card_title(outputname, param) {
     var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'lc-table', datetime);
 
     var session_id = data.session_id;
+    let instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
     $('#' + card_ids.card_id).data("product_type", 'lc');
