@@ -112,32 +112,6 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
 
     foreach ($tokens as $name => $original) {
       switch ($name) {
-        case 'jwt-link':
-          if (\Drupal::currentUser()->isAuthenticated()) {
-            $jwt_service = \Drupal::service('jwt.transcoder');
-            $alg = variable_get('jwt_link_alg', 'HS256');
-            $key = variable_get('jwt_link_key', '');
-            $jwt_decoded_token = JWT::decode($jwt_encoded_token_updated, $key, array(
-              $alg
-            ));
-
-            if($is_mxroomid_empty) {
-              unset($jwt_decoded_token -> mxroomid);
-              $jwt_encoded_token_updated = JWT::encode($jwt_decoded_token, $key, $alg);
-              $url_parsed = parse_url($jwt_encoded_url_updated);
-              parse_str($url_parsed['query'], $query_params);
-              $query_params['token'] = $jwt_encoded_token_updated;
-              $new_query_string = http_build_query($query_params);
-              $url_parsed['query'] = $new_query_string;
-              $jwt_encoded_url_updated = $url_components['scheme'] . '://' . $url_components['host'] . $url_components['path'] . '?' . $url_components['query'];
-            }
-
-            $link_text = variable_get('jwt_link_text', t('Visit Site...'));
-            $jwt_encoded_url = l($link_text, $jwt_encoded_url_updated, array('attributes' => array('target' => '_blank')));
-            $replacements[$original . '_updated'] = $jwt_encoded_url;
-          }
-          break;
-
         case 'jwt-token':
           if (\Drupal::currentUser()->isAuthenticated()) {
             $jwt_auth_service = \Drupal::service('jwt.authentication.jwt');

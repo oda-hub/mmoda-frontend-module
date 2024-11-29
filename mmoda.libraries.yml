@@ -1,10 +1,5 @@
 mmoda_libs:
   version: 1.x
-  css:
-    layout:
-      css/mmoda-layout.css: {}
-    theme:
-      css/mmoda-theme.css: {}
   js:
     js/mmoda.common.js: {}
     js/mmoda.form_validation.js: {}
