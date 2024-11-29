@@ -22,4 +22,4 @@ enable_use_catalog: FALSE
 allowed_roles: 'oda workflow developer'
 
 data_server_url: dispatch-data/run_analysis
-help_page_url: help/mmoda/icecube
+help_page_url: help/mmoda/grb-detection
