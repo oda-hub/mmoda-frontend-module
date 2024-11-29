@@ -94,12 +94,12 @@ function card_title(outputname, param) {
     }
     else if (data.products.hasOwnProperty('image')) {
       if (data.products.hasOwnProperty('download_file_name') && data.products.download_file_name.indexOf('light_curve') == 0) {
-        product_card_body = display_lc_table(job_id, data.products);
+        product_card_body = display_lc_table(job_id, data.products, instrument);
       } else {
         if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-          product_card_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+          product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
         } else if (Array.isArray(data.products.image)) {
-          product_card_body = display_image_table(data.products, job_id, instrument);
+          product_panel_body = display_image_table(data.products, job_id, instrument);
         } else {
           product_card_body = display_image(data.products, job_id, instrument);
         }
@@ -1937,13 +1937,12 @@ function card_title(outputname, param) {
     });
   }
 
-  function display_lc_table(job_id, data) {
+  function display_lc_table(job_id, data, instrument) {
     datetime = get_current_date_time();
 
     var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'lc-table', datetime);
 
     var session_id = data.session_id;
-    let instrument_query = data.analysis_parameters.instrument;
     var session_job_ids = '<div>Session ID : ' + session_id + '</div><div>Job ID : ' + job_id + '</div>';
     $('#' + card_ids.card_id).data("log", session_job_ids + $('.modal-body', '#ldialog').html());
     $('#' + card_ids.card_id).data("product_type", 'lc');
@@ -1980,8 +1979,8 @@ function card_title(outputname, param) {
 
     // Add button "Return progress"
     let enabled = false;
-    if (instrument_query !== undefined && $(`input[value='${instrument_query}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-      $(`input[value='${instrument_query}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
+    if (instrument !== undefined && $(`input[value='${instrument}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
+      $(`input[value='${instrument}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
       enabled = true;
     }
     toolbar.append(get_return_progress_link_button(enabled));
@@ -2087,7 +2086,7 @@ function card_title(outputname, param) {
 
   }
 
-  function display_image_table(data, job_id, query_status) {
+  function display_image_table(data, job_id, instrument) {
     datetime = get_current_date_time();
 
     var card_ids = $(".instrument-params-card", ".instrument-card.active").insert_new_card(desktop_card_counter++, 'image-table', datetime);
