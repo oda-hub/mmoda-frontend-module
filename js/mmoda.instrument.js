@@ -105,7 +105,7 @@ function card_title(outputname, param) {
         }
       }
     } else if (data.products.hasOwnProperty('spectrum_name')) {
-      product_card_body = display_spectrum_table(job_id, data.query_status, data.products);
+      product_card_body = display_spectrum_table(job_id, data.query_status, data.products, instrument);
     }
 
     $('.instrument-card.active .instrument-params-card .paper-quote').clone().removeClass('hidden').removeAttr('id').appendTo(product_card_body);
@@ -2300,10 +2300,9 @@ function card_title(outputname, param) {
     $('#' + card_ids.card_id).highlight_result_card(catalog_offset);
     return ($('#' + card_ids.card_body_id));
 
-
   }
 
-  function display_spectrum_table(job_id, query_status, data) {
+  function display_spectrum_table(job_id, query_status, data, instrument) {
 
     datetime = get_current_date_time();
 
@@ -2316,23 +2315,6 @@ function card_title(outputname, param) {
     var toolbar = $('<div>').addClass('btn-group').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-outline-secondary');
     dbutton.data("datetime", datetime);
-
-    // Add button "Download" : download image, catalog and region file
-    //    var url_params = {
-    //      session_id: data.session_id,
-    //      download_file_name: file_name,
-    //      file_list: files_list,
-    //      query_status: 'ready',
-    //      job_id: job_id,
-    //      instrument: instrument
-    //    };
-    //    var download_url = get_download_url(url_params);
-    //    var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-    //    link.addClass('btn btn-outline-secondary');
-    //    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    //    glyphicon.attr({ title: "image, catalog and region file" });
-    //    link.append(glyphicon);
-    //    toolbar.append(link);
 
     // Add button "Catalog": show catalog
     product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
@@ -2404,7 +2386,7 @@ function card_title(outputname, param) {
         rmf_file_name: data.rmf_file_name[i],
         job_id: job_id,
         session_id: data.session_id,
-        instrument: data.instrument,
+        instrument: instrument,
       }
     }
 
