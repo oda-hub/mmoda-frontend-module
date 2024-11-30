@@ -12,3 +12,13 @@ function mmoda_icecube_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_icecube_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_icecube');
+}
+
+function mmoda_icecube_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_icecube');
+}

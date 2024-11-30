@@ -1,0 +1,19 @@
+<?php
+
+function mmoda_install($is_syncing)
+{
+  \Drupal::configFactory()->getEditable('system.site')
+    ->set('page.front', '/home')
+    ->save();
+
+  mmoda_help_pages_book_publish('mmoda');
+}
+
+function mmoda_uninstall($is_syncing)
+{
+  \Drupal::configFactory()->getEditable('system.site')
+    ->set('page.front', '/')
+    ->save();
+  mmoda_help_pages_book_unpublish('mmoda');
+}
+

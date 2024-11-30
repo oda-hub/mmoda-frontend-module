@@ -12,3 +12,12 @@ function mmoda_jemx_theme($existing, $type, $theme, $path)
 
 }
 
+function mmoda_jemx_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_jemx');
+}
+
+function mmoda_jemx_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_jemx');
+}

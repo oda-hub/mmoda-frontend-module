@@ -7,23 +7,43 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-function mmoda_node_update($node)
+function mmoda_node_presave($node)
 {
-  error_log("updated node\n" . print_r($node->id(), true));
+  $user = user_load_by_name('content-owner');
+  if ($user) {
+    $node->setOwnerId($user->id());
+  }
 }
 
-function mmoda_install($is_syncing)
+function mmoda_help_pages_book_publish($module_name)
 {
-  \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/home')
-    ->save();
+  mmoda_help_pages_book_edit_publish($module_name, true);
 }
 
-function mmoda_uninstall($is_syncing)
+function mmoda_help_pages_book_unpublish($module_name)
 {
-  \Drupal::configFactory()->getEditable('system.site')
-    ->set('page.front', '/')
-    ->save();
+  mmoda_help_pages_book_edit_publish($module_name, false);
+}
+
+function mmoda_help_pages_book_edit_publish($module_name, $publish)
+{
+  $nids = \Drupal::entityQuery('node')->accessCheck(TRUE)
+  ->condition('type', 'mmoda_help_page')
+  ->execute();
+  $nodes = \Drupal\node\Entity\Node::loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    // field_mmoda_module
+    $title_field = $node->get('field_mmoda_module');
+    $mmoda_help_page_module_name = $title_field->getValue();
+    if (! empty($mmoda_help_page_module_name) and ($mmoda_help_page_module_name[0]['value'] == $module_name)) {
+      if ($publish)
+        $node->setPublished();
+        else
+          $node->setUnpublished();
+          $node->save();
+    }
+  }
 }
 
 /**
@@ -52,16 +72,16 @@ function mmoda_theme($existing, $type, $theme, $path)
 /**
  * Implements hook_token_info().
  */
-
-function mmoda_token_info() : array {
+function mmoda_token_info(): array
+{
   $info = [];
   $types['jwt'] = [
     'name' => t("JWT token type"),
-    'description' => t("JWT token"),
+    'description' => t("JWT token")
   ];
   $jwt_token['jwt-token'] = [
     'name' => t("JWT token"),
-    'description' => t("Current JWT token."),
+    'description' => t("Current JWT token.")
   ];
   $logo_token['logo-url'] = [
     'name' => 'Site logo',
@@ -72,8 +92,8 @@ function mmoda_token_info() : array {
     'types' => $types,
     'tokens' => [
       'jwt' => $jwt_token,
-      'site' => $logo_token,
-    ],
+      'site' => $logo_token
+    ]
   ];
   return $info;
 }
@@ -81,7 +101,8 @@ function mmoda_token_info() : array {
 /**
  * Implements hook_tokens().
  */
-function mmoda_tokens($type, $tokens, array $data = array(), array $options = array()) {
+function mmoda_tokens($type, $tokens, array $data = array(), array $options = array())
+{
   $replacements = array();
   $token_service = \Drupal::token();
   if ($type == 'site') {
@@ -90,7 +111,7 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
         case 'logo-url':
           $theme = \Drupal::config('system.theme')->get('default');
           $host = \Drupal::request()->getSchemeAndHttpHost();
-          $logo_url= $host.theme_get_setting('logo', $theme)['url'];
+          $logo_url = $host . theme_get_setting('logo', $theme)['url'];
           $replacements[$original] = $logo_url;
           break;
 
@@ -105,7 +126,7 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $maxroomid_field = $user->get('field_matrix_room_id');
     $is_mxroomid_empty = $maxroomid_field->isEmpty();
-    if($is_mxroomid_empty)
+    if ($is_mxroomid_empty)
       \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is empty');
     else
       \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'user field is not empty');
@@ -117,22 +138,28 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
             $jwt_auth_service = \Drupal::service('jwt.authentication.jwt');
 
             $jwt_encoded_token = $jwt_auth_service->generateToken();
-            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_encoded_token: @jwt_encoded_token', ['@jwt_encoded_token' => print_r($jwt_encoded_token, TRUE)]);
+            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_encoded_token: @jwt_encoded_token',
+              [
+                '@jwt_encoded_token' => print_r($jwt_encoded_token, TRUE)
+              ]);
 
             $jwt_transcoder_service = \Drupal::service('jwt.transcoder');
             $jwt_decoded_token = $jwt_transcoder_service->decode($jwt_encoded_token);
 
-            $jwt_decoded_token -> setClaim('sub', $user->get('mail')->value);
-            $jwt_decoded_token -> setClaim('email', $user->get('mail')->value);
-            $jwt_decoded_token -> setClaim('name', $user->get('name')->value);
-            $jwt_decoded_token -> setClaim('roles', $user->getRoles());
+            $jwt_decoded_token->setClaim('sub', $user->get('mail')->value);
+            $jwt_decoded_token->setClaim('email', $user->get('mail')->value);
+            $jwt_decoded_token->setClaim('name', $user->get('name')->value);
+            $jwt_decoded_token->setClaim('roles', $user->getRoles());
 
-            if($is_mxroomid_empty)
-              unset($jwt_decoded_token -> mxroomid);
+            if ($is_mxroomid_empty)
+              unset($jwt_decoded_token->mxroomid);
             else
-              $jwt_decoded_token -> setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
+              $jwt_decoded_token->setClaim('field_matrix_room_id', $maxroomid_field->getValue()[0]['value']);
 
-            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token', ['@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)]);
+            \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'jwt_decoded_token: @jwt_decoded_token',
+              [
+                '@jwt_decoded_token' => print_r($jwt_decoded_token->getPayload(), TRUE)
+              ]);
 
             $jwt_encoded_token_updated = $jwt_transcoder_service->encode($jwt_decoded_token);
             $replacements[$original . '_updated'] = $jwt_encoded_token_updated;
@@ -146,7 +173,8 @@ function mmoda_tokens($type, $tokens, array $data = array(), array $options = ar
   return $replacements;
 }
 
-function mmoda_tokens_alter(array &$replacements, array $context) {
+function mmoda_tokens_alter(array &$replacements, array $context)
+{
   if (array_key_exists('[jwt:jwt-token]_updated', $replacements)) {
     $replacements['[jwt:jwt-token]'] = $replacements['[jwt:jwt-token]_updated'];
     unset($replacements['[jwt:jwt-token]_updated']);
@@ -157,7 +185,6 @@ function mmoda_tokens_alter(array &$replacements, array $context) {
   }
 }
 
-
 /**
  * Implements hook_preprocess_status_messages()
  */
@@ -166,7 +193,8 @@ function mmoda_preprocess_status_messages(&$variables)
   $matches = array();
   $openid_connect_email_taken_meessage_pattern = '/^The e-mail address <em class="placeholder">(.+)<\/em> is already taken\.$/';
   if (isset($_SESSION['messages']['error'][0]) and preg_match($openid_connect_email_taken_meessage_pattern, $_SESSION['messages']['error'][0], $matches)) {
-    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] . '</em> is already taken by an existing local account which is not connected to Github.';
+    $_SESSION['messages']['error'][0] = 'Logging in with GitHub could not be completed as the e-mail address <em class="placeholder">' . $matches[1] .
+      '</em> is already taken by an existing local account which is not connected to Github.';
     $_SESSION['messages']['error'][1] = 'Login with this account and edit it to connect it to GitHub (<a class="open-in-modal" href="help/mmoda/connect-my-mmoda-account-github">How to ?</a>)';
   }
 }
@@ -177,29 +205,36 @@ function mmoda_preprocess_status_messages(&$variables)
 function mmoda_page_attachments(array &$attachments)
 {
   // Unconditionally attach an asset to the page.
-//   dpm('attaching lib');
-//   $attachments['#attached']['library'][] = 'mmoda/bootstrap_form_validatorrrr';
+  //   dpm('attaching lib');
+  //   $attachments['#attached']['library'][] = 'mmoda/bootstrap_form_validatorrrr';
 }
 
-function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
   $open_id_form_id = 'openid-connect-login-form';
-  if(str_starts_with($form['#id'], $open_id_form_id)) {
-    $form['openid_connect_client_github_login']['#attributes']['class'] = array("nav-item", "btn", "btn-secondary", "btn-sm", "rounded-0");
+  if (str_starts_with($form['#id'], $open_id_form_id)) {
+    $form['openid_connect_client_github_login']['#attributes']['class'] = array(
+      "nav-item",
+      "btn",
+      "btn-secondary",
+      "btn-sm",
+      "rounded-0"
+    );
   }
   switch ($form_id) {
     case 'webform_submission_your_api_token_add_form':
       $form['actions']['close'] = array(
-      '#type' => 'submit',
-      '#access' => TRUE,
-      '#value' => t('Close'),
-      '#weight' => 60,
-      '#attributes' => array(
-      'class' => array(
-      'btn',
-      'btn-primary',
-      'close-copy-api-token-form'
+        '#type' => 'submit',
+        '#access' => TRUE,
+        '#value' => t('Close'),
+        '#weight' => 60,
+        '#attributes' => array(
+          'class' => array(
+            'btn',
+            'btn-primary',
+            'close-copy-api-token-form'
+          )
         )
-      )
       );
       break;
   }
@@ -208,7 +243,8 @@ function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 /**
  * Implements hook_user_login().
  */
-function mmoda_user_login($account) {
+function mmoda_user_login($account)
+{
   $current_route = Drupal::routeMatch()->getRouteName();
   $request = Drupal::request();
   if ($request->getRequestFormat() !== 'html') {
@@ -220,19 +256,18 @@ function mmoda_user_login($account) {
   }
 
   // Accessing the site in maintenance mode.
-  if (\Drupal::state()->get('system.maintenance_mode') &&
-    !$account->hasPermission('access site in maintenance mode')) {
-      // The site is in maintenance mode and the user is not allowed in.
-      // Step out and let Drupal handle it.
-      \Drupal::service('request_stack')
-      ->getCurrentRequest()->query->set('destination', URL::fromUserInput('/')
-        ->toString());
-    }
+  if (\Drupal::state()->get('system.maintenance_mode') && ! $account->hasPermission('access site in maintenance mode')) {
+    // The site is in maintenance mode and the user is not allowed in.
+    // Step out and let Drupal handle it.
+    \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', URL::fromUserInput('/')->toString());
+  }
 
-    if (!in_array($current_route, ['user.reset', 'user.reset.login'])) {
-      // Redirect user on login.
-      $url =  '/';
-      \Drupal::service('request_stack')
-      ->getCurrentRequest()->query->set('destination', URL::fromUserInput($url)->toString());
-    }
+  if (! in_array($current_route, [
+    'user.reset',
+    'user.reset.login'
+  ])) {
+    // Redirect user on login.
+    $url = '/';
+    \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', URL::fromUserInput($url)->toString());
+  }
 }

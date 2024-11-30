@@ -12,3 +12,13 @@ function mmoda_gw_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_gw_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_gw');
+}
+
+function mmoda_gw_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_gw');
+}

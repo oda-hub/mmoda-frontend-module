@@ -12,3 +12,13 @@ function mmoda_legacysurvey_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_legacysurvey_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_legacysurvey');
+}
+
+function mmoda_legacysurvey_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_legacysurvey');
+}

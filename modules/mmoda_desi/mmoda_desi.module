@@ -12,3 +12,12 @@ function mmoda_desi_theme($existing, $type, $theme, $path)
 ];
 
 }
+function mmoda_desi_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_desi');
+}
+
+function mmoda_desi_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_desi');
+}

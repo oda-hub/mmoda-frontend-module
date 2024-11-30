@@ -12,3 +12,13 @@ function mmoda_spi_acs_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_spi_acs_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_spi_acs');
+}
+
+function mmoda_spi_acs_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_spi_acs');
+}

@@ -12,3 +12,12 @@ function mmoda_cta_theme($existing, $type, $theme, $path)
 ];
 
 }
+function mmoda_cta_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_cta');
+}
+
+function mmoda_cta_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_cta');
+}

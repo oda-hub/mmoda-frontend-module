@@ -6,3 +6,13 @@
 // function mmoda_integral_theme($existing, $type, $theme, $path)
 // {
 // }
+
+function mmoda_integral_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_integral');
+}
+
+function mmoda_integral_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_integral');
+}

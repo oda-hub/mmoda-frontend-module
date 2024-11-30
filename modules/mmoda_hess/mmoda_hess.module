@@ -12,3 +12,13 @@ function mmoda_hess_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_hess_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_hess');
+}
+
+function mmoda_hess_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_hess');
+}

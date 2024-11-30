@@ -12,3 +12,13 @@ function mmoda_isgri_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_isgri_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_isgri');
+}
+
+function mmoda_isgri_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_isgri');
+}

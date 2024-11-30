@@ -23,6 +23,3 @@ function mmoda_jemx_requirements($phase)
 
   return $requirements;
 }
-
-function mmoda_jemx_install($is_syncing)
-{}

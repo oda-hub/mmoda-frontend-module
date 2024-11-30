@@ -8,6 +8,7 @@ name: integral
 messenger: Hard X-rays
 title: INTEGRAL
 
+help_page_url: help/mmoda/integral-mission
 
 virtual: true
 weight: 10

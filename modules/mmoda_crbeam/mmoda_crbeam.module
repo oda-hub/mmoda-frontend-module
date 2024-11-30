@@ -12,3 +12,13 @@ function mmoda_crbeam_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_crbeam_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_crbeam');
+}
+
+function mmoda_crbeam_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_crbeam');
+}

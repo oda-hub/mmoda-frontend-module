@@ -12,3 +12,13 @@ function mmoda_grb_detection_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_grb_detection_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_grb_detection');
+}
+
+function mmoda_grb_detection_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_grb_detection');
+}

@@ -12,3 +12,13 @@ function mmoda_polar_theme($existing, $type, $theme, $path)
 ];
 
 }
+
+function mmoda_polar_install($is_syncing)
+{
+  mmoda_help_pages_book_publish('mmoda_polar');
+}
+
+function mmoda_polar_uninstall($is_syncing)
+{
+  mmoda_help_pages_book_unpublish('mmoda_polar');
+}
