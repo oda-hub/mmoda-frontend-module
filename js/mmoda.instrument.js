@@ -28,6 +28,7 @@ function card_title(outputname, param) {
   var distinct_nodes;
 
   var current_ajax_call_params = {};
+  var run_analysis_data_query_status = undefined;
   var last_dataserver_response = {};
   var max_nb_attempts_after_failed = 0;
   var current_nb_attempts_after_failed = 0;
@@ -127,9 +128,6 @@ function card_title(outputname, param) {
     }
     previous_summary = '';
 
-    // if (data.products.hasOwnProperty('input_prod_list')) {
-    //   data_units = data.products.input_prod_list;
-    // }
     if (typeof messages !== 'undefined') {
       previous_summary = messages.summary;
       previous_details = messages.details;
@@ -144,11 +142,11 @@ function card_title(outputname, param) {
         progress_max = data['job_monitor']['full_report_dict']['progress_max'];
     }
     waitingDialog.setProgressBarText(response_status);
+    console.log('progress: ' + progress + ' progress_max: ' + progress_max);
 
     messages = get_server_message(data, integral_instrument);
     current_summary = messages.summary;
     current_details = messages.details;
-    // messages.summary = get_current_date_time() + messages.summary;
     if (current_instrument_query !== undefined) {
       if ($(`input[value='${current_instrument_query}']`, ".instrument-card.active")[0].attributes.hasOwnProperty('support_return_progress') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-card")[0].attributes.support_return_progress.value == 'true') {
@@ -159,12 +157,10 @@ function card_title(outputname, param) {
       else
         waitingDialog.setProgressBarStatus(response_status, false);
     }
-    // if (current_summary != previous_summary) {
-    //   waitingDialog.replace(messages);
-    //   $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
-    //     trigger: 'hover'
-    //   });
-    // }
+
+    if (current_details !== '' && integral_instrument)
+      waitingDialog.showLegend();
+
     if (current_details != previous_details) {
       waitingDialog.replace(messages);
       $('#ldialog .summary [data-toggle="tooltip"]').tooltip({
@@ -174,12 +170,13 @@ function card_title(outputname, param) {
 
     let access_token = current_ajax_call_params.currentFormData.get('token');
     current_ajax_call_params.currentFormData = cloneFormData(current_ajax_call_params.initialFormData);
-    current_ajax_call_params.currentFormData.append('query_status', data.query_status);
+    run_analysis_data_query_status = data.query_status;
+    // current_ajax_call_params.currentFormData.append('query_status', data.query_status);
     if (!current_ajax_call_params.currentFormData.has('job_id')) {
       current_ajax_call_params.currentFormData.append('job_id', job_id);
       current_ajax_call_params.currentFormData.append('session_id', session_id);
     }
-
+    
     if (access_token != undefined)
       current_ajax_call_params.currentFormData.set('token', access_token);
 
@@ -256,21 +253,13 @@ function card_title(outputname, param) {
   }
 
   function AJAX_call() {
-    // Display the key / value pairs
-    //    console.log('--- initialFormData');
-    //    for (var parameter of
-    //      current_ajax_call_params.initialFormData.entries()) {
-    //      console.log(parameter[0] + '=' + parameter[1]);
-    //    }
-    //    console.log('--- currentFormData');
-    //    for (var parameter of
-    //      current_ajax_call_params.currentFormData.entries()) {
-    //      console.log(parameter[0] + '=' + parameter[1]);
-    //    }
     // must be global variable
     requestTimer = null;
 
-    //var startAJAXTime = new Date().getTime();
+    current_ajax_call_params.currentFormData.delete('return_progress');
+    if (typeof run_analysis_data_query_status !== 'undefined')
+      current_ajax_call_params.currentFormData.set('query_status', run_analysis_data_query_status);
+
     var mmoda_jqXHR = $.ajax({
       url: current_ajax_call_params.action,
       data: current_ajax_call_params.currentFormData,
@@ -922,6 +911,7 @@ function card_title(outputname, param) {
       // e.stopPropagation();
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
+      let parent_panel = $('#ldialog-modal-dialog');
       AJAX_call_get_token().done(
         function(data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
@@ -1322,6 +1312,7 @@ function card_title(outputname, param) {
           data_units = new Array();
           job_status_table = new Array();
           distinct_nodes = new Array();
+          run_analysis_data_query_status = undefined;
 
           AJAX_submit_call();
 
