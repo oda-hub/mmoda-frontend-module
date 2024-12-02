@@ -292,7 +292,7 @@ function get_current_date_time() {
     }
   }
 
-  Drupal.AjaxCommands.prototype.exploreMMODAGlleryObject = function(ajax, response, status) {
+  Drupal.AjaxCommands.prototype.exploreMMODAGalleryObject = function(ajax, response, status) {
     if (response.args.status != 0) {
       messages = { 'summary': '<div class="comment alert alert-warning">There are no data products for that oject</div>', 'details': '' };
       waitingDialog.setTitle('Response from MMODA Gallery');

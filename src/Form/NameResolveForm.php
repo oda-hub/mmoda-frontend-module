@@ -5,7 +5,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\mmoda\Ajax\setRADecCommand;
-use Drupal\mmoda\Ajax\exploreMMODAGlleryObjectCommand;
+use Drupal\mmoda\Ajax\exploreMMODAGalleryObjectCommand;
 use Drupal\Component\Utility\UrlHelper;
 
 /**
@@ -176,9 +176,9 @@ class NameResolveForm extends FormBase
     $form['radec']['RA']['#value'] = 0;
     $form['radec']['DEC']['#value'] = 0;
 
-    $args = $this->exploreMMODAGlleryObject($form_state->getValue('src_name'));
+    $args = $this->exploreMMODAGalleryObject($form_state->getValue('src_name'));
     $ajax_response = new AjaxResponse();
-    $ajax_response->addCommand(new exploreMMODAGlleryObjectCommand($args));
+    $ajax_response->addCommand(new exploreMMODAGalleryObjectCommand($args));
 
     // Finally return the AjaxResponse object.
     return $ajax_response;
@@ -251,7 +251,7 @@ class NameResolveForm extends FormBase
     return $data;
   }
 
-  public function exploreMMODAGlleryObject($source_name)
+  public function exploreMMODAGalleryObject($source_name)
   {
     $mmoda_settings = \Drupal::config('mmoda.settings');
 //     sleep ( 200 );

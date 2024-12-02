@@ -7,9 +7,9 @@ use Drupal\Core\Ajax\CommandInterface;
 /**
  * Provides an Ajax command for scrolling to the top of an element.
  *
- * This command is implemented in Drupal.AjaxCommands.prototype.exploreMMODAGlleryObjectCommand.
+ * This command is implemented in Drupal.AjaxCommands.prototype.exploreMMODAGalleryObjectCommand.
  */
-class exploreMMODAGlleryObjectCommand implements CommandInterface {
+class exploreMMODAGalleryObjectCommand implements CommandInterface {
 
   /**
    * A CSS selector string.
@@ -19,7 +19,7 @@ class exploreMMODAGlleryObjectCommand implements CommandInterface {
   protected $args;
 
   /**
-   * Constructs a exploreMMODAGlleryObjectCommand object.
+   * Constructs a exploreMMODAGalleryObjectCommand object.
    *
    * @param array $args
    *   Array of parameters.
@@ -33,7 +33,7 @@ class exploreMMODAGlleryObjectCommand implements CommandInterface {
    */
   public function render() {
     return [
-      'command' => 'exploreMMODAGlleryObject',
+      'command' => 'exploreMMODAGalleryObject',
       'args' => $this->args,
     ];
   }
