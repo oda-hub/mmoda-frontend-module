@@ -30,7 +30,7 @@ class MmodaInstrumentForm extends FormBase
    */
   public function buildForm(array $form, FormStateInterface $form_state)
   {
-    $mform_id = $this->getFormId();
+    $mform_id = $this->getFormId() . '_';
 
     $mmoda_settings = \Drupal::config('mmoda.settings');
     $instrument_settings = \Drupal::config('mmoda_polar.settings');
@@ -67,6 +67,7 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
+        'name' => $mform_id . 'E1_keV',
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e1kev' => 'true',
         'title' => t("The minimum of the energy band")
@@ -84,6 +85,7 @@ class MmodaInstrumentForm extends FormBase
         'class' => array('label')
       ),
       '#attributes' => array(
+        'name' => $mform_id . 'E2_keV',
         'data-fv-numeric' => 'true',
         'data-fv-vcheck-e2kev' => 'true',
         'title' => t("The maximum of the energy band")
@@ -103,6 +105,7 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'title' => "Select query type",
+        'name' => $mform_id . 'time_bin'
       )
     );
 
@@ -130,6 +133,7 @@ class MmodaInstrumentForm extends FormBase
       '#attributes' => array(
         'data-fv-numeric' => 'true',
         'title' => "Minimum value is 20 seconds.",
+        'name' => $mform_id . 'time_bin'
       )
     );
 
@@ -156,6 +160,7 @@ class MmodaInstrumentForm extends FormBase
         )
       ),
       '#label_attributes' => array(
+        'name' => $mform_id . 'time_bin_format',
         'class' => array('label')
       ),
       '#attributes' => array(

@@ -30,7 +30,7 @@ class MmodaInstrumentForm extends FormBase
    */
   public function buildForm(array $form, FormStateInterface $form_state)
   {
-    $mform_id = $this->getFormId();
+    $mform_id = $this->getFormId() . '_';
 
     $mmoda_settings = \Drupal::config('mmoda.settings');
     $instrument_settings = \Drupal::config('mmoda_gw.settings');
