@@ -147,6 +147,7 @@ class mmodaController extends ControllerBase
             'messenger' => $instrument_settings->get('messenger'),
             'title' => $instrument_settings->get('title'),
             'help_page_url' => $instrument_settings->get('help_page_url'),
+            'instrument_version' => $instrument_settings->get('instrument_version'),
             'acknowledgement' => $instrument_settings->get('acknowledgement'),
             'form' => $form
           ];

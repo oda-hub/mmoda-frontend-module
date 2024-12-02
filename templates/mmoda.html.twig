@@ -128,6 +128,10 @@ The configured label of the block if visible.
                     </div>
                     <div id="{{ instrument.name }}-params-card-body" class="show card-body" >
                       {{ instrument.form }}
+                      {% if instrument.instrument_version %}
+                      <hr class="hr-default" />
+                      <div class="float-end">version: {{ instrument.instrument_version | raw }}</div>
+                      {% endif %}
                       {% if instrument.acknowledgement %}
                       <div id="{{ instrument.name }}-paper-quote"
                         class="paper-quote alert alert-info alert-dismissible hidden"
