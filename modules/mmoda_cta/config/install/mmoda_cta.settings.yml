@@ -30,9 +30,9 @@ Telescope_LST: 1
 Telescopes_SST: 0
 Telescope_MST: 1
 Telescope_SST: 0
-instrument_version: '<a target="_blank" href="test">1.0.0</a>'
+instrument_version: '<a target="_blank" class="text-decoration-none" href="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/commit/3af756269a51e2ba50963abe104ece71b30923b6">3af75626</a>'
 weight: 80
 data_server_url: dispatch-data/run_analysis
 help_page_url: help/mmoda/cta
 acknowledgement: >
-  Service provided by <a href="https://github.com/oda-hub" target="_blank">MMODA</a>
+  Service provided by <a href="https://github.com/oda-hub" class="text-decoration-none" target="_blank">MMODA</a>
