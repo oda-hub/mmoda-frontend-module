@@ -97,9 +97,9 @@ function card_title(outputname, param) {
         product_card_body = display_lc_table(job_id, data.products, instrument);
       } else {
         if (data.products.image.hasOwnProperty('spectral_fit_image')) {
-          product_panel_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
+          product_card_body = display_spectrum(request_spectrum_form_element.data(), data.products, job_id, instrument);
         } else if (Array.isArray(data.products.image)) {
-          product_panel_body = display_image_table(data.products, job_id, instrument);
+          product_card_body = display_image_table(data.products, job_id, instrument);
         } else {
           product_card_body = display_image(data.products, job_id, instrument);
         }
@@ -1250,7 +1250,7 @@ function card_title(outputname, param) {
             // form id prefix from
             // the name
             var instrumentFormData = instrument_form_serializeArray.map(function(item) {
-              item.name = item.name.replace(form_id, '');
+              item.name = item.name.replace(form_id + '_', '');
               return (item);
             });
 
@@ -1283,9 +1283,10 @@ function card_title(outputname, param) {
               formData.append('selected_catalog', JSON.stringify(catalog));
             }
             // Attach files
-            $.each($('input:file:enabled', this), function(i, file) {
+            $.each($('input:file:enabled', current_form), function(i, file) {
               if ($(this).val() !== '') {
-                formData.append($(this).attr('name'), file.files[0]);
+                let file_entry_name = $(this).attr('name').replace(form_id + '_', '');
+                formData.append(file_entry_name, file.files[0]);
               }
             });
           }
