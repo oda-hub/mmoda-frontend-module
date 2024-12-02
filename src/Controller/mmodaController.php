@@ -165,6 +165,7 @@ class mmodaController extends ControllerBase
     $instruments[0]['active'] = 'active';
     $common_form = \Drupal::formBuilder()->getForm('\Drupal\mmoda\Form\CommonForm');
     $mmoda_data['help_page_url'] = $mmoda_settings->get('help_page_url');
+    $mmoda_data['mmoda_frontend_version'] = $mmoda_settings->get('version');
 
     $output = [
       '#region' => 'content',

@@ -19,3 +19,4 @@ mmoda_debug: true
 help_page_url: help/mmoda/mmoda
 # role name of user managers
 user_managers_role_name: 'user manager'
+version: 7.x-1.0
