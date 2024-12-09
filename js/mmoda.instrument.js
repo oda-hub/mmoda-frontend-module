@@ -1323,17 +1323,15 @@ function card_title(outputname, param) {
 
     $('body').on('click', '.open-in-modal', function(e) {
       e.preventDefault();
-
-      // var current_modal = $(this).closest('.modal');
       var home_link = '';
       if ($(this).is('.btn-help, .help-home')) {
         $('#ldialog .modal-body').addClass('help-page');
       }
-      if (!$(this).hasClass('help-home')) {
-        home_link_elt = $("<span>")
-          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
-        home_link = home_link_elt[0].outerHTML;
-      }
+//      if (!$(this).hasClass('help-home')) {
+//        home_link_elt = $("<span>")
+//          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
+//        home_link = home_link_elt[0].outerHTML;
+//      }
 
       var open_in_modal_base_path = $(this).attr('href');
       //      var open_in_modal_base_path = $(this).data(' mmoda-href');

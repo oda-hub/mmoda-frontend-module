@@ -56,8 +56,10 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => $instrument_settings->get('osa_version')
     );
 
+    $radius_err_msge = 'Must be in degrees [0,360] ';
+
     $form['radius'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => "Radius",
       '#default_value' => $instrument_settings->get('radius'),
       '#size' => 10,
@@ -66,8 +68,15 @@ class MmodaInstrumentForm extends FormBase
       ),
       '#attributes' => array(
         'name' => $mform_id . 'radius',
-        'data-fv-numeric' => 'true'
-        // 'data-fv-numeric___message' => 'Please enter a valid float number'
+        'data-fv-not-empty' => 'true',
+        'data-fv-not-empty___message' => $radius_err_msge,
+        'data-fv-numeric' => 'true',
+        'data-fv-numeric___message' => $radius_err_msge,
+        'data-fv-between___inclusive' => 'true',
+        'data-fv-between___min' => 0,
+        'data-fv-between___max' => 360,
+        'data-fv-between___message' => $radius_err_msge,
+
       ),
       '#field_suffix' => t('deg')
     );
@@ -89,13 +98,19 @@ class MmodaInstrumentForm extends FormBase
       '#default_value' => 'no'
     );
 
+    $max_pointings_err_msge = 'Must be in [1, 500]';
     $form['max_pointings'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => t("Maximum number of ScWs"),
       '#size' => 10,
       '#default_value' => $instrument_settings->get('max_pointings'),
       '#attributes' => array(
         'data-fv-integer' => 'true',
+        'data-fv-integer___message' => $max_pointings_err_msge,
+        'data-fv-between___inclusive' => 'true',
+        'data-fv-between___min' => 1,
+        'data-fv-between___max' => 500,
+        'data-fv-between___message' => $max_pointings_err_msge,
         'title' => t('Randomly selected in the time range')
       ),
       '#label_attributes' => array(
@@ -190,7 +205,7 @@ class MmodaInstrumentForm extends FormBase
     );
 
     $form['E1_keV'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => t("Energy Min"),
       '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E1_keV'),
@@ -207,7 +222,7 @@ class MmodaInstrumentForm extends FormBase
     );
 
     $form['E2_keV'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => t("Energy Max"),
       '#field_suffix' => t("keV"),
       '#default_value' => $instrument_settings->get('E2_keV'),
