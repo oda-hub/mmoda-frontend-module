@@ -1342,6 +1342,8 @@ function card_title(outputname, param) {
       $('#ldialog .mmoda-loader').css({ 'display': 'inline' });
       $('#ldialog .summary-container').css({ 'visibility': 'hidden' });
 
+      $('#ldialog .modal-body').addClass('modal-body-min-height');
+      
       waitingDialog.show(home_link, '', {
         dialogSize: 'lg',
         showTitle: true,
@@ -1384,7 +1386,7 @@ function card_title(outputname, param) {
         });
         $('#ldialog .write-feedback-button').hide();
         $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%" });
-        $('#ldialog .modal-body').scrollTop(0);
+        $('#ldialog .modal-body').removeClass('modal-body-min-height').scrollTop(0);
         $(window).scrollTop(0);
         //        window.scroll(0, 0);
         //        $('html, body').animate({scrollTop:0},500);

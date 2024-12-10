@@ -90,6 +90,9 @@ datatables_select_bs5:
         
 datatables_editor:
   version: 2.3.2
+  css:
+    theme:
+      /libraries/datatables-editor/css/editor.bootstrap5.min.css: {}
   js:
     /libraries/datatables-editor/js/dataTables.editor.min.js: { minified: true }
     /libraries/datatables-editor/js/editor.bootstrap5.min.js: { minified: true }
