@@ -2,7 +2,6 @@ mmoda_libs:
   version: 1.x
   js:
     js/mmoda.common.js: {}
-    js/mmoda.form_validation.js: {}
     js/mmoda.instrument.js: {}
   dependencies:
      - core/drupal
@@ -14,11 +13,22 @@ mmoda_libs:
      - jquery_ui_resizable/resizable
      - jquery_ui_effects/highlight
 
+mmoda_form_validation:
+  version: 1.x
+  js:
+    js/mmoda.form_validation.js: {}
+  dependencies:
+     - core/drupal
+     - core/drupalSettings
+     - core/jquery
+     - core/once
+     - core/jquery
+
 bootstrap5_form_validator:
   version: 2.4.0
   js:
-    /libraries/form-validation/bundle/full.min.js: {}
-    /libraries/form-validation/plugin-bootstrap5/index.js: {}
+    /libraries/form-validation/bundle/full.min.js: {  }
+    /libraries/form-validation/plugin-bootstrap5/index.js: {  }
   dependencies:
      - core/jquery
        

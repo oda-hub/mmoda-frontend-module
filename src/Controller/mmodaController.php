@@ -113,11 +113,55 @@ class mmodaController extends ControllerBase
         $instruments_settings[$mmoda_module_name] = $module_config;
       }
     }
+
     $instruments = array();
     $mmoda_js_settings = array();
 
     $default_weight = 10000;
     $instruments_weights = array();
+
+    \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, '_SERVER: @_SERVER',
+    [
+      '@_SERVER' => print_r($_SERVER, TRUE)
+    ]);
+
+    \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, '_SESSION: @_SESSION',
+    [
+      '@_SESSION' => print_r($_SESSION, TRUE)
+    ]);
+
+    \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'drupal request: @drupal_request',
+    [
+      '@drupal_request' => \Drupal::request()
+    ]);
+
+    // a two steps process, first reads the parameters from the _SERVER var (QUERY_STRING) meaning that it is available within the request
+    // the second step reads the parameters from the SESSION var, where we have set it in the first step
+
+    if(isset($_SERVER['QUERY_STRING']) and !empty($_SERVER['QUERY_STRING']) and ! isset($_SESSION['url_parameters'])) {
+      $params = \Drupal::request()->query->all();
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'params from the request: @params',
+      [
+        '@params' => print_r($params, TRUE)
+      ]);
+      $_SESSION['url_parameters'] = $params;
+    } else {
+      parse_str(parse_url($_SERVER["HTTP_REFERER"] ?? '', PHP_URL_QUERY) ?? '', $params);
+      \Drupal::logger('mmoda_module')->log(RfcLogLevel::INFO, 'params from _SERVER: @params',
+      [
+        '@params' => print_r($params, TRUE)
+      ]);
+      $mmoda_js_settings['url_parameters'] = $params;
+      unset($_SESSION['url_parameters']);
+    }
+
+    // if ($params) {
+    //   $_SESSION['url_parameters'] = $params;
+    // } 
+    // else if (array_key_exists('url_parameters', $_SESSION)) {
+    //   $mmoda_js_settings['url_parameters'] = $params;
+    //   unset($_SESSION['url_parameters']);
+    // }
 
     foreach ($instruments_settings as $mmoda_module_name => $instrument_settings) {
 

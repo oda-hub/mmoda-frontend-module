@@ -204,9 +204,22 @@ function mmoda_preprocess_status_messages(&$variables)
  */
 function mmoda_page_attachments(array &$attachments)
 {
-  // Unconditionally attach an asset to the page.
-  //   dpm('attaching lib');
-  //   $attachments['#attached']['library'][] = 'mmoda/bootstrap_form_validatorrrr';
+  $bootstrap5_form_validator_info = \Drupal::service('library.discovery')->getLibraryByName('mmoda', 'bootstrap5_form_validator');
+  // Check if each JavaScript file exists.
+  $all_files_exist = true;
+  if (isset($bootstrap5_form_validator_info['js'])) {
+    foreach ($bootstrap5_form_validator_info['js'] as $file => $info) {
+      // Convert the file path to an absolute path.
+      $absolute_path = \Drupal::service('file_system')->realpath($bootstrap5_form_validator_info['js'][$file]['data']);
+      if (!file_exists($absolute_path))
+        $all_files_exist = false;
+    }
+  }
+
+  if ($all_files_exist) {
+    $attachments['#attached']['library'][] = 'mmoda/bootstrap5_form_validator';
+    $attachments['#attached']['library'][] = 'mmoda/mmoda_form_validation';
+  }
 }
 
 function mmoda_form_alter(&$form, FormStateInterface $form_state, $form_id)
