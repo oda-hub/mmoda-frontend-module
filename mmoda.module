@@ -215,10 +215,23 @@ function mmoda_page_attachments(array &$attachments)
         $all_files_exist = false;
     }
   }
-
   if ($all_files_exist) {
     $attachments['#attached']['library'][] = 'mmoda/bootstrap5_form_validator';
     $attachments['#attached']['library'][] = 'mmoda/mmoda_form_validation';
+  }
+  $datatables_editor_info = \Drupal::service('library.discovery')->getLibraryByName('mmoda', 'datatables_editor');
+  // Check if each JavaScript file exists.
+  $all_files_exist = true;
+  if (isset($datatables_editor_info['js'])) {
+    foreach ($datatables_editor_info['js'] as $file => $info) {
+      // Convert the file path to an absolute path.
+      $absolute_path = \Drupal::service('file_system')->realpath($datatables_editor_info['js'][$file]['data']);
+      if (!file_exists($absolute_path))
+        $all_files_exist = false;
+    }
+  }
+  if ($all_files_exist) {
+    $attachments['#attached']['library'][] = 'mmoda/datatables_editor';
   }
 }
 
