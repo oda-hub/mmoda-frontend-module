@@ -379,6 +379,7 @@ function get_waitingDialog($modal_dialog) {
             showLegend: false,
             showCloseInHeader: false,
             showTitle: false,
+            showMoreLessLink: false,
             showButton: true,
             buttonText: 'Close',
             showReturnProgressLink: false,
@@ -424,6 +425,12 @@ function get_waitingDialog($modal_dialog) {
           else {
             $dialog.find('.modal-title').html('');
             $dialog.find('.modal-header').hide();
+          }
+          if (settings.showMoreLessLink) {
+            $dialog.find('.more-less-details').show();
+          }
+          else {
+            $dialog.find('.more-less-details').hide();
           }
           // $('#ldialog .summary-message').html(message.summary);
           this.replace(message);
@@ -925,12 +932,6 @@ function get_waitingDialog($modal_dialog) {
           $(mbutton).prop('disabled', false);
           $('.ajax-progress', $(mbutton).parent()).remove();
         }
-
-        if (settings.extraData._triggering_element_name == 'resolve_name' || settings.extraData._triggering_element_name == 'explore_name') {
-          waitingDialog.showMoreLessLink();
-          waitingDialog.disableMoreLessLink();
-        }
-
       }
     });
 
@@ -941,19 +942,18 @@ function get_waitingDialog($modal_dialog) {
         var message = '';
         if (settings.extraData._triggering_element_name == 'resolve_name') {
           message = 'Resolving object name ...';
-          waitingDialog.hideMoreLessLink();
         }
         else if (settings.extraData._triggering_element_name == 'explore_name') {
           $('#mmoda-gallery-card').remove();
           message = 'Requesting data from MMODA Gallery ...';
-          waitingDialog.hideMoreLessLink();
         }
 
         waitingDialog.show(message, { 'summary': '' }, {
           progressType: 'success',
           showProgressBar: true,
           showSpinner: false,
-          showTitle: true
+          showTitle: true,
+          showMoreLessLink: false
         });
         waitingDialog.setProgressBarBackgroundcolor('#5cb85c');
 
@@ -982,7 +982,8 @@ function get_waitingDialog($modal_dialog) {
         waitingDialog.show(message, '', {
           progressType: 'success',
           showProgressBar: true,
-          showSpinner: false
+          showSpinner: false,
+          showMoreLessLink: false
         });
         waitingDialog.hideHeaderMessage();
 

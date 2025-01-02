@@ -160,58 +160,60 @@ function validate_date(value, time_format_type) {
         },
       };
     };
-    // Register the validator
-    FormValidation.validators.vcheckRa = checkRa;
-    FormValidation.validators.vcheckDec = checkDec;
-    FormValidation.validators.vcheckDate = checkDate;
 
-    //var validator_fields = {};
-
-    common_form_validator = FormValidation.formValidation(document.getElementById('mmoda-common-form'),
-      {
-        //fields: validator_fields,
-        plugins: {
-          trigger: new FormValidation.plugins.Trigger(),
-          bootstrap: new FormValidation.plugins.Bootstrap5(),
-          submitButton: new FormValidation.plugins.SubmitButton(),
-          fieldStatus: new FormValidation.plugins.FieldStatus({
-            onStatusChanged: function(areFieldsValid) {
-              $('input.form-submit', '.instrument-card form').each(function() {
-                var submitButton = $(this)[0];
-                areFieldsValid
+    // if(typeof FormValidation !== 'undefined') {
+      // Register the validator
+      FormValidation.validators.vcheckRa = checkRa;
+      FormValidation.validators.vcheckDec = checkDec;
+      FormValidation.validators.vcheckDate = checkDate;
+      //var validator_fields = {};
+      
+      common_form_validator = FormValidation.formValidation(document.getElementById('mmoda-common-form'),
+        {
+          //fields: validator_fields,
+          plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap: new FormValidation.plugins.Bootstrap5(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            fieldStatus: new FormValidation.plugins.FieldStatus({
+              onStatusChanged: function(areFieldsValid) {
+                $('input.form-submit', '.instrument-card form').each(function() {
+                  var submitButton = $(this)[0];
+                  areFieldsValid
                   // Enable the submit button
                   // so user has a chance to submit the form again
                   ? submitButton.removeAttribute('disabled')
                   // Disable the submit button
                   : submitButton.setAttribute('disabled', 'disabled');
-              })
-            }
-          }),
-          declarative: new FormValidation.plugins.Declarative({
-          }),
-          icon: new FormValidation.plugins.Icon({
-            valid: 'fa fa-check',
-            invalid: 'fa fa-times',
-            validating: 'fa fa-refresh',
-          }),
-        },
+                })
+              }
+            }),
+            declarative: new FormValidation.plugins.Declarative({
+            }),
+            icon: new FormValidation.plugins.Icon({
+              valid: 'fa fa-check',
+              invalid: 'fa fa-times',
+              validating: 'fa fa-refresh',
+            }),
+          },
+        });
+      $('mmoda-common-form').data({ formValidation: common_form_validator });
+      
+      //    $('input, select, textarea', '#mmoda-common-form').on('focusout', function() {
+        //      common_form_validator.validate();
+        //    })
+        
+        //    $('input, select, textarea', '#mmoda-common-form').on('error.field.bv', function() {
+      common_form_validator.on('core.field.invalid', function() {
+        // Disable main submit if error in common parameters
+        //      $('[type="submit"]', '.instrument-card').prop('disabled', true);
+
+      }).on('core.form.valid', function() {
+        // Enable main submit if error in common parameters
+        //      $('[type="submit"]', '.instrument-card').prop('disabled', false);
+        
       });
-    $('mmoda-common-form').data({ formValidation: common_form_validator });
-
-    //    $('input, select, textarea', '#mmoda-common-form').on('focusout', function() {
-    //      common_form_validator.validate();
-    //    })
-
-    //    $('input, select, textarea', '#mmoda-common-form').on('error.field.bv', function() {
-    common_form_validator.on('core.field.invalid', function() {
-      // Disable main submit if error in common parameters
-      //      $('[type="submit"]', '.instrument-card').prop('disabled', true);
-
-    }).on('core.form.valid', function() {
-      // Enable main submit if error in common parameters
-      //      $('[type="submit"]', '.instrument-card').prop('disabled', false);
-
-    });
+    // } 
 
   }
 

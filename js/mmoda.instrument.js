@@ -12,7 +12,7 @@ function card_title(outputname, param) {
   return (title_items.join(', '));
 }
 
-(function($) {
+(function ($) {
   $(document).ready(commonReady);
   var desktop_card_counter = 1;
 
@@ -41,12 +41,12 @@ function card_title(outputname, param) {
 
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
-      function(data, textStatus, jqXHR) {
+      function (data, textStatus, jqXHR) {
         if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
           current_ajax_call_params.currentFormData.append('token', data.token);
         }
         AJAX_call();
-      }).fail(function(jqXHR, textStatus, errorThrown) {
+      }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log('Error in requesting the user token:');
         console.log('textStatus : ' + textStatus);
         console.log('errorThrown :' + errorThrown);
@@ -176,7 +176,7 @@ function card_title(outputname, param) {
       current_ajax_call_params.currentFormData.append('job_id', job_id);
       current_ajax_call_params.currentFormData.append('session_id', session_id);
     }
-    
+
     if (access_token != undefined)
       current_ajax_call_params.currentFormData.set('token', access_token);
 
@@ -271,7 +271,7 @@ function card_title(outputname, param) {
     });
 
     mmoda_jqXHR.done(
-      function(data, textStatus, jqXHR) {
+      function (data, textStatus, jqXHR) {
         last_dataserver_response = data;
         job_id = '';
         session_id = '';
@@ -306,10 +306,10 @@ function card_title(outputname, param) {
           waitingDialog.replace(warning_obj);
         }
       });
-    mmoda_jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+    mmoda_jqXHR.fail(function (jqXHR, textStatus, errorThrown) {
       mmoda_show_request_error(jqXHR, textStatus, errorThrown);
     });
-    mmoda_jqXHR.always(function(jqXHR, textStatus) {
+    mmoda_jqXHR.always(function (jqXHR, textStatus) {
       $('input[type=submit]', ".instrument-card.active, #common-params").prop('disabled', false);
     });
 
@@ -493,7 +493,7 @@ function card_title(outputname, param) {
     $('input, select, textarea', newVAlue).val('');
     current_row.after(newVAlue);
     $('button', multivalued_field).prop('disabled', false);
-    $('input, select, textarea', newVAlue).each(function() {
+    $('input, select, textarea', newVAlue).each(function () {
       current_instrument_form_validator.addField($(this));
     });
     newVAlue.show();
@@ -514,7 +514,7 @@ function card_title(outputname, param) {
     $('.multivalued-field .multivalued-value').append(del_multivalued_elt_button);
     $('button', '.multivalued-field .multivalued-value').prop('disabled', true);
 
-    $('.multivalued-field .multivalued-value').each(function() {
+    $('.multivalued-field .multivalued-value').each(function () {
       var multivalued_field = $(this).closest('.multivalued-field');
       var labels = $(this).clone();
       labels.find('input, select, textarea, button').remove();
@@ -523,25 +523,157 @@ function card_title(outputname, param) {
       multivalued_field.find('label:first').after(labels);
     })
 
-    $('.multivalued-field').on('click', '.add-multivalued-element', function(e) {
+    $('.multivalued-field').on('click', '.add-multivalued-element', function (e) {
       // Prevent form submission
       e.preventDefault();
       insert_new_multivalued_field(this);
     });
-    $('.multivalued-field').on('click', '.delete-multivalued-element', function(e) {
+    $('.multivalued-field').on('click', '.delete-multivalued-element', function (e) {
       // Prevent form submission
       e.preventDefault();
       delete_multivalued_field(this);
     });
   }
 
+  function prepare_request(status, current_form) {
+    // status can be one of the following value
+    // 'NotValidated': The form is not yet validated
+    // 'Valid': The form is valid
+    // 'Invalid': The form is invalid
+    if (status == 'Valid') {
+      console.log('common form  is valid !');
+      //prepare_and_ajax_call(current_form);
+      //      console.log('showing dialog');
+      //var current_form = $(this).closest('form');
+      var form_id = current_form.attr('id').replace(/-/g, "_");
+      var form_card = current_form.closest('.card');
+      var formData;
+      if (request_draw_spectrum) {
+        formData = request_spectrum_form_element.data('parameters');
+      } else {
+        $('input:not(:file)', current_form).val(function (_, value) {
+          return $.trim(value);
+        });
+
+        // Disable form elements added by Drupal
+        $('[name^=form_],[name=op]', current_form).prop('disabled', true);
+        $('[name^=form_],[name=op]', '#common-params').prop('disabled', true);
+        // $('[name=catalog_selected_objects]',this).prop('disabled', true);
+
+        // Collect object name 
+        var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function (item,) {
+          return (item);
+        });
+        var allFormData1 = $("form#mmoda-name-resolve-form").serializeArray().map(function (item,) {
+          return (item);
+        });
+
+        // Collect common parameters
+        var commonFormData = $("form#mmoda-common-form").serializeArray().map(function (item, index) {
+          if (item.name == 'T1' || item.name == 'T2') {
+            item.value = item.value.replace(' ', 'T')
+          }
+          return (item);
+        });
+        var instrument_form_serializeJSON = current_form.serializeJSON();
+        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
+        var instrument_form_serializeArray = [];
+        multival_pars = $.unique($.map(current_form.find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
+        $.each(instrument_form_serializeJSON, function (param, value) {
+          if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
+          else instrument_form_serializeArray.push({ 'name': param, 'value': value });
+        });
+
+        // Collect instrument form fields and remove the
+        // form id prefix from
+        // the name
+        var instrumentFormData = instrument_form_serializeArray.map(function (item) {
+          item.name = item.name.replace(form_id + '_', '');
+          return (item);
+        });
+
+        allFormData = allFormData.concat(commonFormData).concat(instrumentFormData);
+        formData = new FormData();
+        for (var lindex = 0; lindex < allFormData.length; lindex++)
+          formData.append(allFormData[lindex].name, allFormData[lindex].value);
+        // Enable form elements added by Drupal
+        $('[name^=form_],[name=op]', this).prop('disabled', false);
+        $('[name^=form_],[name=op]', '#common-params').prop('disabled', false);
+        // $('[name=catalog_selected_objects]',this).prop('disabled',
+        // false);
+
+        if (form_card.data('catalog')) {
+          catalog = form_card.data('catalog').initial_catalog;
+          var catalog_selected_objects_string = '';
+          if (form_card.data('dataTable')) {
+            var dataTable = form_card.data('dataTable');
+            catalog.cat_column_list = dataTable.columns().data().toArray();
+            catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
+            catalog_selected_objects = catalog_selected_objects.map(function (x, i) {
+              return i + 1
+            });
+            catalog_selected_objects_string = catalog_selected_objects.join(',');
+            catalog.cat_column_list[0] = catalog_selected_objects;
+          } else {
+            catalog_selected_objects_string = catalog.cat_column_list[0].join(',');
+          }
+          formData.append('catalog_selected_objects', catalog_selected_objects_string);
+          formData.append('selected_catalog', JSON.stringify(catalog));
+        }
+        // Attach files
+        $.each($('input:file:enabled', current_form), function (i, file) {
+          if ($(this).val() !== '') {
+            let file_entry_name = $(this).attr('name').replace(form_id + '_', '');
+            formData.append(file_entry_name, file.files[0]);
+          }
+        });
+      }
+      $('input[name=xspec_model]', this).prop('disabled', false);
+      $('input.spectrum-fit-param', this).prop('disabled', true);
+
+      request_draw_spectrum = false;
+
+      waitingDialog.show('Processing ...', '', {
+        progressType: 'success',
+        showProgressBar: true,
+        showSpinner: false,
+        showReturnProgressLink: true,
+        showMoreLessLink: true,
+      });
+      waitingDialog.setProgressBarText('processing request');
+      waitingDialog.setProgressBarBackgroundcolor('#8da38f');
+      waitingDialog.setProgressBarWidthPercentage(100);
+      waitingDialog.hideHeaderMessage();
+      $('.write-feedback-button').show();
+      $(".notice-progress-container").hide();
+
+      current_ajax_call_params = {};
+      current_ajax_call_params.initialFormData = formData;  
+      current_ajax_call_params.currentFormData = cloneFormData(formData);
+      if (!current_ajax_call_params.currentFormData.has('query_status')) {
+        current_ajax_call_params.currentFormData.append('query_status', 'new');
+        current_ajax_call_params.currentFormData.append('session_id', 'new');
+        current_ajax_call_params.currentFormData.append('job_id', '');
+      }
+      current_ajax_call_params.action = current_form.attr('action');
+      // current_ajax_call_params.form = form_context;
+
+      data_units = new Array();
+      job_status_table = new Array();
+      distinct_nodes = new Array();
+      run_analysis_data_query_status = undefined;
+
+      AJAX_submit_call();
+
+    }
+  }
+
   function commonReady() {
     $('.multivalued-field').removeClass('form-group');
     set_multivalued_events();
 
-
     //$('body').on('click', '#ldialog .close-button', function(e) {
-    $('body').on('hidden.bs.modal', '#ldialog', function(e) {
+    $('body').on('hidden.bs.modal', '#ldialog', function (e) {
       e.preventDefault();
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
@@ -564,7 +696,7 @@ function card_title(outputname, param) {
       waitingDialog.hideLegend();
 
       // remove any child html-progress modal window
-      $("#ldialog > *").each(function() {
+      $("#ldialog > *").each(function () {
         var id = $(this).attr('id');
         if (id !== 'ldialog-modal-dialog')
           $(this).remove();
@@ -582,12 +714,12 @@ function card_title(outputname, param) {
 
     });
 
-    $('#ldialog').on('hidden.bs.modal', function() {
+    $('#ldialog').on('hidden.bs.modal', function () {
       $('#ldialog .write-feedback-button').hide();
       $(".notice-progress-container").hide();
     })
 
-    $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
+    $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var current_card = $(this).closest('.card');
@@ -609,7 +741,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve, table.image-table tbody button.draw-image', function(e) {
+    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve, table.image-table tbody button.draw-image', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var lightcurve_offset = {};
@@ -631,7 +763,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $('body').on('click', 'table.spectrum-table tbody button.draw-spectrum', function(e) {
+    $('body').on('click', 'table.spectrum-table tbody button.draw-spectrum', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var spectrum_offset = {};
@@ -674,7 +806,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.card .close-card', function() {
+    $("body").on('click', '.card .close-card', function () {
       var card = $(this).closest('.card');
       if (card.data('catalog')) {
         // delete catalog when attached to card
@@ -738,7 +870,7 @@ function card_title(outputname, param) {
       card.remove();
     });
 
-    $("body").on('click', '.instrument-params-card .show-catalog, .result-card .show-catalog', function(e) {
+    $("body").on('click', '.instrument-params-card .show-catalog, .result-card .show-catalog', function (e) {
       e.preventDefault();
       var showUseCatalog = false;
       var catalog_parent_card = $(this).parents('.result-card, .instrument-params-card');
@@ -762,7 +894,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-card .show-js9', function(e) {
+    $("body").on('click', '.result-card .show-js9', function (e) {
       e.preventDefault();
       var js9_parent_card = $(this).closest('.card');
       var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
@@ -783,7 +915,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-card .show-log', function(e) {
+    $("body").on('click', '.result-card .show-log', function (e) {
       e.preventDefault();
       var log_parent_card = $(this).closest('.card');
       var log = log_parent_card.data('log');
@@ -805,7 +937,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-card .api-code', function(e) {
+    $("body").on('click', '.result-card .api-code', function (e) {
       e.preventDefault();
       var api_code_parent_card = $(this).closest('.card');
       var api_code_parent_card_offest = $(this).closest(".instrument-card").offset();
@@ -826,11 +958,11 @@ function card_title(outputname, param) {
       }
     });
 
-    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function(e) {
+    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function (e) {
       e.stopPropagation();
     });
 
-    $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function(e) {
+    $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function (e) {
       let target_obj = $(e.target);
       let parent_target_obj = target_obj.parent();
       let parent_panel = $(this).closest('.card');
@@ -858,62 +990,61 @@ function card_title(outputname, param) {
       parent_target_obj.find('.spinner-border').css('display', '');
       target_obj.hide();
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           formData_return_progress_link.set('return_progress', 'True');
           formData_return_progress_link.set('query_status', 'new');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             formData_return_progress_link.set('token', data.token);
-            var return_progress_jqXHR = $.ajax({
-              url: current_ajax_call_params.action,
-              data: formData_return_progress_link,
-              dataType: 'json',
-              processData: false,
-              contentType: false,
-              timeout: ajax_request_timeout,
-              type: 'POST'
-            }).done(function(data, textStatus, jqXHR) {
-              console.log(data);
-              let error_display = false;
-              if (data.products.hasOwnProperty('progress_product_html_output'))
-                output_html = data.products.progress_product_html_output;
-              else
-              {
-                error_display = true;
-                output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
-              }
-              
-              card_id = display_progress_html_output(output_html,
-                '#' + parent_panel.attr('id'), 
-                progress_html_offset, 
-                error_display, 
-                true);
-              parent_panel.data({
-                'return_progress_html_output': output_html,
-                'return_progress_html_output_id': '#' + card_id
-              });
-            }).always(function(jqXHR, textStatus) {
-              parent_target_obj.find('.spinner-border').css('display', 'none');
-              target_obj.show();
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-              parent_target_obj.find('.spinner-border').css('display', 'none');
-              target_obj.show();
+          var return_progress_jqXHR = $.ajax({
+            url: current_ajax_call_params.action,
+            data: formData_return_progress_link,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            timeout: ajax_request_timeout,
+            type: 'POST'
+          }).done(function (data, textStatus, jqXHR) {
+            console.log(data);
+            let error_display = false;
+            if (data.products.hasOwnProperty('progress_product_html_output'))
+              output_html = data.products.progress_product_html_output;
+            else {
+              error_display = true;
+              output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
+            }
+
+            card_id = display_progress_html_output(output_html,
+              '#' + parent_panel.attr('id'),
+              progress_html_offset,
+              error_display,
+              true);
+            parent_panel.data({
+              'return_progress_html_output': output_html,
+              'return_progress_html_output_id': '#' + card_id
             });
-            
-            // jqxhr
-            parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
+          }).always(function (jqXHR, textStatus) {
+            parent_target_obj.find('.spinner-border').css('display', 'none');
+            target_obj.show();
+          }).fail(function (jqXHR, textStatus, errorThrown) {
+            parent_target_obj.find('.spinner-border').css('display', 'none');
+            target_obj.show();
+          });
+
+          // jqxhr
+          parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
 
         }
       );
 
     });
 
-    $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function(e) {
+    $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function (e) {
       // e.stopPropagation();
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
       let parent_panel = $('#ldialog-modal-dialog');
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.append('return_progress', 'True');
           current_ajax_call_params.currentFormData.set('query_status', 'new');
           // current_ajax_call_params.currentFormData.set('session_id', 'new');
@@ -931,20 +1062,20 @@ function card_title(outputname, param) {
             contentType: false,
             timeout: ajax_request_timeout,
             type: 'POST'
-          }).done(function(data, textStatus, jqXHR) {
+          }).done(function (data, textStatus, jqXHR) {
             console.log(data);
             var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
-            } else  {
+            } else {
               delete progress_html_offset.top;
               display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
             }
-          }).always(function(jqXHR, textStatus) {
+          }).always(function (jqXHR, textStatus) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
-          }).fail(function(jqXHR, textStatus, errorThrown) {
+          }).fail(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
@@ -954,7 +1085,7 @@ function card_title(outputname, param) {
 
     });
 
-    $("body").on('click', '.result-card .renku-publish', function(e) {
+    $("body").on('click', '.result-card .renku-publish', function (e) {
       e.preventDefault();
       renku_publish_formData = new FormData();
       url_params = {};
@@ -962,7 +1093,7 @@ function card_title(outputname, param) {
       let renku_publish_card = $(this)[0];
 
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
             let token = data.token;
             let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
@@ -985,7 +1116,7 @@ function card_title(outputname, param) {
               context: this,
               timeout: ajax_request_timeout,
               type: 'POST'
-            }).always(function(renku_publish_jqXHR, renku_publish_textStatus) {
+            }).always(function (renku_publish_jqXHR, renku_publish_textStatus) {
               serverResponse = '';
               try {
                 serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
@@ -1021,7 +1152,7 @@ function card_title(outputname, param) {
               renku_publish_card.parentElement.after(publish_result_card);
 
             }).fail(
-              function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+              function (renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
                 console.log(renku_publish_textStatus);
                 e.target.disabled = false;
               }
@@ -1034,7 +1165,7 @@ function card_title(outputname, param) {
             let publish_result_card = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
             renku_publish_card.parentElement.after(publish_result_card);
           }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
+        }).fail(function (jqXHR, textStatus, errorThrown) {
           console.log('Error in requesting the user token:');
           console.log('textStatus : ' + textStatus);
           console.log('errorThrown :' + errorThrown);
@@ -1045,14 +1176,14 @@ function card_title(outputname, param) {
 
     });
 
-    $("body").on('click', '.card .copy-api-code', function(e) {
+    $("body").on('click', '.card .copy-api-code', function (e) {
       e.preventDefault();
       var parent_card = $(this).closest('.card');
       api_code_product_card_id = parent_card.data('api_code_product_card_id');
       copyToClipboard($(api_code_product_card_id).data('api_code'));
     });
 
-    $("body").on('click', '.result-card .show-query-parameters', function(e) {
+    $("body").on('click', '.result-card .show-query-parameters', function (e) {
       e.preventDefault();
       var instrument_card_offset = $(this).closest(".instrument-card.active").offset();
       var query_parameters_parent_card = $(this).closest('.result-card');
@@ -1073,7 +1204,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-card .share-query', function(e) {
+    $("body").on('click', '.result-card .share-query', function (e) {
       e.preventDefault();
       var query_parameters_parent_card = $(this).closest('.result-card');
       var query_parameters = query_parameters_parent_card.data('analysis_parameters');
@@ -1081,7 +1212,7 @@ function card_title(outputname, param) {
       copyToClipboard(url);
     });
 
-    $("body").on('click', '.copy-api-token', function(e) {
+    $("body").on('click', '.copy-api-token', function (e) {
       e.preventDefault();
       let token_container = $(e.target).siblings('p');
       if (token_container.length > 0) {
@@ -1091,7 +1222,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', 'input.close-copy-api-token-form', function(e) {
+    $("body").on('click', 'input.close-copy-api-token-form', function (e) {
       e.preventDefault();
       let drupal_modal_window = document.querySelector('input.close-copy-api-token-form').closest('#drupal-modal');
       if (drupal_modal_window !== null) {
@@ -1115,7 +1246,7 @@ function card_title(outputname, param) {
 
     // Warn the user that if he/she selects objects
     // only those objects will be copied to the used catalog
-    $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function(e) {
+    $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function (e) {
       e.preventDefault();
       var catalog_card = $(this).closest('.card');
       var dataTable = catalog_card.data('dataTable');
@@ -1127,7 +1258,7 @@ function card_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-card .use-catalog', function(e) {
+    $("body").on('click', '.result-card .use-catalog', function (e) {
       e.preventDefault();
       var catalog_card = $(this).parents('.result-card');
       var catalog_parent_card = $(catalog_card.data('catalog_parent_card_id'));
@@ -1153,14 +1284,14 @@ function card_title(outputname, param) {
       var catalog_offset = showCatalog.offset();
       event.pageX = catalog_offset.left + showCatalog.width() / 2;
       event.pageY = catalog_offset.top + showCatalog.height() / 2;
-      catalog_card.animate(new_catalog_position, "slow", function() {
+      catalog_card.animate(new_catalog_position, "slow", function () {
         $('.close-card', catalog_card).click();
         $('button.show-catalog', showCatalog).trigger(event);
       });
     });
 
     // delete catalog when attached to card
-    $(".instrument-card .instrument-params-card .inline-user-catalog").on('click', ".remove-catalog", function() {
+    $(".instrument-card .instrument-params-card .inline-user-catalog").on('click', ".remove-catalog", function () {
       $(this).parent().hide();
       var card = $(this).closest(".instrument-params-card");
       if (card.data('catalog')) {
@@ -1176,162 +1307,35 @@ function card_title(outputname, param) {
     // The main block is hidden at startup (in mmoda.css) and
     // shown here after the setup of DOM and the field controls
     $('.block-mmoda').show();
-    $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
+    $('body').on('click', '.mmoda-log .more-less-details.enabled', function (e) {
       e.preventDefault();
       var details = $('#ldialog .summary .details');
-      details.slideToggle('slow', function() {
+      details.slideToggle('slow', function () {
       });
     });
 
-    $('.form-submit', '.instrument-card form').on('click', function(e) {
+    $('.form-submit', '.instrument-card form').on('click', function (e) {
       var current_form = $(this).closest('form');
-      //var formValidator = current_form.data('formValidation');
-      common_form_validator.validate().then(function(status) {
-        // status can be one of the following value
-        // 'NotValidated': The form is not yet validated
-        // 'Valid': The form is valid
-        // 'Invalid': The form is invalid
-        if (status == 'Valid') {
-          console.log('common form  is valid !');
-          //prepare_and_ajax_call(current_form);
-          e.preventDefault();
-          //      console.log('showing dialog');
-          //var current_form = $(this).closest('form');
-          var form_id = current_form.attr('id').replace(/-/g, "_");
-          var form_card = current_form.closest('.card');
-          var formData;
-          if (request_draw_spectrum) {
-            formData = request_spectrum_form_element.data('parameters');
-          } else {
-            $('input:not(:file)', current_form).val(function(_, value) {
-              return $.trim(value);
-            });
-
-            // Disable form elements added by Drupal
-            $('[name^=form_],[name=op]', current_form).prop('disabled', true);
-            $('[name^=form_],[name=op]', '#common-params').prop('disabled', true);
-            // $('[name=catalog_selected_objects]',this).prop('disabled', true);
-
-            // Collect object name 
-            var allFormData = $("form#mmoda-name-resolve-form").serializeArray().map(function(item,) {
-              return (item);
-            });
-            var allFormData1 = $("form#mmoda-name-resolve-form").serializeArray().map(function(item,) {
-              return (item);
-            });
-
-            // Collect common parameters
-            var commonFormData = $("form#mmoda-common-form").serializeArray().map(function(item, index) {
-              if (item.name == 'T1' || item.name == 'T2') {
-                item.value = item.value.replace(' ', 'T')
-              }
-              return (item);
-            });
-            var instrument_form_serializeJSON = current_form.serializeJSON();
-            //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
-            var instrument_form_serializeArray = [];
-            multival_pars = $.unique($.map(current_form.find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
-            $.each(instrument_form_serializeJSON, function(param, value) {
-              if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
-              else instrument_form_serializeArray.push({ 'name': param, 'value': value });
-            });
-
-            // Collect instrument form fields and remove the
-            // form id prefix from
-            // the name
-            var instrumentFormData = instrument_form_serializeArray.map(function(item) {
-              item.name = item.name.replace(form_id + '_', '');
-              return (item);
-            });
-
-            allFormData = allFormData.concat(commonFormData).concat(instrumentFormData);
-            formData = new FormData();
-            for (var lindex = 0; lindex < allFormData.length; lindex++)
-              formData.append(allFormData[lindex].name, allFormData[lindex].value);
-            // Enable form elements added by Drupal
-            $('[name^=form_],[name=op]', this).prop('disabled', false);
-            $('[name^=form_],[name=op]', '#common-params').prop('disabled', false);
-            // $('[name=catalog_selected_objects]',this).prop('disabled',
-            // false);
-
-            if (form_card.data('catalog')) {
-              catalog = form_card.data('catalog').initial_catalog;
-              var catalog_selected_objects_string = '';
-              if (form_card.data('dataTable')) {
-                var dataTable = form_card.data('dataTable');
-                catalog.cat_column_list = dataTable.columns().data().toArray();
-                catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
-                catalog_selected_objects = catalog_selected_objects.map(function(x, i) {
-                  return i + 1
-                });
-                catalog_selected_objects_string = catalog_selected_objects.join(',');
-                catalog.cat_column_list[0] = catalog_selected_objects;
-              } else {
-                catalog_selected_objects_string = catalog.cat_column_list[0].join(',');
-              }
-              formData.append('catalog_selected_objects', catalog_selected_objects_string);
-              formData.append('selected_catalog', JSON.stringify(catalog));
-            }
-            // Attach files
-            $.each($('input:file:enabled', current_form), function(i, file) {
-              if ($(this).val() !== '') {
-                let file_entry_name = $(this).attr('name').replace(form_id + '_', '');
-                formData.append(file_entry_name, file.files[0]);
-              }
-            });
-          }
-          $('input[name=xspec_model]', this).prop('disabled', false);
-          $('input.spectrum-fit-param', this).prop('disabled', true);
-
-          request_draw_spectrum = false;
-
-          waitingDialog.show('Processing ...', '', {
-            progressType: 'success',
-            showProgressBar: true,
-            showSpinner: false,
-            showReturnProgressLink: true
-          });
-          waitingDialog.setProgressBarText('processing request');
-          waitingDialog.setProgressBarBackgroundcolor('#8da38f');
-          waitingDialog.setProgressBarWidthPercentage(100);
-          waitingDialog.hideHeaderMessage();
-          $('.write-feedback-button').show();
-          $(".notice-progress-container").hide();
-
-          current_ajax_call_params = {};
-          current_ajax_call_params.initialFormData = formData;
-          current_ajax_call_params.currentFormData = cloneFormData(formData);
-          if (!current_ajax_call_params.currentFormData.has('query_status')) {
-            current_ajax_call_params.currentFormData.append('query_status', 'new');
-            current_ajax_call_params.currentFormData.append('session_id', 'new');
-            current_ajax_call_params.currentFormData.append('job_id', '');
-          }
-          current_ajax_call_params.action = current_form.attr('action');
-          current_ajax_call_params.form = this;
-
-          data_units = new Array();
-          job_status_table = new Array();
-          distinct_nodes = new Array();
-          run_analysis_data_query_status = undefined;
-
-          AJAX_submit_call();
-
-        }
-      });
-      //formValidator.validate().then
+      e.preventDefault();
+      if (typeof common_form_validator !== 'undefined')
+        common_form_validator.validate().then(function(validation_status) {
+          prepare_request(validation_status, current_form);
+        });
+      else
+        prepare_request("Valid", current_form);
     });
 
-    $('body').on('click', '.open-in-modal', function(e) {
+    $('body').on('click', '.open-in-modal', function (e) {
       e.preventDefault();
       var home_link = '';
       if ($(this).is('.btn-help, .help-home')) {
         $('#ldialog .modal-body').addClass('help-page');
       }
-//      if (!$(this).hasClass('help-home')) {
-//        home_link_elt = $("<span>")
-//          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
-//        home_link = home_link_elt[0].outerHTML;
-//      }
+      //      if (!$(this).hasClass('help-home')) {
+      //        home_link_elt = $("<span>")
+      //          .append($("<a>", { text: $("#help-home").attr('title'), class: 'open-in-modal help-home', href: $("#help-home").attr('href') })).append(' > ');
+      //        home_link = home_link_elt[0].outerHTML;
+      //      }
 
       var open_in_modal_base_path = $(this).attr('href');
       //      var open_in_modal_base_path = $(this).data(' mmoda-href');
@@ -1343,30 +1347,31 @@ function card_title(outputname, param) {
       $('#ldialog .summary-container').css({ 'visibility': 'hidden' });
 
       $('#ldialog .modal-body').addClass('modal-body-min-height');
-      
+
       waitingDialog.show(home_link, '', {
         dialogSize: 'lg',
         showTitle: true,
         buttonText: 'Close',
         showCloseInHeader: true,
+        showMoreLessLink: false
       });
       $('#ldialog .write-feedback-button').hide();
       $('.colorbox').colorbox({ rel: 'mmoda-gallery', maxWidth: "100%", maxHeight: "100%" });
       $('#ldialog .modal-body').scrollTop(0);
       $(window).scrollTop(0);
 
-      $.get($(this).attr('href'), function(data) {
+      $.get($(this).attr('href'), function (data) {
         var html = $.parseHTML(data);
         var help_text = $(".region-content", html);
         var title = $("h1 span.field--name-title", html).text();
 
         $("h1 span.field--name-title", html).remove();
-        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
+        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function () {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
         help_text.find('#table-of-contents-links').addClass('rounded');
 
-        $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function() {
+        $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function () {
           if (!(this.hostname && this.hostname !== location.hostname) && !$(this).attr('href').startsWith("#")) {
             $(this).addClass('open-in-modal');
             if ($(this).attr('href').indexOf(open_in_modal_base_path) < 0) {
@@ -1394,22 +1399,23 @@ function card_title(outputname, param) {
       return false;
     });
 
-    //    if (Drupal.settings.hasOwnProperty('url_parameters')) {
-    //      $('.instruments-card .nav-tabs li#' + Drupal.settings.url_parameters.instrument + '-tab a').tab('show');
-    //      make_request(Drupal.settings.url_parameters);
-    //    }
+    if (drupalSettings.mmoda.hasOwnProperty('url_parameters') && typeof drupalSettings.mmoda.url_parameters !== 'undefined' && !$.isEmptyObject(drupalSettings.mmoda.url_parameters) ) {
+      $('.instruments-card .nav-tabs li#' + drupalSettings.mmoda.url_parameters.instrument + ' a').tab('show');
+      make_request(drupalSettings.mmoda.url_parameters);
+    }
   }
 
   function make_request(request_parameters) {
     var instrument_card = $(".instrument-card-" + request_parameters.instrument);
-    var current_instrument_form_validator = $('form', instrument_card).data('bootstrapValidator');
+    var current_instrument_form_validator = $('form', instrument_card).data('formValidation');
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
       waitingDialog.show('Error message', '', {
         progressType: 'success',
         'showProgress': true,
-        'showButton': true
+        'showButton': true,
+        showMoreLessLink: false
       });
       waitingDialog.showJobInfo();
       $('.write-feedback-button').show();
@@ -1434,7 +1440,7 @@ function card_title(outputname, param) {
       make_request_error = false;
       var make_request_error_messages = [];
 
-      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form') .each(function() {
+      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form').each(function () {
         // get name of the first select element
         var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
         var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
@@ -1445,66 +1451,68 @@ function card_title(outputname, param) {
           // for each key in the object, add a new multivalued field
           let parsed_field_obj_keys = Object.keys(parsed_field_obj);
           let num_multivalued_field = parsed_field_obj[parsed_field_obj_keys[0]].length;
-          for (let i = 0; i < num_multivalued_field ; i++) {
-            for(key of parsed_field_obj_keys) {
-              var select_list = $('select', this).filter(function() {
+          for (let i = 0; i < num_multivalued_field; i++) {
+            for (key of parsed_field_obj_keys) {
+              var select_list = $('select', this).filter(function () {
                 return $(this).attr('name') === `${field_name}[${key}][]`;
               });
               // check if the select has the value amongst its options
               let select_element = $(select_list[select_list.length - 1]);
-              let hasOption = select_element.find('option').filter(function() {
+              let hasOption = select_element.find('option').filter(function () {
                 return $(this).val() === parsed_field_obj[key][i];
               }).length > 0;
               if (!hasOption)
                 select_element.append(new Option(parsed_field_obj[key][i], parsed_field_obj[key][i]));
               select_element.val(parsed_field_obj[key][i]);
             }
-            if($('.multivalued-value', this).length < num_multivalued_field)
+            if ($('.multivalued-value', this).length < num_multivalued_field)
               insert_new_multivalued_field(add_multivalued_button[0]);
           }
         }
       });
 
-      $('input, textarea, select', 'form#mmoda-name-resolve-form, form#mmoda-common-form, form.' + request_parameters.instrument + '-form').each(function() {
+      $('input, textarea, select', 'form#mmoda-name-resolve-form, form#mmoda-common-form, form.mmoda-' + request_parameters.instrument + '-form').each(function () {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
-        var field_name = $(this).attr('name').replace(re, '');
-        // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
-        if (request_parameters.hasOwnProperty(field_name)) {
-          // if the form element type is file, we should check if it is part of file input/url element:
-          // it has to be checked if it exists an element with the same name in the form and "_type" appended to it
-          let type_selector = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"]`);
-          if ($(this).attr('type') == 'file') {
-            if (type_selector.length == 0) {
-              make_request_error = true;
-              make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
-            }
-          } else if ($(this).attr('type') == 'radio') {
-            if (type_selector.length == 0) {
-              let url_request_value = request_parameters[field_name];
-              if($(this).val() == 0 || $(this).val() == 1) {
-                if(request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
-                  url_request_value = 1;
-                } else if(request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
-                  url_request_value = 0;
+        if(typeof $(this).attr('name') !== 'undefined') {
+          var field_name = $(this).attr('name').replace(re, '');
+          // in case of field_name == user_catalog_file, it would crash, the dispatcher should not pass it?
+          if (request_parameters.hasOwnProperty(field_name)) {
+            // if the form element type is file, we should check if it is part of file input/url element:
+            // it has to be checked if it exists an element with the same name in the form and "_type" appended to it
+            let type_selector = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"]`);
+            if ($(this).attr('type') == 'file') {
+              if (type_selector.length == 0) {
+                make_request_error = true;
+                make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
+              }
+            } else if ($(this).attr('type') == 'radio') {
+              if (type_selector.length == 0) {
+                let url_request_value = request_parameters[field_name];
+                if ($(this).val() == 0 || $(this).val() == 1) {
+                  if (request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
+                    url_request_value = 1;
+                  } else if (request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
+                    url_request_value = 0;
+                  }
+                }
+                if ($(this).val() == url_request_value) {
+                  $(this).click();
                 }
               }
-              if ($(this).val() == url_request_value) {
-                $(this).click();
+            } else {
+              if (type_selector.length > 0) {
+                let type_selector_url = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"][value="url"]`);
+                if (type_selector_url.length > 0)
+                  type_selector_url.click();
               }
-            }
-          } else {
-            if (type_selector.length > 0) {
-              let type_selector_url = $(`[name="mmoda_${request_parameters.instrument}_${field_name}_type"][value="url"]`);
-              if (type_selector_url.length > 0)
-                type_selector_url.click();
-            }
-            try {
-              $(this).val(request_parameters[field_name]);
-            }
-            catch (err) {
-              make_request_error_messages.push('Failed initializing the parameter ' + field_name + ' in the request form');
-              make_request_error = true;
-              $('form.' + request_parameters.instrument + '-form').data('bootstrapValidator').updateStatus(field_name, 'NOT_VALIDATED').validateField(field_name);
+              try {
+                $(this).val(request_parameters[field_name]);
+              }
+              catch (err) {
+                make_request_error_messages.push('Failed initializing the parameter ' + field_name + ' in the request form');
+                make_request_error = true;
+                $('form.mmoda-' + request_parameters.instrument + '-form').data('bootstrapValidator').updateStatus(field_name, 'NOT_VALIDATED').validateField(field_name);
+              }
             }
           }
         }
@@ -1512,17 +1520,25 @@ function card_title(outputname, param) {
 
       if (!make_request_error) {
         both_forms_valid = true;
-        $('input, textarea, select', 'form#mmoda-common-form').each(function() {
-          common_form_validator.validateField($(this).attr('name'));
-          if (!common_form_validator.isValidField($(this).attr('name')))
-            both_forms_valid = false;
+        $('input, textarea, select', 'form#mmoda-common-form').each(function () {
+          if (typeof common_form_validator !== 'undefined' && common_form_validator.fields.hasOwnProperty($(this).attr('name'))) {
+            common_form_validator.validateField($(this).attr('name'))
+            .then(function(status) {
+              if(status === 'Invalid')
+                both_forms_valid = false;
+            });
+          }
         });
 
         if (both_forms_valid) {
-          $('input, textarea, select', 'form.' + request_parameters.instrument + '-form').each(function() {
-            current_instrument_form_validator.validateField($(this).attr('name'));
-            if (!current_instrument_form_validator.isValidField($(this).attr('name')))
-              both_forms_valid = false;
+          $('input, textarea, select', 'form.mmoda-' + request_parameters.instrument + '-form').each(function () {
+            if (typeof current_instrument_form_validator !== 'undefined' && current_instrument_form_validator.fields.hasOwnProperty($(this).attr('name'))) {
+              current_instrument_form_validator.validateField($(this).attr('name'))
+              .then(function(status) {
+                if(status === 'Invalid')
+                  both_forms_valid = false;
+              });
+            }
           });
         }
         if (!both_forms_valid) {
@@ -1533,7 +1549,7 @@ function card_title(outputname, param) {
             + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
         }
         else {
-          $('form.' + request_parameters.instrument + '-form').submit();
+          $('form.mmoda-' + request_parameters.instrument + '-form').submit();
         }
       }
       else {
@@ -1545,7 +1561,8 @@ function card_title(outputname, param) {
       if (make_request_error) {
         waitingDialog.show('Processing request parameters ...', '', {
           showProgressBar: false,
-          showSpinner: false
+          showSpinner: false,
+          showMoreLessLink: true
         });
         warning_obj = { 'failures': error_message };
         waitingDialog.append(warning_obj, 'danger');
@@ -1561,13 +1578,13 @@ function card_title(outputname, param) {
         buttons: [
           {
             text: 'Select all',
-            action: function() {
+            action: function () {
               table.rows().select();
             }
           },
           {
             text: 'Select none',
-            action: function() {
+            action: function () {
               table.rows().deselect();
             }
           }
@@ -1598,7 +1615,7 @@ function card_title(outputname, param) {
         text: 'Delete',
         className: 'btn-primary',
         formTitle: '<h3>Delete source(s)</h3>',
-        formMessage: function(e, dt) {
+        formMessage: function (e, dt) {
           var rows = dt.rows(e.modifier()).data().pluck('src_names');
           return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
         }
@@ -1606,17 +1623,17 @@ function card_title(outputname, param) {
       {
         text: 'Add query object',
         className: 'btn-primary',
-        action: function(e, dt, button, config) {
+        action: function (e, dt, button, config) {
           editor.title('<h3>Add query object</h3>').buttons([{
             text: 'Add',
             className: 'btn-primary save-row',
-            action: function() {
+            action: function () {
               this.submit();
             }
           }, {
             text: 'Cancel',
             className: 'btn-primary',
-            action: function() {
+            action: function () {
               this.close();
             }
           }]).create().set('src_names', $('input[name=src_name]', '#common-params').val()).set('ra', $('input[name=RA]', '#common-params').val()).set('dec',
@@ -1633,7 +1650,7 @@ function card_title(outputname, param) {
       {
         text: 'Save as TXT',
         className: 'btn-primary',
-        action: function(e, dt, button, config) {
+        action: function (e, dt, button, config) {
           var data = dt.buttons.exportData();
           data.header[0] = "meta_ID";
           var file_content = '';
@@ -1651,13 +1668,13 @@ function card_title(outputname, param) {
     var buttons2 = [
       {
         text: 'Select all',
-        action: function() {
+        action: function () {
           catalog_datatable.rows().select();
         }
       },
       {
         text: 'Select none',
-        action: function() {
+        action: function () {
           catalog_datatable.rows().deselect();
         }
       }
@@ -1743,7 +1760,7 @@ function card_title(outputname, param) {
     });
 
     // Activate inline edit on click of a table cell
-    if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
+    if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function () {
       editor.inline(this);
     });
     catalog_card.highlight_result_card(offset);
@@ -1807,7 +1824,7 @@ function card_title(outputname, param) {
         // highlight missing roles
         publish_result_interpreted = publish_result.replace(
           /-(.*)/g,
-          function(m) { return '- <b>' + m.substr(1) + '</b>' }
+          function (m) { return '- <b>' + m.substr(1) + '</b>' }
         );
 
         let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
@@ -1857,8 +1874,8 @@ function card_title(outputname, param) {
     if (errorDisplay)
       $('#' + card_ids.card_id).addClass('mmoda-html-progress-error-display');
     offset.left = afterDiv_obj.offset().left + (afterDiv_obj.width() - $('#' + card_ids.card_id).width()) / 2;
-    
-    $('#' + card_ids.card_id).highlight_progress_card(offset, afterDiv_obj.attr('id') );
+
+    $('#' + card_ids.card_id).highlight_progress_card(offset, afterDiv_obj.attr('id'));
 
     $('#' + card_ids.card_id).data({
       return_progress_html_output_product_card_id: afterDiv
@@ -1917,10 +1934,10 @@ function card_title(outputname, param) {
   }
 
   function only_one_catalog_selection(element_wrapper, element_class, select_all_element, checked_element) {
-    $('input[name=' + checked_element + ']', element_wrapper).on('change', function(e) {
+    $('input[name=' + checked_element + ']', element_wrapper).on('change', function (e) {
       if (this.checked) {
         obj = $(element_wrapper);
-        $('input[name=' + checked_element + ']', element_class).each(function() {
+        $('input[name=' + checked_element + ']', element_class).each(function () {
           if (!$(this).closest(element_class).is(obj)) {
             $(this).prop('checked', false);
           }
@@ -1991,16 +2008,16 @@ function card_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
       $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
-      $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
+      $('.popover-help', '#' + card_ids.card_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -2025,10 +2042,10 @@ function card_title(outputname, param) {
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       let output_name = data.name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
           output_name = data.extra_metadata[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
       }
       lightcurve_table_data[i] = {
@@ -2069,7 +2086,7 @@ function card_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
@@ -2141,16 +2158,16 @@ function card_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
       $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
-      $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
+      $('.popover-help', '#' + card_ids.card_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -2170,10 +2187,10 @@ function card_title(outputname, param) {
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       let output_name = data.name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
           output_name = data.extra_metadata[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
       }
       image_table_data[i] = {
@@ -2206,7 +2223,7 @@ function card_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
@@ -2278,7 +2295,7 @@ function card_title(outputname, param) {
     product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
 
     let panel_title_text = data.name[lc_index];
-    if(data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
+    if (data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
       panel_title_text = data.extra_metadata[data.name[lc_index]].label;
     }
 
@@ -2363,10 +2380,10 @@ function card_title(outputname, param) {
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
       let output_name = data.spectrum_name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
           output_name = data.spectrum_name[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.spectrum_name[i]].description + "'>" + output_name + "</span>";
       }
       spectrum_table_data[i] = {
@@ -2411,7 +2428,7 @@ function card_title(outputname, param) {
         data: null,
         title: "Download",
         name: "download",
-        render: function(data) {
+        render: function (data) {
           download_filename = 'spectra-' + data.source_name + '.tar.gz';
           datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
           var url_params = {
@@ -2453,13 +2470,13 @@ function card_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
 
     // Activate inline edit on click of a table cell
-    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function() {
+    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function () {
     });
 
     // highlight_result_card(card_ids.card_id);
@@ -2543,7 +2560,7 @@ function card_title(outputname, param) {
         fields[i - 1].attr = new Object();
         fields[i - 1].attr.type = 'number';
         fields[i - 1].attr.step = 'any';
-        columns[i].render = function(data) {
+        columns[i].render = function (data) {
           return (format_output(data));
         };
       }
@@ -2723,16 +2740,16 @@ function card_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + card_ids.card_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.scw-list .mmoda-popover-content').text());
       });
       $('.scw-list', '#' + card_ids.card_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + card_ids.card_body_id).html(), 71));
-      var pop = $('.popover-help', '#' + card_ids.card_body_id).on('click', function(e) {
+      var pop = $('.popover-help', '#' + card_ids.card_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -2778,7 +2795,7 @@ function card_title(outputname, param) {
 
   function activate_modal($element) {
     //    $(once('bind-click-event', '.grid-item', context)
-    $('area.ctools-use-modal, a.ctools-use-modal', $element).each('ctools-use-modal', function() {
+    $('area.ctools-use-modal, a.ctools-use-modal', $element).each('ctools-use-modal', function () {
       var $this = $(this);
       $this.click(Drupal.CTools.Modal.clickAjaxLink);
       // Create a drupal ajax object
