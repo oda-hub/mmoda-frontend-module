@@ -1440,7 +1440,7 @@ function card_title(outputname, param) {
       make_request_error = false;
       var make_request_error_messages = [];
 
-      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form').each(function () {
+      $('div.multivalued-field', 'form.mmoda-' + request_parameters.instrument + '-form').each(function () {
         // get name of the first select element
         var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
         var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
@@ -1549,7 +1549,7 @@ function card_title(outputname, param) {
             + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
         }
         else {
-          $('form.mmoda-' + request_parameters.instrument + '-form').submit();
+          $('form.mmoda-' + request_parameters.instrument + '-form .form-submit').click();
         }
       }
       else {
