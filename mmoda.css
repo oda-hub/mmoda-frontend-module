@@ -747,3 +747,12 @@ button.renku-publish {
 div[id^="image-table-wrapper-"] {
   width: 65%;
 }
+
+.top-hr-group-container {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.group-label {
+  padding-left: 15px;
+}

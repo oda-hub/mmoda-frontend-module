@@ -71,7 +71,7 @@ function panel_title(outputname, param) {
   return (title_items.join(', '));
 }
 
-(function($) {
+(function ($) {
   $(document).ready(commonReady);
   var desktop_panel_counter = 1;
 
@@ -101,13 +101,13 @@ function panel_title(outputname, param) {
 
   function AJAX_submit_call() {
     AJAX_call_get_token().done(
-      function(data, textStatus, jqXHR) {
+      function (data, textStatus, jqXHR) {
         if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
           current_ajax_call_params.currentFormData.append('token', data.token);
         }
 
         AJAX_call();
-      }).error(function(jqXHR, textStatus, errorThrown) {
+      }).error(function (jqXHR, textStatus, errorThrown) {
         console.log('Error in requesting the user token:');
         console.log('textStatus : ' + textStatus);
         console.log('errorThrown :' + errorThrown);
@@ -142,8 +142,8 @@ function panel_title(outputname, param) {
     waitingDialog.setProgressBarStatus('done', false);
     waitingDialog.setProgressBarText('done');
     if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
-          waitingDialog.enableReturnProgressLink();
+      $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+      waitingDialog.enableReturnProgressLink();
     }
     if (data.exit_status.status != 0) {
       debug_message = '';
@@ -184,6 +184,7 @@ function panel_title(outputname, param) {
     if (current_instrument_query !== undefined) {
       if ($(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.hasOwnProperty('integral_instrument') &&
         $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.integral_instrument.value == 'true') {
+        waitingDialog.showLegend();
         integral_instrument = true;
       }
     }
@@ -205,6 +206,7 @@ function panel_title(outputname, param) {
       if (data['job_monitor'].full_report_dict.hasOwnProperty('progress_max'))
         progress_max = data['job_monitor']['full_report_dict']['progress_max'];
     }
+    console.log('progress: ' + progress + ' progress_max: ' + progress_max);
     waitingDialog.setProgressBarText(response_status);
 
     messages = get_server_message(data, integral_instrument);
@@ -259,13 +261,14 @@ function panel_title(outputname, param) {
     reformatted_exit_status_message = data.exit_status.message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
 
     reformatted_error_message = data.exit_status.error_message.replace(/\\n/g, "<br />").replace(/\n/g, "<br />");
-    warning_obj = {'failures' : '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
-     + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
-     + reformatted_error_message + '</td></tr></table>'
+    warning_obj = {
+      'failures': '<table class="error-table"><tr><td>' + get_current_date_time() + '</td><td>'
+        + reformatted_exit_status_message + '</td></tr><tr><td></td><td>'
+        + reformatted_error_message + '</td></tr></table>'
     };
     if (current_instrument_query !== undefined && ($(`input[value='${current_instrument_query}']`, ".instrument-panel.active")[0].attributes.hasOwnProperty('support_return_progress') &&
-        $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
-          waitingDialog.enableReturnProgressLink();
+      $(`input[value='${current_instrument_query}']`, ".instrument-panel")[0].attributes.support_return_progress.value == 'true')) {
+      waitingDialog.enableReturnProgressLink();
     }
     waitingDialog.append(warning_obj, 'danger');
     waitingDialog.setClose();
@@ -338,7 +341,7 @@ function panel_title(outputname, param) {
     requestTimer = null;
 
     current_ajax_call_params.currentFormData.delete('return_progress');
-    if(typeof run_analysis_data_query_status !== 'undefined')
+    if (typeof run_analysis_data_query_status !== 'undefined')
       current_ajax_call_params.currentFormData.set('query_status', run_analysis_data_query_status);
 
     //var startAJAXTime = new Date().getTime();
@@ -351,7 +354,7 @@ function panel_title(outputname, param) {
       timeout: ajax_request_timeout,
       type: 'POST'
     }).done(
-      function(data, textStatus, jqXHR) {
+      function (data, textStatus, jqXHR) {
         last_dataserver_response = data;
         job_id = '';
         session_id = '';
@@ -385,9 +388,9 @@ function panel_title(outputname, param) {
           warning_obj = { 'warnings': '<div class="comment alert alert-warning">' + data.exit_status.comment + '</div>' };
           waitingDialog.replace(warning_obj);
         }
-      }).complete(function(jqXHR, textStatus) {
+      }).complete(function (jqXHR, textStatus) {
         $('button[type=submit]', ".instrument-panel.active, .common-params").prop('disabled', false);
-      }).error(function(jqXHR, textStatus, errorThrown) {
+      }).error(function (jqXHR, textStatus, errorThrown) {
         mmoda_show_request_error(jqXHR, textStatus, errorThrown);
 
       });
@@ -565,7 +568,7 @@ function panel_title(outputname, param) {
   }
 
   function showErrorWhenTruncatedPaste() {
-    $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function(e) {
+    $("input[type=text][maxlength], textarea[maxlength]").bind("paste", function (e) {
       var pastedDataLength = e.originalEvent.clipboardData.getData('text').length;
       if ($(this)[0].hasAttribute('maxlength') && !isNaN(parseInt($(this).attr('maxlength')))) {
         var maxlength = parseInt($(this).attr('maxlength'));
@@ -583,7 +586,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("input[type=text], textarea").bind("input", function() {
+    $("input[type=text], textarea").bind("input", function () {
       var parent_elt = $(this).parent().parent();
       parent_elt.removeClass('has-feedback has-error');
     });
@@ -592,15 +595,15 @@ function panel_title(outputname, param) {
   function all_instruments_forms_set_bootstrapValidator() {
 
     var validator_fields = {};
-    
-    $("input[type=text][maxlength], textarea[maxlength]").each(function() {
+
+    $("input[type=text][maxlength], textarea[maxlength]").each(function () {
       var name = $(this).attr('name');
       //      var maxlength = parseInt($(this).attr('maxlength'));
       validator_fields[name] = {
         // enabled: false,
         validators: {
           callback: {
-            callback: function(value, validator, $field) {
+            callback: function (value, validator, $field) {
               return (validate_paste($field));
             }
           }
@@ -609,21 +612,21 @@ function panel_title(outputname, param) {
     });
 
     validator_fields['scw_list'] = {
-        // enabled: false,
-        validators: {
-          callback: {
-            callback: function(value, validator, $field) {
-              return (validate_scws(value, 500));
-            }
+      // enabled: false,
+      validators: {
+        callback: {
+          callback: function (value, validator, $field) {
+            return (validate_scws(value, 500));
+          }
         }
       }
     };
-    
+
     validator_fields['time_bin'] = {
       // enabled: false,
       validators: {
         callback: {
-          callback: function(value, validator, $field) {
+          callback: function (value, validator, $field) {
             return (validate_timebin(value, validator, $field));
           }
         }
@@ -637,7 +640,7 @@ function panel_title(outputname, param) {
           message: 'Please enter a value'
         },
         callback: {
-          callback: function(value, validator, $field) {
+          callback: function (value, validator, $field) {
             var E2_keV = validator.getFieldElements('E2_keV').val();
             if (Number(value) >= Number(E2_keV)) {
               return {
@@ -657,7 +660,7 @@ function panel_title(outputname, param) {
           message: 'Please enter a value'
         },
         callback: {
-          callback: function(value, validator, $field) {
+          callback: function (value, validator, $field) {
             var E1_keV = validator.getFieldElements('E1_keV').val();
             if (Number(value) <= Number(E1_keV)) {
               return {
@@ -700,7 +703,7 @@ function panel_title(outputname, param) {
     $('input, select, textarea', newVAlue).val('');
     current_row.after(newVAlue);
     $('button', multivalued_field).prop('disabled', false);
-    $('input, select, textarea', newVAlue).each(function() {
+    $('input, select, textarea', newVAlue).each(function () {
       current_instrument_form_validator.addField($(this));
     });
     newVAlue.show();
@@ -716,6 +719,38 @@ function panel_title(outputname, param) {
 
 
   function commonReady() {
+
+    $('.group-container').each(function () {
+      let form_wrapper = $(this).children('div.form-wrapper').first();
+      let hr_elt = $(this).next();
+      // Check if the display style property is 'none'
+      if (form_wrapper.css('display') === 'none') {
+        $(this).hide();
+        hr_elt.hide();
+      }
+    });
+
+    $('.form-item-product-type').on('change', function () {
+      let current_form = $(this).closest('form');
+      let group_container_list = current_form.find('.group-container');
+      if (group_container_list.length > 0) {
+        group_container_list.each(function () {
+          let form_wrapper = $(this).children('div.form-wrapper').first();
+          // get the <hr> element right after
+          let hr_elt = $(this).next();
+          // Check if the display style property is 'none'
+          if (form_wrapper.css('display') === 'none') {
+            $(this).hide();
+            hr_elt.hide();
+          }
+          else {
+            $(this).show();
+            hr_elt.show();
+          }
+        });
+      }
+    });
+
     $('.multivalued-field').removeClass('form-group');
 
     all_instruments_forms_set_bootstrapValidator();
@@ -725,7 +760,7 @@ function panel_title(outputname, param) {
     $('.multivalued-field .multivalued-value').append(del_multivalued_elt_button);
     $('button', '.multivalued-field .multivalued-value').prop('disabled', true);
 
-    $('.multivalued-field .multivalued-value').each(function() {
+    $('.multivalued-field .multivalued-value').each(function () {
       var multivalued_field = $(this).closest('.multivalued-field');
       var labels = $(this).clone();
       labels.find('input, select, textarea, button').remove();
@@ -734,18 +769,18 @@ function panel_title(outputname, param) {
       multivalued_field.find('label:first').after(labels);
     })
 
-    $('.multivalued-field').on('click', '.add-multivalued-element', function(e) {
+    $('.multivalued-field').on('click', '.add-multivalued-element', function (e) {
       // Prevent form submission
       e.preventDefault();
       insert_new_multivalued_field(this);
     });
-    $('.multivalued-field').on('click', '.delete-multivalued-element', function(e) {
+    $('.multivalued-field').on('click', '.delete-multivalued-element', function (e) {
       // Prevent form submission
       e.preventDefault();
       delete_multivalued_field(this);
     });
 
-    $('body').on('click', '#ldialog .close-button', function(e) {
+    $('body').on('click', '#ldialog .close-button', function (e) {
       e.preventDefault();
       if (requestTimer !== null) {
         window.clearTimeout(requestTimer);
@@ -767,7 +802,7 @@ function panel_title(outputname, param) {
       waitingDialog.hideLegend();
 
       // remove any child html-progress modal window
-      $("#ldialog > *").each(function() {
+      $("#ldialog > *").each(function () {
         var id = $(this).attr('id');
         if (id !== 'ldialog-modal-dialog')
           $(this).remove();
@@ -784,12 +819,12 @@ function panel_title(outputname, param) {
 
     });
 
-    $('#ldialog').on('hidden.bs.modal', function() {
+    $('#ldialog').on('hidden.bs.modal', function () {
       $('#ldialog button.write-feedback-button').hide();
       $(".notice-progress-container").hide();
     })
 
-    $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function(e) {
+    $('body').on('click', 'table.lightcurve-table tbody button.copy-multi-product', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var current_panel = $(this).closest('.panel');
@@ -811,7 +846,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve, table.image-table tbody button.draw-image', function(e) {
+    $('body').on('click', 'table.lightcurve-table tbody button.draw-lightcurve, table.image-table tbody button.draw-image', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var lightcurve_offset = {};
@@ -833,7 +868,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $('body').on('click', 'table.spectrum-table tbody button.draw-spectrum', function(e) {
+    $('body').on('click', 'table.spectrum-table tbody button.draw-spectrum', function (e) {
       var current_row = $(this).parents('tr');
       var data = current_row.data();
       var spectrum_offset = {};
@@ -876,7 +911,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.panel .close-panel', function() {
+    $("body").on('click', '.panel .close-panel', function () {
       var panel = $(this).closest('.panel');
       if (panel.data('catalog')) {
         // delete catalog when attached to panel
@@ -935,7 +970,7 @@ function panel_title(outputname, param) {
       panel.remove();
     });
 
-    $("body").on('click', '.instrument-params-panel .show-catalog, .result-panel .show-catalog', function(e) {
+    $("body").on('click', '.instrument-params-panel .show-catalog, .result-panel .show-catalog', function (e) {
       e.preventDefault();
       var showUseCatalog = false;
       var catalog_parent_panel = $(this).parents('.result-panel, .instrument-params-panel');
@@ -959,12 +994,12 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-panel .show-js9', function(e) {
+    $("body").on('click', '.result-panel .show-js9', function (e) {
       e.preventDefault();
       display_image_js9($(this).data("image_file_path"), $(this).data());
     });
 
-    $("body").on('click', '.result-panel .show-log', function(e) {
+    $("body").on('click', '.result-panel .show-log', function (e) {
       e.preventDefault();
       var log_parent_panel = $(this).closest('.panel');
       var log = log_parent_panel.data('log');
@@ -986,7 +1021,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-panel .api-code', function(e) {
+    $("body").on('click', '.result-panel .api-code', function (e) {
       e.preventDefault();
       var api_code_parent_panel = $(this).closest('.panel');
       var parent_api_code_offset = $(this).closest(".instrument-panel").offset();
@@ -1007,11 +1042,11 @@ function panel_title(outputname, param) {
       }
     });
 
-    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function(e) {
+    $(".tab-content, #ldialog").on('click', ".return-progress-link-tooltip", function (e) {
       e.stopPropagation();
     });
 
-    $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function(e) {
+    $(".tab-content").on('click', '.return-progress-link.enabled .prompt', function (e) {
       let target_obj = $(e.target);
       let parent_target_obj = target_obj.parent();
       let parent_panel = $(this).closest('.panel');
@@ -1039,63 +1074,63 @@ function panel_title(outputname, param) {
       parent_target_obj.find('.fa-spinner').show();
       target_obj.hide();
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           formData_return_progress_link.set('return_progress', 'True');
           formData_return_progress_link.set('query_status', 'new');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
             formData_return_progress_link.set('token', data.token);
-            var return_progress_jqXHR = $.ajax({
-              url: current_ajax_call_params.action,
-              data: formData_return_progress_link,
-              dataType: 'json',
-              processData: false,
-              contentType: false,
-              timeout: ajax_request_timeout,
-              type: 'POST'
-            }).done(function(data, textStatus, jqXHR) {
-              console.log(data);
-              if (data.products.hasOwnProperty('progress_product_html_output')) {
-                output_html = data.products.progress_product_html_output;
-                panel_id = display_progress_html_output(output_html,
-                  '#' + parent_panel.attr('id'),
-                  progress_html_offset,
-                  true,
-                  true);
-              } else  {
-                output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
-                panel_id = display_progress_html_output(output_html,
-                  '#' + parent_panel.attr('id'), 
-                  progress_html_offset, 
-                  true, 
-                  true);
-              }
-              parent_panel.data({
-                'return_progress_html_output': output_html,
-                'return_progress_html_output_id': '#' + panel_id
-              });
-            }).complete(function(jqXHR, textStatus) {
-              parent_target_obj.find('.fa-spinner').hide();
-              target_obj.show();
-            }).error(function(jqXHR, textStatus, errorThrown) {
-              parent_target_obj.find('.fa-spinner').hide();
-              target_obj.show();
+          var return_progress_jqXHR = $.ajax({
+            url: current_ajax_call_params.action,
+            data: formData_return_progress_link,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            timeout: ajax_request_timeout,
+            type: 'POST'
+          }).done(function (data, textStatus, jqXHR) {
+            console.log(data);
+            if (data.products.hasOwnProperty('progress_product_html_output')) {
+              output_html = data.products.progress_product_html_output;
+              panel_id = display_progress_html_output(output_html,
+                '#' + parent_panel.attr('id'),
+                progress_html_offset,
+                true,
+                true);
+            } else {
+              output_html = '<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>';
+              panel_id = display_progress_html_output(output_html,
+                '#' + parent_panel.attr('id'),
+                progress_html_offset,
+                true,
+                true);
+            }
+            parent_panel.data({
+              'return_progress_html_output': output_html,
+              'return_progress_html_output_id': '#' + panel_id
             });
-            
-            // jqxhr
-            parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
+          }).complete(function (jqXHR, textStatus) {
+            parent_target_obj.find('.fa-spinner').hide();
+            target_obj.show();
+          }).error(function (jqXHR, textStatus, errorThrown) {
+            parent_target_obj.find('.fa-spinner').hide();
+            target_obj.show();
+          });
+
+          // jqxhr
+          parent_panel.data("return_progress_jqxhr", return_progress_jqXHR);
 
         }
       );
 
     });
 
-    
-    $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function(e) {
+
+    $("#ldialog").on('click', '.return-progress-link.enabled .prompt', function (e) {
       waitingDialog.showSpinner();
       waitingDialog.hidePrompt();
       let parent_panel = $('#ldialog-modal-dialog');
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           current_ajax_call_params.currentFormData.set('return_progress', 'True');
           current_ajax_call_params.currentFormData.set('query_status', 'new');
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '')
@@ -1108,8 +1143,8 @@ function panel_title(outputname, param) {
             contentType: false,
             timeout: ajax_request_timeout,
             type: 'POST'
-          }).done(function(data, textStatus, jqXHR) {
-            $("#ldialog > *").each(function() {
+          }).done(function (data, textStatus, jqXHR) {
+            $("#ldialog > *").each(function () {
               var id = $(this).attr('id');
               if (id !== 'ldialog-modal-dialog')
                 $(this).remove();
@@ -1118,15 +1153,15 @@ function panel_title(outputname, param) {
             var progress_html_offset = { left: parent_panel.offset().left, top: 50 };
             if (data.products.hasOwnProperty('progress_product_html_output')) {
               display_progress_html_output(data.products.progress_product_html_output, '#' + parent_panel.attr('id'), progress_html_offset);
-            } else  {
+            } else {
               delete progress_html_offset.top;
               display_progress_html_output('<div class="summary-failures alert alert-danger">Output notebook currently not available. Our team is notified and is working on it.</div>', '#' + parent_panel.attr('id'), progress_html_offset, true);
             }
-          }).complete(function(jqXHR, textStatus) {
+          }).complete(function (jqXHR, textStatus) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
-          }).error(function(jqXHR, textStatus, errorThrown) {
+          }).error(function (jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText);
             waitingDialog.hideSpinner();
             waitingDialog.showPrompt();
@@ -1137,7 +1172,7 @@ function panel_title(outputname, param) {
       );
     });
 
-    $("body").on('click', '.result-panel .renku-publish', function(e) {
+    $("body").on('click', '.result-panel .renku-publish', function (e) {
       e.preventDefault();
       renku_publish_formData = new FormData();
       url_params = {};
@@ -1145,7 +1180,7 @@ function panel_title(outputname, param) {
       let renku_publish_panel = $(this)[0];
 
       AJAX_call_get_token().done(
-        function(data, textStatus, jqXHR) {
+        function (data, textStatus, jqXHR) {
           if (data.hasOwnProperty('token') && data.token !== null && data.token !== undefined && data.token !== '') {
             let token = data.token;
             let url_dispatcher_renku_publish_url = get_renku_publish_url(token, job_id)
@@ -1168,7 +1203,7 @@ function panel_title(outputname, param) {
               context: this,
               timeout: ajax_request_timeout,
               type: 'POST'
-            }).complete(function(renku_publish_jqXHR, renku_publish_textStatus) {
+            }).complete(function (renku_publish_jqXHR, renku_publish_textStatus) {
               serverResponse = '';
               try {
                 serverResponse = $.parseJSON(renku_publish_jqXHR.responseText);
@@ -1204,7 +1239,7 @@ function panel_title(outputname, param) {
               renku_publish_panel.parentElement.after(publish_result_panel);
 
             }).error(
-              function(renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
+              function (renku_publish_jqXHR, renku_publish_textStatus, renku_publish_errorThrown) {
                 console.log(renku_publish_textStatus);
                 e.target.disabled = false;
               }
@@ -1217,7 +1252,7 @@ function panel_title(outputname, param) {
             let publish_result_panel = display_renku_publish_result(publish_result_type, no_user_loged_in_error_message, publish_response_title);
             renku_publish_panel.parentElement.after(publish_result_panel);
           }
-        }).error(function(jqXHR, textStatus, errorThrown) {
+        }).error(function (jqXHR, textStatus, errorThrown) {
           console.log('Error in requesting the user token:');
           console.log('textStatus : ' + textStatus);
           console.log('errorThrown :' + errorThrown);
@@ -1228,14 +1263,14 @@ function panel_title(outputname, param) {
 
     });
 
-    $("body").on('click', '.panel .copy-api-code', function(e) {
+    $("body").on('click', '.panel .copy-api-code', function (e) {
       e.preventDefault();
       var parent_panel = $(this).closest('.panel');
       api_code_product_panel_id = parent_panel.data('api_code_product_panel_id');
       copyToClipboard($(api_code_product_panel_id).data('api_code'));
     });
 
-    $("body").on('click', '.result-panel .show-query-parameters', function(e) {
+    $("body").on('click', '.result-panel .show-query-parameters', function (e) {
       e.preventDefault();
       var query_parameters_parent_panel = $(this).closest('.result-panel');
       var query_parameters = query_parameters_parent_panel.data('analysis_parameters');
@@ -1256,7 +1291,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-panel .share-query', function(e) {
+    $("body").on('click', '.result-panel .share-query', function (e) {
       e.preventDefault();
       var query_parameters_parent_panel = $(this).closest('.result-panel');
       var query_parameters = query_parameters_parent_panel.data('analysis_parameters');
@@ -1264,7 +1299,7 @@ function panel_title(outputname, param) {
       copyToClipboard(url);
     });
 
-    $("body").on('click', '.copy-api-token', function(e) {
+    $("body").on('click', '.copy-api-token', function (e) {
       e.preventDefault();
       token_text = $("#edit-submitted-copy-button p")[0].textContent;
       if (token_text !== undefined)
@@ -1290,7 +1325,7 @@ function panel_title(outputname, param) {
 
     // Warn the user that if he/she selects objects
     // only those objects will be copied to the used catalog
-    $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function(e) {
+    $("body").on('click', '.catalog-wrapper table.mmoda tr td.select-checkbox', function (e) {
       e.preventDefault();
       var catalog_panel = $(this).closest('.panel');
       var dataTable = catalog_panel.data('dataTable');
@@ -1302,7 +1337,7 @@ function panel_title(outputname, param) {
       }
     });
 
-    $("body").on('click', '.result-panel .use-catalog', function(e) {
+    $("body").on('click', '.result-panel .use-catalog', function (e) {
       e.preventDefault();
       var catalog_panel = $(this).parents('.result-panel');
       var catalog_parent_panel = $(catalog_panel.data('catalog_parent_panel_id'));
@@ -1328,14 +1363,14 @@ function panel_title(outputname, param) {
       var catalog_offset = showCatalog.offset();
       event.pageX = catalog_offset.left + showCatalog.width() / 2;
       event.pageY = catalog_offset.top + showCatalog.height() / 2;
-      catalog_panel.animate(new_catalog_position, "slow", function() {
+      catalog_panel.animate(new_catalog_position, "slow", function () {
         $('.close-panel', catalog_panel).click();
         $('button.show-catalog', showCatalog).trigger(event);
       });
     });
 
     // delete catalog when attached to panel
-    $(".instrument-panel .instrument-params-panel .inline-user-catalog").on('click', ".remove-catalog", function() {
+    $(".instrument-panel .instrument-params-panel .inline-user-catalog").on('click', ".remove-catalog", function () {
       $(this).parent().hide();
       var panel = $(this).closest(".instrument-params-panel");
       if (panel.data('catalog')) {
@@ -1351,12 +1386,12 @@ function panel_title(outputname, param) {
     // The main block is hidden at startup (in mmoda.css) and
     // shown here after the setup of DOM and the field controls
     $('.block-mmoda').show();
-    $('body').on('click', '.mmoda-log .more-less-details.enabled', function(e) {
+    $('body').on('click', '.mmoda-log .more-less-details.enabled', function (e) {
       e.preventDefault();
       var $this = $(this);
       // var details = $(this).parent().find('.details');
       var details = $('#ldialog .summary .details');
-      details.slideToggle('slow', function() {
+      details.slideToggle('slow', function () {
         // var txt = $(this).is(':visible') ? '< Less details' : 'More details >';
         // $this.text(txt);
       });
@@ -1366,26 +1401,26 @@ function panel_title(outputname, param) {
     // This is important in Firefox when the page is refreshed
     // where indeed the old values are still in the form
 
-    $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function() {
+    $('[name^=time_bin_format]', '.instrument-params-panel form').on('change', function () {
       var form = $(this).parents('form');
       form.data('bootstrapValidator').updateStatus('time_bin', 'NOT_VALIDATED').validateField('time_bin');
     });
 
-    $('[name=E1_keV]', '.instrument-params-panel form').on('change', function() {
+    $('[name=E1_keV]', '.instrument-params-panel form').on('change', function () {
       var form = $(this).parents('form');
       form.data('bootstrapValidator').updateStatus('E2_keV', 'NOT_VALIDATED').validateField('E2_keV');
     });
 
-    $('[name=E2_keV]', '.instrument-params-panel form').on('change', function() {
+    $('[name=E2_keV]', '.instrument-params-panel form').on('change', function () {
       var form = $(this).parents('form');
       form.data('bootstrapValidator').updateStatus('E1_keV', 'NOT_VALIDATED').validateField('E1_keV');
     });
 
-    $('.instrument-panel form').on('error.form.bv', function(e) {
+    $('.instrument-panel form').on('error.form.bv', function (e) {
       e.preventDefault();
     });
 
-    $('.instrument-panel form').on('success.form.bv', function(e) {
+    $('.instrument-panel form').on('success.form.bv', function (e) {
       e.preventDefault();
       //      if ($(e.target).is('.instrument-panel form.mmoda-iframe-result')) {
       //        e.stopPropagation();
@@ -1398,7 +1433,7 @@ function panel_title(outputname, param) {
       if (request_draw_spectrum) {
         formData = request_spectrum_form_element.data('parameters');
       } else {
-        $('input:not(:file)', this).val(function(_, value) {
+        $('input:not(:file)', this).val(function (_, value) {
           return $.trim(value);
         });
 
@@ -1410,12 +1445,12 @@ function panel_title(outputname, param) {
         // true);
 
         // Collect object name 
-        var allFormData = $("form#mmoda-name-resolve").serializeArray().map(function(item, index) {
+        var allFormData = $("form#mmoda-name-resolve").serializeArray().map(function (item, index) {
           return (item);
         });
 
         // Collect common parameters
-        var commonFormData = $("form#mmoda-common").serializeArray().map(function(item, index) {
+        var commonFormData = $("form#mmoda-common").serializeArray().map(function (item, index) {
           if (item.name == 'T1' || item.name == 'T2') {
             item.value = item.value.replace(' ', 'T')
           }
@@ -1425,7 +1460,7 @@ function panel_title(outputname, param) {
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
         multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
-        $.each(instrument_form_serializeJSON, function(param, value) {
+        $.each(instrument_form_serializeJSON, function (param, value) {
           if (multival_pars.includes(param)) instrument_form_serializeArray.push({ 'name': param, 'value': JSON.stringify(value) });
           else instrument_form_serializeArray.push({ 'name': param, 'value': value });
         });
@@ -1433,7 +1468,7 @@ function panel_title(outputname, param) {
         // Collect instrument form fields and remove the
         // form id prefix from
         // the name
-        var instrumentFormData = instrument_form_serializeArray.map(function(item) {
+        var instrumentFormData = instrument_form_serializeArray.map(function (item) {
           item.name = item.name.replace(form_id + '_', '');
           return (item);
         });
@@ -1455,7 +1490,7 @@ function panel_title(outputname, param) {
             var dataTable = form_panel.data('dataTable');
             catalog.cat_column_list = dataTable.columns().data().toArray();
             catalog_selected_objects = Array.apply(null, Array(dataTable.rows().count()));
-            catalog_selected_objects = catalog_selected_objects.map(function(x, i) {
+            catalog_selected_objects = catalog_selected_objects.map(function (x, i) {
               return i + 1
             });
             catalog_selected_objects_string = catalog_selected_objects.join(',');
@@ -1467,7 +1502,7 @@ function panel_title(outputname, param) {
           formData.append('selected_catalog', JSON.stringify(catalog));
         }
         // Attach files
-        $.each($('input:file:enabled', this), function(i, file) {
+        $.each($('input:file:enabled', this), function (i, file) {
           if ($(this).val() !== '') {
             let file_entry_name = $(this).attr('name').replace(form_id + '_', '');
             formData.append(file_entry_name, file.files[0]);
@@ -1479,7 +1514,7 @@ function panel_title(outputname, param) {
 
       request_draw_spectrum = false;
 
-      waitingDialog.show('Processing ...', {'summary': ''}, {
+      waitingDialog.show('Processing ...', { 'summary': '' }, {
         progressType: 'success',
         showProgressBar: true,
         showSpinner: false,
@@ -1511,7 +1546,7 @@ function panel_title(outputname, param) {
       AJAX_submit_call();
     });
 
-    $('body').on('click', '.open-in-modal', function(e) {
+    $('body').on('click', '.open-in-modal', function (e) {
       e.preventDefault();
 
       // var current_modal = $(this).closest('.modal');
@@ -1527,16 +1562,16 @@ function panel_title(outputname, param) {
       path_items.pop(); // remove the last
       open_in_modal_base_path = path_items.join("/");
 
-      $.get($(this).attr('href'), function(data) {
+      $.get($(this).attr('href'), function (data) {
         var html = $.parseHTML(data);
         var help_text = $(".region-content", html);
         var title = $(".page-header", html).text();
-        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function() {
+        help_text.find('#table-of-contents-links ul.toc-node-bullets li a, .toc-top-links a').each(function () {
           $(this).attr('href', $(this).attr('href').substring($(this).attr('href').indexOf("#")));
         });
         help_text.find('#table-of-contents-links').addClass('rounded');
 
-        $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function() {
+        $("a[href]:not(.colorbox, [download], .active-trail)", help_text).each(function () {
           if (!(this.hostname && this.hostname !== location.hostname) && !$(this).attr('href').startsWith("#")) {
             $(this).addClass('open-in-modal');
             if ($(this).attr('href').indexOf(open_in_modal_base_path) < 0) {
@@ -1574,7 +1609,7 @@ function panel_title(outputname, param) {
 
     // If there's just an error_message, visualize it
     if (request_parameters.hasOwnProperty('error_message')) {
-      waitingDialog.show('Error message', {'summary': ''}, {
+      waitingDialog.show('Error message', { 'summary': '' }, {
         progressType: 'success',
         'showProgress': true,
         'showButton': true
@@ -1583,10 +1618,11 @@ function panel_title(outputname, param) {
       $('.write-feedback-button').show();
       waitingDialog.hideSpinner();
 
-      warning_obj = {'failures' : '<table class="error-table"><tr>' +
-        '<td>' + get_current_date_time() + '</td>' +
-        '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
-        '</tr></table>',
+      warning_obj = {
+        'failures': '<table class="error-table"><tr>' +
+          '<td>' + get_current_date_time() + '</td>' +
+          '<td>error ' + request_parameters.status_code + ', ' + request_parameters.error_message + '</td>' +
+          '</tr></table>',
       };
       waitingDialog.append(warning_obj, 'danger');
     }
@@ -1602,7 +1638,7 @@ function panel_title(outputname, param) {
       var make_request_error_messages = [];
       // var all_form_inputs = [];
 
-      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form') .each(function() {
+      $('div.multivalued-field', 'form.' + request_parameters.instrument + '-form').each(function () {
         // get name of the first select element
         var re_multivalued_field = new RegExp('\\[[^\\]]*\\]\\[\\]');
         var field_name = $('select', this).attr('name').replace(re_multivalued_field, '');
@@ -1613,27 +1649,27 @@ function panel_title(outputname, param) {
           // for each key in the object, add a new multivalued field
           let parsed_field_obj_keys = Object.keys(parsed_field_obj);
           let num_multivalued_field = parsed_field_obj[parsed_field_obj_keys[0]].length;
-          for (let i = 0; i < num_multivalued_field ; i++) {
-            for(key of parsed_field_obj_keys) {
-              var select_list = $('select', this).filter(function() {
+          for (let i = 0; i < num_multivalued_field; i++) {
+            for (key of parsed_field_obj_keys) {
+              var select_list = $('select', this).filter(function () {
                 return $(this).attr('name') === `${field_name}[${key}][]`;
               });
               // check if the select has the value amongst its options
               let select_element = $(select_list[select_list.length - 1]);
-              let hasOption = select_element.find('option').filter(function() {
+              let hasOption = select_element.find('option').filter(function () {
                 return $(this).val() === parsed_field_obj[key][i];
               }).length > 0;
               if (!hasOption)
                 select_element.append(new Option(parsed_field_obj[key][i], parsed_field_obj[key][i]));
               select_element.val(parsed_field_obj[key][i]);
             }
-            if($('.multivalued-value', this).length < num_multivalued_field)
+            if ($('.multivalued-value', this).length < num_multivalued_field)
               insert_new_multivalued_field(add_multivalued_button[0]);
           }
         }
       });
 
-      $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function() {
+      $('input, textarea, select', 'form#mmoda-name-resolve, form#mmoda-common, form.' + request_parameters.instrument + '-form').each(function () {
         var re = new RegExp('mmoda_?-?' + request_parameters.instrument + '_?-?');
         var field_name = $(this).attr('name').replace(re, '');
 
@@ -1651,10 +1687,10 @@ function panel_title(outputname, param) {
           } else if ($(this).attr('type') == 'radio') {
             if (type_selector.length == 0) {
               let url_request_value = request_parameters[field_name];
-              if($(this).val() == 0 || $(this).val() == 1) {
-                if(request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
+              if ($(this).val() == 0 || $(this).val() == 1) {
+                if (request_parameters[field_name].toLowerCase() == "true" || request_parameters[field_name] == "1") {
                   url_request_value = 1;
-                } else if(request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
+                } else if (request_parameters[field_name].toLowerCase() == "false" || request_parameters[field_name] == "0") {
                   url_request_value = 0;
                 }
               }
@@ -1693,14 +1729,14 @@ function panel_title(outputname, param) {
 
       if (!make_request_error) {
         both_forms_valid = true;
-        $('input, textarea, select', 'form#mmoda-common').each(function() {
+        $('input, textarea, select', 'form#mmoda-common').each(function () {
           common_form_validator.validateField($(this).attr('name'));
           if (!common_form_validator.isValidField($(this).attr('name')))
             both_forms_valid = false;
         });
 
         if (both_forms_valid) {
-          $('input, textarea, select', 'form.' + request_parameters.instrument + '-form').each(function() {
+          $('input, textarea, select', 'form.' + request_parameters.instrument + '-form').each(function () {
             current_instrument_form_validator.validateField($(this).attr('name'));
             if (!current_instrument_form_validator.isValidField($(this).attr('name')))
               both_forms_valid = false;
@@ -1724,11 +1760,11 @@ function panel_title(outputname, param) {
           + '<p>If you are not sure how to obtain it, please feel free to contact us using the "Write feedback" form below.</p>';
       }
       if (make_request_error) {
-        waitingDialog.show('Processing request parameters ...', {'summary': ''}, {
+        waitingDialog.show('Processing request parameters ...', { 'summary': '' }, {
           showProgressBar: false,
           showSpinner: false
         });
-        warning_obj = {'failures' : error_message};
+        warning_obj = { 'failures': error_message };
         waitingDialog.append(warning_obj, 'danger');
         $('.write-feedback-button').show();
       }
@@ -1748,13 +1784,13 @@ function panel_title(outputname, param) {
         formButtons: [{
           text: 'Add',
           className: 'btn-primary save-row',
-          action: function() {
+          action: function () {
             this.submit();
           }
         }, {
           text: 'Cancel',
           className: 'btn-primary',
-          action: function() {
+          action: function () {
             this.close();
           }
         }]
@@ -1768,13 +1804,13 @@ function panel_title(outputname, param) {
         formButtons: [{
           label: 'Save',
           className: 'btn-primary save-row',
-          action: function() {
+          action: function () {
             this.submit();
           }
         }, {
           label: 'Cancel',
           className: 'btn-primary',
-          action: function() {
+          action: function () {
             this.close();
           }
         }]
@@ -1784,7 +1820,7 @@ function panel_title(outputname, param) {
         className: 'btn-primary',
         formTitle: '<h3>Delete source(s)</h3>',
         editor: editor,
-        formMessage: function(e, dt) {
+        formMessage: function (e, dt) {
           var rows = dt.rows(e.modifier()).data().pluck('src_names');
           return 'Confirm the deletion of the following sources ? <ul><li>' + rows.join('</li><li>') + '</li></ul>';
         }
@@ -1792,17 +1828,17 @@ function panel_title(outputname, param) {
       {
         text: 'Add query object',
         className: 'btn-primary',
-        action: function(e, dt, button, config) {
+        action: function (e, dt, button, config) {
           editor.title('<h3>Add query object</h3>').buttons([{
             text: 'Add',
             className: 'btn-primary save-row',
-            action: function() {
+            action: function () {
               this.submit();
             }
           }, {
             text: 'Cancel',
             className: 'btn-primary',
-            action: function() {
+            action: function () {
               this.close();
             }
           }]).create().set('src_names', $('input[name=src_name]', '.common-params').val()).set('ra', $('input[name=RA]', '.common-params').val()).set('dec',
@@ -1819,7 +1855,7 @@ function panel_title(outputname, param) {
       {
         text: 'Save as TXT',
         className: 'btn-primary',
-        action: function(e, dt, button, config) {
+        action: function (e, dt, button, config) {
           var data = dt.buttons.exportData();
           data.header[0] = "meta_ID";
           var file_content = '';
@@ -1905,11 +1941,11 @@ function panel_title(outputname, param) {
     });
 
     // Activate inline edit on click of a table cell
-    if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function() {
+    if (enable_use_catalog) catalog_container.on('click', 'tbody td:not(:first-child)', function () {
       editor.inline(this);
     });
 
-    editor.on('preSubmit', function(e, data, action) {
+    editor.on('preSubmit', function (e, data, action) {
       var rowId = Object.keys(data.data)[0];
       if (action === 'confirm') {
 
@@ -1923,7 +1959,7 @@ function panel_title(outputname, param) {
         var confirmation = ($('.DTE button.save-row').data('confirmation'));
         if (!confirmation) {
           ldataTable.rows().every(
-            function(rowIdx, tableLoop, rowLoop) {
+            function (rowIdx, tableLoop, rowLoop) {
               // ignore compare with
               // the current row !
               if (this.id() === rowId)
@@ -1947,7 +1983,7 @@ function panel_title(outputname, param) {
 
                 editor.error('<div class="alert alert-danger alert-dismissible"><strong>Object already in the catalog ! :</strong><br>Source name: ' + d.src_names + '<br>RA: '
                   + d.ra + '<br>Dec: ' + d.dec + '<br>Distance: ' + distance + '</dv>');
-                setTimeout(function() {
+                setTimeout(function () {
                   var row = $(".catalog-wrapper .mmoda", '#' + panel_ids.panel_id).DataTable().row(rowIdx).node();
 
                   $(row).removeClass('alert alert-danger')
@@ -1981,7 +2017,7 @@ function panel_title(outputname, param) {
     // changed
     // create, remove or edit of any cell
     if (!showUseCatalog) {
-      editor.on('create remove edit', function(e, json, data) {
+      editor.on('create remove edit', function (e, json, data) {
         var catalog_parent_panel = $(afterDiv);
         if (catalog_parent_panel.hasClass('instrument-params-panel')) {
           var panel = $('#' + panel_ids.panel_id);
@@ -2054,7 +2090,7 @@ function panel_title(outputname, param) {
         // highlight missing roles
         publish_result_interpreted = publish_result.replace(
           /-(.*)/g,
-          function(m) { return '- <b>' + m.substr(1) + '</b>' }
+          function (m) { return '- <b>' + m.substr(1) + '</b>' }
         );
 
         let result_error_message_tooltip = $('<div>').addClass('result-renku-publish-link-tooltip').html(publish_result_interpreted);
@@ -2099,8 +2135,8 @@ function panel_title(outputname, param) {
     if (errorDisplay)
       $('#' + panel_ids.panel_id).addClass('mmoda-html-progress-error-display');
     offset.left = afterDiv_obj.offset().left + (afterDiv_obj.width() - $('#' + panel_ids.panel_id).width()) / 2;
-    
-    $('#' + panel_ids.panel_id).highlight_progress_panel(offset, afterDiv_obj.attr('id') );
+
+    $('#' + panel_ids.panel_id).highlight_progress_panel(offset, afterDiv_obj.attr('id'));
 
     $('#' + panel_ids.panel_id).data({
       return_progress_html_output_product_panel_id: afterDiv
@@ -2156,10 +2192,10 @@ function panel_title(outputname, param) {
   }
 
   function only_one_catalog_selection(element_wrapper, element_class, select_all_element, checked_element) {
-    $('input[name=' + checked_element + ']', element_wrapper).on('change', function(e) {
+    $('input[name=' + checked_element + ']', element_wrapper).on('change', function (e) {
       if (this.checked) {
         obj = $(element_wrapper);
-        $('input[name=' + checked_element + ']', element_class).each(function() {
+        $('input[name=' + checked_element + ']', element_class).each(function () {
           if (!$(this).closest(element_class).is(obj)) {
             $(this).prop('checked', false);
           }
@@ -2231,16 +2267,16 @@ function panel_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
       $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -2265,10 +2301,10 @@ function panel_title(outputname, param) {
     var lightcurve_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       let output_name = data.name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
           output_name = data.extra_metadata[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
       }
       lightcurve_table_data[i] = {
@@ -2309,7 +2345,7 @@ function panel_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
@@ -2381,16 +2417,16 @@ function panel_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.mmoda-popover-content').text());
       });
       $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -2416,10 +2452,10 @@ function panel_title(outputname, param) {
     var image_table_data = new Array(data.name.length);
     for (var i = 0; i < data.name.length; i++) {
       let output_name = data.name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
           output_name = data.extra_metadata[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
       }
       image_table_data[i] = {
@@ -2452,7 +2488,7 @@ function panel_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
@@ -2483,11 +2519,11 @@ function panel_title(outputname, param) {
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
     var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
     dbutton.data("datetime", datetime);
-    
+
     if (data.file_name.length > lc_index) {
       var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
       var files_list = data.file_name[lc_index];
-    
+
       if (data.root_file_name) {
         file_name = file_name.split('.').slice(0, -1).join('.') + '.tar.gz';
         files_list += ',' + data.root_file_name;
@@ -2524,7 +2560,7 @@ function panel_title(outputname, param) {
     product_type = $("input[name$='product_type']:checked", ".instrument-panel.active").val();
 
     let panel_title_text = data.name[lc_index];
-    if(data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
+    if (data.hasOwnProperty('extra_metadata') && data.extra_metadata[data.name[lc_index]].hasOwnProperty('label')) {
       panel_title_text = data.extra_metadata[data.name[lc_index]].label;
     }
 
@@ -2626,10 +2662,10 @@ function panel_title(outputname, param) {
     var spectrum_table_data = new Array(data.spectrum_name.length);
     for (var i = 0; i < data.spectrum_name.length; i++) {
       let output_name = data.spectrum_name[i];
-      if(data.hasOwnProperty('extra_metadata')) {
-        if(data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
+      if (data.hasOwnProperty('extra_metadata')) {
+        if (data.extra_metadata[data.spectrum_name[i]].hasOwnProperty('label'))
           output_name = data.spectrum_name[output_name].label;
-        if(data.extra_metadata[data.name[i]].hasOwnProperty('description'))
+        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
           output_name = "<span title='" + data.extra_metadata[data.spectrum_name[i]].description + "'>" + output_name + "</span>";
       }
       spectrum_table_data[i] = {
@@ -2674,7 +2710,7 @@ function panel_title(outputname, param) {
         data: null,
         title: "Download",
         name: "download",
-        render: function(data) {
+        render: function (data) {
           download_filename = 'spectra-' + data.source_name + '.tar.gz';
           datafiles = data.ph_file_name + ',' + data.arf_file_name + ',' + data.rmf_file_name;
           var url_params = {
@@ -2716,20 +2752,20 @@ function panel_title(outputname, param) {
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
       buttons: [],
       order: [[0, 'asc']],
-      "rowCallback": function(row, data) {
+      "rowCallback": function (row, data) {
         $(row).data(data);
       }
     });
 
     // Activate inline edit on click of a table cell
-    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function() {
+    spectrum_table_container.on('click', 'tbody td:nth-child(2)', function () {
       editor.inline(this);
     });
-    editor.on('initEdit', function(e, json, data) {
+    editor.on('initEdit', function (e, json, data) {
       $(this).data('xspec_model_previous_val', data.xspec_model);
     });
 
-    editor.on('postEdit', function(e, json, data) {
+    editor.on('postEdit', function (e, json, data) {
       if ($(this).data('xspec_model_previous_val') != data.xspec_model) {
         $('.instrument-panel.active .spectrum-table tr#' + data.DT_RowId).removeData('spectrum_panel_id');
       }
@@ -2816,7 +2852,7 @@ function panel_title(outputname, param) {
         fields[i - 1].attr = new Object();
         fields[i - 1].attr.type = 'number';
         fields[i - 1].attr.step = 'any';
-        columns[i].render = function(data) {
+        columns[i].render = function (data) {
           return (format_output(data));
         };
       }
@@ -2996,16 +3032,16 @@ function panel_title(outputname, param) {
       scw_list = data.input_prod_list.join(', ');
       $('#' + panel_ids.panel_body_id).append(
         '<div>ScWs List <button type="button" class="btn btn-xs copy-to-clipboard" >Copy</button>:<br><div class="scw-list">' + scw_list + '</div></div>');
-      $('.copy-to-clipboard').on('click', function() {
+      $('.copy-to-clipboard').on('click', function () {
         copyToClipboard($(this).parent().find('.scw-list .mmoda-popover-content').text());
       });
       $('.scw-list', '#' + panel_ids.panel_body_id).html(add3Dots('ScWs List', $('.scw-list', '#' + panel_ids.panel_body_id).html(), 71));
-      var pop = $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function(e) {
+      var pop = $('.popover-help', '#' + panel_ids.panel_body_id).on('click', function (e) {
         e.preventDefault();
         return true;
       }).popover({
         container: 'body',
-        content: function() {
+        content: function () {
           return $(this).parent().find('.mmoda-popover-content').html();
         },
         html: true,
@@ -3050,7 +3086,7 @@ function panel_title(outputname, param) {
   }
 
   function activate_modal($element) {
-    $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function() {
+    $('area.ctools-use-modal, a.ctools-use-modal', $element).once('ctools-use-modal', function () {
       var $this = $(this);
       $this.click(Drupal.CTools.Modal.clickAjaxLink);
       // Create a drupal ajax object
