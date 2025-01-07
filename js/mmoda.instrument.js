@@ -2501,6 +2501,8 @@ function panel_title(outputname, param) {
 
   function display_lc_image(current_panel, lc_index, datetime, catalog_offset) {
     var panel_ids = $(".instrument-params-panel", ".instrument-panel.active").insert_new_panel(desktop_panel_counter++, 'image', datetime);
+    var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
+    dbutton.data("datetime", datetime);
 
     var current_row = $(".instrument-panel.active").data("lightcurve_table_current_row");
     $(current_row).data({
@@ -2537,6 +2539,14 @@ function panel_title(outputname, param) {
         job_id: job_id,
         instrument: instrument
       };
+
+      if (image.hasOwnProperty('file_path')) {
+        var button = dbutton.clone().addClass('show-js9');
+        button.data("image_file_path", image.file_path);
+        button.append("JS9");
+        toolbar.append(button);
+      }
+
       var download_url = get_download_url(url_params);
       var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
       link.addClass('btn btn-default');
