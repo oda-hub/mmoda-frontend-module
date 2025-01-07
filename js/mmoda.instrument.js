@@ -2517,8 +2517,6 @@ function panel_title(outputname, param) {
 
     // -------------- Toolbar start 
     var toolbar = $('<div>').addClass('btn-group product-toolbar').attr('role', 'group');
-    // var dbutton = $('<button>').attr('type', 'button').addClass('btn btn-default');
-    // dbutton.data("datetime", datetime);
 
     if (data.file_name.length > lc_index) {
       var file_name = data.file_name[lc_index].replace('query_lc_query_lc_', '');
