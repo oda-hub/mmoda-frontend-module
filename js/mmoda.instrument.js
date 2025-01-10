@@ -1971,16 +1971,16 @@ function card_title(outputname, param) {
 
     // Add button "Share" : share query
     button = dbutton.clone().addClass('share-query').text('Share ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the product URL to clipboard" });
-    button.append(glyphicon);
+    let info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the product URL to clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "API code" : Copy API code to clipboard
     button = dbutton.clone().addClass('api-code').text('API code ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the API code to the clipboard" });
-    button.append(glyphicon);
+    info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the API code to the clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
@@ -2121,16 +2121,16 @@ function card_title(outputname, param) {
 
     // Add button "Share" : share query
     button = dbutton.clone().addClass('share-query').text('Share ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the product URL to clipboard" });
-    button.append(glyphicon);
+    let info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the product URL to clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "API code" : Copy API code to clipboard
     button = dbutton.clone().addClass('api-code').text('API code ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the API code to the clipboard" });
-    button.append(glyphicon);
+    info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the API code to the clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "API token" : copy API token to clipboard if connected
@@ -2274,11 +2274,19 @@ function card_title(outputname, param) {
         job_id: job_id,
         instrument: instrument
       };
+
+      if (image.hasOwnProperty('file_path')) {
+        var button = dbutton.clone().addClass('show-js9');
+        button.data("image_file_path", image.file_path);
+        button.append("JS9");
+        toolbar.append(button);
+      }
+
       var download_url = get_download_url(url_params);
       var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
-      link.addClass('btn btn-default');
-      var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-      glyphicon.attr({ title: "Light curve in FITS format" });
+      link.addClass('btn btn-outline-secondary');
+      var glyphicon = $('<span>').addClass("bi bi-info-circle-fill");
+      glyphicon.attr({ title: "Download in FITS format" });
       link.append(glyphicon);
       toolbar.append(link);
     }
@@ -2682,9 +2690,9 @@ function card_title(outputname, param) {
     var download_url = get_download_url(url_params);
     var link = $('<a>').attr({ href: download_url, role: 'button' }).text('Download ');
     link.addClass('btn btn-outline-secondary');
-    var glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "image, catalog and region file" });
-    link.append(glyphicon);
+    var info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "image, catalog and region file" });
+    link.append(info_icon);
     toolbar.append(link);
 
     // Add button "Catalog": show catalog
@@ -2703,16 +2711,16 @@ function card_title(outputname, param) {
 
     // Add button "Share" : share query
     button = dbutton.clone().addClass('share-query').text('Share ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the product URL to clipboard" });
-    button.append(glyphicon);
+    info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the product URL to clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "API code" : copy the API code to the clipboard
     button = dbutton.clone().addClass('api-code').text('API code ');
-    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
-    glyphicon.attr({ title: "Copy the API code to the clipboard" });
-    button.append(glyphicon);
+    info_icon = $('<span>').addClass("bi bi-info-circle-fill");
+    info_icon.attr({ title: "Copy the API code to the clipboard" });
+    button.append(info_icon);
     toolbar.append(button);
 
     // Add button "API token" : copy API token to clipboard if connected
