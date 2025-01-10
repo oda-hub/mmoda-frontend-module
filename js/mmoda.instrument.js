@@ -2025,16 +2025,11 @@ function card_title(outputname, param) {
       });
     }
     $('#' + card_ids.card_id).data({
-      'job_id': job_id
-    });
-
-    $('#' + card_ids.card_id).data({
-      'products': data
-    });
-
-    $('#' + card_ids.card_id).data({
+      job_id: job_id,
+      products: data,
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
+      formData_return_progress_link: current_ajax_call_params.currentFormData
     });
 
     $('#' + card_ids.card_id + ' .card-header .card-title').html(card_title(data.analysis_parameters.src_name, data.analysis_parameters));
@@ -2175,8 +2170,8 @@ function card_title(outputname, param) {
       });
     }
     $('#' + card_ids.card_id).data({
-      'job_id': job_id,
-      'products': data,
+      job_id: job_id,
+      products: data,
       analysis_parameters: data.analysis_parameters,
       api_code: data.api_code,
       formData_return_progress_link: current_ajax_call_params.currentFormData
@@ -2246,8 +2241,13 @@ function card_title(outputname, param) {
     });
 
     var data = current_card.data('products');
-
     var image = data.image[lc_index];
+    if (data.hasOwnProperty('image')) {
+      if (Array.isArray(data.image))
+        var image = data.image[lc_index];
+      else if(data.image.hasOwnProperty('image'))
+        var image = data.image;
+    }
     var job_id = current_card.data('job_id');
 
     // -------------- Toolbar start 
@@ -2275,7 +2275,7 @@ function card_title(outputname, param) {
         instrument: instrument
       };
 
-      if (image.hasOwnProperty('file_path')) {
+      if (typeof image !== 'undefined' && image.hasOwnProperty('file_path')) {
         var button = dbutton.clone().addClass('show-js9');
         button.data("image_file_path", image.file_path);
         button.append("JS9");
@@ -2503,7 +2503,10 @@ function card_title(outputname, param) {
       spectrum_card_id: '#' + card_ids.card_id
     });
     $('#' + card_ids.card_id).data({
-      spectrum_parent_card_id: current_row
+      spectrum_parent_card_id: current_row,
+      analysis_parameters: data.analysis_parameters,
+      api_code: data.api_code,
+      formData_return_progress_link: current_ajax_call_params.currentFormData
     });
 
     product_type = $("input[name$='product_type']:checked", ".instrument-card.active").val();
