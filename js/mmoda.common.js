@@ -776,7 +776,7 @@ function get_waitingDialog($modal_dialog) {
     $('#edit-src-name', '#mmoda-name-resolve').on('keyup', function(event) {
       $('.row', '#mmoda-name-resolve').removeClass('has-success').removeClass('has-error');
       $('small.help-block', '#mmoda-name-resolve').remove();
-      //$('button#edit-resolve-src-name').prop('disabled', !$(this).val());
+      $('button#edit-resolve-src-name').prop('disabled', !$(this).val());
     });
 
     $('body').on('click', '.panel-heading .collapsible', function() {
