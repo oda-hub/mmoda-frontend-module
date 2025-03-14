@@ -19,7 +19,7 @@ function resolve_object_name($source_name)
       $data['ra'] = $response_json->ra;
       $data['dec'] = $response_json->dec;
       $data['status'] = 0;
-      $data['message'] = 'Name resolved by local resolver.';
+      $data['message'] = 'Object resolved by local resolver.';
       if ($response_json->success_time) {
         $data['t1'] = $response_json->view->t1;
         $data['t2'] = $response_json->view->t2;
