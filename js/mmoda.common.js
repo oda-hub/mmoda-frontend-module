@@ -264,8 +264,11 @@ var waitingDialog;
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
     waitingDialog.hide();
     html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-      + response.args.message
-      + '</small>';
+      + response.args.message;
+      if(response.args.hasOwnProperty('extra_message'))
+        html += '<br>' + response.args.extra_message;
+    html += '</small>';
+
     elt = $('.form-item-src-name', '#mmoda-name-resolve').parent().after(html);
     elt.find('.alert').hide();
     if (response.args.status == 0) {
