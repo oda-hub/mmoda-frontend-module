@@ -43,7 +43,6 @@ function resolve_object_name($source_name)
     $data['message'] = 'Failed to resolve name.<br>Please try later ...';
   } else if (! isset($xml->Target->Resolver->jradeg)) {
     error_log('Object name can not be resolved by remote name resolver:' . $name_resolver_url . "\n" . $xml->Target->INFO);
-    // This may be due to an incorrect input or the unavailability of the external service we rely on.
     $data['message'] = $source_name . ': The requested object could not be resolved.';
     $data['extra_message'] = 'This may be due to an incorrect input or the unavailability of the external service we rely on.';
   } else {
@@ -56,7 +55,7 @@ function resolve_object_name($source_name)
     }
     $nameresolver = explode('=', (string) $xml->Target->Resolver->attributes()->name[0])[1];
     $data['status'] = 0;
-    $data['message'] = 'Name resolved using ' . $nameresolver;
+    $data['message'] = 'Object resolved using the external service ' . $nameresolver;
     $data['ra'] = $ra;
     $data['dec'] = $dec;
   }
