@@ -3,7 +3,8 @@
 function resolve_object_name($source_name)
 {
   $local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";
-  $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
+  // $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/NSV?";
+  $name_resolver_url = "http://cdsweb.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/SNV?";
   // sleep ( 2 );
 
   $data = array();
