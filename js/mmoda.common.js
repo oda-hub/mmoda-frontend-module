@@ -264,8 +264,11 @@ var waitingDialog;
   Drupal.ajax.prototype.commands.set_ra_dec = function(ajax, response, status) {
     waitingDialog.hide();
     html = '<small class="help-block" data-bv-validator="callback" data-bv-for="src_name" data-bv-result="INVALID" style="">'
-      + response.args.message
-      + '</small>';
+      + response.args.message;
+      if(response.args.hasOwnProperty('extra_message'))
+        html += '<br>' + response.args.extra_message;
+    html += '</small>';
+
     elt = $('.form-item-src-name', '#mmoda-name-resolve').parent().after(html);
     elt.find('.alert').hide();
     if (response.args.status == 0) {
@@ -379,17 +382,34 @@ function get_waitingDialog($modal_dialog) {
             showProgressBar: false,
             showSpinner: false,
             showLegend: false,
+            showPrompt: false,
             showCloseInHeader: false,
+            showMoreLessLink: false,
             showTitle: false,
             showButton: true,
+            showDetails: false,
             buttonText: 'Close',
             showReturnProgressLink: false,
+            progressBarWidthPercentage: null,
+            progressBarBackgroundcolor: null,
+            progressBarTextcolor: null,
+            progressBarText: null,
+            showHeaderMessage: false,
+            enableMoreLessLink: false,
+            enableReturnProgressLink: false,
+            headerMessageJobId: null,
+            headerMessageSessionId: null,
+            jobInfoJobId: null,
+            jobInfoSessionId: null,
             // This callback runs after the dialog was hidden
           }, options);
           // Configuring dialog
           // $dialog.find('.modal-footer button.bug-button').addClass('hidden');
           $dialog.find('.modal-dialog').attr('class', 'modal-dialog')
             .addClass('modal-' + settings.dialogSize);
+
+          $dialog.find('.more-less-details .fa-info-circle').css('color', '');
+          $dialog.find('.progress').addClass('progress-striped');
 
           if (!settings.showCloseInHeader)
             $dialog.find('.modal-header .close').hide();
@@ -401,16 +421,27 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.return-progress-link').show();
 
           if (!settings.showProgressBar) {
-            //            $dialog.find('.progress').addClass('hidden');
             $dialog.find('.progress').hide();
           }
           else {
-            //            $dialog.find('.progress').removeClass('hidden');
             $dialog.find('.progress').show();
             $dialog.find('.progress-bar').attr('class', 'progress progress-bar');
             if (settings.progressType) {
               $dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
             }
+          }
+          if(settings.showMoreLessLink) {
+            this.showMoreLessLink();
+          }
+          if(settings.enableMoreLessLink) {
+            this.enableMoreLessLink();
+          } else {
+            this.disableMoreLessLink();
+          }
+          if(settings.enableReturnProgressLink) {
+            this.enableReturnProgressLink();
+          } else {
+            this.disableReturnProgressLink();
           }
 
           if (settings.showButton) {
@@ -429,6 +460,10 @@ function get_waitingDialog($modal_dialog) {
           }
           // $('#ldialog .summary-message').html(message.summary);
           this.replace(message);
+          if(settings.showDetails)
+            $dialog.find('.details').show();
+          else
+            $dialog.find('.details').hide();
           $('#ldialog .details').html('');
           $dialog.find('.modal-footer button.submit-button').text(settings.buttonText).addClass(settings.buttonText.toLowerCase() + '-button');
 
@@ -446,11 +481,39 @@ function get_waitingDialog($modal_dialog) {
             $dialog.find('.fa-spinner').removeClass('hidden');
           }
 
-          if (!settings.showLegend) {
-            $dialog.find('.legend').hide();
+          if( settings.progressBarWidthPercentage !== null) {
+            this.setProgressBarWidthPercentage(settings.progressBarWidthPercentage);
           }
-          else {
-            $dialog.find('.legend').show();
+          if( settings.progressBarBackgroundcolor !== null) {
+            this.setProgressBarBackgroundcolor(settings.progressBarBackgroundcolor);
+          }
+          if( settings.progressBarTextcolor !== null) {
+            this.setProgressBarTextColor(settings.progressBarTextcolor);
+          }
+          if( settings.progressBarText !== null) {
+            this.setProgressBarText(settings.progressBarText);
+          }
+          if(settings.headerMessageJobId !== null) {
+            this.setHeaderMessageJobId(settings.headerMessageJobId);
+          }
+          if(settings.headerMessageSessionId !== null) {
+            this.setHeaderMessagesSessionId(settings.headerMessageSessionId);
+          }
+          if(settings.showHeaderMessage) {
+            this.showHeaderMessage();
+          } else {
+            this.hideHeaderMessage();
+          }
+
+          if (settings.showLegend) {
+            this.showLegend();
+          } else {
+            this.hideLegend();
+          }
+          if (settings.showPrompt) {
+            this.showPrompt();
+          } else {
+            this.hidePrompt();
           }
           // Opening dialog
           $dialog.modal({ keyboard: true });
@@ -584,10 +647,16 @@ function get_waitingDialog($modal_dialog) {
           $('#mmoda_bug_report_form_container', $dialog).removeClass('hidden');
         },
         setHeaderMessagesSessionId: function(session_id) {
-          $dialog.find('.header-message .session-id').html('Session Id:' + session_id);
+          if(session_id !== '')
+            $dialog.find('.header-message .session-id').html('Session Id:' + session_id);
+          else
+            $dialog.find('.header-message .session-id').html('');
         },
         setHeaderMessageJobId: function(job_id) {
-          $dialog.find('.header-message .job-id').html('| Job Id:' + job_id);
+          if(job_id !== '')
+            $dialog.find('.header-message .job-id').html('| Job Id:' + job_id);
+          else
+            $dialog.find('.header-message .job-id').html('');
         },
         showHeaderMessage: function() {
           $dialog.find('.header-message').show();
@@ -596,10 +665,16 @@ function get_waitingDialog($modal_dialog) {
           $dialog.find('.header-message').hide();
         },
         setJobInfoSessionId: function(session_id) {
-          $dialog.find('.job-info .session-id').html('Session Id:' + session_id);
+          if(session_id !== '')
+            $dialog.find('.job-info .session-id').html('Session Id:' + session_id);
+          else
+            $dialog.find('.job-info .session-id').html('');
         },
         setJobInfoJobId: function(job_id) {
-          $dialog.find('.job-info .job-id').html('| Job Id:' + job_id);
+          if(job_id !== '')
+            $dialog.find('.job-info .job-id').html('| Job Id:' + job_id);
+          else
+            $dialog.find('.job-info .job-id').html('');
         },
         showJobInfo: function() {
           $dialog.find('.job-info').show();

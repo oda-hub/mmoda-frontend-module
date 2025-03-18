@@ -1517,13 +1517,24 @@ function panel_title(outputname, param) {
       waitingDialog.show('Processing ...', { 'summary': '' }, {
         progressType: 'success',
         showProgressBar: true,
+        showMoreLessLink: true,
         showSpinner: false,
-        showReturnProgressLink: true
+        showLegend: false,
+        showPrompt: true,
+        showReturnProgressLink: true,
+        enableMoreLessLink: false,
+        enableReturnProgressLink: false,
+        progressBarWidthPercentage: 100,
+        progressBarBackgroundcolor: '#8da38f',
+        progressBarText: 'processing request',
+        progressBarTextcolor: 'black',
+        showHeaderMessage: false,
+        headerMessageJobId: '',
+        headerMessageSessionId: '',
+        jobInfoJobId: '',
+        jobInfoSessionId: ''
       });
-      waitingDialog.setProgressBarText('processing request');
-      waitingDialog.setProgressBarBackgroundcolor('#8da38f');
-      waitingDialog.setProgressBarWidthPercentage(100);
-      waitingDialog.hideHeaderMessage();
+
       $('.write-feedback-button').show();
       $(".notice-progress-container").hide();
 

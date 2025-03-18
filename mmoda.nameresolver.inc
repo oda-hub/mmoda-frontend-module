@@ -19,7 +19,7 @@ function resolve_object_name($source_name)
       $data['ra'] = $response_json->ra;
       $data['dec'] = $response_json->dec;
       $data['status'] = 0;
-      $data['message'] = 'Name resolved by local resolver.';
+      $data['message'] = 'Object resolved by local resolver.';
       if ($response_json->success_time) {
         $data['t1'] = $response_json->view->t1;
         $data['t2'] = $response_json->view->t2;
@@ -43,7 +43,8 @@ function resolve_object_name($source_name)
     $data['message'] = 'Failed to resolve name.<br>Please try later ...';
   } else if (! isset($xml->Target->Resolver->jradeg)) {
     error_log('Object name can not be resolved by remote name resolver:' . $name_resolver_url . "\n" . $xml->Target->INFO);
-    $data['message'] = $source_name . ' : Unknown object !';
+    $data['message'] = $source_name . ': The requested object could not be resolved.';
+    $data['extra_message'] = 'This may be due to an incorrect input or a temporary unavailability of the external service we rely on.';
   } else {
     if (is_array($xml->Target->Resolver->jradeg)) {
       $ra = floatval($xml->Target->Resolver->jradeg['0']);
@@ -54,7 +55,7 @@ function resolve_object_name($source_name)
     }
     $nameresolver = explode('=', (string) $xml->Target->Resolver->attributes()->name[0])[1];
     $data['status'] = 0;
-    $data['message'] = 'Name resolved using ' . $nameresolver;
+    $data['message'] = 'Object resolved using the external service ' . $nameresolver;
     $data['ra'] = $ra;
     $data['dec'] = $dec;
   }
