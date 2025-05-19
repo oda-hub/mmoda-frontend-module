@@ -2486,8 +2486,8 @@ function panel_title(outputname, param) {
       columns: image_table_column_names,
       // dom : 'Brtflip',
       dom: '<"top"Bif>rt<"bottom"<l>p><"clear">',
+      ordering: false,
       buttons: [],
-      order: [[0, 'asc']],
       "rowCallback": function (row, data) {
         $(row).data(data);
       }
