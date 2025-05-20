@@ -2450,20 +2450,35 @@ function panel_title(outputname, param) {
     $('#' + panel_ids.panel_id + ' .panel-heading .panel-title').html(panel_title(data.analysis_parameters.src_name, data.analysis_parameters));
 
     var image_table_data = new Array(data.name.length);
-    for (var i = 0; i < data.name.length; i++) {
-      let output_name = data.name[i];
+    var distinct_names = [ ...new Set(data.name)];
+    distinct_names.forEach((name, i) => {
+      let output_name = name;
+      let index_name = data.name.indexOf(name);
       if (data.hasOwnProperty('extra_metadata')) {
-        if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
+        if (data.extra_metadata[name].hasOwnProperty('label'))
           output_name = data.extra_metadata[output_name].label;
-        if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
-          output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
+        if (data.extra_metadata[name].hasOwnProperty('description'))
+          output_name = "<span title='" + data.extra_metadata[name].description + "'>" + output_name + "</span>";
       }
-      image_table_data[i] = {
-        DT_RowId: 'row_' + i,
-        output_name: output_name,
-        index: i,
+      // extract sub list from data.name
+      let sub_list_products = data.name.filter((item) => item === name);
+      if (sub_list_products.length > 1) {
+        for (var j = 0; j < sub_list_products.length; j++) {
+          let table_output_name = (j + 1) + ' - ' + output_name;
+          image_table_data[j + index_name] = {
+            DT_RowId: 'row_' + (j + index_name),
+            output_name: table_output_name,
+            index: j + index_name,
+          }
+        }
+      } else {
+        image_table_data[index_name] = {
+            DT_RowId: 'row_' + index_name,
+            output_name: output_name,
+            index: index_name,
+          }
       }
-    }
+    });
 
     $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
     var image_table_column_names = [{
