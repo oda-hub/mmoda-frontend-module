@@ -396,6 +396,7 @@ tr.selected td {
 
 .dataTable tr td {
   white-space: nowrap;
+  padding-right: 0.5em;
 }
 
 table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
