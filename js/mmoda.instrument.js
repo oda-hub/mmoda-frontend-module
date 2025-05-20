@@ -2468,14 +2468,14 @@ function panel_title(outputname, param) {
           image_table_data[j + index_name] = {
             DT_RowId: 'row_' + (j + index_name),
             output_name: table_output_name,
-            index: i,
+            index: j + index_name,
           }
         }
       } else {
         image_table_data[index_name] = {
             DT_RowId: 'row_' + index_name,
             output_name: output_name,
-            index: i,
+            index: index_name,
           }
       }
     });
