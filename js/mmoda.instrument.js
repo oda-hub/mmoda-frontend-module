@@ -2480,21 +2480,6 @@ function panel_title(outputname, param) {
       }
     });
 
-    // for (var i = 0; i < data.name.length; i++) {
-    //   let output_name = data.name[i];
-    //   if (data.hasOwnProperty('extra_metadata')) {
-    //     if (data.extra_metadata[data.name[i]].hasOwnProperty('label'))
-    //       output_name = data.extra_metadata[output_name].label;
-    //     if (data.extra_metadata[data.name[i]].hasOwnProperty('description'))
-    //       output_name = "<span title='" + data.extra_metadata[data.name[i]].description + "'>" + output_name + "</span>";
-    //   }
-    //   image_table_data[i] = {
-    //     DT_RowId: 'row_' + i,
-    //     output_name: output_name,
-    //     index: i,
-    //   }
-    // }
-
     $('#' + panel_ids.panel_body_id).append('<div class="image-table-wrapper"><table class="image-table table-striped"></table></div>');
     var image_table_column_names = [{
       title: "Output Name",
