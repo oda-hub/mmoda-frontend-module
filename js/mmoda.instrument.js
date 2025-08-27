@@ -1456,7 +1456,7 @@ function panel_title(outputname, param) {
           }
           return (item);
         });
-        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON();
+        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON({checkboxUncheckedValue: "0"});
         //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
         var instrument_form_serializeArray = [];
         multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
