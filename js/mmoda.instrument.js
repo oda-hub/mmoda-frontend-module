@@ -1458,7 +1458,7 @@ function panel_title(outputname, param) {
         });
 
         var instrument_check_boxes_JSON = $(this).find('input[type=checkbox]').serializeJSON({checkboxUncheckedValue: "0"});
-        var instrument_no_check_boxes_JSON = $(this).find('input[type!=checkbox]').serializeJSON();
+        var instrument_no_check_boxes_JSON = $(this).find('[type!=checkbox]').serializeJSON();
         var instrument_form_serializeJSON = {... instrument_check_boxes_JSON, ... instrument_no_check_boxes_JSON};
 
         var instrument_form_serializeArray = [];
