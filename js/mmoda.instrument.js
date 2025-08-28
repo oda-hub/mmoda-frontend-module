@@ -1456,8 +1456,11 @@ function panel_title(outputname, param) {
           }
           return (item);
         });
-        var instrument_form_serializeJSON = $($(this)[0]).serializeJSON({checkboxUncheckedValue: "0"});
-        //var instrument_form_serializeArray = $($(this)[0]).serializeArray();
+
+        var instrument_check_boxes_JSON = $(this).find('input[type=checkbox]').serializeJSON({checkboxUncheckedValue: "0"});
+        var instrument_no_check_boxes_JSON = $(this).find('input[type!=checkbox]').serializeJSON();
+        var instrument_form_serializeJSON = {... instrument_check_boxes_JSON, ... instrument_no_check_boxes_JSON};
+
         var instrument_form_serializeArray = [];
         multival_pars = $.unique($.map($(this).find('.multivalued-value .form-control'), (x) => x.name.split('[')[0]));
         $.each(instrument_form_serializeJSON, function (param, value) {
