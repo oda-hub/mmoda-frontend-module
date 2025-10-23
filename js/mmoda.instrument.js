@@ -1698,6 +1698,15 @@ function panel_title(outputname, param) {
               make_request_error = true;
               make_request_error_messages.push('File parameter (' + field_name + ') can not be set via url');
             }
+          } else if ($(this).attr('type') == 'checkbox') {
+            // Handle boolean/checkbox inputs
+            let bool_value = false;
+            if (typeof request_parameters[field_name] === 'string') {
+              bool_value = request_parameters[field_name].toLowerCase() === 'true' || request_parameters[field_name] === '1';
+            } else {
+              bool_value = !!request_parameters[field_name];
+            }
+            $(this).prop('checked', bool_value).trigger('change');
           } else if ($(this).attr('type') == 'radio') {
             if (type_selector.length == 0) {
               let url_request_value = request_parameters[field_name];
