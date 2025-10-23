@@ -903,7 +903,7 @@ function get_waitingDialog($modal_dialog) {
       var url_base;
       thelocation = window.parent.location;
       url_base = thelocation.protocol + "//"
-        + thelocation.hostname + thelocation.pathname;
+        + thelocation.hostname + ":" + thelocation.port + thelocation.pathname;
       // redirect to mmoda base url to get rid of the parameters
       thelocation.replace(url_base);
     }
