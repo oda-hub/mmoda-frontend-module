@@ -710,6 +710,15 @@ button.renku-publish {
   border-top-right-radius: 4px !important;
 }
 
+button.solidipes-publish {
+  background: url(https://gitlab.com/solidipes/solidipes/-/raw/main/logos/solidipes.png) no-repeat;
+  background-size: 20px 20px;
+  background-position: 5px center;
+  padding-left: 28px;
+  border-bottom-right-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+}
+
 .tab-title {
   font-weight: bold;
 }

@@ -1263,6 +1263,27 @@ function panel_title(outputname, param) {
 
     });
 
+    $("body").on('click', '.result-panel .solidipes-publish', function (e) {
+      e.preventDefault();
+
+      var $btn = $(this);
+      var params = $btn.data('analysis_parameters');
+      
+      var normalized = normalizeAnalysisParams(params);
+
+      var encoded = encodeURIComponent(JSON.stringify(normalized));
+
+      if (Drupal.settings.mmoda.hasOwnProperty('solidipes_url_base')) {
+        var url_base = Drupal.settings.mmoda.solidipes_url_base
+      } else {
+        var url_base = 'https://dcsm.epfl.ch/dcsm-intranet?op=creation&creation_method=MMODA_import&query='
+      }
+
+      var url = url_base + encoded;
+
+      window.open(url, '_blank');
+    });
+
     $("body").on('click', '.panel .copy-api-code', function (e) {
       e.preventDefault();
       var parent_panel = $(this).closest('.panel');
@@ -2266,7 +2287,8 @@ function panel_title(outputname, param) {
     toolbar.append(button);
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
-    toolbar.append(get_renku_publish_button(dbutton, job_id));
+    // toolbar.append(get_renku_publish_button(dbutton, job_id));
+    toolbar.append(get_solidipes_publish_button(dbutton, data.analysis_parameters));
 
     // Add button "Return progress"
     let enabled = false;
@@ -2415,7 +2437,8 @@ function panel_title(outputname, param) {
     toolbar.append(get_token_button());
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
-    toolbar.append(get_renku_publish_button(dbutton, job_id));
+    // toolbar.append(get_renku_publish_button(dbutton, job_id));
+    toolbar.append(get_solidipes_publish_button(dbutton, data.analysis_parameters));
 
     // Add button "Return progress"
     let enabled = false;
@@ -2677,7 +2700,8 @@ function panel_title(outputname, param) {
     toolbar.append(button);
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
-    toolbar.append(get_renku_publish_button(dbutton, job_id));
+    // toolbar.append(get_renku_publish_button(dbutton, job_id));
+    toolbar.append(get_solidipes_publish_button(dbutton, data.analysis_parameters));
 
     // Add button "Return progress"
     let enabled = false;
@@ -2949,6 +2973,21 @@ function panel_title(outputname, param) {
     return button;
   }
 
+  function get_solidipes_publish_button(dbutton, analysis_parameters) {
+
+    button = dbutton.clone().addClass('solidipes-publish').text('Open on Solidipes ');
+    glyphicon = $('<span>').addClass("glyphicon glyphicon-info-sign");
+    glyphicon.attr({ title: "Import and curate data on Solidipes" });
+    button.append(glyphicon);
+
+    if (analysis_parameters) {
+      button.data('analysis_parameters', analysis_parameters);
+    }
+
+    return button;
+  }
+
+
   function get_return_progress_link_button(enable = true) {
     let inner_html = $(`<div class="btn return-progress-link return-progress-link-result-panel">
     <div class="prompt"><span class="return-progress-link-tooltip">View notebook progress</span></div>
@@ -3056,7 +3095,8 @@ function panel_title(outputname, param) {
     toolbar.append(get_token_button());
 
     // Add button "Publish on Renku", code goes here it's it has to appear for all cases
-    toolbar.append(get_renku_publish_button(dbutton, job_id));
+    // toolbar.append(get_renku_publish_button(dbutton, job_id));
+    toolbar.append(get_solidipes_publish_button(dbutton, data.analysis_parameters));
 
     // Add button "Return progress"
     let enabled = false;
@@ -3127,6 +3167,47 @@ function panel_title(outputname, param) {
       parameters['job_id'] = job_id;
     url = 'dispatch-data/push-renku-branch?' + $.param(parameters);
     return (url);
+  }
+
+  function normalizeAnalysisParams(input) {
+    if (!input || typeof input !== 'object') {
+      return null;
+    }
+
+    var output = {};
+
+    // Fields to drop
+    var droppedFields = [
+      'job_id',
+      'query_status',
+      // 'selected_catalog', // TODO: test with selected_catalog
+      'session_id',
+      'token' // TODO: should we keep token?
+    ];
+
+    // Renaming rules
+    var renameMap = {
+      product_type: 'product',
+      query_type: 'product_type',
+      catalog_selected_objects: 'selected_catalog'
+    };
+
+    Object.keys(input).forEach(function (key) {
+
+      // Skip dropped fields
+      if (droppedFields.indexOf(key) !== -1) {
+        return;
+      }
+
+      // Apply renaming if defined
+      if (renameMap[key]) {
+        output[renameMap[key]] = input[key];
+      } else {
+        output[key] = input[key];
+      }
+    });
+
+    return output;
   }
 
   function activate_modal($element) {
