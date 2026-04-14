@@ -1274,10 +1274,14 @@ function panel_title(outputname, param) {
       var encoded = encodeURIComponent(JSON.stringify(normalized));
 
       if (Drupal.settings.mmoda.hasOwnProperty('solidipes_url_base')) {
-        var url_base = Drupal.settings.mmoda.solidipes_url_base
+        var solidipes_url_base = Drupal.settings.mmoda.solidipes_url_base
       } else {
-        var url_base = 'https://dcsm.epfl.ch/dcsm-intranet?op=creation&creation_method=MMODA_import&query='
+        var solidipes_url_base = 'https://dcsm.epfl.ch/dcsm-intranet?op=creation&creation_method=MMODA_import'
       }
+      var regex = /[\/]*$/;
+      var my_url = window.location.href.replace(regex, '');
+
+      var url_base = solidipes_url_base + '&mmoda_url=' + my_url + '/dispatch-data' + '&query=';
 
       var url = url_base + encoded;
 
@@ -3199,11 +3203,15 @@ function panel_title(outputname, param) {
         return;
       }
 
+      var value = input[key];
+      if (key === 'selected_catalog' && (value === null || value === undefined || value === '\x00') ) {
+        return;
+      }
       // Apply renaming if defined
       if (renameMap[key]) {
-        output[renameMap[key]] = input[key];
+        output[renameMap[key]] = value;
       } else {
-        output[key] = input[key];
+        output[key] = value;
       }
     });
 
