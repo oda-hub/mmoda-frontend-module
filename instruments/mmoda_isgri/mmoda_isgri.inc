@@ -47,7 +47,6 @@ function mmoda_isgri($form, &$form_state)
     '#type' => 'select',
     '#title' => t("OSA Version"),
     '#options' => array(
-      'OSA10.2' => 'OSA10.2',
       'OSA11.2' => 'OSA11.2'
     ),
     '#default_value' => $instrument_defaults['osa_version'],
