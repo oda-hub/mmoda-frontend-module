@@ -3186,7 +3186,7 @@ function panel_title(outputname, param) {
       'query_status',
       // 'selected_catalog', // TODO: test with selected_catalog
       'session_id',
-      'token' // TODO: should we keep token?
+      // 'token' // TODO: should we keep token?
     ];
 
     // Renaming rules
